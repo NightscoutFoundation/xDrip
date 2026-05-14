@@ -23,7 +23,8 @@ public class WidgetUpdateService extends Service {
     {
         try {
             Context context = xdrip.getAppContext();
-            if (AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0) {
+            if (AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidget.class)).length > 0
+                    || AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(context, xDripWidgetExtended.class)).length > 0) {
                 context.startService(new Intent(context, WidgetUpdateService.class));
             }
         } catch (Exception e)
@@ -105,11 +106,21 @@ public class WidgetUpdateService extends Service {
 
     public void updateCurrentBgInfo() {
         Log.d(TAG, "Sending update flag to widget");
+
+        // Update standard widget
         int ids[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), xDripWidget.class));
-        Log.d(TAG, "Updating " + ids.length + " widgets");
+        Log.d(TAG, "Updating " + ids.length + " standard widgets");
         Intent intent = new Intent(this,xDripWidget.class);
         intent.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,ids);
         sendBroadcast(intent);
+
+        // Update extended widget
+        int idsExtended[] = AppWidgetManager.getInstance(getApplication()).getAppWidgetIds(new ComponentName(getApplication(), xDripWidgetExtended.class));
+        Log.d(TAG, "Updating " + idsExtended.length + " extended widgets");
+        Intent intentExtended = new Intent(this,xDripWidgetExtended.class);
+        intentExtended.setAction(AppWidgetManager.ACTION_APPWIDGET_UPDATE);
+        intentExtended.putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS,idsExtended);
+        sendBroadcast(intentExtended);
     }
 }

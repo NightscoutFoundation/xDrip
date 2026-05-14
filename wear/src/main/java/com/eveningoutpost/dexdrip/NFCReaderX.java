@@ -495,7 +495,8 @@ if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
             Libre2SensorData.setLibre2SensorData(patchUid, patchInfo, 42, 1, unlockData.second);
             byte[] nfc_command = unlockData.first;
 
-            final byte[] cmd = new byte[]{0x02, (byte) 0xa1, 0x07};
+            final byte manufacturerCode = patchUid[6];
+            final byte[] cmd = new byte[]{0x02, (byte) 0xa1, manufacturerCode};
             final byte[] full_cmd = new byte[cmd.length + nfc_command.length];
             System.arraycopy(cmd, 0, full_cmd, 0, cmd.length);
             System.arraycopy(nfc_command, 0, full_cmd, cmd.length, nfc_command.length);
@@ -563,6 +564,7 @@ if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
                             nfcvTag.connect();
                         }
                         final byte[] uid = tag.getId();
+                        final byte manufacturerCode = uid[6];
 
                         try {
                             final byte[] diag = JoH.hexStringToByteArray(Pref.getStringDefaultBlank("nfc_test_diagnostic"));
@@ -599,8 +601,8 @@ if (Pref.getBooleanDefaultFalse("external_blukon_algorithm")) {
                         Long time_patch = System.currentTimeMillis();
                         while (true) {
                             try {
-                                
-                                final byte[] cmd = new byte[] {0x02, (byte)0xa1, 0x07};
+
+                                final byte[] cmd = new byte[] {0x02, (byte)0xa1, manufacturerCode};
                                 patchInfo = nfcvTag.transceive(cmd);
                                 if(patchInfo != null) {
                                     // We need to throw away the first byte.

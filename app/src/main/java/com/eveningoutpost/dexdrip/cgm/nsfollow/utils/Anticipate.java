@@ -2,6 +2,9 @@ package com.eveningoutpost.dexdrip.cgm.nsfollow.utils;
 
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
+
+import lombok.val;
 
 /**
  * Choose optimum anticipation times for re-attempting data collection to minimize
@@ -21,8 +24,7 @@ public class Anticipate {
      */
 
     public static long next(long now, final long lastTimeStamp, final long period, final long grace) {
-        final long lag = Constants.SECOND_IN_MS * Pref.getStringToInt("nsfollow_lag", 0); // User can choose a wake delay with a 0 default.
-        final long last = lastTimeStamp + lag; // We delay the source timestamp and use it as the time we received the reading to account for any source delay.
+        final long last = lastTimeStamp;
 
         final long since = now - last;
         if (since <= (grace * 2)) {

@@ -117,7 +117,7 @@ public class DailyIntentService extends IntentService {
                 }
 
                 try {
-                    final int bg_retention_days = Pref.getStringToInt("retention_days_bg_reading", 0);
+                    final int bg_retention_days = Pref.getStringToInt("retention_days_bg_reading", 180);
                     if (bg_retention_days > 0) {
                         BgReading.cleanup(bg_retention_days);
                         try {

@@ -16,6 +16,7 @@ import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import java.io.IOException;
@@ -23,7 +24,6 @@ import java.io.IOException;
 import lombok.val;
 import okhttp3.Callback;
 import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -45,7 +45,7 @@ public class Legacy {
             return;
         }
         try {
-            val client = new OkHttpClient();
+            val client = OkHttpWrapper.getClient();
             val urlBuilder = HttpUrl.parse(url).newBuilder();
             urlBuilder.addQueryParameter("param1", param1);
             urlBuilder.addQueryParameter("param2", param2);

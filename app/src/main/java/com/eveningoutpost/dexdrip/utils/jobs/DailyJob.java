@@ -27,7 +27,9 @@ public class DailyJob extends Job {
     protected Result onRunJob(@NonNull Job.Params params) {
         final long startTime = JoH.tsl();
         DailyIntentService.work();
-        UserError.Log.uel(TAG, JoH.dateTimeText(JoH.tsl()) + " Job Ran - finished, duration: " + JoH.niceTimeScalar(JoH.msSince(startTime)));
+        final String cellService = !JoH.isLANConnected()? " (mobile)" : "";
+        UserError.Log.uel(TAG, JoH.dateTimeText(JoH.tsl()) + " Job Ran" + cellService + ", duration: " + JoH.niceTimeScalar(JoH.msSince(startTime)));
+
         return Result.SUCCESS;
     }
 
@@ -39,7 +41,7 @@ public class DailyJob extends Job {
                     .setRequiresDeviceIdle(true)
 //                    .setRequiresCharging(true) // If the battery level is not low, we should run even if it is not being charged.
                     .setRequiresBatteryNotLow(true)
-                    .setRequiredNetworkType(JobRequest.NetworkType.UNMETERED)
+                    .setRequiredNetworkType(JobRequest.NetworkType.CONNECTED)
                     .setUpdateCurrent(true)
                     .build()
                     .schedule();

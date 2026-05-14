@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.BluetoothScan;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -29,7 +30,7 @@ public class DexCollectionHelper {
     private static final String TAG = DexCollectionHelper.class.getSimpleName();
 
 
-    public static void assistance(Activity activity, DexCollectionType type) {
+    public static void assistance(final Activity activity, DexCollectionType type) {
 
         switch (type) {
 
@@ -58,7 +59,8 @@ public class DexCollectionHelper {
                             clearDataWhenTransmitterIdEntered(Pref.getString(pref, ""));
 
                             CollectionServiceStarter.restartCollectionServiceBackground();
-                        });
+                            LocationHelper.requestLocationForBluetooth(activity);
+                        }, true);
                 break;
 
             case DexbridgeWixel:
@@ -109,6 +111,10 @@ public class DexCollectionHelper {
                 Home.staticRefreshBGChartsOnIdle();
                 break;
 
+            default:
+                UserError.Log.d(TAG, "Default case in assistance - restarting collection service");
+                CollectionServiceStarter.restartCollectionServiceBackground();
+                break;
             /* LOGIN via browser is required currently
             case CLFollow:
                 textSettingDialog(activity,

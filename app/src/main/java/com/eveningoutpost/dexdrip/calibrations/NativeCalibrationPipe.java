@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
+import com.eveningoutpost.dexdrip.cgm.glupro.GluPro;
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -50,6 +51,7 @@ public class NativeCalibrationPipe {
         // Send to potential listeners
         Ob1G5StateMachine.addCalibration(glucose, timestamp);
         Medtrum.addCalibration(glucose, timestamp);
+        GluPro.addCalibration(glucose, timestamp);
 
         PersistentStore.setLong("last-calibration-pipe-timestamp", JoH.tsl());
 

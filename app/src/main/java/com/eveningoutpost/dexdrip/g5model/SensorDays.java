@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.g5model;
 
 import android.text.SpannableString;
 
+import com.eveningoutpost.dexdrip.cgm.glupro.GluProService;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -22,6 +23,7 @@ import lombok.Getter;
 import lombok.val;
 
 import static com.eveningoutpost.dexdrip.g5model.FirmwareCapability.isDeviceAlt2;
+import static com.eveningoutpost.dexdrip.g5model.FirmwareCapability.isDeviceAlt3;
 import static com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine.getFirmwareXDetails;
 import static com.eveningoutpost.dexdrip.models.JoH.msSince;
 import static com.eveningoutpost.dexdrip.models.JoH.roundDouble;
@@ -32,6 +34,7 @@ import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.usingNa
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.GluPro;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.None;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getDexCollectionType;
@@ -49,6 +52,7 @@ public class SensorDays {
     private static final long UNKNOWN = -1;
     private static final int USE_DEXCOM_STRATEGY = 5;
     private static final int USE_LIBRE_STRATEGY = 6;
+    private static final int USE_GLUPRO_STRATEGY = 7;
 
     private static final long CAL_THRESHOLD1 = DAY_IN_MS * 4;
     private static final long CAL_THRESHOLD2 = Constants.HOUR_IN_MS * 18;
@@ -106,17 +110,27 @@ public class SensorDays {
             if (vr3 != null) {
                 ths.warmupMs = Math.min(Constants.SECOND_IN_MS * vr3.warmupSeconds, 2 * HOUR_IN_MS);
             } else {
-               ths.warmupMs = 2 * HOUR_IN_MS;
+                ths.warmupMs = 2 * HOUR_IN_MS;
             }
 
             if (getBestCollectorHardwareName().equals("G7")) {
                 ths.period = DAY_IN_MS * 10 + HOUR_IN_MS * 12; // The device lasts 10.5 days.
-                ths.warmupMs = 30 * MINUTE_IN_MS; // The warmup time is 30 minutes.
+                ths.warmupMs = 27 * MINUTE_IN_MS;
             }
 
             if (isDeviceAlt2(getTransmitterID())) {
                 ths.period = DAY_IN_MS * 15 + HOUR_IN_MS * 12;
             }
+
+            if (isDeviceAlt3(getTransmitterID())) {
+                ths.period = DAY_IN_MS * 15 + HOUR_IN_MS * 12;
+                ths.warmupMs = HOUR_IN_MS;
+            }
+
+        } else if (type == GluPro) {
+            ths.strategy = USE_GLUPRO_STRATEGY;
+            ths.period = GluProService.getRunTime();
+            ths.warmupMs = HOUR_IN_MS;
 
         } else {
             // unknown type
@@ -166,6 +180,8 @@ public class SensorDays {
                 return getDexcomStart();
             case USE_LIBRE_STRATEGY:
                 return getLibreStart();
+            case USE_GLUPRO_STRATEGY:
+                return com.eveningoutpost.dexdrip.cgm.glupro.GluPro.getStart();
             default:
                 return 0; // very large error default will be caught by sanity check
         }
@@ -210,7 +226,19 @@ public class SensorDays {
                 return new SpannableString(MessageFormat.format(fmt, roundDouble((double) expiryMs / DAY_IN_MS, 1)));
             } else {
                 // expiring soon
-                val niceTime = new SimpleDateFormat(expiryMs < CAL_THRESHOLD2 ? "h:mm a" : "EEE, h:mm a", Locale.getDefault()).format(getSensorEndTimestamp());
+                val context = xdrip.getAppContext();
+                boolean is24Hour = android.text.format.DateFormat.is24HourFormat(context);
+
+                // pick skeleton based on expiry window
+                String timeSkeleton = is24Hour ? "Hm" : "hma";
+                String skeleton = (expiryMs < CAL_THRESHOLD2) ? timeSkeleton : "EEE" + timeSkeleton;
+
+                // build best pattern for this locale + system 12h/24h setting
+                String pattern = android.text.format.DateFormat.getBestDateTimePattern(Locale.getDefault(), skeleton);
+
+                val dateFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+                String niceTime = dateFormat.format(getSensorEndTimestamp());
+
                 return Span.colorSpan(MessageFormat.format(xdrip.gs(R.string.expires_at), niceTime), expiryMs < CAL_THRESHOLD2 ? Highlight.BAD.color() : Highlight.NOTICE.color());
             }
         }

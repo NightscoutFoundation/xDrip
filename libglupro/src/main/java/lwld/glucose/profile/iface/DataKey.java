@@ -1,0 +1,40 @@
+package lwld.glucose.profile.iface;
+
+/**
+ * JamOrHam
+ * <p>
+ * Interface information exchange data keys
+ */
+
+public enum DataKey {
+    DEVICE_NAME,
+    DEVICE_ADDRESS,
+    FIRMWARE_VERSION,
+    MANUFACTURER,
+    MODEL_NUMBER,
+    SERIAL_NUMBER,
+    HARDWARE_REVISION,
+    SYSTEM_ID,
+    START_TIME,
+    START_TIME_MILLIS,
+    RUN_TIME,
+    MGDL,
+    TIMESTAMP,
+    TREND,
+    QUALITY,
+    SESSION_STOPPED,
+    BATTERY_LOW,
+    SENSOR_MALFUNCTION,
+    VALUE_TOO_LOW,
+    VALUE_TOO_HIGH,
+    DEVICE_ALERT,
+    DEVICE_FAULT,
+    TEMPERATURE_TOO_HIGH,
+    TEMPERATURE_TOO_LOW,
+    CALIBRATION_ALLOWED,
+    CALIBRATION_RECOMMENDED,
+    CALIBRATION_REQUIRED,
+    COMMUNICATION_INTERVAL,
+    STATUS_STRING,
+    SECURED,
+}

@@ -140,6 +140,7 @@ public class AlertList extends ActivityWithMenu {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_alert_list);
+        JoH.fixActionBar(this);
         mContext = getApplicationContext();
         listViewLow = (ListView) findViewById(R.id.listView_low);
         listViewHigh = (ListView) findViewById(R.id.listView_high);
@@ -190,11 +191,11 @@ public class AlertList extends ActivityWithMenu {
 
                 if (!isFinishing()) {
                     new AlertDialog.Builder(AlertList.this)
-                            .setTitle("Warning !")
-                            .setMessage("No low alert is active. You won’t be notified of low glucose—please add or enable one.")
+                            .setTitle(getString(R.string.alert_warning))
+                            .setMessage(getString(R.string.no_active_low_alert_warning))
                             .setCancelable(false)
                             .setPositiveButton(
-                                    "Ok",
+                                    getString(R.string.ok),
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int id) {
                                             dialog.cancel();

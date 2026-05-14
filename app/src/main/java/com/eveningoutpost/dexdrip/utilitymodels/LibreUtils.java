@@ -42,7 +42,7 @@ public class LibreUtils {
             15843, 11370, 7921, 3960 };
 
     // first two bytes = crc16 included in data
-    static long computeCRC16(byte[] data, int start, int size){
+    public static long computeCRC16(byte[] data, int start, int size){
         long crc = 0xffff;
         for (int i = start + 2; i < start + size; i++) {
             crc = ((crc >> 8) ^ crc16table[(int)(crc ^   (data[i] & 0xFF) ) & 0xff]);

@@ -20,6 +20,7 @@ public class EGlucoseRxMessage2 extends BaseGlucoseRxMessage {
 
     private Integer predicted_glucose;
 
+    @Getter
     public int age;
     public int info;
 
@@ -89,6 +90,10 @@ public class EGlucoseRxMessage2 extends BaseGlucoseRxMessage {
             return tsl() - (timestamp * Constants.SECOND_IN_MS);
         }
         return null;
+    }
+
+    public boolean ageRecent() {
+        return age >= 0 && age < 305;
     }
 
     @Override

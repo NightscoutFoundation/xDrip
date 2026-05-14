@@ -14,6 +14,8 @@ import android.os.Environment;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
+
 import android.util.Log;
 import android.widget.Toast;
 
@@ -133,8 +135,9 @@ public class InstallPebbleWatchFace extends BaseAppCompatActivity {
 
             // open the file - trigger pebble helper app
             Intent intent = new Intent(Intent.ACTION_VIEW);
-            intent.setDataAndType(Uri.fromFile(new File(dest_filename)), "application/octet-stream");
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Uri uri = FileProvider.getUriForFile(this.getApplicationContext(), this.getPackageName() + ".provider", new File(dest_filename));
+            intent.setDataAndType(uri, "application/octet-stream");
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_GRANT_READ_URI_PERMISSION);
             startActivity(intent);
 
         } catch (Exception e) {

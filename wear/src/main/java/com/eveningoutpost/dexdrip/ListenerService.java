@@ -1743,6 +1743,7 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             prefs.putBoolean("bluetooth_watchdog", dataMap.getBoolean("bluetooth_watchdog", false));
             prefs.putString("bluetooth_watchdog_timer", dataMap.getString("bluetooth_watchdog_timer", "20"));
 
+            prefs.putBoolean("enable_wear_auto_update", dataMap.getBoolean("enable_wear_auto_update", true));
             prefs.putBoolean("sync_wear_logs", dataMap.getBoolean("sync_wear_logs", false));
 
             //prefs.putBoolean("engineering_mode", dataMap.getBoolean("engineering_mode", false));
@@ -2900,6 +2901,10 @@ public class ListenerService extends WearableListenerService implements GoogleAp
     public void onChannelClosed(final Channel channel, final int closeReason, final int appSpecificErrorCode) {
         logChannelCloseReason("Whole Channel", channel, closeReason, appSpecificErrorCode);
         // TODO counter for failures??
+        if (!VersionFixer.isWearAutoUpdateEnabled()) {
+            UserError.Log.d(TAG, "Wear auto-update disabled; not re-requesting APK on channel close");
+            return;
+        }
         if ((closeReason == CLOSE_REASON_LOCAL_CLOSE || closeReason == CLOSE_REASON_REMOTE_CLOSE) && reRequestDownloadApkCounter < 30 && apkBytesRead < 1 && appSpecificErrorCode == 0) {
             UserError.Log.d(TAG,"Requesting to download again");
             reRequestDownloadApkCounter++;

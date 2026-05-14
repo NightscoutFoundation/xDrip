@@ -4,16 +4,16 @@ import com.eveningoutpost.dexdrip.sharemodels.models.ExistingFollower;
 import com.eveningoutpost.dexdrip.sharemodels.models.InvitationPayload;
 import com.eveningoutpost.dexdrip.sharemodels.models.ShareUploadPayload;
 import com.eveningoutpost.dexdrip.sharemodels.useragentinfo.UserAgent;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
 
-import retrofit.Call;
-import retrofit.http.Body;
-import retrofit.http.Headers;
-import retrofit.http.POST;
-import retrofit.http.Query;
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 /**
  * Created by Emma Black on 3/16/15.

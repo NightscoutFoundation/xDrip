@@ -15,6 +15,7 @@ import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.CalRecord;
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.records.CalSubrecord;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -42,6 +43,7 @@ import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.models.BgReading.isDataSuitableForDoubleCalibration;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.newFingerStickData;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 
 
 class DexParameters extends SlopeParameters {
@@ -295,7 +297,7 @@ public class Calibration extends Model {
             if ((bgReadings == null) || (bgReadings.size() != 3) || !isDataSuitableForDoubleCalibration() ){
 
             if (Ob1G5CollectionService.usingNativeMode()) {
-                JoH.static_toast_long("Sending Blood Tests to Transmitter"); // TODO extract string
+                JoH.static_toast_long(context.getString(R.string.sending_blood_tests_to_transmitter));
                 BloodTest.create(JoH.tsl() - (Constants.SECOND_IN_MS * 30), bg1, "Initial Calibration");
                 BloodTest.create(JoH.tsl(), bg2, "Initial Calibration");
 
@@ -625,7 +627,7 @@ public class Calibration extends Model {
                         bgReading.save();
                     }
 
-                    if ((!is_follower) && (!note_only)) {
+                    if ((!DexCollectionType.isAlwaysNativeCal()) && (!note_only)) {
                         BgSendQueue.handleNewBgReading(bgReading, "update", context);
                         // TODO probably should add a more fine grained prefs option in future
                         calculate_w_l_s(prefs.getBoolean("infrequent_calibration", false));
@@ -640,14 +642,15 @@ public class Calibration extends Model {
                     } else {
                         Log.d(TAG, "Follower mode or note so not processing calibration deeply");
                     }
-                } else {
+                } else if (!getBestCollectorHardwareName().equals("G7")) {
+                    // Only if we are not using newer devices, which are limited to native behavior
                     final String msg = "Sensor data fails sanity test - Cannot Calibrate! raw:" + bgReading.raw_data;
                     UserError.Log.e(TAG, msg);
                     JoH.static_toast_long(msg);
                 }
             } else {
                 // we couldn't get a reading close enough to the calibration timestamp
-                if (!is_follower) {
+                if (!DexCollectionType.isAlwaysNativeCal()) {
                     JoH.static_toast(context, "No close enough reading for Calib (15 min)", Toast.LENGTH_LONG);
                 }
             }

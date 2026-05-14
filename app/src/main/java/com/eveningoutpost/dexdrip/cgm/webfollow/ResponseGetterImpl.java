@@ -8,6 +8,8 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.net.SocketTimeoutException;
 
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
+
 import lombok.val;
 import okhttp3.Authenticator;
 import okhttp3.Credentials;
@@ -24,7 +26,7 @@ public class ResponseGetterImpl implements ResponseGetter {
     private static final String TAG = "WebFollower";
     private final OkHttpClient client;
     {
-        val builder = new OkHttpClient.Builder();
+        val builder = OkHttpWrapper.getClient().newBuilder();
         if (Cpref.getB("UP")) {
             val proxy = new Proxy(Cpref.getB("HP") ? Proxy.Type.HTTP : Proxy.Type.SOCKS,
                     new InetSocketAddress(Cpref.get("HA"), Integer.parseInt(Cpref.get("HP"))));

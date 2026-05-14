@@ -17,21 +17,15 @@ import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
-import com.squareup.okhttp.FormEncodingBuilder;
-import com.squareup.okhttp.Interceptor;
-import com.squareup.okhttp.MediaType;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.RequestBody;
-import com.squareup.okhttp.Response;
+import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
-
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.GzipSink;
-import okio.Okio;
 
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry.isNative;
@@ -147,13 +141,10 @@ public class SendFeedBack extends BaseAppCompatActivity {
 
         final EditText contact = (EditText) findViewById(R.id.contactText);
         final EditText yourtext = (EditText) findViewById(R.id.yourText);
-        final OkHttpClient client = new OkHttpClient();
-
-        client.setConnectTimeout(10, TimeUnit.SECONDS);
-        client.setReadTimeout(30, TimeUnit.SECONDS);
-        client.setWriteTimeout(30, TimeUnit.SECONDS);
-
-        client.interceptors().add(new GzipRequestInterceptor());
+        final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .addInterceptor(new GzipRequestInterceptor())
+                .build();
 
         if (yourtext.length() == 0) {
             toast("No text entered - cannot send blank");
@@ -175,7 +166,7 @@ public class SendFeedBack extends BaseAppCompatActivity {
         toast("Sending..");
 
         try {
-            final RequestBody formBody = new FormEncodingBuilder()
+            final RequestBody formBody = new FormBody.Builder()
                     .add("contact", contact.getText().toString())
                     .add("body",yourtext.getText().toString() + " \n\n===\nType: " + type_of_message + "\nLog data:\n\n" + log_data)  // Adding "Your text" and type to the log
                     .add("rating", String.valueOf(myrating.getRating()))
@@ -224,65 +215,3 @@ public class SendFeedBack extends BaseAppCompatActivity {
         }
     }
 }
-
-class GzipRequestInterceptor implements Interceptor {
-    @Override
-    public Response intercept(Chain chain) throws IOException {
-        Request originalRequest = chain.request();
-        if (originalRequest.body() == null || originalRequest.header("Content-Encoding") != null) {
-            return chain.proceed(originalRequest);
-        }
-
-        Request compressedRequest = originalRequest.newBuilder()
-                .header("Content-Encoding", "gzip")
-                .method(originalRequest.method(), forceContentLength(gzip(originalRequest.body())))
-                .build();
-        return chain.proceed(compressedRequest);
-    }
-
-    /**
-     * https://github.com/square/okhttp/issues/350
-     */
-    private RequestBody forceContentLength(final RequestBody requestBody) throws IOException {
-        final Buffer buffer = new Buffer();
-        requestBody.writeTo(buffer);
-        return new RequestBody() {
-            @Override
-            public MediaType contentType() {
-                return requestBody.contentType();
-            }
-
-            @Override
-            public long contentLength() {
-                return buffer.size();
-            }
-
-            @Override
-            public void writeTo(BufferedSink sink) throws IOException {
-                sink.write(buffer.snapshot());
-            }
-        };
-    }
-
-    private RequestBody gzip(final RequestBody body) {
-        return new RequestBody() {
-            @Override
-            public MediaType contentType() {
-                return body.contentType();
-            }
-
-            @Override
-            public long contentLength() {
-                return -1; // We don't know the compressed length in advance!
-            }
-
-            @Override
-            public void writeTo(BufferedSink sink) throws IOException {
-                BufferedSink gzipSink = Okio.buffer(new GzipSink(sink));
-                body.writeTo(gzipSink);
-                gzipSink.close();
-            }
-        };
-    }
-}
-

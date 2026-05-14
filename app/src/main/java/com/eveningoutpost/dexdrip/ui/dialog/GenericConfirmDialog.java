@@ -12,26 +12,33 @@ import com.eveningoutpost.dexdrip.R;
 
 public class GenericConfirmDialog {
 
+    public static void show(final Activity activity, String title, CharSequence message, Runnable runnable) {
+        show(activity, title, message, runnable, true);
+    }
 
-    public static void show(final Activity activity, String title, String message, Runnable runnable) {
+    public static void inform(final Activity activity, String title, String message, Runnable runnable) {
+        // Simply inform without offering a decline option.
+        show(activity, title, message, runnable, false);
+    }
+
+    public static void show(final Activity activity, String title, CharSequence message, Runnable runnable, boolean negativeButton) {
 
         final AlertDialog.Builder builder = new AlertDialog.Builder(activity)
                 .setTitle(title)
                 .setMessage(message);
 
-        builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        builder.setPositiveButton(R.string.yes, (dialog, which) -> {
+            if (runnable != null) {
                 runnable.run();
             }
         });
 
-        builder.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        if (negativeButton) {
+            builder.setNegativeButton(R.string.no, (dialog, which) ->
+            {
                 dialog.cancel();
-            }
-        });
+            });
+        }
 
         final AlertDialog dialog = builder.create();
         // apparently possible dialog is already showing, probably due to hash code

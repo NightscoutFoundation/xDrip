@@ -46,9 +46,10 @@ public class AAPSStatusHandler {
                             }
                         }
                     }
+                    PumpStatus.syncUpdate();
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error processing device status: " + e);
+                Log.e(TAG, "Error processing device status: " + e + " json: " + json);
             }
         }
     }

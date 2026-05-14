@@ -318,7 +318,7 @@
     <string name="xdrip_plus_color_settings">Настройки цветовой схемы xDrip+</string>
     <string name="glucose_values_and_lines">Значения и линии глюкозы на графике</string>
     <string name="high_glucose_values">Высокие значения глюкозы</string>
-    <string name="in_range_glucose_values">Значения глюкозы в диапазоне</string>
+    <string name="in_range_glucose_values">Нормальные значения глюкозы</string>
     <string name="default_color_selected">Цвет по-умолчанию</string>
     <string name="color_bg_values">Цвета показания ГК и стрелки тренда</string>
     <string name="xdrip_plus_extra_settings">Дополнительные настройки xDrip+</string>
@@ -371,7 +371,7 @@
     <string name="load_all_settings_from_sdcard">Загрузить настройки с SD-карты</string>
     <string name="delete_any_settings_on_sdcard">Удалить все настройки на SD-карте</string>
     <string name="use_qr_codes_to_transfer_settings_using_settings_auto_configure_feature"><![CDATA[Воспользуйтесь QR-кодами для отправки настроек, для этого перейдите в меню Настройки->Автонастройка]]></string>
-    <string name="xdrip_plus_security_key_settings_only">Настройки ключа безопасности xDrip+</string>
+    <string name="xdrip_plus_security_key_settings_only">Только настройки ключа безопасности xDrip+</string>
     <string name="show_general_and_collection_settings">Отображать общие настройки и настройки сбора данных</string>
     <string name="copy_all_settings">Скопировать все настройки</string>
     <string name="sensor_is_ready_please_enter_double_calibration">Датчик готов к работе, пожалуйста, введите значения для начальной калибровки</string>
@@ -379,7 +379,7 @@
     <string name="enter_first_bg_value">Введите первое показание глюкометра</string>
     <string name="enter_second_bg_value">Введите второе показание глюкометра</string>
     <string name="language_editor">Языковой редактор</string>
-    <string name="configure_missed_readings">Настройки при пропусках данных</string>
+    <string name="configure_missed_readings">Настройка пропущенных показаний</string>
     <string name="install_pebble_snooze_control_app">Установить приложение Pebble Snooze Control</string>
     <string name="install_pebble_classic_trend_watchface">Установить циферблат Pebble Classic Trend</string>
     <string name="install_pebble_trend_watchface">Установить циферблат Pebble Trend</string>
@@ -485,10 +485,10 @@
     <string name="double_tap_or_pinch_to_zoom">Дважды нажмите или защипните для увеличения.</string>
     <string name="start_sensor">Запустить сенсор</string>
     <string name="debug_and_other_misc_options">Отладка и другие настройки</string>
-    <string name="low_glucose_values">Значения низкого уровня глюкозы</string>
+    <string name="low_glucose_values">Низкие значения глюкозы</string>
     <string name="bad_glucose_values">Неверные показания глюкозы</string>
-    <string name="revert_to_default">Вернуть значения по-умолчанию</string>
-    <string name="filtered_values">Отфильтрованные значения</string>
+    <string name="revert_to_default">Вернуть к стандартному</string>
+    <string name="filtered_values">Сглаженные значения</string>
     <string name="treatment_color">Цвет события терапии</string>
     <string name="treatment_color_dark">Темный цвет события терапии</string>
     <string name="predictive_color">Цвет прогноза</string>
@@ -496,16 +496,16 @@
     <string name="average_and_target_lines">Средняя и целевая линии</string>
     <string name="eight_hour_average_line">Линия среднего за 8 часов</string>
     <string name="twenty_four_hour_average_line">Линия среднего за 24 часа</string>
-    <string name="glucose_target_line">Линия целевого уровня</string>
+    <string name="glucose_target_line">Линия целевой глюкозы</string>
     <string name="annotations_and_dots">Примечания и точки</string>
-    <string name="blood_test_background">Задний фон значений с глюкометра</string>
-    <string name="blood_test_foreground">Передний фон значений с глюкометра</string>
-    <string name="treatment_background">Задний фон пользовательских значений</string>
-    <string name="treatment_foreground">Передний фон пользовательских значений</string>
+    <string name="blood_test_background">Фон анализа крови</string>
+    <string name="blood_test_foreground">Передний план анализа крови</string>
+    <string name="treatment_background">Фон события терапии</string>
+    <string name="treatment_foreground">Передний план события терапии</string>
     <string name="backgrounds">Задний фон</string>
-    <string name="main_chart_background">Задний фон основного графика</string>
-    <string name="notification_chart_background">Задний фон графика в строке уведомлений</string>
-    <string name="widget_chart_background">Задний фон графика в виджете</string>
+    <string name="main_chart_background">Фон главного графика</string>
+    <string name="notification_chart_background">Фон диаграммы уведомления</string>
+    <string name="widget_chart_background">Фон графика виджета</string>
     <string name="try_to_work_around_noisy_readings">Пытаться отфильтровывать некорректные значения (шум)</string>
     <string name="show_tips_hints">Отображать подсказки, описывающие назначение кнопок и т.д. Поставьте или снимите галочку, чтобы сбросить к начальному состоянию</string>
     <string name="show_interface_hints">Показывать подсказки по работе с интерфейсом</string>
@@ -543,7 +543,7 @@
     <string name="snooze_alert_before_it_fires">отложить тревогу до срабатывания</string>
     <string name="create_low_alert">Создать оповещение о гипо</string>
     <string name="create_high_alert">Создать оповещение о гипер</string>
-    <string name="long_press_an_existing_alert_to_edit">(Удерживайте палец на существующем оповещении, чтобы отредактировать)</string>
+    <string name="long_press_an_existing_alert_to_edit">(Удерживайте существующую тревогу для изменения)</string>
     <string name="adding">Добавление</string>
     <string name="high">высокая</string>
     <string name="alert">оповещение</string>
@@ -806,10 +806,10 @@
     <string name="enable_dedicated_insulin_profiles">Настройки профилей инсулина</string>
     <string name="desc_enable_dedicated_insulin_profiles">Активация и настройки различных профилей инсулина</string>
     <string name="insulin_sensitivity">Чувствительность к инсулину</string>
-    <string name="secondary_plugin_glucose_value">Показания глюкозы дополнительного плагина</string>
-    <string name="step_counter_1st_color">Шагометр 1-й цвет</string>
-    <string name="step_counter_2nd_color">Шагометр 2-й цвет</string>
-    <string name="flair_colors">Цвет шторки/кнопок</string>
+    <string name="secondary_plugin_glucose_value">Знач. глюкозы от вторичного плагина</string>
+    <string name="step_counter_1st_color">1-ый цвет счетчика шагов</string>
+    <string name="step_counter_2nd_color">2-ой цвет счетчика шагов</string>
+    <string name="flair_colors">Цвета панелей</string>
     <string name="use_flair_colors">Использовать цвета панелей</string>
     <string name="upper_title_bar_flair">Верхняя панель уведомлений</string>
     <string name="lower_button_bar_falir">Нижняя панель кнопок навигации</string>
@@ -936,6 +936,7 @@
     <string name="use_confict_msg_glimp">Вы можете настроить Glimp: Опции -&gt; Устройства -&gt; отключите настройки Bluetooth</string>
     <string name="eng_mode_is_on">Инженерный режим включен. Пожалуйста, выключите его, если вы не уверены, что он нужен, так как он может вызывать неожиданное поведение.</string>
     <string name="yes">Да</string>
+    <string name="enable">Включить</string>
     <string name="xdrip_compatible_features">Функции %s xDrip+</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
@@ -1036,7 +1037,7 @@
     <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Принимать соединения из любых сетей, а не только внутри данного устройства. Не безопасно! Необходим ключ безопасности если активировано.</string>
     <string name="title_Open_Web_Service">Открытая веб служба</string>
     <string name="summary_Shared_Secret_for_open_web_service">Общий ключ безопасности для открытой веб службы (должен совпадать с ключом Nightscout API)</string>
-    <string name="title_xDrip_Web_Service_Secret">Ключ веб сервиса xDrip</string>
+    <string name="title_xDrip_Web_Service_Secret">Secret веб-службы xDrip+</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Отображать статус из других приложений, например AndroidAPS</string>
     <string name="title_External_Status">Статус внешних источников</string>
     <string name="summary_Display_pump_status_information_if_available">Отображать состояние помпы если доступно</string>
@@ -1065,7 +1066,7 @@
     <string name="title_Batterylog">История батареи</string>
     <string name="summary_Choose_to_display_the_bridge_battery_level">Выберите для отображения уровня заряда батареи моста</string>
     <string name="title_Glucose_Retention">Хранить значения глюкозы</string>
-    <string name="summary_Erase_data_older_than_this_many_days">Удалять историю значений глюкозы старше заданного количества дней. 0 = не удалять ничего</string>
+    <string name="summary_Erase_data_older_than_this_many_days">Стирать данные старше чем это количество дней. 0 = не стирать ничего</string>
     <string name="title_Other_misc_options">Другие разные настройки</string>
     <string name="summary_allow_testing_with_dead_sensor">разрешить тестирование с использованным сенсором</string>
     <string name="title_NOT_FOR_PRODUCTION_USE">НЕ ДЛЯ ПРОМЫШЛЕННОГО ИСПОЛЬЗОВАНИЯ</string>
@@ -1125,7 +1126,7 @@
     <string name="weekdays">По будням</string>
     <string name="weekends">По выходным</string>
     <string name="mega_priority">Мега-приоритет</string>
-    <string name="xdrip_reminders">xDrip+ Напоминания</string>
+    <string name="xdrip_reminders">Напоминания xDrip+</string>
     <string name="button_15_min">15 минут</string>
     <string name="button_2_hour">2 часа</string>
     <string name="button_1_day">1 день</string>
@@ -1374,7 +1375,7 @@
     <string name="title_g5_battery_warning_level">Настройки предупреждений о состоянии батареи</string>
     <string name="title_plugins_and_features">Функции и дополнения</string>
     <string name="title_color_heart_rate1">Монитор пульса</string>
-    <string name="title_insulin_colors">Цвет инсулина</string>
+    <string name="title_insulin_colors">Цвета инсулина</string>
     <string name="title_color_basal_tbr">Базальный инсулин</string>
     <string name="title_color_smb_icon">Значек болюсного инсулина</string>
     <string name="title_color_smb_line">Линия болюсного инсулина</string>
@@ -1394,17 +1395,17 @@
     <string name="title_high_priority_notifications">Приоритетные оповещения</string>
     <string name="summary_public_notifications">Показывать содержимое оповещений на экране блокировки</string>
     <string name="title_public_notifications">Публичные оповещения</string>
-    <string name="title_xdrip_plus_number_wall">Отображать виджет на экране блокировки</string>
+    <string name="title_xdrip_plus_number_wall">Число на экране блокировки</string>
     <string name="summary_do_number_wall_configuration">Настройка внешнего вида и предпросмотр виджета</string>
-    <string name="title_do_number_wall_configuration">Настройки виджета</string>
+    <string name="title_do_number_wall_configuration">Настроить стену числа</string>
     <string name="summary_number_wall_on_lockscreen">Отображать виджет на экране блокировки. Только Android 7 и выше!</string>
     <string name="title_number_wall_on_lockscreen">Отображать на экране блокировки</string>
-    <string name="title_color_number_wall">Цвет текста</string>
-    <string name="title_color_number_wall_shadow">Цвет контура текста</string>
-    <string name="summary_pick_numberwall_start">Выберите время начала отображения виджета</string>
-    <string name="title_pick_numberwall_start">Время начала отображения</string>
-    <string name="summary_pick_numberwall_stop">Выберите время прекращения отображения виджета. Установите равным времени начала чтобы виджет всегда присутствовал на экране блокировки</string>
-    <string name="title_pick_numberwall_stop">Время прекращения отображения</string>
+    <string name="title_color_number_wall">Цвет текста стены</string>
+    <string name="title_color_number_wall_shadow">Цвет тени стены</string>
+    <string name="summary_pick_numberwall_start">Выберите время для запуска отображения</string>
+    <string name="title_pick_numberwall_start">Включить</string>
+    <string name="summary_pick_numberwall_stop">Выберите время остановки - задайте то же, что для запуска, чтобы было всегда включено</string>
+    <string name="title_pick_numberwall_stop">Время выключения</string>
     <string name="title_xdrip_plus_number_icon">Значение глюкозы в области уведомлений</string>
     <string name="summary_do_number_icon_test">Данная функция может вызывать сбои на некоторых устройства! Нажмите, чтобы запустить тест совместимости перед активацией функции!</string>
     <string name="title_do_number_icon_test">Запустить тест</string>
@@ -1892,4 +1893,8 @@
     <string name="bg_alert">ГК %1$s ТРЕВОГА: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Показывать графическую стрелку тренда</string>
     <string name="no_alert_in_silent_mode">Без тревог при режиме без звука</string>
+    <string name="volume_profile_high">Высокие значения глюкозы</string>
+    <string name="glupro_disconnected">Отключено</string>
+    <string name="glupro_connected">Подключено</string>
+    <string name="glupro_start_time">Включить</string>
 </resources>

@@ -1500,7 +1500,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                                                                         output.write(new byte[64000]); // seems to need some kind of padding
                                                                         JoH.threadSleep(5000);
                                                                         Log.d(TAG, "VUP: sent bytes: " + (apkBytes.length - finalStartAt));
-                                                                    } catch (final IOException e) {
+                                                                    } catch (final IOException | NullPointerException e) {
                                                                         Log.w(TAG, "VUP: could not send message: " + "Node: " + channel.getNodeId() + "Path: " + channel.getPath() + " Error message: " + e.getMessage() + " Error cause: " + e.getCause());
                                                                     } finally {
                                                                         try {
@@ -1790,6 +1790,7 @@ public class WatchUpdaterService extends WearableListenerService implements
             dataMap.putInt("bridge_battery", mPrefs.getInt("bridge_battery", -1));
             dataMap.putInt("nfc_sensor_age", mPrefs.getInt("nfc_sensor_age", -1));
 
+            dataMap.putBoolean("enable_wear_auto_update", mPrefs.getBoolean("enable_wear_auto_update", true));
             dataMap.putBoolean("sync_wear_logs", mPrefs.getBoolean("sync_wear_logs", false));
             //Alerts:
             dataMap.putString("persistent_high_repeat_mins", mPrefs.getString("persistent_high_repeat_mins", "20"));

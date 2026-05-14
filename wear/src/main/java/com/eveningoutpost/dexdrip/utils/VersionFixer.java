@@ -18,6 +18,7 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.File;
@@ -62,6 +63,10 @@ public class VersionFixer {
         } else {
             return false;
         }
+    }
+
+    public static boolean isWearAutoUpdateEnabled() {
+        return Pref.getBoolean("enable_wear_auto_update", true);
     }
 
 
@@ -167,6 +172,11 @@ public class VersionFixer {
 
 
     private static void checkAndActOnVersionDifference() {
+        if (!isWearAutoUpdateEnabled()) {
+            UserError.Log.d(TAG, "Wear auto-update disabled");
+            return;
+        }
+
         if (checkVersion()) {
             UserError.Log.d(TAG, "Version report as different: " + getLocalVersion() + " vs " + getPeerVersion());
             resolveVersionDifference(getPeerVersion());

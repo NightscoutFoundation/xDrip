@@ -20,8 +20,9 @@ import retrofit2.Converter;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
+
 import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
-import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
 
 /**
  * jamorham
@@ -55,7 +56,7 @@ public class RetrofitBase {
                     return null;
                 }
                 UserError.Log.d(TAG, "Creating new instance for: " + url);
-                final OkHttpClient.Builder httpClient = enableTls12OnPreLollipop(new OkHttpClient.Builder())
+                final OkHttpClient.Builder httpClient = OkHttpWrapper.getClient().newBuilder()
                         .addInterceptor(new InfoInterceptor(TAG))
                         .addInterceptor(useGzip ? new GzipRequestInterceptor() : new NullInterceptor());
 

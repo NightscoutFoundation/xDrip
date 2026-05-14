@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 
@@ -49,7 +50,7 @@ public class InfluxDBUploader {
         dbUser = prefs.getString("cloud_storage_influxdb_username", null);
         dbPassword = prefs.getString("cloud_storage_influxdb_password", null);
 
-        client = new OkHttpClient.Builder()
+        client = OkHttpWrapper.getClient().newBuilder()
                 .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
                 .readTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS)
                 .writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS)

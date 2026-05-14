@@ -43,7 +43,7 @@ public class DexSyncKeeper {
 
     public static void store(final String transmitterId, final long when, final long last_conection_time, final long last_glucose_processed) {
         final long latency = (last_glucose_processed - last_conection_time);
-        UserError.Log.d(TAG, "Update time from glucose rx glucose: " + JoH.dateTimeText(when) + " latency:" + latency + " ms");
+        UserError.Log.d(TAG, "Update time from glucose rx glucose: dsk:" + ((when / 1000) % 300)+" " + JoH.dateTimeText(when) + " latency:" + latency + " ms");
         if (latency < 8000) { // roughly half preempt
             store(transmitterId, when);
         } else {
@@ -58,15 +58,20 @@ public class DexSyncKeeper {
         }
     }
 
-    // anticpiate next wake up from now
+    // anticipate next wake up from now
     public static long anticipate(final String transmitterId) {
         return anticipate(transmitterId, JoH.tsl());
+    }
+
+    // get the stored value
+    public static long get(final String transmitterId) {
+        return PersistentStore.getLong(DEX_SYNC_STORE + transmitterId);
     }
 
     // anticipate next wake up from time
     // -1 means we don't know anything
     static long anticipate(final String transmitterId, final long now) {
-        final long last = PersistentStore.getLong(DEX_SYNC_STORE + transmitterId);
+        final long last = get(transmitterId);
         if (last < OLDEST_POSSIBLE) {
             return -1;
         }

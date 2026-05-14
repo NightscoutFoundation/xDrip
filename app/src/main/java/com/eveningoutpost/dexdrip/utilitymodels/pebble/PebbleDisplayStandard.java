@@ -104,17 +104,12 @@ public class PebbleDisplayStandard extends PebbleDisplayAbstract {
 
 
     public void sendDownload() {
-        if (PebbleKit.isWatchConnected(this.context)) {
+        PebbleDictionary dictionary = buildDictionary();
 
-            PebbleDictionary dictionary = buildDictionary();
-
-            if (dictionary != null && this.context != null) {
-                Log.d(TAG, "sendDownload: Sending data to pebble");
-                sendDataToPebble(dictionary);
-                last_time_seen = JoH.ts();
-            }
-        } else {
-            watchdog();
+        if (dictionary != null && this.context != null) {
+            Log.d(TAG, "sendDownload: Sending data to pebble");
+            sendDataToPebble(dictionary);
+            last_time_seen = JoH.ts();
         }
     }
 

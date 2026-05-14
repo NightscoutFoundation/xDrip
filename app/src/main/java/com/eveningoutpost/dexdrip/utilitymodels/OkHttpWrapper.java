@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.models.UserError;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
@@ -14,6 +15,23 @@ import okhttp3.ConnectionSpec;
 import okhttp3.OkHttpClient;
 
 public class OkHttpWrapper {
+
+    private static volatile OkHttpClient instance;
+
+    public static OkHttpClient getClient() {
+        if (instance == null) {
+            synchronized (OkHttpWrapper.class) {
+                if (instance == null) {
+                    instance = enableTls12OnPreLollipop(new OkHttpClient.Builder())
+                            .connectTimeout(30, TimeUnit.SECONDS)
+                            .readTimeout(60, TimeUnit.SECONDS)
+                            .writeTimeout(20, TimeUnit.SECONDS)
+                            .build();
+                }
+            }
+        }
+        return instance;
+    }
 
     /*
      * Aggressive server cipher suite restrictions mean we may run out of compatible ciphers

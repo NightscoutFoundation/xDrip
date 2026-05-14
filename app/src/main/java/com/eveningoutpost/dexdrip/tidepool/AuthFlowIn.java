@@ -38,21 +38,43 @@ public class AuthFlowIn extends AppCompatActivity {
     private static final String PREF_TIDEPOOL_USER_NAME = "tidepool_username";
     private static final String PREF_TIDEPOOL_SUB_NAME = "tidepool_subname";
 
+    private static final boolean DEBUG = false;
+
     final AtomicReference<JSONObject> userInfo = new AtomicReference<>();
 
     public void onCreate(final Bundle savedInstanceBundle) {
         super.onCreate(savedInstanceBundle);
+        val intent = getIntent();
         Log.d(TAG, "Got response");
-        Inevitable.task("tidepool-process-auth", 10, () -> processIntent(getIntent()));
+        if (DEBUG) {
+            val extras = intent.getExtras();
+            if (extras != null) {
+                for (String key : extras.keySet()) {
+                    Object value = extras.get(key);
+                    Log.d(TAG, key + " = " + value + " (" + (value != null ? value.getClass().getName() : "null") + ")");
+                }
+            } else {
+                Log.d(TAG, "No extras found in intent.");
+            }
+        }
+        Inevitable.task("tidepool-process-auth", 10, () -> processIntent(intent));
         this.finish();
     }
 
     private void processIntent(final Intent intent) {
+        if (intent == null) {
+            Log.wtf(TAG, "Intent is null when trying to process intent");
+            return;
+        }
         val authorizationResponse = AuthorizationResponse.fromIntent(intent);
         val authorizationException = AuthorizationException.fromIntent(intent);
         val state = AuthFlowOut.getAuthState();
         if (state == null) {
             Log.wtf(TAG, "Could not get auth state");
+            return;
+        }
+        if (authorizationResponse == null && authorizationException == null) {
+            Log.wtf(TAG, "Both response and exception are null when processing intent?");
             return;
         }
         state.update(authorizationResponse, authorizationException);

@@ -1,7 +1,10 @@
 package com.eveningoutpost.dexdrip.models;
 
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
+
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.services.TransmitterRereadHelper;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
@@ -48,6 +51,14 @@ public class SensorSanity {
             return true;
         }
 
+        if (TransmitterRereadHelper.isTxRereadActive()) {
+            // Allow readings on the main screen even though we temporarily have no firmware!
+            if (JoH.pratelimit("reread-transmitter-sanity-passing", 30 * 60)) {
+                UserError.Log.e(TAG, "Allowing any value due to transmitter reread.");
+            }
+            return true;
+        }
+
         // passes by default!
         boolean state = true;
 
@@ -71,7 +82,7 @@ public class SensorSanity {
             else if (raw_value > DEXCOM_MAX_RAW) state = false;
         }
 
-        if (!state) {
+        if (!state && !getBestCollectorHardwareName().equals("G7")) {
             if (JoH.ratelimit("sanity-failure", 20)) {
                 final String msg = "Sensor Raw Data Sanity Failure: " + raw_value;
                 UserError.Log.e(TAG, msg);

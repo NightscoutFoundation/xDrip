@@ -81,6 +81,7 @@ public class XDripDreamService extends DreamService implements SensorEventListen
 
     @Override
     public void onCreate() {
+        super.onCreate();
         use_gravity = Pref.getBooleanDefaultFalse("daydream_use_gravity_sensor");
     }
 

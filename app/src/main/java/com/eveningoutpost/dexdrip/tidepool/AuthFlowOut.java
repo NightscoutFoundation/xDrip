@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Base64;
-import android.util.Log;
+import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -142,9 +142,13 @@ public class AuthFlowOut {
                             ResponseTypeValues.CODE, // the response_type value: we want a code
                             MY_REDIRECT_URI); // the redirect URI to which the auth response is sent
 
+                    String hint = Pref.getString("tidepool_username", null);
+                    if (hint != null && hint.isEmpty()) {
+                        hint = null; // cannot be empty string
+                    }
                     authRequestBuilder
                             .setScopes("openid", "offline_access")
-                            .setLoginHint(Pref.getString("tidepool_username", ""))
+                            .setLoginHint(hint)
                             .setCodeVerifier(codeVerifier, codeChallenge, codeVerifierChallengeMethod);
 
                     if (full) {
@@ -155,11 +159,16 @@ public class AuthFlowOut {
                     val authRequest = authRequestBuilder.build();
 
                     Log.d(TAG, "Firing off request");
-                    getAuthService().performAuthorizationRequest(
-                            authRequest,
-                            // TODO will need mutability flag in later target sdk versions
-                            PendingIntent.getActivity(context, 0, new Intent(context, AuthFlowIn.class), 0),
-                            PendingIntent.getActivity(context, 0, new Intent(context, AuthFlowIn.class), 0));
+                    try {
+                        getAuthService().performAuthorizationRequest(
+                                authRequest,
+                                PendingIntent.getActivity(context, 0, new Intent(context, AuthFlowIn.class), PendingIntent.FLAG_MUTABLE),
+                                PendingIntent.getActivity(context, 0, new Intent(context, AuthFlowIn.class), PendingIntent.FLAG_MUTABLE));
+                    } catch (Exception e) {
+                        val msg = "Tidepool: exception when trying to perform authorization. Is Chrome installed? "+e;
+                        Log.wtf(TAG, msg);
+                        JoH.static_toast_long(msg);
+                    }
                 });
     }
 }

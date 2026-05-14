@@ -38,4 +38,15 @@ public class RecordsCmdTx {
         return data.array();
     }
 
+    public static byte[] getNewerThanSequenceExclusive(int sequence) {
+        final ByteBuffer data = ByteBuffer.allocate(5);
+        data.order(ByteOrder.LITTLE_ENDIAN);
+        data.put(OPCODE_REPORT_RECORDS);
+        data.put(GREATER_THAN_OR_EQUAL);
+        data.put(FILTER_TYPE_SEQUENCE_NUMBER);
+        // RACP uses >=, so request the next sequence for true "newer than" behavior.
+        data.putShort((short) (sequence + 1));
+        return data.array();
+    }
+
 }

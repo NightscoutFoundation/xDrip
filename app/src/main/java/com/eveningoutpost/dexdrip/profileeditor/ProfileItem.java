@@ -6,6 +6,7 @@ import com.google.gson.annotations.Expose;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * Created by jamorham on 21/06/2016.
@@ -13,6 +14,10 @@ import java.util.Locale;
 public class ProfileItem implements Comparable<ProfileItem>{
 
     final private static SimpleDateFormat hourMinConvert = new SimpleDateFormat("HHmm", Locale.ENGLISH);
+
+    static void updateTimeZone() {
+        hourMinConvert.setTimeZone(TimeZone.getDefault());
+    }
 
     private String title;
     @Expose

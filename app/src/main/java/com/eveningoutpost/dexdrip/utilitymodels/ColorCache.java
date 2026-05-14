@@ -98,6 +98,7 @@ public class ColorCache {
         color_high_bg_values("color_high_bg_values"),
         color_inrange_bg_values("color_inrange_bg_values"),
         color_low_bg_values("color_low_bg_values"),
+        color_low_predicted_critical_note("color_low_predicted_critical_note"),
         ;
 
         @Getter

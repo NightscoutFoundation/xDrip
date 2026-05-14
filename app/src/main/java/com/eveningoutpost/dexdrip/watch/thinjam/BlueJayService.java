@@ -1538,7 +1538,7 @@ public class BlueJayService extends JamBaseBluetoothSequencer {
                             if (throwable instanceof BleCharacteristicNotFoundException) {
                                 // maybe legacy - ignore for now but needs better handling
                                 UserError.Log.d(TAG, "Characteristic not found for notification");
-                                debug.processTestSuite("logcharerror");
+                                //debug.processTestSuite("logcharerror");
                                 tryGattRefresh(getI().connection);
                             }
                             if (throwable instanceof BleCannotSetCharacteristicNotificationException) {

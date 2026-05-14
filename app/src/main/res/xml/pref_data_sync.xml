@@ -92,6 +92,16 @@
                     android:key="rest_api_extra_options"
                     android:summary=""
                     android:title="@string/title_rest_api_extra_options">
+
+                    <Preference
+                        android:key="send_nightscout_show_qr"
+                        android:summary="@string/summary_send_sync_show_qr"
+                        android:title="@string/title_send_sync_show_qr">
+                        <intent
+                            android:action="xdrip_nightscout_qr"
+                            android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"
+                            android:targetPackage="@string/local_target_package" />
+                    </Preference>
                     <CheckBoxPreference
                         android:defaultValue="true"
                         android:key="skip_lan_uploads_when_no_lan"
@@ -365,6 +375,42 @@
                 </Preference>
 
             </PreferenceScreen>
+
+
+            <PreferenceScreen
+                android:key="cloud_storage_nightlite"
+                android:summary="Lightweight Nightscout compatible service intended for followers"
+                android:title="NightLite">
+
+                <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="nightlite-enabled"
+                    android:summary="Whether to upload to the remote service"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Upload to NightLite" />
+
+                <EditTextPreference
+                    android:defaultValue=""
+                    android:dialogMessage="This contains your security key - do not disclose it"
+                    android:dialogTitle="Typically entered by scanning QR code from dashboard"
+                    android:inputType="textUri"
+                    android:key="nightlite-api-url"
+                    android:title="NightLite URL" />
+
+                <Preference
+                    android:dependency="nightlite-enabled"
+                    android:key="send_nightlite_show_qr"
+                    android:summary="@string/summary_send_sync_show_qr"
+                    android:title="@string/title_send_sync_show_qr">
+                <intent
+                    android:action="xdrip_nightlite_qr"
+                    android:targetClass="com.eveningoutpost.dexdrip.utils.DisplayQRCode"
+                    android:targetPackage="@string/local_target_package" />
+                </Preference>
+
+            </PreferenceScreen>
+
 
         </PreferenceScreen>
         <PreferenceScreen

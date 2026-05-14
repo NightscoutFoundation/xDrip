@@ -33,6 +33,11 @@ public class UpdateActivity extends Activity {
                 JoH.threadSleep(10000);
             }
             if (canInstallHere) {
+                if (!VersionFixer.isWearAutoUpdateEnabled()) {
+                    JoH.static_toast_long("Wear update temporarily disabled");
+                    return;
+                }
+
                 if (JoH.pratelimit("forced update request", 60)) {
 
                     JoH.static_toast_long("Asking for update file");

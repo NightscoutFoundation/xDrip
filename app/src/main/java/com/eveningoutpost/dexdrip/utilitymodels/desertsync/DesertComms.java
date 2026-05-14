@@ -7,6 +7,7 @@ import com.eveningoutpost.dexdrip.models.DesertSync;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
@@ -18,8 +19,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.concurrent.TimeUnit;
-
 import okhttp3.HttpUrl;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -234,10 +233,7 @@ public class DesertComms {
 
     private static OkHttpClient getHttpInstance() {
         if (okHttpClient == null) {
-            final OkHttpClient.Builder b = new OkHttpClient.Builder();
-            b.connectTimeout(10, TimeUnit.SECONDS);
-            b.readTimeout(40, TimeUnit.SECONDS);
-            b.writeTimeout(20, TimeUnit.SECONDS);
+            final OkHttpClient.Builder b = OkHttpWrapper.getClient().newBuilder();
             try {
                 b.sslSocketFactory(TrustManager.getSSLSocketFactory(), TrustManager.getNaiveTrustManager());
             } catch (Exception e) {

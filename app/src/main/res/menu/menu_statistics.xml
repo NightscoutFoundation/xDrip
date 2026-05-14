@@ -1,23 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/action_toggle_fullscreen"
-        android:title="@string/title_full_screen_mode"
+    <item
+        android:id="@+id/action_toggle_fullscreen"
+        android:checkable="true"
         android:onClick="toggleStatisticsFullScreenMode"
-        android:checkable="true"
         android:orderInCategory="1"
-        android:visible="true"/>
-    <item android:id="@+id/action_toggle_printing"
-        android:title="@string/title_colors_for_printing"
+        android:title="@string/title_full_screen_mode"
+        android:visible="true" />
+    <item
+        android:id="@+id/action_toggle_printing"
+        android:checkable="true"
         android:onClick="toggleStatisticsPrintingMode"
-        android:checkable="true"
         android:orderInCategory="1"
-        android:visible="true"/>
-    <item android:id="@+id/share_this_screen"
-        android:title="@string/title_share_save_this_screen"
-        android:onClick="statisticsShare"
+        android:title="@string/title_colors_for_printing"
+        android:visible="true" />
+    <item
+        android:id="@+id/share_this_screen"
         android:checkable="false"
+        android:onClick="statisticsShare"
         android:orderInCategory="1"
-        android:visible="true"/>
+        android:title="@string/title_share_save_this_screen"
+        android:visible="true" />
+    <item
+        android:id="@+id/statistics_settings"
+        android:orderInCategory="1"
+        android:title="Parameters"
+        android:visible="true">
+        <menu>
+            <group
+                android:id="@+id/visibility_settings"
+                android:checkableBehavior="all"
+                android:visible="true">
+                <item
+                    android:id="@+id/action_show_absolutes"
+                    android:onClick="toggleStatisticsShowAbsolutes"
+                    android:title="Absolutes #s" />
+                <item
+                    android:id="@+id/action_show_median"
+                    android:onClick="toggleStatisticsShowMedianBG"
+                    android:title="Median BG" />
+                <item
+                    android:id="@+id/action_show_a1cestimate"
+                    android:onClick="toggleStatisticsShowA1C"
+                    android:title="Estimated A1C" />
+                <item
+                    android:id="@+id/action_show_sd"
+                    android:onClick="toggleStatisticsShowSD"
+                    android:title="Standard Deviation" />
+                <item
+                    android:id="@+id/action_show_relsd"
+                    android:onClick="toggleStatisticsShowRelSD"
+                    android:title="Relative SD" />
+                <item
+                    android:id="@+id/action_show_gvi"
+                    android:onClick="toggleStatisticsShowGVI"
+                    android:title="GVI" />
+                <item
+                    android:id="@+id/action_show_pgs"
+                    android:onClick="toggleStatisticsShowPGS"
+                    android:title="PGS" />
+            </group>
+        </menu>
+    </item>
 
 </menu>

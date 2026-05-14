@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import static com.eveningoutpost.dexdrip.ui.NumberGraphic.isLockScreenBitmapTiled;
 import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenHeight;
 import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenWidth;
+import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 
 /**
  * jamorham
@@ -153,7 +154,7 @@ public class NumberWallPreview extends AppCompatActivity {
             final BestGlucose.DisplayGlucose dg = new BestGlucose.DisplayGlucose();
             dg.delta_arrow = "\u21C5"; // ⇅
             dg.unitized = Unitized.usingMgDl() ? "123" : "12.3";
-            final Bitmap bitmap = BitmapUtil.getTiled(NumberGraphic.getLockScreenBitmap(dg.unitized, dg.delta_arrow, false), getScreenWidth(), getScreenHeight(), isLockScreenBitmapTiled(), Pref.getString(ViewModel.PREF_numberwall_background, null));
+            final Bitmap bitmap = BitmapUtil.getTiled(NumberGraphic.getLockScreenBitmap(dg.unitized, dg.delta_arrow, false, getCol(ColorCache.X.color_number_wall)), getScreenWidth(), getScreenHeight(), isLockScreenBitmapTiled(), Pref.getString(ViewModel.PREF_numberwall_background, null));
             background.setBitmap(bitmap);
             Inevitable.task("refresh-lock-number-wall", 500, LockScreenWallPaper::setIfEnabled);
         }

@@ -208,7 +208,7 @@ public class NoteSearch extends ListActivityWithMenu {
         // filter whitespace
         final String searchTerm = searchTextField.getText().toString().trim();
 
-        if ("".equals(searchTerm)) {
+        if (searchTerm.isEmpty()) {
             if (from_interactive) JoH.static_toast_short(getString(R.string.no_search_term_found));
             return;
         }

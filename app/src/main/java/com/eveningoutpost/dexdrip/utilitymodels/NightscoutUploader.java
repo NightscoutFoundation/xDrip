@@ -50,11 +50,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
 
+import lombok.val;
 import okhttp3.CipherSuite;
 import okhttp3.Handshake;
 import okhttp3.Interceptor;
@@ -79,7 +81,8 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
-import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
+import static com.nightscout.core.barcode.NSBarcodeConfigKeys.API_CONFIG;
+import static com.nightscout.core.barcode.NSBarcodeConfigKeys.API_URI;
 
 /**
  * THIS CLASS WAS BUILT BY THE NIGHTSCOUT GROUP FOR THEIR NIGHTSCOUT ANDROID UPLOADER
@@ -173,14 +176,14 @@ public class NightscoutUploader {
     public NightscoutUploader(Context context) {
         mContext = context;
         prefs = PreferenceManager.getDefaultSharedPreferences(mContext);
-        final OkHttpClient.Builder okHttp3Builder = enableTls12OnPreLollipop(new OkHttpClient.Builder());
+        final OkHttpClient.Builder okHttp3Builder = OkHttpWrapper.getClient().newBuilder()
+                .connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS)
+                .readTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS)
+                .writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
         if (UserError.ExtraLogTags.shouldLogTag(TAG, android.util.Log.VERBOSE)) {
             okHttp3Builder.addInterceptor(new SSLHandshakeInterceptor());
         }
         if (USE_GZIP) okHttp3Builder.addInterceptor(new GzipRequestInterceptor());
-        okHttp3Builder.connectTimeout(CONNECTION_TIMEOUT, TimeUnit.MILLISECONDS);
-        okHttp3Builder.writeTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
-        okHttp3Builder.readTimeout(SOCKET_TIMEOUT, TimeUnit.MILLISECONDS);
         client = okHttp3Builder.build();
         enableRESTUpload = prefs.getBoolean("cloud_storage_api_enable", false);
         enableMongoUpload = prefs.getBoolean("cloud_storage_mongodb_enable", false);
@@ -241,6 +244,10 @@ public class NightscoutUploader {
     }
 
     public static String uuid_to_id(String uuid) {
+        if (uuid.contains(":")) {
+            // convert non-standard uuids to compatible ones
+            return CipherUtils.getMD5(uuid).substring(0, 24);
+        }
         if (uuid.length() == 24) return uuid; // already converted
         if (uuid.length() < 24) {
             // convert non-standard uuids to compatible ones
@@ -1461,5 +1468,14 @@ public class NightscoutUploader {
                 }
             };
         }
+    }
+
+    public static String getJsonFromSetting(String setting) {
+        val split = setting.trim().split(" ");
+        val hm = new HashMap<String, Object>();
+        val ep = new HashMap<String, String[]>();
+        ep.put(API_URI, split);
+        hm.put(API_CONFIG, ep);
+        return JoH.defaultGsonInstance().toJson(hm);
     }
 }

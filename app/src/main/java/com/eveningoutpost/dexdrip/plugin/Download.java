@@ -8,6 +8,7 @@ import static com.eveningoutpost.dexdrip.utils.FileUtils.writeToFile;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.io.IOException;
@@ -15,7 +16,6 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 
 import lombok.val;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
 /**
@@ -32,7 +32,7 @@ public class Download {
     private static byte[] getData(final PluginDef pluginDef) {
         if (pluginDef == null) return null;
         val url = getUrl(pluginDef);
-        val client = new OkHttpClient();
+        val client = OkHttpWrapper.getClient();
         val builder = new Request.Builder().url(url);
         val request = builder.build();
         UserError.Log.d(TAG, "REQUEST URL: " + request.url());

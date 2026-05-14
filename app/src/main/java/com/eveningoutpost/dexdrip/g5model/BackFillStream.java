@@ -47,12 +47,16 @@ public class BackFillStream extends BaseMessage {
     }
 
     public synchronized void pushNew(final byte[] packet) {
+        pushNew(packet, 0);
+    }
+
+    public synchronized void pushNew(final byte[] packet, final int streamType) {
         if (packet == null) return;
         if (locked) {
             UserError.Log.d(TAG, "Locked stream so ignoring");
             return;
         }
-        if (packet.length == 9) {
+        if (packet.length == 9 || streamType > 0) {
             last_sequence = -1;
             data.put(packet);
         } else {
@@ -88,7 +92,7 @@ public class BackFillStream extends BaseMessage {
         try {
             while (data.position() < extent) {
                 final int dexTime = data.getInt();
-                final int glucose = data.getShort();
+                final int glucose = data.getShort() & 0xfff;
                 final byte type = data.get();
                 if (last_sequence < 0) {
                     final byte extra = data.get();

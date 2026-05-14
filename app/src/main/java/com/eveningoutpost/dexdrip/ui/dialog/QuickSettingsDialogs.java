@@ -10,10 +10,13 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.eveningoutpost.dexdrip.cgm.dex.TxIdHelper;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
+
+import lombok.val;
 
 // jamorham
 
@@ -60,6 +63,10 @@ public class QuickSettingsDialogs {
     }
 
     public static void textSettingDialog(Activity activity, String setting, String title, String message, int input_type, final Runnable postRun) {
+        textSettingDialog(activity, setting, title, message, input_type, postRun, false);
+    }
+
+    public static void textSettingDialog(Activity activity, String setting, String title, String message, int input_type, final Runnable postRun, boolean ignoreExisting) {
         final boolean finishOnDismiss = activity.getIntent().getBooleanExtra(FINISH_ACTIVITY_ON_DIALOG_DISMISS, false);
 
         final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(activity);
@@ -75,17 +82,29 @@ public class QuickSettingsDialogs {
 
         if (setting.equals("dex_txid")) {
             edt.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+            TxIdHelper.attachValidator(edt);
         }
 
-        edt.setText(Pref.getString(setting, ""));
+        if (!ignoreExisting) {
+            edt.setText(Pref.getString(setting, ""));
+        }
 
         final TextView tv = dialogView.findViewById(R.id.dialogTextEntryTextView);
         dialogBuilder.setTitle(title);
         tv.setText(message);
         dialogBuilder.setPositiveButton(R.string.done, (dialog, whichButton) -> {
-            final String text = edt.getText().toString().trim();
-            Pref.setString(setting, text);
-            if (postRun != null) postRun.run();
+            val text = edt.getText().toString().trim();
+            if (setting.equals("dex_txid")) {
+                TxIdHelper.handleTransmitterEntry(text, activity, transmitterId -> {
+                    Pref.setString(setting, transmitterId);
+                    if (postRun != null) postRun.run();
+                });
+            } else {
+             // not txid being set
+                Pref.setString(setting, text);
+                if (postRun != null) postRun.run();
+            }
+
         });
         dialogBuilder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> {
             if (postRun != null) postRun.run();

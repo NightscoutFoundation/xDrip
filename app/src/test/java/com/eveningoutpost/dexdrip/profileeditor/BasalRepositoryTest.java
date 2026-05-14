@@ -31,6 +31,7 @@ public class BasalRepositoryTest extends RobolectricTestWithConfig {
     public void setup() {
         oldTimeZone = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        ProfileItem.updateTimeZone();
         final List<Double> segments = new LinkedList<>();
         for (int i = 1; i < 25; i++) {
             segments.add(i / 10d);
@@ -41,6 +42,7 @@ public class BasalRepositoryTest extends RobolectricTestWithConfig {
     @After
     public void tearDown() {
         TimeZone.setDefault(oldTimeZone);
+        ProfileItem.updateTimeZone();
     }
 
     @Test

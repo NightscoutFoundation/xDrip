@@ -11,13 +11,13 @@ import android.widget.Toast;
 
 import com.eveningoutpost.dexdrip.sharemodels.models.ExistingFollower;
 import com.eveningoutpost.dexdrip.sharemodels.ShareRest;
-import com.squareup.okhttp.ResponseBody;
+import okhttp3.ResponseBody;
 
 import java.util.List;
 
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * Created by Emma Black on 8/11/15.
@@ -66,8 +66,8 @@ public class FollowerListAdapter extends BaseAdapter {
             public void onClick(View v) {
                 Callback<ResponseBody> deleteFollowerListener = new Callback<ResponseBody>() {
                     @Override
-                    public void onResponse(Response<ResponseBody> response, Retrofit retrofit) {
-                        if (response.isSuccess()) {
+                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                        if (response.isSuccessful()) {
                             Toast.makeText(context, gs(R.string.follower_deleted_succesfully), Toast.LENGTH_LONG).show();
                             list.remove(position);
                             notifyDataSetChanged();
@@ -77,7 +77,7 @@ public class FollowerListAdapter extends BaseAdapter {
                     }
 
                     @Override
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Call<ResponseBody> call, Throwable t) {
                         Toast.makeText(context, gs(R.string.failed_to_delete_follower), Toast.LENGTH_LONG).show();
                     }
                 };

@@ -58,7 +58,7 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/long_press_an_existing_alert_to_edit"
-                android:textSize="12sp"
+                android:textSize="@dimen/text_helper"
                 android:gravity="center_horizontal" />
         </LinearLayout>
 

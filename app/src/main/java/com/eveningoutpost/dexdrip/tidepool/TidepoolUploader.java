@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
-import static com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper.enableTls12OnPreLollipop;
+import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 
 import android.os.PowerManager;
 
@@ -97,7 +97,7 @@ public class TidepoolUploader {
             if (D) {
                 httpLoggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
             }
-            final OkHttpClient client = enableTls12OnPreLollipop(new OkHttpClient.Builder())
+            final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
                     .addInterceptor(httpLoggingInterceptor)
                     .addInterceptor(new InfoInterceptor(TAG))
                     //          .addInterceptor(new GzipRequestInterceptor())

@@ -18,4 +18,7 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
 
     <dimen name="keypad_top_text_size">25sp</dimen>
 
+    <!-- Example: Glucose level alerts page -->
+    <dimen name="text_helper">15sp</dimen>
+
 </resources>
