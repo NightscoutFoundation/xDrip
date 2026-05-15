@@ -25,7 +25,7 @@ public class NocturneOAuthService {
 
     private static final String TAG = "NocturneOAuth";
     private static final String SOFTWARE_ID = "org.nightscoutfoundation.xdrip";
-    private static final String REQUESTED_SCOPES = "entries.readwrite heartrate.readwrite stepcount.readwrite treatments.readwrite devicestatus.readwrite";
+    private static final String REQUESTED_SCOPES = "glucose.readwrite heartrate.readwrite stepcount.readwrite treatments.readwrite devices.readwrite";
 
     private static final String KEY_CLIENT_ID = "nocturne_client_id";
     private static final String KEY_ACCESS_TOKEN = "nocturne_access_token";
@@ -143,12 +143,17 @@ public class NocturneOAuthService {
                     .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
-                if (!response.isSuccessful() || response.body() == null) {
-                    UserError.Log.e(TAG, "registerClient: HTTP " + response.code());
+                if (response.body() == null) {
+                    UserError.Log.e(TAG, "registerClient: HTTP " + response.code() + " (no body)");
+                    return null;
+                }
+                final String responseBody = response.body().string();
+                if (!response.isSuccessful()) {
+                    UserError.Log.e(TAG, "registerClient: HTTP " + response.code() + " body=" + responseBody);
                     return null;
                 }
 
-                final JSONObject result = new JSONObject(response.body().string());
+                final JSONObject result = new JSONObject(responseBody);
                 final String clientId = result.getString("client_id");
                 PersistentStore.setString(KEY_CLIENT_ID, clientId);
                 UserError.Log.d(TAG, "registerClient: registered client_id=" + clientId);
@@ -194,12 +199,17 @@ public class NocturneOAuthService {
                     .build();
 
             try (Response response = httpClient.newCall(request).execute()) {
-                if (!response.isSuccessful() || response.body() == null) {
-                    UserError.Log.e(TAG, "startDeviceFlow: HTTP " + response.code());
+                if (response.body() == null) {
+                    UserError.Log.e(TAG, "startDeviceFlow: HTTP " + response.code() + " (no body)");
+                    return null;
+                }
+                final String responseBody = response.body().string();
+                if (!response.isSuccessful()) {
+                    UserError.Log.e(TAG, "startDeviceFlow: HTTP " + response.code() + " body=" + responseBody);
                     return null;
                 }
 
-                final JSONObject result = new JSONObject(response.body().string());
+                final JSONObject result = new JSONObject(responseBody);
                 return new DeviceCodeResponse(
                         result.getString("device_code"),
                         result.getString("user_code"),
