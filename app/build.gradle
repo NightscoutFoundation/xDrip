@@ -92,6 +92,7 @@ android {
         minSdkVersion 24
         // increasing target SDK version can cause compatibility issues with Android 7+
         //noinspection ExpiredTargetSdkVersion
+        buildConfigField "int", "minSDK", minSdkVersion.mApiLevel.toString()
         targetSdkVersion 24
         // change versionCode only when downgrade should be prevented
         // eg, when data structures are incompatible

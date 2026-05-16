@@ -364,9 +364,22 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         }
 
-        if (Build.VERSION.SDK_INT < 17) {
-            JoH.static_toast_long(gs(R.string.xdrip_will_not_work_below_android_version_42));
-            finish();
+        if (Build.VERSION.SDK_INT < BuildConfig.minSDK) {
+            final String message = gs(R.string.xdrip_requires_newer_android);
+            try {
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.app_name)
+                        .setMessage(message)
+                        .setCancelable(false) // Prevents clicking outside the dialog to dismiss
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                            finish(); // Closes the activity after OK
+                        })
+                        .show();
+            } catch (Exception e) {
+                JoH.static_toast_long(message);
+                finish(); // Closes the activity if the dialog can't show
+            }
+            return; // CRITICAL: Stops the rest of onCreate() from running
         }
 
         xdrip.checkForcedEnglish(Home.this);
