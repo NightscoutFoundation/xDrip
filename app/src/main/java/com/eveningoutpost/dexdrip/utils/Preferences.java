@@ -81,6 +81,7 @@ import com.eveningoutpost.dexdrip.cloud.nightlite.NightLiteQR;
 import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
 import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
+import com.eveningoutpost.dexdrip.nocturne.NocturneConnectHelper;
 import com.eveningoutpost.dexdrip.models.DesertSync;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Profile;
@@ -1159,6 +1160,15 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_uri"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_collection"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
+
+            try {
+                findPreference("nocturne_connect").setOnPreferenceClickListener(preference -> {
+                    NocturneConnectHelper.startConnectFlow(getActivity());
+                    return true;
+                });
+            } catch (Exception e) {
+                // Preference may not exist in all configurations
+            }
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);

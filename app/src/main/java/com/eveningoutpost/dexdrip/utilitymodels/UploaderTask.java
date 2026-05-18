@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import android.os.AsyncTask;
 
 import com.eveningoutpost.dexdrip.influxdb.InfluxDBUploader;
+import com.eveningoutpost.dexdrip.nocturne.NocturneUploader;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -29,7 +30,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
     public static Exception exception;
     private static final String TAG = UploaderTask.class.getSimpleName();
     public static final String BACKFILLING_BOOSTER = "backfilling-nightscout";
-    private static final boolean retry_timer = false;
+
 
 
     public Void doInBackground(String... urls) {
@@ -61,6 +62,11 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
             }
             if (Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
                 circuits.add(UploaderQueue.INFLUXDB_RESTAPI);
+            }
+            if (Pref.getBooleanDefaultFalse("nocturne_upload_enable")) {
+                if (Pref.getBoolean("nocturne_use_mobile", true) || JoH.isLANConnected()) {
+                    circuits.add(UploaderQueue.NOCTURNE_RESTAPI);
+                }
             }
 
 
@@ -134,7 +140,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                                     }
                                     break;
                                 case "delete":
-                                    if ((THIS_QUEUE == UploaderQueue.WATCH_WEARAPI || THIS_QUEUE == UploaderQueue.NIGHTSCOUT_RESTAPI) && type.equals(Treatments.class.getSimpleName())) {
+                                    if ((THIS_QUEUE == UploaderQueue.WATCH_WEARAPI || THIS_QUEUE == UploaderQueue.NIGHTSCOUT_RESTAPI || THIS_QUEUE == UploaderQueue.NOCTURNE_RESTAPI) && type.equals(Treatments.class.getSimpleName())) {
                                         items.add(up);
                                         Log.wtf(TAG, "Delete Treatments with ID: " + up.reference_uuid);
                                         treatmentsDel.add(up.reference_uuid);
@@ -170,13 +176,11 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                         uploadStatus = influxDBUploader.upload(bgReadings, calibrations, calibrations);
                     } else if (THIS_QUEUE == UploaderQueue.WATCH_WEARAPI) {
                         uploadStatus = WatchUpdaterService.sendWearUpload(bgReadings, calibrations, bloodtests, treatmentsAdd, treatmentsDel);
+                    } else if (THIS_QUEUE == UploaderQueue.NOCTURNE_RESTAPI) {
+                        final NocturneUploader nocturneUploader = new NocturneUploader(xdrip.getAppContext());
+                        uploadStatus = nocturneUploader.upload(bgReadings, calibrations, bloodtests, treatmentsAdd, treatmentsDel);
                     }
 
-                    if (retry_timer) {
-                        SyncService.startSyncService(Constants.MINUTE_IN_MS * 6); // standard retry timer
-                    }
-
-                    // TODO some kind of fail counter?
                     if (uploadStatus) {
                         for (UploaderQueue up : items) {
                             up.completed(THIS_QUEUE); // approve all types for this queue
@@ -188,6 +192,9 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                             SyncService.startSyncService(2000);
                         }
 
+                    } else {
+                        Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " upload failed, scheduling retry");
+                        SyncService.startSyncService(Constants.MINUTE_IN_MS * 6);
                     }
 
 

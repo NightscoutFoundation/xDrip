@@ -1283,6 +1283,39 @@
     <string name="summary_tidepool_upload_no_treatment">Upload only CGM data to avoid duplicates with manual pump upload</string>
     <string name="title_tidepool_upload_no_treatment">Don\'t upload treatments</string>
     <string name="title_tidepool">Tidepool</string>
+
+    <!-- Nocturne connect flow -->
+    <string name="nocturne">Nocturne</string>
+    <string name="nocturne_connect_activity_label">Connect to Nocturne</string>
+
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <string name="nocturne_connect_err_missing_url">Missing Nocturne instance URL</string>
+    <string name="nocturne_connect_err_invalid_url">Invalid URL</string>
+    <string name="nocturne_connect_warn_http">Using insecure connection (HTTP)</string>
+    <string name="nocturne_connect_err_bad_scheme">URL must start with http:// or https://</string>
+    <string name="nocturne_connect_already_connected">Already connected to %1$s</string>
+    <string name="nocturne_connect_switch_title">Switch Nocturne Instance?</string>
+    <string name="nocturne_connect_switch_message">You\'re connected to:\n%1$s\n\nSwitch to:\n%2$s?</string>
+    <string name="nocturne_connect_switch_positive">Switch</string>
+    <string name="nocturne_connect_confirm_title">Connect to Nocturne?</string>
+    <string name="nocturne_connect_confirm_message">Connect xDrip+ to:\n\n%1$s</string>
+    <string name="nocturne_connect_confirm_positive">Connect</string>
+
+    <!-- NocturneConnectHelper (device flow UI) -->
+    <string name="nocturne_already_connected_disconnect">Already connected to Nocturne. Disconnect first?</string>
+    <string name="nocturne_disconnect">Disconnect</string>
+    <string name="nocturne_disconnected">Disconnected from Nocturne</string>
+    <string name="nocturne_set_url_first">Please set your Nocturne instance URL first</string>
+    <string name="nocturne_connecting">Connecting to Nocturne...</string>
+    <string name="nocturne_start_auth_failed">Failed to start authorization. Check your Nocturne URL.</string>
+    <string name="nocturne_device_code_body_auto">Enter this code on your Nocturne instance:\n\n%1$s\n\nThe code expires in %2$d minutes.\n\nTap \'Open Browser\' to go to the approval page.</string>
+    <string name="nocturne_device_code_body_manual">Enter this code on your Nocturne instance:\n\n%1$s\n\nThe code expires in %2$d minutes.\n\nOpen your Nocturne instance in your browser to enter the code.</string>
+    <string name="nocturne_authorize_title">Authorize xDrip+</string>
+    <string name="nocturne_open_browser">Open Browser</string>
+    <string name="nocturne_connected">Connected to Nocturne!</string>
+    <string name="nocturne_auth_expired">Authorization expired. Please try again.</string>
+    <string name="nocturne_auth_denied">Authorization denied.</string>
+    <string name="nocturne_auth_timed_out">Authorization timed out. Please try again.</string>
     <string name="show_help">Show Help</string>
     <string name="load_save_settings_on_sdcard">Load / Save Settings</string>
     <string name="delete_all_bg_readings">Delete All BG readings</string>
