@@ -1478,9 +1478,15 @@ public class Ob1G5CollectionService extends G5BaseService {
 
         if (state == DISCOVER) {
             // possible encryption failure
-            if (!resetBondIfAllowed(false) && android_wear) {
-                UserError.Log.d(TAG, "Trying alternate reconnection strategy");
-                changeState(CONNECT_NOW);
+            final boolean bondReset = resetBondIfAllowed(false);
+            if (!bondReset) {
+                if (android_wear) {
+                    UserError.Log.d(TAG, "Trying alternate reconnection strategy");
+                    changeState(CONNECT_NOW);
+                } else {
+                    UserError.Log.e(TAG, "Connection failure in DISCOVER, bond reset not allowed, forcing scan");
+                    changeState(SCAN);
+                }
             }
             return;
         }
@@ -1523,6 +1529,13 @@ public class Ob1G5CollectionService extends G5BaseService {
                 tryGattRefresh();
                 changeState(SCAN);
             }
+            return;
+        }
+
+        if (state == CHECK_AUTH || state == GET_DATA || state == PREBOND
+                || state == BOND || state == RESET || state == UNBOND) {
+            UserError.Log.e(TAG, "Connection failure in " + state + ": " + throwable.getMessage() + ", forcing scan");
+            changeState(SCAN);
         }
 
     }
@@ -1611,6 +1624,11 @@ public class Ob1G5CollectionService extends G5BaseService {
                 break;
             case DISCONNECTING:
                 connection_state = "Disconnecting";
+                if (state == CONNECT || state == CONNECT_NOW || state == DISCOVER
+                        || state == CHECK_AUTH || state == PREBOND || state == BOND
+                        || state == GET_DATA || state == RESET || state == UNBOND) {
+                    UserError.Log.e(TAG, "Disconnecting in active state: " + state + " after " + niceTimeScalar(msSince(last_connect_started)));
+                }
                 break;
             case DISCONNECTED:
                 connection_state = "Disconnected";
