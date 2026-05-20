@@ -29,7 +29,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 
 @RunWith(RobolectricTestRunner.class)
 @Config(sdk = BuildConfig.targetSDK,
-        packageName = "com.eveningoutpost.dexdrip",
+        //packageName = "com.eveningoutpost.dexdrip",
         application = TestingApplication.class)
 
 // In order to be in the same universe as activeandroid, any classes using it must be ignored. This means power mock instrumentation
