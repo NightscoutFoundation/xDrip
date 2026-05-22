@@ -489,6 +489,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                 UserError.Log.d(TAG, "Not avoiding scanning due to connect failure level: " + connectNowFailures);
                 connectNowFailures++;
             }
+            if (alwaysMinimize && preScanFailureMarker) {
+                alwaysMinimize = false;
+                UserError.Log.e(TAG, "Not avoiding scanning due to mid-session connection failure");
+            }
         }
         if (transmitterMAC == null) {
             UserError.Log.d(TAG, "Do not know transmitter mac inside minimize scanning!!");
@@ -1535,6 +1539,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (state == CHECK_AUTH || state == GET_DATA || state == PREBOND
                 || state == BOND || state == RESET || state == UNBOND) {
             UserError.Log.e(TAG, "Connection failure in " + state + ": " + throwable.getMessage() + ", forcing scan");
+            preScanFailureMarker = true;
             changeState(SCAN);
         }
 
