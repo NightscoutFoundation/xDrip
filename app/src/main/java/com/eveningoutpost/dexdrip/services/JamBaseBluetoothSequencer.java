@@ -269,8 +269,7 @@ public abstract class JamBaseBluetoothSequencer extends JamBaseBluetoothService 
             try {
                 // TODO this probably should be encapsulated within LocationHelper but the check is different because during
                 // TODO an initial scan we may have permission with the app in the foreground and not (yet) need background location permission
-                if (ContextCompat.checkSelfPermission(this,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (!com.eveningoutpost.dexdrip.utils.BtPermissionCache.isLocationGranted(this)) {
                     UserError.Log.e(TAG, "Could not start a scan as location permission is not granted");
                 } else {
                     rxBleClient.getBackgroundScanner()

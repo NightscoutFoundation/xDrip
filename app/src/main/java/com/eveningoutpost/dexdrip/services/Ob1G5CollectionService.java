@@ -125,6 +125,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem.Highlight;
 import com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity;
 import com.eveningoutpost.dexdrip.utilitymodels.WholeHouse;
+import com.eveningoutpost.dexdrip.utils.BtPermissionCache;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.bt.Subscription;
 import com.eveningoutpost.dexdrip.utils.framework.WakeLockTrampoline;
@@ -869,7 +870,16 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // check required permissions and warn the user if they are wrong
     private static void checkPermissions() {
-
+        final android.content.Context ctx = xdrip.getAppContext();
+        if (!BtPermissionCache.isBluetoothScanGranted(ctx)) {
+            UserError.Log.wtf(TAG, "BLUETOOTH_SCAN permission is not granted");
+        }
+        if (!BtPermissionCache.isBluetoothConnectGranted(ctx)) {
+            UserError.Log.wtf(TAG, "BLUETOOTH_CONNECT permission is not granted");
+        }
+        if (!BtPermissionCache.isLocationGranted(ctx)) {
+            UserError.Log.e(TAG, "ACCESS_FINE_LOCATION permission is not granted");
+        }
     }
 
     public static synchronized boolean isDeviceLocallyBonded() {
@@ -1230,6 +1240,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                 state = SCAN;
             }
 
+            BtPermissionCache.refresh(this);
+            checkPermissions();
             checkAndEnableBT();
 
             Ob1G5StateMachine.restoreQueue();
