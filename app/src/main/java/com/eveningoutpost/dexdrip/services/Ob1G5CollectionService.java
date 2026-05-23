@@ -627,10 +627,8 @@ public class Ob1G5CollectionService extends G5BaseService {
                         //.doOnUnsubscribe(this::clearSubscription)
                         .subscribeOn(Schedulers.io())
                         .subscribe(this::onScanResult, this::onScanFailure));
-                if (minimize_scanning) {
-                    // Must be less than fail over timeout
-                    Inevitable.task(STOP_SCAN_TASK_ID, 320 * Constants.SECOND_IN_MS, this::stopScanWithTimeoutAndReschedule);
-                }
+                // Must be less than fail over timeout - always schedule so stuck BLE scans are detected
+                Inevitable.task(STOP_SCAN_TASK_ID, 320 * Constants.SECOND_IN_MS, this::stopScanWithTimeoutAndReschedule);
 
                 UserError.Log.d(TAG, "Scanning for: " + getTransmitterBluetoothName());
             } else {
@@ -648,6 +646,10 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Stopped scan due to timeout at: " + JoH.dateTimeText(tsl()));
         //noinspection NonAtomicOperationOnVolatileField
         scanTimeouts++;
+        if (scanTimeouts % 3 == 0 && genericBluetoothWatchdog()) {
+            UserError.Log.e(TAG, "Scan timeout watchdog: resetting Bluetooth after " + scanTimeouts + " consecutive scan timeouts");
+            JoH.niceRestartBluetooth(xdrip.getAppContext());
+        }
         tryLoadingSavedMAC();
         prepareToWakeup();
     }
