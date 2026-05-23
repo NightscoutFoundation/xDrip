@@ -1554,6 +1554,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 || state == BOND || state == RESET || state == UNBOND) {
             UserError.Log.e(TAG, "Connection failure in " + state + ": " + throwable.getMessage() + ", forcing scan");
             preScanFailureMarker = true;
+            tryGattRefresh();
             changeState(SCAN);
         }
 
