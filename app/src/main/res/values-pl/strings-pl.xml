@@ -647,6 +647,7 @@
     <string name="libre_use_smoothed_data_title">Wygładź dane z Libre.</string>
     <string name="retrieve_blukon_history_title">Pobierz historię Libre</string>
     <string name="summary_nsfollow_sample_period">Domyślnie: 5 min\nobecnie: %s</string>
+    <string name="title_sample_period">Okres próbkowania</string>
     <string name="retrieve_blukon_history_summary">Pobierz brakującą historię z urządzenia BluCon podczas ponownego łączenia z czujnikiem.</string>
     <string name="interpret_share_raw">Jeśli używasz Share, xDrip wyświetli wartości, gdy są one normalnie ukryte w odbiorniku.</string>
     <string name="interpret_raw">Interpretuj surowe wartości glukozy</string>
@@ -1331,6 +1332,7 @@
     <string name="title_nsfollow_url">Adres URL do obserwowania Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Pobierz również zabiegi z Nightscout jako obserwator</string>
     <string name="title_nsfollow_download_treatments">Pobieraj zabiegi</string>
+    <string name="summary_nsfollow_lag">Domyślnie: 0\nobecnie: %s</string>
     <string name="title_nsfollow_lag">Odstęp czasowy śledzenia Nightscout</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
