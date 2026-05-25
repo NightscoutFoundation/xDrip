@@ -8,6 +8,7 @@ public class PointValueExtended extends HPointValue {
 
     public static final int BloodTest = 1;
     public static final int AdjustableDose = 2;
+    public static final int UserEvent = 3;
 
     public PointValueExtended(double x, float y, String note_param) {
         super(x, y);

@@ -221,13 +221,27 @@
                     android:paddingTop="2dp"
                     android:src="@drawable/ic_note_plus_grey600_24dp" />
 
+                <ImageButton
+                    android:id="@+id/btnEventLog"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignStart="@+id/btnNote"
+                    android:layout_below="@+id/btnNote"
+                    android:layout_marginTop="4dp"
+                    android:background="@android:color/transparent"
+                    android:contentDescription="@string/event_log"
+                    android:paddingBottom="2dp"
+                    android:paddingLeft="2dp"
+                    android:paddingRight="6dp"
+                    android:paddingTop="2dp"
+                    android:src="@drawable/ic_event_log_grey600_24dp" />
 
                 <ImageButton
                     android:id="@+id/btnUndo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/btnNote"
-                    android:layout_below="@+id/btnNote"
+                    android:layout_alignStart="@+id/btnEventLog"
+                    android:layout_below="@+id/btnEventLog"
                     android:layout_marginTop="8dp"
                     android:background="@android:color/transparent"
 
