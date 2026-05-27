@@ -2,16 +2,13 @@ package com.eveningoutpost.dexdrip.models;
 
 import android.os.Build;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.OrderWith;
 import org.junit.runner.RunWith;
 import org.junit.runner.manipulation.Alphanumeric;
-import org.junit.runners.Parameterized;
+import org.robolectric.annotation.Config;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
@@ -19,6 +16,8 @@ import java.util.Collection;
 import java.util.Date;
 
 import static org.junit.Assert.assertEquals;
+
+import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
 @RunWith(Enclosed.class)
 @OrderWith(Alphanumeric.class)
@@ -28,60 +27,23 @@ public class DateUtilTest {
             "2018-03-03T11:22:48.384Z", "2018-03-03T12:22:48+01:00", "2018-03-03T05:22:48-06:00", "2018-03-03T14:22:48+0300");
     public static Date dtExpected = Date.from(Instant.parse("2018-03-03T11:22:48.000Z"));
 
-    static void setFinalStatic(Field field, Object newValue) throws Exception {
-        field.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
-        modifiersField.setAccessible(true);
-        modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-        field.set(null, newValue);
-    }
-
-    @RunWith(Parameterized.class)
-    abstract public static class SharedTests {
-
-        @Parameterized.Parameter
-        public String strInput;
-
-        @Parameterized.Parameters(name = "{index}: fromISODate({0})={1}")
-        public static Collection<String> data() {
-            return testISODateStrings;
-        }
+    @Config(sdk = Build.VERSION_CODES.O)
+    public static class UpperSdkVersionsTest extends RobolectricTestWithConfig{
 
         @Test
         public void tolerantFromISODateString() {
-            try {
-                assertEquals(dtExpected, DateUtil.tolerantFromISODateString(strInput));
-            } catch (Exception e) {
-                e.printStackTrace();
+            for (String strInput : testISODateStrings) {
+                try {
+                    assertEquals(dtExpected, DateUtil.tolerantFromISODateString(strInput));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
 
-    public static class LowerSdkVersions extends SharedTests {
-
-        @BeforeClass
-        public static void setUp() throws Exception {
-            setFinalStatic(Build.VERSION.class.getField("SDK_INT"), Build.VERSION_CODES.M);
-            System.out.println("Testing ISO Date Parsing function using SDK version: " + Build.VERSION.SDK_INT);
-        }
-    }
-
-    public static class UpperSdkVersions extends SharedTests {
-
-        @BeforeClass
-        public static void setUp() throws Exception {
-            setFinalStatic(Build.VERSION.class.getField("SDK_INT"), Build.VERSION_CODES.O);
-            System.out.println("Testing ISO Date Parsing function using SDK version: " + Build.VERSION.SDK_INT);
-        }
-    }
-
-    public static class DateUtilMiscTests {
-
-        @BeforeClass
-        public static void setUp() throws Exception {
-            setFinalStatic(Build.VERSION.class.getField("SDK_INT"), Build.VERSION_CODES.O);
-            System.out.println("Testing ISO Date Parsing function using SDK version: " + Build.VERSION.SDK_INT);
-        }
+    @Config(sdk = Build.VERSION_CODES.O)
+    public static class DateUtilMiscTests extends RobolectricTestWithConfig {
 
         @Test
         public void tolerantFromISODateStringWithoutSeconds() {
@@ -93,5 +55,4 @@ public class DateUtilTest {
             }
         }
     }
-
 }

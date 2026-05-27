@@ -133,6 +133,13 @@
     @com.google.gson.annotations.Expose *;
 }
 
+-if class * {
+    @com.google.gson.annotations.Expose <fields>;
+}
+-keepclassmembers class <1> {
+    public <init>();
+}
+
 -dontnote rx.internal.util.PlatformDependent
 -dontnote rx.**
 -dontnote **rx.Observable.**
@@ -157,3 +164,84 @@
 -keep class * implements com.google.gson.TypeAdapterFactory
 -keep class * implements com.google.gson.JsonSerializer
 -keep class * implements com.google.gson.JsonDeserializer
+
+# New R8 rules for gradle 8 - may not all be needed
+
+-keep class jamorham.keks.** { *; }
+-keep class com.eveningoutpost.dexdrip.plugin.** { *; }
+-keep class com.eveningoutpost.dexdrip.plugin.IPluginDA { *; }
+-keep class * implements com.eveningoutpost.dexdrip.plugin.IPluginDA { *; }
+
+-keepattributes Signature
+-keep class com.eveningoutpost.dexdrip.adapters.ObservableArrayMapNoNotify { *; }
+-keep class com.eveningoutpost.dexdrip.utilitymodels.PrefsViewString { *; }
+-keep class com.eveningoutpost.dexdrip.utilitymodels.PrefsViewImpl { *; }
+-keepattributes Signature
+-keep class com.eveningoutpost.dexdrip.eassist.EmergencyContact { *; }
+-keep class com.eveningoutpost.dexdrip.adapters.ObservableArrayMapNoNotify { *; }
+-keep class com.eveningoutpost.dexdrip.utilitymodels.PrefsViewString { *; }
+-keep class com.google.gson.reflect.TypeToken
+-keep class * extends com.google.gson.reflect.TypeToken
+-keepattributes Signature
+
+# Keep Retrofit interfaces and their methods
+-keep interface com.eveningoutpost.dexdrip.tidepool.TidepoolUploader$Tidepool { *; }
+
+# Keep data models used in Retrofit calls to prevent R8 from stripping generic types
+-keep class com.eveningoutpost.dexdrip.tidepool.M*Reply { *; }
+-keep class com.eveningoutpost.dexdrip.tidepool.M*Request { *; }
+
+# Ensure signature is kept for these as well (though generally covered by global rule)
+-keepattributes Signature
+
+# Generic rule to keep all Retrofit interfaces and their methods
+# This targets any class/interface with methods annotated with Retrofit's @GET, @POST, etc.
+-if interface * { @retrofit2.http.* <methods>; }
+-keep interface <1> { *; }
+
+-keep interface * {
+    @retrofit2.http.GET <methods>;
+    @retrofit2.http.POST <methods>;
+    @retrofit2.http.PUT <methods>;
+    @retrofit2.http.DELETE <methods>;
+    @retrofit2.http.PATCH <methods>;
+    @retrofit2.http.HEAD <methods>;
+    @retrofit2.http.OPTIONS <methods>;
+    @retrofit2.http.HTTP <methods>;
+}
+
+-if interface * { @retrofit2.http.* public *** *(...); }
+-keep,allowoptimization,allowshrinking,allowobfuscation class <3>
+
+-keep class com.eveningoutpost.dexdrip.tidepool.M* { *; }
+
+-keepclassmembers class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+
+-keep class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+-keepnames class com.fasterxml.jackson.databind.** { *; }
+-dontwarn com.fasterxml.jackson.databind.**
+
+# questionable below maybe??
+-dontwarn javax.naming.NamingEnumeration
+-dontwarn javax.naming.NamingException
+-dontwarn javax.naming.directory.Attribute
+-dontwarn javax.naming.directory.Attributes
+-dontwarn javax.naming.directory.DirContext
+-dontwarn javax.naming.directory.InitialDirContext
+-dontwarn javax.naming.directory.SearchControls
+-dontwarn javax.naming.directory.SearchResult
+-dontwarn kotlinx.serialization.descriptors.SerialDescriptor
+-dontwarn kotlinx.serialization.internal.GeneratedSerializer
+-dontwarn kotlinx.serialization.internal.PluginGeneratedSerialDescriptor
+-dontwarn org.apache.http.client.config.RequestConfig$Builder
+-dontwarn org.apache.http.client.config.RequestConfig
+-dontwarn org.apache.http.client.methods.HttpPatch
+-dontwarn org.apache.http.conn.socket.LayeredConnectionSocketFactory
+-dontwarn org.apache.http.conn.ssl.SSLConnectionSocketFactory
+-dontwarn org.apache.http.impl.client.CloseableHttpClient
+-dontwarn org.apache.http.impl.client.HttpClientBuilder
+-dontwarn org.apache.http.impl.conn.SystemDefaultRoutePlanner

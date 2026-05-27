@@ -1,5 +1,8 @@
 
 -keep interface com.eveningoutpost.dexdrip.plugin.IPluginDA
+-keep class com.eveningoutpost.dexdrip.plugin.IPluginDA { *; }
+-keep class * implements com.eveningoutpost.dexdrip.plugin.IPluginDA { *; }
+
 
 # entry points need to be in umbilical to avoid being stripped
 -keepnames class jamorham.keks.Plugin {
