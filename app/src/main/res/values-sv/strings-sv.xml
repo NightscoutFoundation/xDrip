@@ -1749,6 +1749,7 @@
     <string name="snoozing_due_button_press">Snoozar varning på grund av volymknappstryckning</string>
     <string name="share_database">Dela databas...</string>
     <string name="title_motion_detection_warning">Varning för rörelsedetektion</string>
+    <string name="message_motion_detection_warning">Detektering av rörelseaktivitet är experimentell och bara vissa telefoner är kompatibla. Dess huvudsakliga syfte är att upptäcka fordonsläge.\n\nI enligt tester verkar det som om dyrare telefoner är de mest sannolika att stödja de sensorer som behövs för att det ska fungera. Det kan också tömma batteriet.\n\nFör träningsrelaterade rörelser fungerar Smartwatch-stegräknare bättre.</string>
     <string name="title_variant">Du använder en variant av xDrip+</string>
     <string name="message_variant">xDrip+-varianter gör det möjligt att installera flera appar samtidigt. Antingen för avancerad användning eller för att tillåta både xDrips experimentella version och xDrip+ att parallelt installerade.\n\nMed varianter kanske vissa saker inte fungerar korrekt på grund av att en eller annan app har exklusiv åtkomst, till exempel för Bluetooth-parning. Feedback och felrapporter om varianter är välkomna!</string>
     <string name="expires_unknown">Går ut: ???</string>
@@ -1790,12 +1791,16 @@
     <string name="show_time_buttons">Visa tidsknappar</string>
     <string name="source_wizard_button">Knapp för assistans källa</string>
     <string name="please_wait_seconds_before_trying_to_start_sensor">Vänligen vänta %d sekunder innan du försöker starta sensorn</string>
+    <string name="please_update_OOP2_or_move_to_calibrate_based_on_raw_mode">uppdatera OOP2 eller flytta för att kalibrera baserat på raw mode</string>
     <string name="reminder">Påminnelse</string>
     <string name="notification">Avisering</string>
+    <string name="TX_EOL_reminder">När sändardagar på systemets statussida når %1$dinnebär det sista tillfället att starta en sensor på denna sändare. För närvarande på %2$d dagar.</string>
+    <string name="TX_EOL_notification">Om du fortsätter och startar sensorn är det högst troligt att det kommer att misslyckas på grund av att max sändardagar är uppnått.</string>
     <string name="TX_EOL_reminder_mod">Sändarens dagar närmar sig slutet. Snart kommer du inte att kunna starta sensorer på denna sändare. För närvarande på %d dagar.</string>
     <string name="proceed">Fortsätt</string>
     <string name="special_pairing_workaround">Temporär fix för enhetskoppling</string>
     <string name="save_power">Spara Ström</string>
+    <string name="use_xdrip_cloud">Använd xDrip Cloud</string>
     <string name="reduce_battery_and_network_overhead">Minska batteri- och nätverksanvändning genom batch-behandling och exkludera ickenödvändiga data</string>
     <string name="simplify_graphs_by_smoothing_out_irregularities">Förenkla grafer genom att jämna ut avvikelser</string>
     <string name="graph_smoothing">Grafutjämning</string>
@@ -1849,6 +1854,7 @@
     <string name="output_error">Utmatningsfel:</string>
     <string name="security_error">Säkerhetsfel:</string>
     <string name="please_grant_permission">Vänligen tillåt åtkomst</string>
+    <string name="drive_permission_blurb">För att automatiskt säkerhetskopiera behöver xDrip behörighet att använda din Google Drive.\n\nxDrip utvecklare kan inte komma åt någon av dina filer eller se din personliga information.</string>
     <string name="cloud_backup">Säkerhetskopiering i molnet​</string>
     <string name="megabyte_format_string">%.1f MB</string>
     <string name="invalid_time">Ogiltig tid</string>

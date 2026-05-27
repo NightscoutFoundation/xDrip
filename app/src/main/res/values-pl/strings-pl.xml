@@ -646,6 +646,8 @@
     <string name="libre_use_smoothed_data_summary">Użyj średniej z 5 punktów, aby uzyskać bardziej gładkie dane.</string>
     <string name="libre_use_smoothed_data_title">Wygładź dane z Libre.</string>
     <string name="retrieve_blukon_history_title">Pobierz historię Libre</string>
+    <string name="summary_nsfollow_sample_period">Domyślnie: 5 min\nobecnie: %s</string>
+    <string name="title_sample_period">Okres próbkowania</string>
     <string name="retrieve_blukon_history_summary">Pobierz brakującą historię z urządzenia BluCon podczas ponownego łączenia z czujnikiem.</string>
     <string name="interpret_share_raw">Jeśli używasz Share, xDrip wyświetli wartości, gdy są one normalnie ukryte w odbiorniku.</string>
     <string name="interpret_raw">Interpretuj surowe wartości glukozy</string>
@@ -1330,6 +1332,7 @@
     <string name="title_nsfollow_url">Adres URL do obserwowania Nightscout</string>
     <string name="summary_nsfollow_download_treatments">Pobierz również zabiegi z Nightscout jako obserwator</string>
     <string name="title_nsfollow_download_treatments">Pobieraj zabiegi</string>
+    <string name="summary_nsfollow_lag">Domyślnie: 0\nobecnie: %s</string>
     <string name="title_nsfollow_lag">Odstęp czasowy śledzenia Nightscout</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
@@ -1956,4 +1959,10 @@
     <string name="glupro_device">Urządzenie</string>
     <string name="need_bluetooth_permission">Potrzebne uprawnienia do korzystania z Bluetooth</string>
     <string name="ob1_sensor_stopped">Czujnik zatrzymany</string>
+    <string name="invalid_transmitter_id">Niepoprawny kod identyfikacyjny transmitera</string>
+    <string name="you_entered">Wprowadziłeś:</string>
+    <string name="fixed_version">Poprawiona wersja:</string>
+    <string name="click">Klik</string>
+    <string name="to_use_this_instead">aby użyć tego zamiast?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">Wprowadzony przez Ciebie identyfikator nadajnika lub kod parowania jest nieprawidłowy i nie będzie działał.\n\nSprawdź wprowadzone wartości i spróbuj ponownie.</string>
 </resources>

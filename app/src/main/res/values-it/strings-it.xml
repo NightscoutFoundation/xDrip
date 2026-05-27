@@ -654,6 +654,8 @@
     <string name="retrieve_blukon_history_title">Recupera cronologia Libre</string>
     <string name="summary_libre_one_minute_interval">Accetta i dati ad intervalli di un minuto da Libre. Riavvia il telefono per attivare la modifica.</string>
     <string name="title_libre_one_minute_interval">Libre 1-minuto</string>
+    <string name="summary_nsfollow_sample_period">Predefinito: 5 min\nCorrente: %s</string>
+    <string name="title_sample_period">Periodo di campionamento</string>
     <string name="retrieve_blukon_history_summary">Recupera la cronologia dal dispositivo Blukon quando si ricollega al sensore.</string>
     <string name="interpret_share_raw">Se usi Condividi, xDrip mostrerà i valori quando sono normalmente nascosti sul ricevitore.</string>
     <string name="interpret_raw">Interpreta Valori Grezzi</string>
@@ -1341,6 +1343,7 @@
     <string name="title_nsfollow_url">URL Nightscout Follow</string>
     <string name="summary_nsfollow_download_treatments">Scarica anche i trattamenti da Nightscout come follower</string>
     <string name="title_nsfollow_download_treatments">Scarica trattamenti</string>
+    <string name="summary_nsfollow_lag">Predefinito: 0\nCorrente: %s</string>
     <string name="title_nsfollow_lag">Ritardo Nightscout Follower</string>
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
@@ -2011,6 +2014,39 @@
     <string name="glupro_configuring">Configurazione</string>
     <string name="glupro_configured">Configurato</string>
     <string name="glupro_connect_failed">Connessione fallita</string>
+    <string name="glupro_bonding">Bonding</string>
+    <string name="glupro_bonded">Collegato</string>
+    <string name="glupro_bonding_failed">Bonding fallito</string>
+    <string name="glupro_scanning_error">Errore di scansione</string>
+    <string name="glupro_insufficient_permissions">Autorizzazioni insufficienti</string>
+    <string name="glupro_bluetooth_disabled">Bluetooth disabilitato</string>
+    <string name="glupro_scan_stopped">Scansione interrotta</string>
+    <string name="glupro_setup_failed">Configurazione fallita</string>
+    <string name="glupro_shut_down">Arresta</string>
+    <string name="glupro_starting_up">Avvio in corso</string>
+    <string name="glupro_collector_status">Stato Collettore</string>
+    <string name="glupro_reading_quality">Qualità lettura</string>
+    <string name="glupro_model_number">Numero modello</string>
+    <string name="glupro_hardware_revision">Revisione hardware</string>
+    <string name="glupro_firmware_version">Versione firmware</string>
+    <string name="glupro_manufacturer">Costruttore</string>
     <string name="glupro_start_time">Accendi</string>
+    <string name="glupro_total_sensor_period">Periodo totale del sensore</string>
+    <string name="glupro_period_remaining">Periodo rimanente</string>
+    <string name="glupro_search_sensor_screen">Schermata ricerca sensore</string>
+    <string name="glupro_open">Aperto</string>
+    <string name="glupro_connecting">In collegamento</string>
+    <string name="glupro_collector_state">Stato collettore</string>
+    <string name="glupro_sensor_serial">Seriale del sensore</string>
+    <string name="glupro_device">Dispositivo</string>
+    <string name="glupro_reconnect_attempt">Tentativo di riconnessione</string>
+    <string name="glupro_reading_frequency">Frequenza di lettura</string>
+    <string name="need_bluetooth_permission">Necessità di autorizzazioni Bluetooth</string>
     <string name="ob1_sensor_stopped">Sensore Fermato</string>
+    <string name="invalid_transmitter_id">ID trasmettitore invalido</string>
+    <string name="you_entered">Hai inserito:</string>
+    <string name="fixed_version">Versione fissa:</string>
+    <string name="click">Clicca</string>
+    <string name="to_use_this_instead">usare questo invece?</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">L\'ID del trasmettitore o il codice di accoppiamento che hai inserito è errato e non funzionerebbe.\n\nRicontrolla i dettagli e riprova.</string>
 </resources>
