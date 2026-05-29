@@ -1,11 +1,14 @@
 package com.eveningoutpost.dexdrip.plugin;
 
+import androidx.annotation.Keep;
+
 /**
  * JamOrHam
  *
  * Simple plugin data exchange interface
  */
 
+@Keep
 public interface IPluginDA {
 
     byte[][] aNext();
