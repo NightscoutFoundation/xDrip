@@ -174,6 +174,7 @@ public class IdempotentMigrations {
         Pref.setBoolean("use_transmiter_pl_bluetooth", false);
         Pref.setBoolean("use_rfduino_bluetooth", false);
         Pref.setBoolean("use_notification_channels", true);
+        Pref.setBoolean("run_service_in_foreground", true);
 
     }
 

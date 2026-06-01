@@ -507,18 +507,13 @@ public class CollectionServiceStarter {
 
     @SuppressWarnings("ConstantConditions")
     private void startServiceCompat(final Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            //    && BuildConfig.targetSDK >= Build.VERSION_CODES.N
-                && ForegroundServiceStarter.shouldRunCollectorInForeground()) {
-            try {
-                Log.d(TAG, String.format("Starting oreo foreground service: %s", intent.getComponent().getClassName()));
-            } catch (NullPointerException e) {
-                Log.d(TAG, "Null pointer exception in startServiceCompat");
-            }
+        try {
+            Log.d(TAG, String.format("Starting foreground service: %s", intent.getComponent().getClassName()));
             mContext.startForegroundService(intent);
-        } else {
-            mContext.startService(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to start foreground service: " + e);
         }
+        mContext.startService(intent);
     }
 
 }
