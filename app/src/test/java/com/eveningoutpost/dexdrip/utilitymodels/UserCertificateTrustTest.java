@@ -146,4 +146,41 @@ public class UserCertificateTrustTest {
             // same SSLHandshakeException — trust-anchor validation rejecting an unknown CA.
         }
     }
+
+    /**
+     * When the home CA is added to the trust store, connections succeed. This is the behaviour
+     * that network_security_config.xml with {@code <certificates src="user"/>} enables on Android:
+     * user-installed CAs are injected into the SSL TrustManager alongside system CAs.
+     */
+    @Test
+    public void okHttpClientWithHomeCaTrusted_acceptsSelfSignedCaCert() throws Exception {
+        // :: Setup — trust store containing only our home CA (simulates Android NSC user trust)
+        server.enqueue(new MockResponse().setBody("ok"));
+
+        KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        trustStore.load(null, null);
+        trustStore.setCertificateEntry("home-ca", caCert);
+
+        TrustManagerFactory tmf = TrustManagerFactory.getInstance(
+                TrustManagerFactory.getDefaultAlgorithm());
+        tmf.init(trustStore);
+        X509TrustManager trustManager = (X509TrustManager) tmf.getTrustManagers()[0];
+
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new javax.net.ssl.TrustManager[]{trustManager}, null);
+
+        OkHttpClient client = new OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.getSocketFactory(), trustManager)
+                .hostnameVerifier((hostname, session) -> true) // hostname check is irrelevant to this test
+                .build();
+
+        Request request = new Request.Builder().url(server.url("/")).build();
+
+        // :: Act
+        okhttp3.Response response = client.newCall(request).execute();
+
+        // :: Verify
+        assertThat(response.isSuccessful()).isTrue();
+        assertThat(response.body().string()).isEqualTo("ok");
+    }
 }
