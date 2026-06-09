@@ -1413,6 +1413,7 @@
     <string name="title_pick_numberwall_start">Encender</string>
     <string name="summary_pick_numberwall_stop">Elija horario para detener: mismo que el de inicio = siempre encendido</string>
     <string name="title_pick_numberwall_stop">Hora de Apagado</string>
+    <string name="summary_force_lockscreen_text_color"><b>Activar:</b> Usar siempre el color de texto seleccionado.\n<b>Desactivar:</b> Usar los colores de glucosa de la pantalla principal (bajo / en rango / alto).</string>
     <string name="title_xdrip_plus_number_icon">Icono numérico en área de notificación</string>
     <string name="summary_do_number_icon_test">¡Los iconos numéricos bloquean algunos teléfonos! ¡Toque para ejecutar una prueba antes de habilitar la función!</string>
     <string name="title_do_number_icon_test">Ejecutar prueba de icono numérico</string>
@@ -1428,6 +1429,7 @@
     <string name="summary_aod_use_top">Usar el primer quinto de la pantalla para el widget AOD</string>
     <string name="title_aod_use_top_center">Usar centro superior</string>
     <string name="summary_aod_use_center">Usar el tercer quinto de la pantalla para el Widget AOD</string>
+    <string name="title_aod_use_center">Usar parte central</string>
     <string name="summary_show_home_on_boot">Mostrar la pantalla xDrip automáticamente después de que se inicie el dispositivo</string>
     <string name="title_show_home_on_boot">Mostrar xDrip al arrancar</string>
     <string name="eula">CLUF</string>
@@ -1899,6 +1901,7 @@
     <string name="bg_alert">BG %1$s ALERTA: %2$s (@%3$s)</string>
     <string name="show_graphical_trend_arrow">Mostrar flecha de tendencia gráfica</string>
     <string name="no_alert_in_silent_mode">No hay alerta en modo silencioso</string>
+    <string name="calibration_slope_intercept">pendiente = %1$s intersección = %2$s</string>
     <string name="axis_x_raw_value">Valor sin procesar</string>
     <string name="axis_y_glucose_mgdl_mmol">Glucosa + %s</string>
     <string name="set_home_network">Establecer red de domicilio</string>
