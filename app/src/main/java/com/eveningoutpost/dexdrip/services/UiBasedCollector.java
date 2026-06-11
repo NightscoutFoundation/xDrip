@@ -300,6 +300,7 @@ public class UiBasedCollector extends NotificationListenerService {
                 .replace("\u00a0", " ")
                 .replace("\u2060", "")
                 .replace("\\", "/")
+                .replace("当前血糖:", "")
                 .replace("mmol/L", "")
                 .replace("mmol/l", "")
                 .replace("mg/dL", "")
