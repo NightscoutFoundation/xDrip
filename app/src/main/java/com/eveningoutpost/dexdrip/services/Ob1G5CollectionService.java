@@ -188,7 +188,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile String transmitterID;
     private static volatile String transmitterMAC;
     private static volatile String historicalTransmitterMAC;
-    private static String transmitterIDmatchingMAC;
+    private static volatile String transmitterIDmatchingMAC;
 
     private static volatile String lastScanError = null;
     private static volatile int lastScanException = -1;
@@ -215,9 +215,9 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile Subscription scanSubscription;
     private static volatile Subscription connectionSubscription;
     private static volatile Subscription stateSubscription;
-    private Subscription discoverSubscription;
-    private RxBleDevice bleDevice;
-    private RxBleConnection connection;
+    private volatile Subscription discoverSubscription;
+    private volatile RxBleDevice bleDevice;
+    private volatile RxBleConnection connection;
     public volatile IPluginDA plugin;
 
     private PowerManager.WakeLock connection_linger;
@@ -662,7 +662,6 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
 
                 unBondAllG7notCurrentAsNeeded();
-
                 msg("Connect request");
                 if (state == CONNECT_NOW) {
                     if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
@@ -1064,8 +1063,13 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-    public static void clearPersistStore() {
+    public static void clearKeks() {
         PersistentStore.cleanupOld(KEKS_ONE);
+        Loader.getLocalInstance(Registry.get(KEKS), "9999");
+    }
+
+    public static void clearPersistStore() {
+        clearKeks();
         PersistentStore.cleanupOld(OB1G5_MACSTORE);
     }
 
@@ -1074,6 +1078,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         expireFailures(true);
         transmitterID = null;
         transmitterMAC = null;
+        historicalTransmitterMAC = null;
+        transmitterIDmatchingMAC = null;
     }
 
     private void scheduleWakeUp(long future, final String info) {
@@ -1819,6 +1825,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 try {
                     if (parcel_device.getAddress().equals(transmitterMAC)) {
                         msg(bondState(bond_state_extra).replace(" ", ""));
+
                         if (parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) {
                             if (shortTxId()) {
                                 pairKeeper.add(getTransmitterID(), parcel_device.getAddress());
@@ -1846,6 +1853,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 JoH.playResourceAudio(R.raw.bt_meter_connect);
                                 UserError.Log.uel(TAG, "Prompting user to notice pairing request with sound - On Android 8+ you have to manually pair when requested");
                             }
+                        }  else if (parcel_device.getBondState() == BluetoothDevice.BOND_NONE) {
+                                UserError.Log.uel(TAG, "Unbonded mac: " + transmitterMAC);
+                                clearKeks();
                         }
                     }
                 } catch (Exception e) {

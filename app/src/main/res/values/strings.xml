@@ -859,6 +859,7 @@
     <string name="use_flair_colors">Custom Title/Nav Bar</string>
     <string name="upper_title_bar_flair">Upper Title Bar</string>
     <string name="lower_button_bar_falir">Lower Navigation Bar</string>
+    <string name="title_language">Language</string>
     <string name="force_english_text">Force English Text</string>
     <string name="using_local_language">Currently using your device\'s local language</string>
     <string name="forcing_alternate_language">Currently forcing use of alternate language</string>
