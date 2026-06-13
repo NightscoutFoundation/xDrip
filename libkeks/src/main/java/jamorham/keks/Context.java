@@ -21,13 +21,13 @@ import lombok.Setter;
 
 public class Context {
 
-    public KeyPair keyA;
-    public KeyPair KeyB;
-    public String password;
-    public byte[] passwordBytes;
-    public byte[] alice;
-    public byte[] bob;
-    public byte[] challenge;
+    public volatile KeyPair keyA;
+    public volatile KeyPair KeyB;
+    public volatile String password;
+    public volatile byte[] passwordBytes;
+    public volatile byte[] alice;
+    public volatile byte[] bob;
+    public volatile byte[] challenge;
     public volatile byte[] savedKey;
     public volatile Packet[] packet = new Packet[4];
     public volatile int sequence;
