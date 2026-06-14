@@ -1,6 +1,51 @@
 {
   "profiles": [
     {
+      "name": "FIASP-exp",
+      "displayName": "FIASP exponential (ultra fast acting)",
+      "concentration": "U100",
+      "PPN": [
+        "FIASP-exp-U100"
+      ],
+      "Curve": {
+        "type": "exponential",
+        "data": {
+          "peak": "55",
+          "duration": "300"
+        }
+      }
+    },
+    {
+      "name": "Novorapid-exp",
+      "displayName": "Novorapid exponential (rapid acting)",
+      "concentration": "U100",
+      "PPN": [
+        "Novorapid-exp-U100"
+      ],
+      "Curve": {
+        "type": "exponential",
+        "data": {
+          "peak": "75",
+          "duration": "360"
+        }
+      }
+    },
+    {
+      "name": "Humalog-exp",
+      "displayName": "Humalog exponential (rapid acting)",
+      "concentration": "U100",
+      "PPN": [
+        "Humalog-exp-U100"
+      ],
+      "Curve": {
+        "type": "exponential",
+        "data": {
+          "peak": "75",
+          "duration": "360"
+        }
+      }
+    },
+    {
       "name": "FIASP",
       "displayName": "FIASP (ultra fast acting)",
       "concentration": "U100",

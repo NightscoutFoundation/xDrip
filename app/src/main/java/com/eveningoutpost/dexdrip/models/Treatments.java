@@ -27,6 +27,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
 import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
 import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
+import com.eveningoutpost.dexdrip.insulin.ExponentialInsulin;
 import com.eveningoutpost.dexdrip.insulin.Insulin;
 import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
@@ -894,43 +895,27 @@ public class Treatments extends Model {
         return new Pair<>(iobContrib, activityContrib);
     }
 
-    // using the original calculation
-    private static Pair<Double, Double> calculateLegacyIobActivityFromTreatmentAtTime(final Treatments treatment, final long time) {
-
-        final double dia = Profile.insulinActionTime(time); // duration insulin action in hours
-        final double peak = 75; // minutes in based on a 3 hour DIA - scaled proportionally (orig 75)
-
-        double insulin_delay_minutes = 0;
-
-        double insulin_timestamp = treatment.timestamp + (insulin_delay_minutes * 60 * 1000);
-
-        //Iob response = new Iob();
-
-        final double scaleFactor = 3.0 / dia;
-        double iobContrib = 0;
-        //double activityContrib = 0;
-
-        // only use treatments with insulin component which have already happened
-        if ((treatment.insulin > 0) && (insulin_timestamp < time)) {
-            //  double bolusTime = insulin_timestamp; // bit of a dupe
-            double minAgo = scaleFactor * (((time - insulin_timestamp) / 1000) / 60);
-
-            if (minAgo < peak) {
-                double x1 = minAgo / 5 + 1;
-                iobContrib = treatment.insulin * (1 - 0.001852 * x1 * x1 + 0.001852 * x1);
-                // units: BG (mg/dL)  = (BG/U) *    U insulin     * scalar
-                // activityContrib = sens * activityMultipler * treatment.insulin * (2 / dia / 60 / peak) * minAgo;
-
-            } else if (minAgo < 180) {
-                double x2 = (minAgo - peak) / 5;
-                iobContrib = treatment.insulin * (0.001323 * x2 * x2 - .054233 * x2 + .55556);
-                //   activityContrib = sens * activityMultipler * treatment.insulin * (2 / dia / 60 - (minAgo - peak) * 2 / dia / 60 / (60 * dia - peak));
-            }
-
+    // Oref biexponential model — replaces the old piecewise quadratic approximation.
+    // Uses the same formula as AAPS/OpenAPS for a smooth bell-curve activity profile
+    // that respects the full DIA from the user's profile.
+    private static Pair<Double, Double> calculateOrefIobActivityFromTreatmentAtTime(final Treatments treatment, final long time) {
+        if (treatment.insulin <= 0 || treatment.timestamp >= time) {
+            return new Pair<>(0d, 0d);
         }
-        if (iobContrib < 0) iobContrib = 0;
-        //if (activityContrib < 0) activityContrib = 0;
-        return new Pair<>(iobContrib, 0d);
+        // Enforce a minimum DIA of 300 min (5 h) — the AAPS/OpenAPS standard for rapid-acting
+        // insulin. The xDrip legacy default of 3 h produces a peak/DIA ratio near 50 %, which
+        // collapses the formula's long tail and truncates the curve far too early.
+        final double diaMins = Math.max(Profile.insulinActionTime(time) * 60.0, 300.0);
+        // Keep peak at ≤25 % of DIA so the exponential decay has room to form a proper tail.
+        // Using DIA/2−1 (the old formula) placed the peak too close to the forbidden limit,
+        // yielding a near-symmetric bell with no tail.
+        final double peakMins = Math.min(75.0, diaMins * 0.25);
+        final ExponentialInsulin model = new ExponentialInsulin(peakMins, diaMins);
+        final long minAgo = (time - treatment.timestamp) / MINUTE_IN_MS;
+        return new Pair<>(
+                Math.max(0, treatment.insulin * model.calculateIOB(minAgo)),
+                Math.max(0, treatment.insulin * model.calculateActivity(minAgo))
+        );
     }
 
 
@@ -943,9 +928,9 @@ public class Treatments extends Model {
             response.iob = result.first;
             response.jActivity = result.second;
         } else {
-            Pair<Double,Double> result = calculateLegacyIobActivityFromTreatmentAtTime(treatment, time);
+            Pair<Double,Double> result = calculateOrefIobActivityFromTreatmentAtTime(treatment, time);
             response.iob = result.first;
-           // response.jActivity = result.second;
+            response.jActivity = result.second;
         }
 
         return response;
@@ -1050,32 +1035,6 @@ public class Treatments extends Model {
             }
         } // per insulin treatment
 
-        // legacy jActivity calculation
-        if (!multipleInsulins) {
-            Log.d(TAG, "Single insulin type iteration counter: " + counter);
-
-            // evaluate insulin impact
-            Iob lastiob = null;
-            for (Map.Entry<Long, Iob> entry : timeslices.entrySet()) {
-                Iob thisiob = entry.getValue();
-                if (lastiob != null) {
-                    if ((thisiob.iob != 0) || (lastiob.iob != 0)) {
-                        if (thisiob.iob < lastiob.iob) {
-                            // decaying iob
-                            thisiob.jActivity = (lastiob.iob - thisiob.iob) * Profile.getSensitivity(thisiob.timestamp);
-                        } else {
-                            // more insulin added
-                            thisiob.jActivity = 0; // TODO THIS IS NOT RIGHT IT MISSES ONE DECAY STEP
-                        }
-                    }
-                }
-
-                //Log.d(TAG,"iobinfo2 iob debug: "+JoH.qs(thisiob.timestamp)+" C:"+JoH.qs(thisiob.cob,4)+" I:"+JoH.qs(thisiob.iob,4)+" CA:"+JoH.qs(thisiob.jCarbImpact)+" IA:"+JoH.qs(thisiob.jActivity));
-                counter++;
-                lastiob = thisiob;
-            }
-            //
-        }
 
         // calculate carb treatments
         for (Treatments thisTreatment : theTreatments) {
