@@ -821,6 +821,7 @@
     <string name="use_flair_colors">Título personalizado/Barra de navegación</string>
     <string name="upper_title_bar_flair">Barra de título superior</string>
     <string name="lower_button_bar_falir">Barra de navegación inferior</string>
+    <string name="title_language">Idioma</string>
     <string name="force_english_text">Forzar idioma Inglés</string>
     <string name="using_local_language">Actualmente utilizando el idioma local de su dispositivo</string>
     <string name="forcing_alternate_language">Actualmente forzando el uso de un idioma alternativo</string>
