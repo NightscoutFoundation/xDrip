@@ -918,12 +918,10 @@ public class Treatments extends Model {
         );
     }
 
-
-
     private static Iob calcTreatment(final Treatments treatment, final long time, final boolean useBasal) {
         final Iob response = new Iob();
 
-        if (MultipleInsulins.isEnabled()) {
+        if (MultipleInsulins.isEnabled() || !(InsulinManager.getBolusProfile() instanceof ExponentialInsulin)) {
             Pair<Double,Double> result = calculateIobActivityFromTreatmentAtTime(treatment, time, useBasal);
             response.iob = result.first;
             response.jActivity = result.second;
