@@ -59,6 +59,7 @@ public class InfoInterceptorTest extends RobolectricTestWithConfig {
         final int code;
         try (Response response = client.newCall(request).execute()) {
             code = response.code();
+            assertThat(response.body()).isNotNull();
             responseBody = response.body().string();
         }
 
