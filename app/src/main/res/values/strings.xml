@@ -1775,6 +1775,8 @@
     <string name="title_accept_broadcast_snooze">Accept Local Broadcast</string>
     <string name="title_bg_compensate_noise">\u26A0 Smooth sensor noise</string>
     <string name="title_bg_compensate_noise_ultrasensitive">\u26A0 Smooth sensor noise ultrasensitive</string>
+    <string name="title_bg_glucose_offset">Glucose offset calibration</string>
+    <string name="summary_bg_glucose_offset">Shift every incoming glucose reading by a fixed amount, in your selected units. For example +1 raises all readings by 1; use a negative value to lower them. Leave at 0 to disable.</string>
     <string name="no_battery_optimization_whitelisting">Device does not appear to support battery optimization whitelisting!</string>
     <string name="no_i_really_know">No, I really know what I\'m doing</string>
     <string name="use_for_calibration">Use %s for Calibration?</string>

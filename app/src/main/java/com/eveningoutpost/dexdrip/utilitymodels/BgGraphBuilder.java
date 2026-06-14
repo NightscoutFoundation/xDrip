@@ -316,7 +316,7 @@ public class BgGraphBuilder {
             String collector = getDexCollectionType().toString(); // Identify which collector is being used
 
             for (BgReading r : recent) { // Process each reading in the Look-back period
-                double valueY = unitized(r.calculated_value); // Reading value
+                double valueY = unitized(BgReading.applyGlucoseOffset(r.calculated_value)); // Reading value (incl. offset calibration)
                 if (Double.isNaN(valueY)) { // Skip invalid readings
                     UserError.Log.e(TAG, "NaN detected. Collector = " + collector + ",  Raw = " + r.raw_data);
                     continue;
@@ -1334,6 +1334,7 @@ public class BgGraphBuilder {
                 plugin_adjusted = true; // plugin will be adjusting data
             }
 
+            final double offsetMgdl = BgReading.getGlucoseOffsetMgdl(); // offset calibration, applied to visible plot below
             for (final BgReading bgReading : bgReadings) {
                 // jamorham special
 
@@ -1368,11 +1369,17 @@ public class BgGraphBuilder {
                     bgReading.filtered_calculated_value = plugin.getGlucoseFromFilteredBgReading(bgReading, cd);
                 }
 
+                // shifted values for the visible plot; the noise estimate below stays raw (it is re-offset in getDisplayGlucose)
+                final double dv = (offsetMgdl != 0 && bgReading.calculated_value > BgReading.BG_READING_ERROR_VALUE)
+                        ? bgReading.calculated_value + offsetMgdl : bgReading.calculated_value;
+                final double dfv = (offsetMgdl != 0 && bgReading.filtered_calculated_value > BgReading.BG_READING_ERROR_VALUE)
+                        ? bgReading.filtered_calculated_value + offsetMgdl : bgReading.filtered_calculated_value;
+
                 if ((show_filtered) && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
-                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(Math.min(bgReading.filtered_calculated_value, BgReading.BG_READING_MAXIMUM_VALUE))));
+                    filteredValues.add(new HPointValue((double) ((bgReading.timestamp - timeshift) / FUZZER), (float) unitized(Math.min(dfv, BgReading.BG_READING_MAXIMUM_VALUE))));
                 } else if (show_pseudo_filtered) {
                     // TODO differentiate between filtered and pseudo-filtered when both may be in play at different times
-                    final double rollingValue = rollingAverage.put(bgReading.calculated_value);
+                    final double rollingValue = rollingAverage.put(dv);
                     if (rollingAverage.reachedPeak()) {
                         filteredValues.add(new HPointValue((double) ((bgReading.timestamp + rollingOffset) / FUZZER), (float) unitized(Math.min(rollingValue, BgReading.BG_READING_MAXIMUM_VALUE))));
                     }
@@ -1384,18 +1391,18 @@ public class BgGraphBuilder {
                     pluginValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(Math.min(plugin.getGlucoseFromBgReading(bgReading, cd), BgReading.BG_READING_MAXIMUM_VALUE))));
                 }
                 if (bgReading.ignoreForStats) {
-                    if (unitized(bgReading.calculated_value) <= defaultMaxY) { // Don't display value marked as bad if greater than the default Max (defaultMaxY)
-                        badValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                    if (unitized(dv) <= defaultMaxY) { // Don't display value marked as bad if greater than the default Max (defaultMaxY)
+                        badValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(dv)));
                     }
-                } else if (bgReading.calculated_value >= BgReading.BG_READING_MAXIMUM_VALUE) {
+                } else if (dv >= BgReading.BG_READING_MAXIMUM_VALUE) {
                     highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(BgReading.BG_READING_MAXIMUM_VALUE)));
-                } else if (unitized(bgReading.calculated_value) >= highMark) {
-                    highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
-                } else if (unitized(bgReading.calculated_value) >= lowMark) {
-                    val ppx = new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value));
+                } else if (unitized(dv) >= highMark) {
+                    highValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(dv)));
+                } else if (unitized(dv) >= lowMark) {
+                    val ppx = new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(dv));
                     inRangeValues.add(ppx);
-                } else if (bgReading.calculated_value >= 40) {
-                    lowValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(bgReading.calculated_value)));
+                } else if (dv >= 40) {
+                    lowValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(dv)));
                 } else if (bgReading.calculated_value > 13) {
                     lowValues.add(new HPointValue((double) (bgReading.timestamp / FUZZER), (float) unitized(40)));
                 }
@@ -1408,10 +1415,10 @@ public class BgGraphBuilder {
                 }
 
                 avg2counter++;
-                avg2value += bgReading.calculated_value;
+                avg2value += dv;
                 if (bgReading.timestamp > avg1start) {
                     avg1counter++;
-                    avg1value += bgReading.calculated_value;
+                    avg1value += dv;
                 }
 
                 // noise calculator
@@ -1447,11 +1454,11 @@ public class BgGraphBuilder {
                 if (!simple && (bgReading.timestamp > trendstart) && (bgReading.timestamp > last_calibration)) {
                     if (has_filtered && (bgReading.filtered_calculated_value > 0) && (bgReading.filtered_calculated_value != bgReading.calculated_value)) {
                         polyxList.add((double) bgReading.timestamp - timeshift);
-                        polyyList.add(unitized(bgReading.filtered_calculated_value));
+                        polyyList.add(unitized(dfv));
                     }
                     if (bgReading.calculated_value > 0) {
                         polyxList.add((double) bgReading.timestamp);
-                        polyyList.add(unitized(bgReading.calculated_value));
+                        polyyList.add(unitized(dv));
                     }
                     if (d)
                         Log.d(TAG, "poly Added: " + JoH.qs(polyxList.get(polyxList.size() - 1)) + " / " + JoH.qs(polyyList.get(polyyList.size() - 1), 2));

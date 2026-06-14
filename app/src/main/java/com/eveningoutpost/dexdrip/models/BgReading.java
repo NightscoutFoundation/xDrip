@@ -659,6 +659,22 @@ public class BgReading extends Model implements ShareUploadableBg {
         Log.i(TAG, "NEW VALUE CALCULATED AT: " + bgReading.calculated_value);
     }
 
+    // user configurable glucose offset ("offset calibration"), entered in display units, returned as mg/dl
+    public static final String GLUCOSE_OFFSET_PREF = "bg_glucose_offset";
+
+    public static double getGlucoseOffsetMgdl() {
+        final double offset = Pref.getStringToDouble(GLUCOSE_OFFSET_PREF, 0d);
+        if (offset == 0) return 0d;
+        return Pref.getString("units", "mgdl").equals("mgdl") ? offset : offset * Constants.MMOLL_TO_MGDL;
+    }
+
+    public static double applyGlucoseOffset(final double mgdl) {
+        final double offset = getGlucoseOffsetMgdl();
+        if (offset == 0) return mgdl;
+        if (mgdl <= BG_READING_ERROR_VALUE) return mgdl; // leave error / placeholder markers unchanged
+        return mgdl + offset;
+    }
+
     public static void pushBgReadingSyncToWatch(BgReading bgReading, boolean is_new) {
         Log.d(TAG, "pushTreatmentSyncToWatch Add treatment to UploaderQueue.");
         if (Pref.getBooleanDefaultFalse("wear_sync")) {

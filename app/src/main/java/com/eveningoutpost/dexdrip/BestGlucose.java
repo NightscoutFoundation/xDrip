@@ -258,6 +258,9 @@ public class BestGlucose {
             warning_level = 2;
         }
 
+        // offset calibration: shift the displayed value here (after delta/slope are computed). No-op when unset.
+        estimate = BgReading.applyGlucoseOffset(estimate);
+
         dg.unitized_value = BgGraphBuilder.unitized(estimate, doMgdl);
         final String stringEstimate = BgGraphBuilder.unitized_string(estimate, doMgdl);
         if ((lastBgReading.hide_slope) || (bg_from_filtered)) {

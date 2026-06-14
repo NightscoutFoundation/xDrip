@@ -1102,6 +1102,13 @@
             android:summary="@string/debug_and_other_misc_options"
             android:title="@string/less_common_settings">
 
+            <EditTextPreference
+                android:defaultValue="0"
+                android:inputType="numberDecimal|numberSigned"
+                android:key="bg_glucose_offset"
+                android:summary="@string/summary_bg_glucose_offset"
+                android:title="@string/title_bg_glucose_offset" />
+
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="xdrip_extra_status_line"
                 android:summary="@string/options_for_extra_line"

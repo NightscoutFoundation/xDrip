@@ -3131,6 +3131,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 String stringEstimate = bgGraphBuilder.unitized_string(estimate);
                 currentBgValueText.setText(stringEstimate + (itr == null ? " " + BgReading.activeSlopeArrow() : ""));
             }
+            // offset calibration active: warn that the shown value is shifted
+            if (extrastring.isEmpty() && BgReading.getGlucoseOffsetMgdl() != 0) extrastring = "⚠";
             if (extrastring.length() > 0)
                 currentBgValueText.setText(extrastring + currentBgValueText.getText());
         }
