@@ -829,6 +829,7 @@
     <string name="use_flair_colors">Folosește culori pe barele de notificări și navigare</string>
     <string name="upper_title_bar_flair">Culoare bară de notificări</string>
     <string name="lower_button_bar_falir">Culoare bară de navigare</string>
+    <string name="title_language">Limba</string>
     <string name="force_english_text">Forțează textul în engleză</string>
     <string name="using_local_language">În prezent folosind limba locală a dispozitivului</string>
     <string name="forcing_alternate_language">În prezent se forțează utilizarea limbii alternative</string>
