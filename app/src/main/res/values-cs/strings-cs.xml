@@ -829,6 +829,7 @@
     <string name="use_flair_colors">Vlastní barva titulní/navigační lišty</string>
     <string name="upper_title_bar_flair">Vrchní titulní lišta</string>
     <string name="lower_button_bar_falir">Spodní navigační lišta</string>
+    <string name="title_language">Jazyk</string>
     <string name="force_english_text">Vynucení angličtiny</string>
     <string name="using_local_language">Nyní se používá text v jazyce dle nastavení telefonu</string>
     <string name="forcing_alternate_language">Nyní se používá text v jazyce odlišném od nastavení telefonu</string>
