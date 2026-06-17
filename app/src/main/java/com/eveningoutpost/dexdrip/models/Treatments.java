@@ -7,34 +7,61 @@ package com.eveningoutpost.dexdrip.models;
 import android.content.Context;
 import android.provider.BaseColumns;
 import android.util.Pair;
+
 import androidx.annotation.Nullable;
+
 import com.activeandroid.Model;
-import com.activeandroid.annotation.*;
-import com.activeandroid.query.*;
+import com.activeandroid.annotation.Column;
+import com.activeandroid.annotation.Table;
+import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.*;
+import com.eveningoutpost.dexdrip.GcmActivity;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.g5model.DexSessionKeeper;
-import com.eveningoutpost.dexdrip.insulin.*;
+import com.eveningoutpost.dexdrip.insulin.ExponentialInsulin;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.SyncService;
-import com.eveningoutpost.dexdrip.utilitymodels.*;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
+import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
+import com.eveningoutpost.dexdrip.insulin.Insulin;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
+import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
-import com.google.gson.*;
+import com.eveningoutpost.dexdrip.xdrip;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
 import com.google.gson.reflect.TypeToken;
-import lombok.val;
-import org.json.*;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.DecimalFormat;
-import java.util.*;
-import java.util.regex.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import static com.eveningoutpost.dexdrip.models.JoH.*;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.*;
+import lombok.val;
+
+import static com.eveningoutpost.dexdrip.models.JoH.msSince;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static java.lang.StrictMath.abs;
-
+import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 // TODO Switchable Carb models
 // TODO Linear array timeline optimization
 
@@ -936,16 +963,19 @@ public class Treatments extends Model {
         Pair<Double, Double> result;
         if (MultipleInsulins.isEnabled() || !(InsulinManager.getBolusProfile() instanceof ExponentialInsulin)) {
             result = calculateIobActivityFromTreatmentAtTime(treatment, time, useBasal);
+            response.iob = result.first;
+            response.jActivity = result.second;
         } else {
             if (ExponentialInsulin.useExponentialModel()) {
                 result = calculateOrefIobActivityFromTreatmentAtTime(treatment, time);
+                response.iob = result.first;
+                response.jActivity = result.second;
             } else {
                 result = calculateLegacyIobActivityFromTreatmentAtTime(treatment, time);
+                response.iob = result.first;
             }
         }
 
-        response.iob = result.first;
-        response.jActivity = result.second;
         return response;
     }
 
@@ -1048,6 +1078,32 @@ public class Treatments extends Model {
             }
         } // per insulin treatment
 
+        // legacy jActivity calculation
+        if (!multipleInsulins && !ExponentialInsulin.useExponentialModel()) {
+            Log.d(TAG, "Single insulin type iteration counter: " + counter);
+
+            // evaluate insulin impact
+            Iob lastiob = null;
+            for (Map.Entry<Long, Iob> entry : timeslices.entrySet()) {
+                Iob thisiob = entry.getValue();
+                if (lastiob != null) {
+                    if ((thisiob.iob != 0) || (lastiob.iob != 0)) {
+                        if (thisiob.iob < lastiob.iob) {
+                            // decaying iob
+                            thisiob.jActivity = (lastiob.iob - thisiob.iob) * Profile.getSensitivity(thisiob.timestamp);
+                        } else {
+                            // more insulin added
+                            thisiob.jActivity = 0; // TODO THIS IS NOT RIGHT IT MISSES ONE DECAY STEP
+                        }
+                    }
+                }
+
+                //Log.d(TAG,"iobinfo2 iob debug: "+JoH.qs(thisiob.timestamp)+" C:"+JoH.qs(thisiob.cob,4)+" I:"+JoH.qs(thisiob.iob,4)+" CA:"+JoH.qs(thisiob.jCarbImpact)+" IA:"+JoH.qs(thisiob.jActivity));
+                counter++;
+                lastiob = thisiob;
+            }
+            //
+        }
 
         // calculate carb treatments
         for (Treatments thisTreatment : theTreatments) {
