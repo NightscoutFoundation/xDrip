@@ -1929,18 +1929,20 @@
     <string name="last_90_days">Últimos 90 días</string>
     <string name="scan_with_xdrip_settings_auto_configure"><![CDATA[Escanear con\nxDrip Settings -> Auto Configurar]]></string>
     <string name="could_not_create_qr_code">No se pudo crear el código QR</string>
-    <string name="volume_profile_high">Valores de glucosa alta</string>
+    <string name="volume_profile_high">Alto</string>
     <string name="low_alert_threshold_error">Las alertas de glucosa baja deben configurarse por debajo de todas las alertas de glucosa alta. Por favor, ajusta el umbral.</string>
     <string name="threshold_has_to_be_between">El umbral debe estar entre %1$s y %2$s.</string>
     <string name="alert_reraise_value_too_small">El valor de reactivación debe ser de 1 minuto o más</string>
     <string name="alert_reraise_value_too_big">El valor de re-subida debe ser menor que la duración de la posposición</string>
-    <string name="start_and_end_time_same"></string>
+    <string name="start_and_end_time_same">Las horas de inicio y fin de la alerta no pueden ser iguales.</string>
     <string name="error_with_value">Error con valor</string>
-    <string name="smartguide_pairing"></string>
+    <string name="smartguide_pairing">Emparejamiento SmartGuide</string>
     <string name="glupro_pairing_pin">Pin emparejamiento</string>
     <string name="glupro_disconnected">Desconectado</string>
     <string name="glupro_connected">Conectado</string>
     <string name="glupro_start_time">Encender</string>
+    <string name="glupro_reconnect_attempt">Intento de reconexión</string>
     <string name="invalid_transmitter_id">ID transmisor no válida</string>
     <string name="fixed_version">Versión arreglada:</string>
+    <string name="the_transmitter_id_you_have_entered_is_incorrect">El ID del transmisor o el código de emparejamiento que ha introducido es incorrecto y no funcionaría.\n\nCompruebe los detalles e inténtelo de nuevo.</string>
 </resources>
