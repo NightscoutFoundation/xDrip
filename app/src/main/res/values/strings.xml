@@ -877,6 +877,8 @@
     <string name="enable_reminder_features">Enable Reminder features</string>
     <string name="display_mathamatical_simulations">Display mathematical simulations based on profile data and carbs/insulin logs</string>
     <string name="predictive_simulations">Predictive Simulations</string>
+    <string name="summary_exponential_insulin_model">Use Bi-Exponential model to calculate IOB and insulin-activity</string>
+    <string name="exponential_insulin_model">Bi-Exponential Insulin Model</string>
     <string name="low_prediction_values">Low level prediction values</string>
     <string name="target_glucose_default">Target Glucose Default</string>
     <string name="default_liver_maximum_impact">Default Liver Maximum Impact (0–1)</string>

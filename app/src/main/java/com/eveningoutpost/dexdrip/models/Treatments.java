@@ -7,61 +7,33 @@ package com.eveningoutpost.dexdrip.models;
 import android.content.Context;
 import android.provider.BaseColumns;
 import android.util.Pair;
-
 import androidx.annotation.Nullable;
-
 import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
-import com.activeandroid.query.Delete;
-import com.activeandroid.query.Select;
+import com.activeandroid.annotation.*;
+import com.activeandroid.query.*;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.GcmActivity;
-import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.*;
 import com.eveningoutpost.dexdrip.g5model.DexSessionKeeper;
+import com.eveningoutpost.dexdrip.insulin.*;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.SyncService;
-import com.eveningoutpost.dexdrip.utilitymodels.Constants;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
-import com.eveningoutpost.dexdrip.utilitymodels.PumpStatus;
-import com.eveningoutpost.dexdrip.utilitymodels.UndoRedo;
-import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
-import com.eveningoutpost.dexdrip.insulin.ExponentialInsulin;
-import com.eveningoutpost.dexdrip.insulin.Insulin;
-import com.eveningoutpost.dexdrip.insulin.InsulinManager;
-import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
+import com.eveningoutpost.dexdrip.utilitymodels.*;
 import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
-import com.eveningoutpost.dexdrip.xdrip;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.google.gson.annotations.Expose;
 import com.google.gson.internal.bind.DateTypeAdapter;
 import com.google.gson.reflect.TypeToken;
-
-import org.json.JSONException;
-import org.json.JSONObject;
+import lombok.val;
+import org.json.*;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*;
+import java.util.regex.*;
 
-import lombok.val;
-
-import static com.eveningoutpost.dexdrip.models.JoH.msSince;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
+import static com.eveningoutpost.dexdrip.models.JoH.*;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.*;
 import static java.lang.StrictMath.abs;
-import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
 // TODO Switchable Carb models
 // TODO Linear array timeline optimization
@@ -121,7 +93,7 @@ public class Treatments extends Model {
         boolean foundBasal = false;
         final List<InsulinInjection> injections = getInsulinInjections();
         for (InsulinInjection injection : injections) {
-            Log.d(TAG,"isBasalOnly: "+injection.isBasal()+" "+injection.getInsulin());
+            Log.d(TAG, "isBasalOnly: " + injection.isBasal() + " " + injection.getInsulin());
             if (!injection.isBasal()) {
                 return false;
             } else {
@@ -141,8 +113,7 @@ public class Treatments extends Model {
         return sb.toString();
     }
 
-    private void setInsulinInjections(List<InsulinInjection> i)
-    {
+    private void setInsulinInjections(List<InsulinInjection> i) {
         // TODO possiblity here to preserve null if Multiple Injections is not enabled
         if (i == null) {
             i = new ArrayList<>();
@@ -150,7 +121,7 @@ public class Treatments extends Model {
         insulinInjections = i;
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-               // .registerTypeAdapter(Date.class, new DateTypeAdapter())
+                // .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
         insulinJSON = gson.toJson(i);
@@ -158,7 +129,7 @@ public class Treatments extends Model {
 
     // lazily populate and return InsulinInjection array from json
     List<InsulinInjection> getInsulinInjections() {
-       // Log.d(TAG,"get injections: "+insulinJSON);
+        // Log.d(TAG,"get injections: "+insulinJSON);
         if (insulinInjections == null) {
             if (insulinJSON != null) {
                 try {
@@ -168,7 +139,7 @@ public class Treatments extends Model {
 
                     StringBuilder x = new StringBuilder();
                     for (InsulinInjection y : insulinInjections) {
-                        x.append(y.getProfile().getName() + " " + y.getUnits()+" ");
+                        x.append(y.getProfile().getName() + " " + y.getUnits() + " ");
                     }
 
 
@@ -202,9 +173,10 @@ public class Treatments extends Model {
 
     // take a simple insulin value and produce a list by name of insulin - for general quick conversion
     public static List<InsulinInjection> convertLegacyDoseToInjectionListByName(final String insulinName, final double insulinSum) {
-        Log.d(TAG,"convertingLegacyDoseByName: "+insulinName+" "+insulinSum);
+        Log.d(TAG, "convertingLegacyDoseByName: " + insulinName + " " + insulinSum);
         final Insulin insulin = InsulinManager.getProfile(insulinName);
-        if (insulin == null) return null; // TODO should we actually throw an exception here as this should never happen and the result would be invalid
+        if (insulin == null)
+            return null; // TODO should we actually throw an exception here as this should never happen and the result would be invalid
         final ArrayList<InsulinInjection> injections = new ArrayList<>();
         injections.add(new InsulinInjection(insulin, insulinSum));
         return injections;
@@ -223,8 +195,7 @@ public class Treatments extends Model {
         }
     }
 
-    public Treatments()
-    {
+    public Treatments() {
         eventType = DEFAULT_EVENT_TYPE;
         carbs = 0;
         insulin = 0;
@@ -386,8 +357,9 @@ public class Treatments extends Model {
     /**
      * Returns a newly created treatment entry in the database for Sensor Start,
      * and pushes the new treatment to followers.
+     *
      * @param timestamp is optional, defaults to right now
-     * @param notes is optional
+     * @param notes     is optional
      */
     public static synchronized Treatments sensorStart(@Nullable Long timestamp, @Nullable String notes) {
         if (timestamp == null || timestamp == 0) {
@@ -411,8 +383,9 @@ public class Treatments extends Model {
     /**
      * Returns a newly created treatment entry in the database for Sensor Stop,
      * and pushes the new treatment to followers.
+     *
      * @param timestamp is optional, defaults to right now
-     * @param notes is optional
+     * @param notes     is optional
      */
     public static synchronized Treatments sensorStop(@Nullable Long timestamp, @Nullable String notes) {
         if (timestamp == null || timestamp == 0) {
@@ -483,7 +456,7 @@ public class Treatments extends Model {
                     SyncService.startSyncService(3000); // sync in 3 seconds
                 }
             }
-        },1000);
+        }, 1000);
 
     }
 
@@ -875,11 +848,11 @@ public class Treatments extends Model {
 
         double iobContrib = 0, activityContrib = 0;
         if (treatment.insulin > 0) {
-           // Log.d(TAG,"NEW TYPE insulin: "+treatment.insulin+ " "+treatment.insulinJSON);
+            // Log.d(TAG,"NEW TYPE insulin: "+treatment.insulin+ " "+treatment.insulinJSON);
             // translate a legacy entry to be bolus insulin
             List<InsulinInjection> injectionsList = treatment.getInsulinInjections();
             if (injectionsList == null || injectionsList.size() == 0) {
-                Log.d(TAG,"CONVERTING LEGACY: "+treatment.insulinJSON+ " "+injectionsList);
+                Log.d(TAG, "CONVERTING LEGACY: " + treatment.insulinJSON + " " + injectionsList);
                 injectionsList = convertLegacyDoseToBolusInjectionList(treatment.insulin);
                 treatment.insulinInjections = injectionsList; // cache but best not to save it
             }
@@ -893,6 +866,45 @@ public class Treatments extends Model {
             if (activityContrib < 0) activityContrib = 0;
         }
         return new Pair<>(iobContrib, activityContrib);
+    }
+
+    // using the original calculation
+    private static Pair<Double, Double> calculateLegacyIobActivityFromTreatmentAtTime(final Treatments treatment, final long time) {
+
+        final double dia = Profile.insulinActionTime(time); // duration insulin action in hours
+        final double peak = 75; // minutes in based on a 3 hour DIA - scaled proportionally (orig 75)
+
+        double insulin_delay_minutes = 0;
+
+        double insulin_timestamp = treatment.timestamp + (insulin_delay_minutes * 60 * 1000);
+
+        //Iob response = new Iob();
+
+        final double scaleFactor = 3.0 / dia;
+        double iobContrib = 0;
+        //double activityContrib = 0;
+
+        // only use treatments with insulin component which have already happened
+        if ((treatment.insulin > 0) && (insulin_timestamp < time)) {
+            //  double bolusTime = insulin_timestamp; // bit of a dupe
+            double minAgo = scaleFactor * (((time - insulin_timestamp) / 1000) / 60);
+
+            if (minAgo < peak) {
+                double x1 = minAgo / 5 + 1;
+                iobContrib = treatment.insulin * (1 - 0.001852 * x1 * x1 + 0.001852 * x1);
+                // units: BG (mg/dL)  = (BG/U) *    U insulin     * scalar
+                // activityContrib = sens * activityMultipler * treatment.insulin * (2 / dia / 60 / peak) * minAgo;
+
+            } else if (minAgo < 180) {
+                double x2 = (minAgo - peak) / 5;
+                iobContrib = treatment.insulin * (0.001323 * x2 * x2 - .054233 * x2 + .55556);
+                //   activityContrib = sens * activityMultipler * treatment.insulin * (2 / dia / 60 - (minAgo - peak) * 2 / dia / 60 / (60 * dia - peak));
+            }
+
+        }
+        if (iobContrib < 0) iobContrib = 0;
+        //if (activityContrib < 0) activityContrib = 0;
+        return new Pair<>(iobContrib, 0d);
     }
 
     // Oref biexponential model — replaces the old piecewise quadratic approximation.
@@ -921,16 +933,19 @@ public class Treatments extends Model {
     private static Iob calcTreatment(final Treatments treatment, final long time, final boolean useBasal) {
         final Iob response = new Iob();
 
+        Pair<Double, Double> result;
         if (MultipleInsulins.isEnabled() || !(InsulinManager.getBolusProfile() instanceof ExponentialInsulin)) {
-            Pair<Double,Double> result = calculateIobActivityFromTreatmentAtTime(treatment, time, useBasal);
-            response.iob = result.first;
-            response.jActivity = result.second;
+            result = calculateIobActivityFromTreatmentAtTime(treatment, time, useBasal);
         } else {
-            Pair<Double,Double> result = calculateOrefIobActivityFromTreatmentAtTime(treatment, time);
-            response.iob = result.first;
-            response.jActivity = result.second;
+            if (ExponentialInsulin.useExponentialModel()) {
+                result = calculateOrefIobActivityFromTreatmentAtTime(treatment, time);
+            } else {
+                result = calculateLegacyIobActivityFromTreatmentAtTime(treatment, time);
+            }
         }
 
+        response.iob = result.first;
+        response.jActivity = result.second;
         return response;
     }
 
@@ -952,7 +967,7 @@ public class Treatments extends Model {
         } else {
             tempiob = new Iob();
             tempiob.timestamp = (long) thistime;
-         //   tempiob.date = new Date((long)thistime);
+            //   tempiob.date = new Date((long)thistime);
             tempiob.cob = carbs;
         }
         timeslices.put(thistime, tempiob);
@@ -963,11 +978,11 @@ public class Treatments extends Model {
             if (timeslices.containsKey(thistime)) {
                 Iob tempiob = timeslices.get(thistime);
                 tempiob.iob += thisiob.iob;
-                tempiob.jActivity+= thisiob.jActivity;
+                tempiob.jActivity += thisiob.jActivity;
                 timeslices.put(thistime, tempiob);
             } else {
                 thisiob.timestamp = (long) thistime;
-             //   thisiob.date = new Date((long)thistime);
+                //   thisiob.date = new Date((long)thistime);
                 timeslices.put(thistime, thisiob); // first entry at timeslice so put the record in as is
             }
         }
@@ -976,7 +991,7 @@ public class Treatments extends Model {
     // NEW NEW NEW
     public static List<Iob> ioBForGraph_new(long startTime) {
 
-       // Log.d(TAG, "Processing iobforgraph2: main  ");
+        // Log.d(TAG, "Processing iobforgraph2: main  ");
         JoH.benchmark_method_start();
         final boolean multipleInsulins = MultipleInsulins.isEnabled();
         final boolean useBasal = MultipleInsulins.useBasalActivity();
@@ -986,7 +1001,7 @@ public class Treatments extends Model {
         final double dontLookThisFar = MultipleInsulins.isEnabled() ? MINUTE_IN_MS * InsulinManager.getMaxEffect(true) : 10 * HOUR_IN_MS;
 // look back the longest effect period of all enabled insulin profiles (startTime is always 24h behind NOW)
         List<Treatments> theTreatments = latestForGraph(2000, startTime - dontLookThisFar);
-        Log.d(TAG,"TREATMENT LIST: "+theTreatments.size()+" "+JoH.dateTimeText((long)(startTime - dontLookThisFar)));
+        Log.d(TAG, "TREATMENT LIST: " + theTreatments.size() + " " + JoH.dateTimeText((long) (startTime - dontLookThisFar)));
         if (theTreatments.size() == 0) return null;
 
         int counter = 0; // iteration counter

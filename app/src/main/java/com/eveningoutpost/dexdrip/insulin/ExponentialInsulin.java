@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.insulin;
 
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
@@ -9,6 +10,9 @@ import java.util.ArrayList;
 // IOB curve:      1 - s(1-a) × ((t²/(τ·td·(1-a)) - t/τ - 1) × exp(-t/τ) + 1)
 // Both formulas naturally produce a smooth bell curve that reaches zero at exactly DIA.
 public class ExponentialInsulin extends Insulin {
+    public static Boolean useExponentialModel() {
+        return Pref.getBoolean("exponential_model_enabled", false);
+    }
 
     private final double tp; // peak time (minutes)
     private final double td; // total duration / DIA (minutes)

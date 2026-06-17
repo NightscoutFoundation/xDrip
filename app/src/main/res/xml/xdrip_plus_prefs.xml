@@ -796,6 +796,14 @@
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/predictive_simulations" />
 
+            <SwitchPreference
+                    android:defaultValue="false"
+                    android:key="exponential_model_enabled"
+                    android:summary="@string/summary_exponential_insulin_model"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/exponential_insulin_model" />
+
             <PreferenceScreen
                 android:key="xdrip_plus_multiple_insulin_types_settings"
                 android:title="@string/title_multiple_insulin_types_settings"
