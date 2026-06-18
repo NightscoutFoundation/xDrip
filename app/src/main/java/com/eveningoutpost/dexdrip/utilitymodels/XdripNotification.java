@@ -1,8 +1,8 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
-import android.os.Build;
+
+import com.eveningoutpost.dexdrip.models.UserError;
 
 /*
  * Created by jwoglom on 5/17/2018
@@ -13,25 +13,16 @@ import android.os.Build;
 
 public class XdripNotification {
 
-    @TargetApi(Build.VERSION_CODES.O)
+    private final static String TAG = XdripNotification.class.getSimpleName();
+
     public static Notification build(Notification.Builder builder) {
-        if ((Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O)) {
-            if (Pref.getBooleanDefaultFalse("use_notification_channels")) {
-                // get dynamic channel based on contents of the builder
-                try {
-                    final String id = NotificationChannels.getChan(builder).getId();
-                    builder.setChannelId(id);
-                } catch (NullPointerException e) {
-                    //noinspection ConstantConditions
-                    builder.setChannelId(null);
-                }
-            } else {
-                //noinspection ConstantConditions
-                builder.setChannelId(null);
-            }
-            return builder.build();
-        } else {
-            return builder.build(); // standard pre-oreo behaviour
+        try {
+            builder.setChannelId(NotificationChannels.getChan(builder).getId());
+        } catch (Exception e) {
+            builder.setChannelId(NotificationChannels.ONGOING_CHANNEL);
         }
+        // No setGroup call here.
+        UserError.Log.d(TAG, "Channel: " + builder.build().getChannelId() + " | Group: " + builder.build().getGroup());
+        return builder.build();
     }
 }

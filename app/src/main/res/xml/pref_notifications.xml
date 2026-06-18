@@ -124,11 +124,6 @@
                         android:key="ongoing_notification_aodchipstyle"
                         android:summary="Display notification chip and lockscreen notification. Android 16+ only"
                         android:title="Use AOD chip style" />
-                    <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:key="notification_channels_grouping"
-                        android:summary="@string/summary_notification_channels_grouping"
-                        android:title="@string/title_notification_channels_grouping" />
                 </PreferenceScreen>
 
                 <PreferenceScreen

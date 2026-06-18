@@ -182,7 +182,6 @@ public class NotificationChannels {
 
 
         // mirror the notification parameters in the channel
-        template.setGroup(temp.getChannelId());
 
         val mNotification = getNotificationFromInsideBuilder(wip);
         if (mNotification != null) {
@@ -206,11 +205,6 @@ public class NotificationChannels {
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
-        if (addChannelGroup()) {
-            channel.setGroup(template.getGroup());
-        } else {
-            channel.setGroup(channel.getId());
-        }
         channel.setDescription(template.getDescription());
         channel.setVibrationPattern(template.getVibrationPattern());
 
@@ -222,8 +216,7 @@ public class NotificationChannels {
 
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 
-        // create a group to hold this channel if one doesn't exist or update text
-        getNotifManager().createNotificationChannelGroup(new NotificationChannelGroup(channel.getGroup(), getString(channel.getGroup())));
+        channel.setGroup(null);
         // create this channel if it doesn't exist or update text
         getNotifManager().createNotificationChannel(channel);
         return mNotification != null ? channel : null; // Note we return null to fallback old behavior if we can't get reflected access
@@ -249,7 +242,6 @@ public class NotificationChannels {
 
 
         // mirror the notification parameters in the channel
-        template.setGroup(temp.getChannelId());
         template.setVibrationPattern(temp.vibrate);
         template.setSound(temp.sound, generic_audio);
         template.setLightColor(temp.ledARGB);
@@ -268,11 +260,6 @@ public class NotificationChannels {
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
-        if (addChannelGroup()) {
-            channel.setGroup(template.getGroup());
-        } else {
-            channel.setGroup(channel.getId());
-        }
         channel.setDescription(template.getDescription());
         channel.setVibrationPattern(template.getVibrationPattern());
         template.setLightColor(temp.ledARGB);
@@ -280,8 +267,7 @@ public class NotificationChannels {
             template.enableLights(true); // weird how this doesn't work like vibration pattern
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 
-        // create a group to hold this channel if one doesn't exist or update text
-        getNotifManager().createNotificationChannelGroup(new NotificationChannelGroup(channel.getGroup(), getString(channel.getGroup())));
+        channel.setGroup(null);
         // create this channel if it doesn't exist or update text
         getNotifManager().createNotificationChannel(channel);
         return  channel;

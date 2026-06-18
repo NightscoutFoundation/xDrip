@@ -4,6 +4,8 @@ import static com.eveningoutpost.dexdrip.services.DexCollectionService.MAX_BT_WD
 import static com.eveningoutpost.dexdrip.utils.Preferences.MAX_GLUCOSE_INPUT;
 import static com.eveningoutpost.dexdrip.utils.Preferences.MIN_GLUCOSE_INPUT;
 
+import android.app.NotificationChannelGroup;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -29,6 +31,7 @@ import com.eveningoutpost.dexdrip.utils.Preferences;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import lombok.val;
 
@@ -70,6 +73,7 @@ public class IdempotentMigrations {
         FirstPageFragment.defineDefaults(); // Define the statistics page visibility defaults.
         prefSettingRangeVerification();
         inheritPrefSettingsAfterUpdate();
+        removeAllNotificationChannelGroups(mContext);
 
     }
 
@@ -175,6 +179,7 @@ public class IdempotentMigrations {
         Pref.setBoolean("use_rfduino_bluetooth", false);
         Pref.setBoolean("use_notification_channels", true);
         Pref.setBoolean("run_service_in_foreground", true);
+        Pref.setBoolean("notification_channels_grouping", false);
 
     }
 
@@ -220,6 +225,21 @@ public class IdempotentMigrations {
             Pref.setBoolean("has_been_explicitly_set_persistent_high_alert_override_silent", true); // Set this setting so that we never inherit again.
         }
         //
+    }
+
+    private static void removeAllNotificationChannelGroups(Context context) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm != null) {
+            // Get all currently registered groups
+            List<NotificationChannelGroup> groups = nm.getNotificationChannelGroups();
+
+            // Delete each group found
+            if (groups != null && !groups.isEmpty()) {
+                for (NotificationChannelGroup group : groups) {
+                    nm.deleteNotificationChannelGroup(group.getId());
+                }
+            }
+        }
     }
 
 }

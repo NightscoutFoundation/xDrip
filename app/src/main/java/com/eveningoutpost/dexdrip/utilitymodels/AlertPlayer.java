@@ -541,7 +541,6 @@ public class AlertPlayer {
                 .setContentIntent(notificationIntent(context, intent))
                 .setLocalOnly(localOnly)
 
-                .setGroup("xDrip level alert")
                 .setPriority(Pref.getBooleanDefaultFalse("high_priority_notifications") ? Notification.PRIORITY_MAX : Notification.PRIORITY_HIGH)
                 .setDeleteIntent(snoozeIntent(context, minsFromStartPlaying));
         if (Pref.getBoolean("show_buttons_in_alerts", true)) {

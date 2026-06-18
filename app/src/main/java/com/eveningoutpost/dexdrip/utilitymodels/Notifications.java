@@ -601,16 +601,8 @@ public class Notifications extends IntentService {
         final Notification.Builder b;
         b = new Notification.Builder(mContext, NotificationChannels.ONGOING_CHANNEL);
         b.setOngoing(Pref.getBoolean("use_proper_ongoing", true));
-        try {
-            b.setGroup("xDrip ongoing");
-        } catch (Exception e) {
-            //
-        }
         b.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
         b.setCategory(Notification.CATEGORY_STATUS);
-    //    if (Pref.getBooleanDefaultFalse("high_priority_notifications")) {
-    //        b.setPriority(Notification.PRIORITY_HIGH);
-    //    }
         final BestGlucose.DisplayGlucose dg = (use_best_glucose) ? BestGlucose.getDisplayGlucose() : null;
         final boolean use_color_in_notification = false; // could be preference option
         final SpannableString titleString = new SpannableString(lastReading == null ? "BG Reading Unavailable" : (dg != null) ? (dg.spannableString(dg.unitized + " " + dg.delta_arrow,use_color_in_notification))
