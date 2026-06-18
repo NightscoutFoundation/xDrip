@@ -838,8 +838,8 @@
     <string name="enable_reminder_features">Reminder-Funktionen aktivieren</string>
     <string name="display_mathamatical_simulations">Mathematische Simulationen basierend auf den Profildaten und Kohlenhydrat-/Insulinlogs anzeigen</string>
     <string name="predictive_simulations">Vorhersage-Simulationen</string>
-    <string name="summary_exponential_insulin_model">Verwende das Bi-Exponentielle Insulin-Model zur Berechnung von IOB und Insulin-Aktivität</string>
-    <string name="exponential_insulin_model">Bi-Exponentielles Insulin-Model</string>
+    <string name="summary_exponential_insulin_model">Verwende ein bi-exponentielles Insulin-Model zur Berechnung von IOB- und Insulin-Aktivitätskurven</string>
+    <string name="exponential_insulin_model">Bi-exponentielles Insulin-Model</string>
     <string name="low_prediction_values">Unterzucker-Vorhersagewerte</string>
     <string name="target_glucose_default">Ziel-Glukosestandard</string>
     <string name="default_liver_maximum_impact">Maximaler Standardeinfluss der Leber (0-1)</string>
