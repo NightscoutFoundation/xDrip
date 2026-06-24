@@ -46,7 +46,7 @@ public class TrustManager {
         return sslContext.getSocketFactory();
     }
 
-    // verify talking to something that looks like an xDrip+ instance
+    // verify talking to something that looks like an xDrip instance
     static HostnameVerifier getXdripHostVerifier() {
         return new HostnameVerifier() {
             @Override

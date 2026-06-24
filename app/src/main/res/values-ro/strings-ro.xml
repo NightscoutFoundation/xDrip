@@ -647,7 +647,7 @@
     <string name="use_external_blukon_algorithm">Algoritm libre în afara procesului.</string>
     <string name="calibrate_external_libre_algorithm_summary">Aplică metodele de calibrare xDrip pe datele OOP.</string>
     <string name="calibrate_external_libre_algorithm_title">Algoritm de calibrare in afara procesului Libre (OOP).</string>
-    <string name="calibrate_external_libre_2_algorithm_summary">Aplicaţi metodele de calibrare xDrip pe datele OOP2.</string>
+    <string name="calibrate_external_libre_2_algorithm_summary">Aplicați metodele de calibrare xDrip pe datele OOP2.</string>
     <string name="calibrate_external_libre_2_algorithm_title">Algoritm calibrare OOP2.</string>
     <string name="libre_use_smoothed_data_summary">Utilizați media din 5 puncte pentru a obține date mai aplatizate.</string>
     <string name="libre_use_smoothed_data_title">Aplatizare date libre.</string>
@@ -829,6 +829,7 @@
     <string name="use_flair_colors">Folosește culori pe barele de notificări și navigare</string>
     <string name="upper_title_bar_flair">Culoare bară de notificări</string>
     <string name="lower_button_bar_falir">Culoare bară de navigare</string>
+    <string name="title_language">Limba</string>
     <string name="force_english_text">Forțează textul în engleză</string>
     <string name="using_local_language">În prezent folosind limba locală a dispozitivului</string>
     <string name="forcing_alternate_language">În prezent se forțează utilizarea limbii alternative</string>
@@ -1732,7 +1733,7 @@
     <string name="no_i_really_know">Nu, chiar știu ce fac</string>
     <string name="use_for_calibration">Folosiți %s pentru calibrare?</string>
     <string name="problem_loading_speech_lexicon">Problemă la încărcarea lexiconului de vorbire!</string>
-    <string name="type_treatment_eg">Tratament de tip\nex. unităţi x.x</string>
+    <string name="type_treatment_eg">Tratament de tip\nex. unități x.x</string>
     <string name="word_lexicon_not_loaded">Lexiconul de cuvinte nu a fost încărcat!</string>
     <string name="no_never">NU, Niciodată</string>
     <string name="auto_starting_sensor">Autopornire senzor!</string>
@@ -1863,7 +1864,7 @@
     <string name="you_cannot_undo_delete_alert">Nu veți putea anula acest lucru!\n\nSigur doriți să ștergeți această alertă?</string>
     <string name="this_backup_looks_like_came_from_different_format_string">Se pare că această copie de rezervă provine de pe un alt dispozitiv:\n%s\nEști sigur că vrei să restaurezi din această copie de rezervă?</string>
     <string name="megabyte_format_string">%.1f MB</string>
-    <string name="manual_selection_google_drive_file_warning">Ați selectat un fișier din Google Drive, dar acest lucru nu este gestionat automat de xDrip astfel încât poate fi folosit doar pentru copii de rezervă manuale şi restaurare.\n\nNu va avea loc nicio copie de rezervă automată cu acest fișier.\n\nContinuați?</string>
+    <string name="manual_selection_google_drive_file_warning">Ați selectat un fișier din Google Drive, dar acest lucru nu este gestionat automat de xDrip astfel încât poate fi folosit doar pentru copii de rezervă manuale și restaurare.\n\nNu va avea loc nicio copie de rezervă automată cu acest fișier.\n\nContinuați?</string>
     <string name="alternate_file_selected_warning">Ați selectat un fișier alternativ. De obicei acesta ar fi doar pentru a restaura dintr-o copie de rezervă stocată local.\n\nNu va avea loc nicio copie de rezervă automată cu acest fișier.\n\nContinuați?</string>
     <string name="backup_file_security_error_advice">Fișierul copiei de rezervă raportează o eroare de securitate. În mod normal acest lucru înseamnă că trebuie să îl re-selectați pentru a continua să permiteți accesul xDrip.</string>
     <string name="invalid_time">Oră nevalidă</string>
@@ -1981,7 +1982,7 @@
     <string name="alert_threshold_already_in_use">Fiecare alertă are nevoie de un prag unic. Te rugăm să alegi altul.</string>
     <string name="high_alert_threshold_error">Alerte de prag ridicat trebuie setate deasupra alertelor de prag mic. Vă rugăm să reglați pragul.</string>
     <string name="low_alert_threshold_error">Alerte de prag mic trebuie setate sub alertele de prag ridicat. Vă rugăm să reglați pragul.</string>
-    <string name="threshold_has_to_be_between">Pragul trebuie să fie între %1$s şi %2$s.</string>
+    <string name="threshold_has_to_be_between">Pragul trebuie să fie între %1$s și %2$s.</string>
     <string name="alert_reraise_value_too_small">Valoarea de resemnalare trebuie să fie de cel puțin 1 minut</string>
     <string name="alert_reraise_value_too_big">Valoarea de resemnalare trebuie să fie mai mică decât durata amânării</string>
     <string name="start_and_end_time_same">Timpul de început și de sfârșit ale alertei nu pot fi egale.</string>

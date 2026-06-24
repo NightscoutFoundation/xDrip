@@ -2649,7 +2649,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                             if (AllPrefsFragment.this.prefs.getBoolean("plus_follow_master",false))
                             {
                                 AllPrefsFragment.this.prefs.edit().putBoolean("plus_follow_master", false).apply();
-                                JoH.static_toast(preference.getContext(),"Turning off xDrip+ Sync Master for Followers!",Toast.LENGTH_LONG);
+                                JoH.static_toast(preference.getContext(),"Turning off xDrip Sync Master for Followers!",Toast.LENGTH_LONG);
                             }
                             GcmActivity.requestBGsync();
                         }

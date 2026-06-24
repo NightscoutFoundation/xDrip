@@ -390,7 +390,7 @@ public class StatsActivity extends ActivityWithMenu {
                     View rootView = getWindow().getDecorView().findViewWithTag(mViewPager.getCurrentItem()); // search by tag :(
                     String file_name = "xDrip-Screenshot-" + JoH.dateTimeText(JoH.tsl()).replace(" ", "-").replace(":", "-").replace(".", "-") + ".png";
                     final String dirPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/Screenshots";
-                    JoH.bitmapToFile(JoH.screenShot(rootView,"xDrip+ Statistics for "+stateString+"   @ "+JoH.dateText(JoH.tsl())), dirPath, file_name);
+                    JoH.bitmapToFile(JoH.screenShot(rootView,"xDrip Statistics for "+stateString+"   @ "+JoH.dateText(JoH.tsl())), dirPath, file_name);
                     JoH.shareImage(context, new File(dirPath + "/" + file_name));
                 }
             }, 250);
