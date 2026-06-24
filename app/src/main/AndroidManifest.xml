@@ -478,7 +478,7 @@
         <activity
             android:name=".NFCFilterX"
             android:configChanges="orientation|screenSize"
-            android:label="xDrip+ NFC"
+            android:label="xDrip NFC"
             android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.nfc.action.TECH_DISCOVERED" />
@@ -715,7 +715,7 @@
             android:name=".utilitymodels.XDripDreamService"
             android:exported="true"
             android:icon="@drawable/ic_launcher"
-            android:label="xDrip+"
+            android:label="xDrip"
             android:permission="android.permission.BIND_DREAM_SERVICE">
             <intent-filter>
                 <action android:name="android.service.dreams.DreamService" />
@@ -800,7 +800,7 @@
         <activity android:name=".HelpActivity" />
         <activity
             android:name=".Agreement"
-            android:label="Nightscout xDrip+" />
+            android:label="Nightscout xDrip" />
         <activity
             android:name=".WearVoiceActivity"
             android:label="Simulation handheld">
