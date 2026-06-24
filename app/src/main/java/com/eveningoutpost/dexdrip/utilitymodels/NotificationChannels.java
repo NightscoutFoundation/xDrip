@@ -196,11 +196,13 @@ public class NotificationChannels {
 
         // get a nice string to identify the hash
         final String mhash = my_text_hash(template);
+        final String channelId = temp.getChannelId();
+        final String baseName = getBaseDisplayName(channelId);
 
         // create another notification channel using the hash because id is immutable
         final NotificationChannel channel = new NotificationChannel(
                 template.getId() + mhash,
-                getString(temp.getChannelId()) + mhash,
+                baseName + mhash,
                 NotificationManager.IMPORTANCE_DEFAULT);
 
         // mirror the settings from the previous channel
@@ -216,7 +218,6 @@ public class NotificationChannels {
 
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 
-        channel.setGroup(null);
         // create this channel if it doesn't exist or update text
         getNotifManager().createNotificationChannel(channel);
         return mNotification != null ? channel : null; // Note we return null to fallback old behavior if we can't get reflected access
@@ -251,11 +252,13 @@ public class NotificationChannels {
 
         // get a nice string to identify the hash
         final String mhash = my_text_hash(template);
+        final String channelId = temp.getChannelId();
+        final String baseName = getBaseDisplayName(channelId);
 
         // create another notification channel using the hash because id is immutable
         final NotificationChannel channel = new NotificationChannel(
                 template.getId() + mhash,
-                getString(temp.getChannelId()) + mhash,
+                baseName + mhash,
                 NotificationManager.IMPORTANCE_DEFAULT);
 
         // mirror the settings from the previous channel
@@ -267,10 +270,16 @@ public class NotificationChannels {
             template.enableLights(true); // weird how this doesn't work like vibration pattern
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 
-        channel.setGroup(null);
         // create this channel if it doesn't exist or update text
         getNotifManager().createNotificationChannel(channel);
         return  channel;
+    }
+
+    private static String getBaseDisplayName(String channelId) {
+        if ("bgAlertChannel".equals(channelId)) {
+            return "Glucose Level Alert";
+        }
+        return getString(channelId);
     }
 
     static Notification getNotificationFromInsideBuilder(final NotificationCompat.Builder builder) {

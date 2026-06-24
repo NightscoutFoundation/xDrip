@@ -73,7 +73,6 @@ public class IdempotentMigrations {
         FirstPageFragment.defineDefaults(); // Define the statistics page visibility defaults.
         prefSettingRangeVerification();
         inheritPrefSettingsAfterUpdate();
-        removeAllNotificationChannelGroups(mContext);
 
     }
 
@@ -225,21 +224,6 @@ public class IdempotentMigrations {
             Pref.setBoolean("has_been_explicitly_set_persistent_high_alert_override_silent", true); // Set this setting so that we never inherit again.
         }
         //
-    }
-
-    private static void removeAllNotificationChannelGroups(Context context) {
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (nm != null) {
-            // Get all currently registered groups
-            List<NotificationChannelGroup> groups = nm.getNotificationChannelGroups();
-
-            // Delete each group found
-            if (groups != null && !groups.isEmpty()) {
-                for (NotificationChannelGroup group : groups) {
-                    nm.deleteNotificationChannelGroup(group.getId());
-                }
-            }
-        }
     }
 
 }
