@@ -4,7 +4,10 @@ package com.eveningoutpost.dexdrip.utilitymodels;
  * Various constants
  */
 public class Constants {
-    public static final double MMOLL_TO_MGDL = 18.0182;
+    // Molar mass of glucose (C6H12O6) = 180.1559 g/mol
+    // Source: NIST Chemistry WebBook, SRD 69 (https://webbook.nist.gov/cgi/cbook.cgi?ID=C50997)
+    // Conversion factor: 1 mmol/L = 18.01559 mg/dL
+    public static final double MMOLL_TO_MGDL = 18.01559; //
     public static final double MGDL_TO_MMOLL = 1 / MMOLL_TO_MGDL;
 
 
