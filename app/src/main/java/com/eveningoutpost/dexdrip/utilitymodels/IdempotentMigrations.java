@@ -4,8 +4,6 @@ import static com.eveningoutpost.dexdrip.services.DexCollectionService.MAX_BT_WD
 import static com.eveningoutpost.dexdrip.utils.Preferences.MAX_GLUCOSE_INPUT;
 import static com.eveningoutpost.dexdrip.utils.Preferences.MIN_GLUCOSE_INPUT;
 
-import android.app.NotificationChannelGroup;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -31,7 +29,6 @@ import com.eveningoutpost.dexdrip.utils.Preferences;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import lombok.val;
 
