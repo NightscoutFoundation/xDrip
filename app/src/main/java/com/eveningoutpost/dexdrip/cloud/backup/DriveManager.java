@@ -62,7 +62,7 @@ public class DriveManager {
                             new Drive.Builder(
                                     AndroidHttp.newCompatibleTransport(),
                                     new GsonFactory(), credential)
-                                    .setApplicationName("Nightscout xDrip+")
+                                    .setApplicationName("Nightscout xDrip")
                                     .build();
                     instance = new DriveManager(googleDriveService);
                 }

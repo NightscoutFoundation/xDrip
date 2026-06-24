@@ -91,7 +91,7 @@ public abstract class FloatingLocaleActivityWithScreenshot extends ActivityWithM
             // TODO probably should centralize this code
             String file_name = "xDrip-Status-Screenshot-" + JoH.dateTimeText(JoH.tsl()).replace(" ", "-").replace(":", "-").replace(".", "-") + ".png";
             final String dirPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath() + "/Screenshots";
-            JoH.bitmapToFile(JoH.screenShot(rootView, "xDrip+ Status @ " + JoH.dateText(JoH.tsl())), dirPath, file_name);
+            JoH.bitmapToFile(JoH.screenShot(rootView, "xDrip Status @ " + JoH.dateText(JoH.tsl())), dirPath, file_name);
             JoH.shareImage(getApplicationContext(), new File(dirPath + "/" + file_name));
             finish();
         }));
