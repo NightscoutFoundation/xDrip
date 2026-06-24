@@ -407,7 +407,7 @@
     <string name="settings_on_external_storage">Nastavení na externí úložiště</string>
     <string name="get_notified_of_new_apk_releases">Dostávat upozornění na nové verze</string>
     <string name="choose_stable_beta_or_alpha_releases">Vybrat stabilní, beta nebo alfa verzi</string>
-    <string name="web_feedback_form_for_sending_messages">Webový formulář zpětná vazba pro posílání zpráv a stanovení sazeb xDrip+ vývojářům</string>
+    <string name="web_feedback_form_for_sending_messages">Webový formulář pro zpětnou vazbu a hodnocení aplikace xDrip+ zasílaný vývojářům</string>
     <string name="be_master_for_followers">Být Master pro následovníky</string>
     <string name="this_device_will_send_data_to_followers">Toto zařízení bude odesílat data následovníkům</string>
     <string name="send_parakeet_map_location_to_followers">Odeslat polohu Parakeetu následovníkům</string>
