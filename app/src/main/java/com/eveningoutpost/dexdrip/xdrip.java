@@ -105,7 +105,6 @@ public class xdrip extends Application {
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
 
-        NotificationChannels.createOngoingChannel();
         IntentFilter externalFilter = new IntentFilter("com.eveningoutpost.dexdrip.ExternalStatusline");
         registerReceiver(new com.eveningoutpost.dexdrip.wearintegration.ExternalStatusBroadcastReceiver(), externalFilter);
         IntentFilter bgFilter = new IntentFilter();
