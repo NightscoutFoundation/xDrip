@@ -2,8 +2,6 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 import android.app.Notification;
 
-import com.eveningoutpost.dexdrip.models.UserError;
-
 /*
  * Created by jwoglom on 5/17/2018
  * <p>

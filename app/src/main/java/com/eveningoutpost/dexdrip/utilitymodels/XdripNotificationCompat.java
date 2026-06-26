@@ -3,8 +3,6 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import android.app.Notification;
 import androidx.core.app.NotificationCompat;
 
-import com.eveningoutpost.dexdrip.models.UserError;
-
 /**
  * Created by jamorham on 18/10/2017.
  */

@@ -42,6 +42,19 @@ public class ExternalStatusService extends android.app.Service {
         startForeground(124, builder.build());
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            final String action = intent.getAction();
+            if (ACTION_NEW_EXTERNAL_STATUSLINE.equals(action)) {
+                final String statusLine = intent.getStringExtra(EXTRA_STATUSLINE);
+                update(JoH.tsl(), statusLine, true);
+            }
+        }
+        stopSelf();
+        return START_NOT_STICKY;
+    }
+
     public ExternalStatusService() {
     }
 

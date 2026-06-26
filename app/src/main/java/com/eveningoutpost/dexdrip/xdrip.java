@@ -114,7 +114,6 @@ public class xdrip extends Application {
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT");
         registerReceiver(new NSEmulatorReceiver(), bgFilter);
 
-
         JobManager.create(this).addJobCreator(new XDripJobCreator());
         DailyJob.schedule();
         //SyncService.startSyncServiceSoon();
