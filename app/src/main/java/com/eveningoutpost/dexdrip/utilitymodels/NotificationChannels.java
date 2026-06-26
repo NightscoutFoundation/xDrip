@@ -167,6 +167,7 @@ public class NotificationChannels {
 
         final Notification temp = wip.build();
         if (temp.getChannelId() == null) return null;
+        final int importance = temp.getChannelId().contains("ongoing") ? NotificationManager.IMPORTANCE_LOW : NotificationManager.IMPORTANCE_HIGH;
 
         // create generic audio attributes
         final AudioAttributes generic_audio = new AudioAttributes.Builder()
@@ -203,7 +204,7 @@ public class NotificationChannels {
         final NotificationChannel channel = new NotificationChannel(
                 template.getId() + mhash,
                 baseName + mhash,
-                NotificationManager.IMPORTANCE_DEFAULT);
+                importance); // Change from IMPORTANCE_DEFAULT
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
@@ -228,6 +229,7 @@ public class NotificationChannels {
 
         final Notification temp = wip.build();
         if (temp.getChannelId() == null) return null;
+        final int importance = temp.getChannelId().contains("ongoing") ? NotificationManager.IMPORTANCE_LOW : NotificationManager.IMPORTANCE_HIGH;
 
         // create generic audio attributes
         final AudioAttributes generic_audio = new AudioAttributes.Builder()
@@ -239,7 +241,7 @@ public class NotificationChannels {
         NotificationChannel template = new NotificationChannel(
                 temp.getChannelId(),
                 getString(temp.getChannelId()),
-                NotificationManager.IMPORTANCE_DEFAULT);
+                importance); // Change from IMPORTANCE_DEFAULT
 
 
         // mirror the notification parameters in the channel
@@ -259,7 +261,7 @@ public class NotificationChannels {
         final NotificationChannel channel = new NotificationChannel(
                 template.getId() + mhash,
                 baseName + mhash,
-                NotificationManager.IMPORTANCE_DEFAULT);
+                importance); // Change from IMPORTANCE_DEFAULT
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
@@ -295,6 +297,5 @@ public class NotificationChannels {
             return null;
         }
     }
-
 
 }

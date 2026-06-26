@@ -1258,15 +1258,9 @@ public class JoH {
 
     public static boolean setMediaDataSource(final Context context, final MediaPlayer mp, final Uri uri) {
         try {
-            if (uri.toString().startsWith("/")) {
-                UserError.Log.d(TAG, "Setting old style uri: " + uri);
-                mp.setDataSource(context, uri);
-            } else {
-                UserError.Log.d(TAG, "Setting new style uri: " + uri);
-                val pfd = context.getContentResolver().openFileDescriptor(uri, "r");
-                mp.setDataSource(pfd.getFileDescriptor());
-                pfd.close();
-            }
+            if (uri == null || mp == null) return false;
+            // Use the context-aware method for all URIs to satisfy Android 11+ requirements
+            mp.setDataSource(context, uri);
             return true;
         } catch (IOException | NullPointerException | IllegalArgumentException | SecurityException ex) {
             UserError.Log.e(TAG, "setMediaDataSource from uri failed: uri = " + uri.toString(), ex);

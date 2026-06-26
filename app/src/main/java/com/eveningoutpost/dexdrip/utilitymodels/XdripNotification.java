@@ -21,7 +21,6 @@ public class XdripNotification {
         } catch (Exception e) {
             builder.setChannelId(NotificationChannels.ONGOING_CHANNEL);
         }
-        UserError.Log.d(TAG, "Channel: " + builder.build().getChannelId() + " | Group: " + builder.build().getGroup());
         return builder.build();
     }
 }
