@@ -143,6 +143,7 @@ public class xdrip extends Application {
         PluggableCalibration.invalidateCache();
         Poller.init();
         BgGraphBuilder.setLogging();
+        NotificationChannels.setupTestChannel();
     }
 
 

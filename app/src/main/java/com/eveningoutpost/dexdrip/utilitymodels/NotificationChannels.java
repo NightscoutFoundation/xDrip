@@ -48,6 +48,7 @@ public class NotificationChannels {
     public static final String BG_PERSISTENT_HIGH_CHANNEL = "bgPersistentHighChannel";
     public static final String CALIBRATION_CHANNEL = "calibrationChannel";
     public static final String ONGOING_CHANNEL = "ongoingChannel";
+    public static final String ICON_TEST_CHANNEL = "xdrip_icon_test";
 
     // get a localized string for each channel / group name
     public static String getString(String id) {
@@ -167,7 +168,7 @@ public class NotificationChannels {
 
         final Notification temp = wip.build();
         if (temp.getChannelId() == null) return null;
-        final int importance = temp.getChannelId().contains("ongoing") ? NotificationManager.IMPORTANCE_LOW : NotificationManager.IMPORTANCE_HIGH;
+        final int importance = temp.getChannelId().contains("ongoing") ? NotificationManager.IMPORTANCE_DEFAULT : NotificationManager.IMPORTANCE_HIGH;
 
         // create generic audio attributes
         final AudioAttributes generic_audio = new AudioAttributes.Builder()
@@ -229,7 +230,7 @@ public class NotificationChannels {
 
         final Notification temp = wip.build();
         if (temp.getChannelId() == null) return null;
-        final int importance = temp.getChannelId().contains("ongoing") ? NotificationManager.IMPORTANCE_LOW : NotificationManager.IMPORTANCE_HIGH;
+        final int importance = temp.getChannelId().contains("ongoing") ? NotificationManager.IMPORTANCE_DEFAULT : NotificationManager.IMPORTANCE_HIGH;
 
         // create generic audio attributes
         final AudioAttributes generic_audio = new AudioAttributes.Builder()
@@ -296,6 +297,16 @@ public class NotificationChannels {
             }
             return null;
         }
+    }
+
+    public static void setupTestChannel() {
+        NotificationChannel channel = new NotificationChannel(
+                ICON_TEST_CHANNEL,
+                "xDrip Icon Test",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        channel.enableVibration(true);
+        channel.setSound(null, null); // Keep it silent
+        getNotifManager().createNotificationChannel(channel);
     }
 
 }
