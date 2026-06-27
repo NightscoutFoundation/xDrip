@@ -829,6 +829,7 @@
     <string name="use_flair_colors">Egendefinert tittel/nav-linje</string>
     <string name="upper_title_bar_flair">Øvre tittellinje</string>
     <string name="lower_button_bar_falir">Nedre navigeringslinje</string>
+    <string name="title_language">Språk</string>
     <string name="force_english_text">Tving engelsk språk</string>
     <string name="using_local_language">Bruker for øyeblikket din enhets lokale språk</string>
     <string name="forcing_alternate_language">Nå brukes et alternativt språk i xDrip+</string>

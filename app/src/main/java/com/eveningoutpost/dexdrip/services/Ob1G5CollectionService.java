@@ -188,7 +188,7 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile String transmitterID;
     private static volatile String transmitterMAC;
     private static volatile String historicalTransmitterMAC;
-    private static String transmitterIDmatchingMAC;
+    private static volatile String transmitterIDmatchingMAC;
 
     private static volatile String lastScanError = null;
     private static volatile int lastScanException = -1;
@@ -215,9 +215,9 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile Subscription scanSubscription;
     private static volatile Subscription connectionSubscription;
     private static volatile Subscription stateSubscription;
-    private Subscription discoverSubscription;
-    private RxBleDevice bleDevice;
-    private RxBleConnection connection;
+    private volatile Subscription discoverSubscription;
+    private volatile RxBleDevice bleDevice;
+    private volatile RxBleConnection connection;
     public volatile IPluginDA plugin;
 
     private PowerManager.WakeLock connection_linger;
@@ -662,7 +662,6 @@ public class Ob1G5CollectionService extends G5BaseService {
                 }
 
                 unBondAllG7notCurrentAsNeeded();
-
                 msg("Connect request");
                 if (state == CONNECT_NOW) {
                     if (connection_linger != null) JoH.releaseWakeLock(connection_linger);
@@ -1064,8 +1063,13 @@ public class Ob1G5CollectionService extends G5BaseService {
         }
     }
 
-    public static void clearPersistStore() {
+    public static void clearKeks() {
         PersistentStore.cleanupOld(KEKS_ONE);
+        Loader.getLocalInstance(Registry.get(KEKS), "9999");
+    }
+
+    public static void clearPersistStore() {
+        clearKeks();
         PersistentStore.cleanupOld(OB1G5_MACSTORE);
     }
 
@@ -1074,6 +1078,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         expireFailures(true);
         transmitterID = null;
         transmitterMAC = null;
+        historicalTransmitterMAC = null;
+        transmitterIDmatchingMAC = null;
     }
 
     private void scheduleWakeUp(long future, final String info) {
@@ -1819,6 +1825,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 try {
                     if (parcel_device.getAddress().equals(transmitterMAC)) {
                         msg(bondState(bond_state_extra).replace(" ", ""));
+
                         if (parcel_device.getBondState() == BluetoothDevice.BOND_BONDED) {
                             if (shortTxId()) {
                                 pairKeeper.add(getTransmitterID(), parcel_device.getAddress());
@@ -1846,6 +1853,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                                 JoH.playResourceAudio(R.raw.bt_meter_connect);
                                 UserError.Log.uel(TAG, "Prompting user to notice pairing request with sound - On Android 8+ you have to manually pair when requested");
                             }
+                        }  else if (parcel_device.getBondState() == BluetoothDevice.BOND_NONE) {
+                                UserError.Log.uel(TAG, "Unbonded mac: " + transmitterMAC);
+                                clearKeks();
                         }
                     }
                 } catch (Exception e) {
@@ -1988,6 +1998,15 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
         if (!is_started && was_started) {
+            // A SessionStartTxMessage queued at the moment a stopped-state calibration
+            // is processed means xDrip has already moved on to a new sensor session
+            // locally - whether the Start was queued behind a still-pending Stop, or in
+            // the gap between the connection that delivered the Stop and the one now
+            // reading the transmitter's resulting Stopped state. Either way, the stop
+            // ack we are now processing applies to the prior session, so do not clear
+            // the newly-created Sensor row or emit duplicate stop notifications or
+            // treatments.
+            final boolean staleStopAck = pendingStart();
             if (Sensor.isActive()) {
                 if (Pref.getBooleanDefaultFalse("ob1_g5_restart_sensor")) {
                     if (state.ended()) {
@@ -2000,15 +2019,21 @@ public class Ob1G5CollectionService extends G5BaseService {
                     final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_RESTARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
                     JoH.showNotification("Auto Start", "Sensor Requesting Restart", pi, G5_SENSOR_RESTARTED, true, true, false);
                     UserError.Log.uel(TAG, "Sensor Requesting Restart");
+                } else if (staleStopAck) {
+                    UserError.Log.uel(TAG, "Ignoring stale stop ack: a Start is already queued for the next sensor session");
                 } else {
                     UserError.Log.uel(TAG, "Marking sensor session as stopped");
                     Sensor.stopSensor();
                 }
             }
-            final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
-            JoH.showNotification(state.getText(), "Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
-            UserError.Log.ueh(TAG, "Native Sensor is now Stopped: " + state.getExtendedText());
-            Treatments.sensorStop(null, "Stopped by transmitter: " + state.getExtendedText());
+            if (!staleStopAck) {
+                final PendingIntent pi = PendingIntent.getActivity(xdrip.getAppContext(), G5_SENSOR_STARTED, JoH.getStartActivityIntent(Home.class), PendingIntent.FLAG_UPDATE_CURRENT);
+                JoH.showNotification(state.getText(), "Sensor Stopped", pi, G5_SENSOR_STARTED, true, true, false);
+                UserError.Log.ueh(TAG, "Native Sensor is now Stopped: " + state.getExtendedText());
+                Treatments.sensorStop(null, "Stopped by transmitter: " + state.getExtendedText());
+            } else {
+                UserError.Log.ueh(TAG, "Suppressing duplicate stop notification: transmitter stop ack belongs to a session already replaced in xDrip");
+            }
         } else if (is_started && !was_started) {
             JoH.cancelNotification(G5_SENSOR_STARTED);
             UserError.Log.ueh(TAG, "Native Sensor is now Started: " + state.getExtendedText());

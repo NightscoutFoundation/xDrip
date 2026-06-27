@@ -824,6 +824,7 @@
     <string name="use_flair_colors">Kohanda pealkirja/navigeerimisriba</string>
     <string name="upper_title_bar_flair">Ülemine tiitliriba</string>
     <string name="lower_button_bar_falir">Alumine navigeerimisriba</string>
+    <string name="title_language">Keel</string>
     <string name="force_english_text">Ainult inglise keeles</string>
     <string name="using_local_language">Kasutad praegu seadme määratud keelt</string>
     <string name="forcing_alternate_language">Praegu sunnitakse kasutama alternatiivset keelt</string>

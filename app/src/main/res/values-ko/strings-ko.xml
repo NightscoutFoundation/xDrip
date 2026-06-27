@@ -829,6 +829,7 @@
     <string name="use_flair_colors">제목/탐색 바 사용자 지정</string>
     <string name="upper_title_bar_flair">상단 제목 바</string>
     <string name="lower_button_bar_falir">하단 탐색 바</string>
+    <string name="title_language">언어</string>
     <string name="force_english_text">영어 강제 사용</string>
     <string name="using_local_language">현재 기기의 로컬 언어 사용 중</string>
     <string name="forcing_alternate_language">현재 대체 언어 강제 사용 중</string>

@@ -829,6 +829,7 @@
     <string name="use_flair_colors">使用Flair 颜色</string>
     <string name="upper_title_bar_flair">上部标题栏Flair</string>
     <string name="lower_button_bar_falir">下部标题栏Flair</string>
+    <string name="title_language">语言</string>
     <string name="force_english_text">强制使用英语文本</string>
     <string name="using_local_language">目前正在使用你手机的语言</string>
     <string name="forcing_alternate_language">目前强制使用 替代(alternate) 语言</string>

@@ -125,7 +125,7 @@ public class Ob1G5StateMachine {
     private static final LinkedBlockingDeque<Ob1Work> commandQueue = new LinkedBlockingDeque<>();
 
     private static boolean speakSlowly = false; // slow down bluetooth comms for android wear etc
-    private static int nextBackFillCheckSize = BACKFILL_CHECK_SMALL;
+    private volatile static int nextBackFillCheckSize = BACKFILL_CHECK_SMALL;
 
     private static final boolean d = false;
 
@@ -136,9 +136,9 @@ public class Ob1G5StateMachine {
     private static volatile AuthRequestTxMessage lastAuthPacket;
     private static volatile boolean backup_loaded = false;
     private static final int OLDEST_RAW = 300 * 24 * 60 * 60; // 300 days
-    private static long relAutoSessionStartTime = HOUR_IN_MS * 3;
+    private static volatile long relAutoSessionStartTime = HOUR_IN_MS * 3;
 
-    public static long maxBackfillPeriod_MS = 0;
+    public static volatile long maxBackfillPeriod_MS = 0;
 
     public static long maxBackfillPeriod_MS() {
         maxBackfillPeriod_MS = MAX_BACKFILL_PERIOD_MS;
@@ -163,7 +163,7 @@ public class Ob1G5StateMachine {
             speakSlowly = true;
             UserError.Log.d(TAG, "Setting speak slowly to true"); // WARN should be reactive or on named devices
         }
-        if (Build.VERSION.SDK_INT >= 23 && usingG6()) {
+        if (usingG6()) {
             connection.setupIndication(Authentication)
                     // .timeout(10, TimeUnit.SECONDS)
                     .timeout(15, TimeUnit.SECONDS) // WARN
@@ -244,6 +244,7 @@ public class Ob1G5StateMachine {
                 }
             } else if (p.length == 1) {
                 if (cmd != null) {
+                    parent.saveTransmitterMac();
                     parent.changeState(GET_DATA);
                 }
             } else if (p.length == 3) {
@@ -293,7 +294,7 @@ public class Ob1G5StateMachine {
                 .timeout(15, TimeUnit.SECONDS) // WARN
                 .doOnNext(notificationObservable -> {
                     UserError.Log.d(TAG, "Extra data notifications enabled");
-                    connection.setupIndication(Authentication)
+                   val sresult = connection.setupIndication(Authentication)
                             .timeout(15, TimeUnit.SECONDS) // WARN
                             .doOnNext(notificationObservable2 -> doNext(parent, connection))
                             .flatMap(notificationObservable2 -> notificationObservable2)
@@ -347,7 +348,7 @@ public class Ob1G5StateMachine {
         lastAuthPacket = authRequest;
         UserError.Log.i(TAG, "AuthRequestTX: " + bytesToHex(authRequest.byteSequence));
 
-        connection.writeCharacteristic(Authentication, nn(authRequest.byteSequence))
+        val sresult = connection.writeCharacteristic(Authentication, nn(authRequest.byteSequence))
                 .subscribe(
                         characteristicValue -> {
                             // Characteristic value confirmed.
@@ -423,13 +424,13 @@ public class Ob1G5StateMachine {
                     if (d)
                         UserError.Log.d(TAG, "Transmitter trying auth challenge");
 
-                    connection.writeCharacteristic(Authentication, nn(new BaseAuthChallengeTxMessage(challengeHash).byteSequence))
+                    val result = connection.writeCharacteristic(Authentication, nn(new BaseAuthChallengeTxMessage(challengeHash).byteSequence))
                             .subscribe(
                                     challenge_value -> {
 
                                         speakSlowly();
                                         if (msSince(lastAuthenticationStream) > 500) {
-                                            connection.readCharacteristic(Authentication)
+                                            val rchar = connection.readCharacteristic(Authentication)
                                                     //.observeOn(Schedulers.io())
                                                     .subscribe(
                                                             status_value -> {
@@ -547,7 +548,7 @@ public class Ob1G5StateMachine {
     @SuppressLint("CheckResult")
     public synchronized static void doKeepAlive(Ob1G5CollectionService parent, RxBleConnection connection, Runnable runnable) {
         if (connection == null) return;
-        connection.writeCharacteristic(Authentication, nn(new KeepAliveTxMessage(60).byteSequence))
+        val wchar = connection.writeCharacteristic(Authentication, nn(new KeepAliveTxMessage(60).byteSequence))
                 .timeout(3, TimeUnit.SECONDS)
                 .subscribe(
                         characteristicValue -> {
@@ -569,12 +570,10 @@ public class Ob1G5StateMachine {
 
         if (connection == null) return false;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            UserError.Log.d(TAG, "Requesting high priority");
-            connection.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH, 500, TimeUnit.MILLISECONDS);
-        }
+        UserError.Log.d(TAG, "Requesting high priority");
+        connection.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_HIGH, 500, TimeUnit.MILLISECONDS);
         UserError.Log.e(TAG, "Sending keepalive..");
-        connection.writeCharacteristic(Authentication, nn(new KeepAliveTxMessage(60).byteSequence))
+        val wchar = connection.writeCharacteristic(Authentication, nn(new KeepAliveTxMessage(60).byteSequence))
                 .subscribe(
                         characteristicValue -> {
                             UserError.Log.d(TAG, "Wrote keep-alive request successfully");
@@ -582,7 +581,7 @@ public class Ob1G5StateMachine {
                             parent.unBond();
                             parent.instantCreateBondIfAllowed();
                             speakSlowly();
-                            connection.writeCharacteristic(Authentication, nn(new BondRequestTxMessage().byteSequence))
+                            val wchar2 = connection.writeCharacteristic(Authentication, nn(new BondRequestTxMessage().byteSequence))
                                     .subscribe(
                                             bondRequestValue -> {
                                                 UserError.Log.d(TAG, "Wrote bond request value: " + bytesToHex(bondRequestValue));
@@ -643,7 +642,7 @@ public class Ob1G5StateMachine {
     @SuppressLint("CheckResult")
     public static boolean doReset(Ob1G5CollectionService parent, RxBleConnection connection) {
         if (connection == null) return false;
-        connection.writeCharacteristic(Control, nn(new ResetTxMessage().byteSequence))
+        val wchar = connection.writeCharacteristic(Control, nn(new ResetTxMessage().byteSequence))
                 .subscribe(characteristicValue -> {
                     if (d)
                         UserError.Log.d(TAG, "Wrote ResetTxMessage request!!");
@@ -665,7 +664,7 @@ public class Ob1G5StateMachine {
     public static void checkVersionAndBattery(final Ob1G5CollectionService parent, final RxBleConnection connection) {
         final int nextVersionRequest = requiredNextFirmwareDetailsType();
         if ((getVersionDetails) && (nextVersionRequest != -1)) {
-            connection.writeCharacteristic(Control, nn(new VersionRequestTxMessage(nextVersionRequest).byteSequence))
+            val wchar = connection.writeCharacteristic(Control, nn(new VersionRequestTxMessage(nextVersionRequest).byteSequence))
                     .subscribe(versionValue -> {
                         UserError.Log.e(TAG, "Wrote version request: " + nextVersionRequest);
                     }, throwable -> {
