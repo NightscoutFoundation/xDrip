@@ -48,7 +48,7 @@ public class NotificationChannels {
     public static final String BG_PERSISTENT_HIGH_CHANNEL = "bgPersistentHighChannel";
     public static final String CALIBRATION_CHANNEL = "calibrationChannel";
     public static final String ONGOING_CHANNEL = "ongoingChannel";
-    public static final String ICON_TEST_CHANNEL = "xdrip_icon_test";
+    public static final String ICON_TEST_CHANNEL = "number_icon_test";
 
     // get a localized string for each channel / group name
     public static String getString(String id) {
