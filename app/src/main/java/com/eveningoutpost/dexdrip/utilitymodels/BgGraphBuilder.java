@@ -159,6 +159,10 @@ public class BgGraphBuilder {
     public static double capturePercentage = -1;
     @Getter
     private int predictivehours = 0;
+    // Set by basalChartData(): the top of the dedicated basal mini-graph's Y range (U/hr) and whether
+    // there is anything to plot — read by Home to size/show the separate basal chart.
+    public double basalChartMaxRate = 1.0;
+    public boolean basalChartHasData = false;
     private boolean prediction_enabled = false;
     private boolean simulation_enabled = false;
     private static double avg1value = 0;
@@ -439,76 +443,292 @@ public class BgGraphBuilder {
     }
 
 
-    private List<Line> basalLines() {
-        final List<Line> basalLines = new ArrayList<>();
-        if (prefs.getBoolean("show_basal_line", false)) {
+    // Safely read an hourly basal rate (U/hr) from a 24-entry profile.
+    private static double safeBasalRate(final List<Float> profile, final int hour) {
+        if (profile == null || hour < 0 || hour >= profile.size()) return 0;
+        final Float f = profile.get(hour);
+        return f == null ? 0 : f;
+    }
 
-            final float yscale = doMgdl ? (float) Constants.MMOLL_TO_MGDL : 1f;
+    // Load the active basal profile (24 hourly U/hr blocks) used for the future/scheduled projection.
+    private List<Float> loadBasalProfile() {
+        try {
+            return com.eveningoutpost.dexdrip.profileeditor.BasalProfile.load(
+                    com.eveningoutpost.dexdrip.profileeditor.BasalProfile.getActiveRateName());
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-            final List<APStatus> aplist = APStatus.latestForGraph(2000, loaded_start, loaded_end);
+    // Trim a rate to a short label: whole numbers drop the decimal (1.0 -> "1"); otherwise up to two
+    // decimals, trimmed (0.85 -> "0.85", 0.50 -> "0.5", 1.20 -> "1.2").
+    private static String fmtRate(final double v) {
+        if (v == Math.floor(v)) return String.valueOf((int) v);
+        final double r = Math.round(v * 100.0) / 100.0;
+        return (r == Math.floor(r)) ? String.valueOf((int) r) : String.valueOf(r);
+    }
 
-            if (!aplist.isEmpty()) {
+    // A "nice" Y-axis step for the basal chart so there are roughly 4-6 labelled gridlines up to ref.
+    private static double basalAxisStep(final double ref) {
+        if (ref <= 1.0) return 0.25;
+        if (ref <= 2.0) return 0.5;
+        if (ref <= 5.0) return 1.0;
+        return Math.ceil(ref / 5.0);
+    }
 
-                // divider line
+    /**
+     * Extend the chart's future window so the upcoming scheduled basal (and any future IOB/COB) is
+     * actually visible — out to next midnight, the end of the basal schedule day. The basal itself is
+     * drawn on its own chart (see basalChartData); this only nudges the shared time window so the two
+     * charts scroll together far enough to show the projection.
+     */
+    private void extendWindowForBasalProjection() {
+        if (!prefs.getBoolean("show_basal_line", false)) return;
+        final List<Float> basalProfile = loadBasalProfile();
+        if (basalProfile == null || basalProfile.size() != 24) return;
+        // Nudge the future window just a couple of hours so the next scheduled basal change (and any
+        // near-future IOB/COB) is visible by default. Deliberately small: the chart anchors its default
+        // view to the right edge (now + predictivehours), so a large value pushes "now" off the left
+        // side — very noticeable in portrait, where DEFAULT_CHART_HOURS is only 2.5h. The basal chart's
+        // own data still projects to end-of-day, so the full schedule is there when you scroll/zoom.
+        predictivehours = Math.max(predictivehours, 2);
+    }
 
-                final Line dividerLine = new Line();
-                dividerLine.setTag("tbr"); // not quite true
-                dividerLine.setHasPoints(false);
-                dividerLine.setHasLines(true);
-                dividerLine.setStrokeWidth(1);
-                dividerLine.setColor(getCol(X.color_basal_tbr));
-                dividerLine.setPathEffect(new DashPathEffect(new float[]{10.0f, 10.0f}, 0));
-                dividerLine.setReverseYAxis(true);
-                dividerLine.setHasPoints(false);
+    /**
+     * Data for the dedicated basal mini-graph shown directly below the main BG chart. Basal is drawn
+     * in real U/hr on its own (non-reversed) Y axis — solid for delivered basal held forward to "now",
+     * dashed for the upcoming scheduled profile — using the same X (time) coordinates as the main
+     * chart so the two line up. Sources without an absolute rate fall back to plotting temp-basal %.
+     *
+     * Sets {@link #basalChartHasData} and {@link #basalChartMaxRate} so Home can size and show/hide
+     * the chart. Drawing basal here (instead of overlaying it on the glucose axis) keeps the main
+     * graph readable — a basal rate is no longer rendered up near a glucose value of 12.
+     */
+    public LineChartData basalChartData() {
+        basalChartHasData = false;
+        basalChartMaxRate = 1.0;
+        final List<Line> lines = new ArrayList<>();
+        if (!prefs.getBoolean("show_basal_line", false)) {
+            return new LineChartData(lines);
+        }
 
-                final float one_hundred_percent = (100 * yscale) / 100f;
-                final List<PointValue> divider_points = new ArrayList<>(2);
-                divider_points.add(new HPointValue((double) loaded_start / FUZZER, one_hundred_percent));
-                dividerLine.setPointRadius(0);
-                divider_points.add(new HPointValue((double) loaded_end / FUZZER, one_hundred_percent));
-                dividerLine.setValues(divider_points);
-                basalLines.add(dividerLine);
+        final List<APStatus> aplist = APStatus.latestForGraph(2000, loaded_start, loaded_end);
+        final List<Float> basalProfile = loadBasalProfile();
+        final boolean haveProfile = basalProfile != null && basalProfile.size() == 24;
+        boolean haveAbsolute = false;
+        for (APStatus a : aplist) { if (a.basal_absolute >= 0) { haveAbsolute = true; break; } }
 
-                final List<PointValue> points = new ArrayList<>(aplist.size());
+        final int basalColor = getCol(X.color_basal_tbr);
+        final boolean absoluteMode = haveAbsolute || haveProfile;
+        final long now = System.currentTimeMillis();
 
-                int last_percent = -1;
-                double last_timestamp = Double.MIN_VALUE;
+        // Reference rate = top of the Y range. Real U/hr in absolute mode (nearest 0.5 above the max);
+        // for the percent fallback, a little above the largest percent seen.
+        double ref;
+        if (absoluteMode) {
+            double maxRate = 0.5;
+            for (APStatus a : aplist) if (a.basal_absolute > maxRate) maxRate = a.basal_absolute;
+            if (haveProfile) for (Float f : basalProfile) if (f != null && f > maxRate) maxRate = f;
+            ref = Math.max(0.5, Math.ceil(maxRate * 2.0) / 2.0);
+        } else {
+            int maxPercent = 100;
+            for (APStatus a : aplist) if (a.basal_percent > maxPercent) maxPercent = a.basal_percent;
+            ref = Math.min(BgReading.BG_READING_MAXIMUM_VALUE, maxPercent);
+        }
 
-                int count = aplist.size();
-                for (APStatus item : aplist) {
-                    val sanitized_percent = Math.min(BgReading.BG_READING_MAXIMUM_VALUE, Math.max(0, item.basal_percent)); // percent value plotted on glucose axis; capped to prevent Y-axis growth
-                    if (--count == 0 || (sanitized_percent != last_percent)) {
-                        float this_ypos = (sanitized_percent * yscale) / 100f;
-                        this_ypos = clampNonGlucoseY(this_ypos + panCompensationOffset);
-                        final double fuzzedT = (double) item.timestamp / FUZZER;
-                        if (fuzzedT != last_timestamp) {
-                            points.add(new HPointValue(fuzzedT, this_ypos));
-                            last_timestamp = fuzzedT;
-                            last_percent = sanitized_percent;
-                        } else {
-                            UserError.Log.d(TAG, "EXCLUDING APSTAT: " + fuzzedT + " " + this_ypos);
-                        }
+        if (absoluteMode) {
+            // SOLID: delivered basal (absolute U/hr), one stepped point per rate change (each carrying
+            // its U/hr value as a label), held forward to "now".
+            final List<PointValue> deliveredPts = new ArrayList<>();
+            double lastRate = -1;
+            double lastPlotted = Double.NaN;
+            int changes = 0;
+            for (APStatus item : aplist) {
+                if (item.basal_absolute < 0) continue;
+                if (item.basal_absolute != lastPlotted) {
+                    final HPointValue p = new HPointValue((double) item.timestamp / FUZZER, (float) item.basal_absolute);
+                    p.setLabel(fmtRate(item.basal_absolute)); // value marker at each change
+                    deliveredPts.add(p);
+                    lastPlotted = item.basal_absolute;
+                    changes++;
+                }
+                lastRate = item.basal_absolute;
+            }
+            if (lastRate >= 0) {
+                final HPointValue end = new HPointValue((double) now / FUZZER, (float) lastRate);
+                end.setLabel(""); // no duplicate label on the held-to-now point
+                deliveredPts.add(end);
+            }
+            if (!deliveredPts.isEmpty()) {
+                final Line delivered = new Line(deliveredPts);
+                delivered.setFilled(true);
+                delivered.setHasGradientToTransparent(true);
+                delivered.setGradientDivider(10f);
+                delivered.setHasPoints(true);
+                delivered.setPointRadius(1);
+                delivered.setStrokeWidth(1);
+                delivered.setHasLines(true);
+                delivered.setSquare(true);
+                delivered.setColor(basalColor);
+                // Only label when it won't be a cluttered mess (the user's "if it fits").
+                delivered.setHasLabels(changes <= 12);
+                lines.add(delivered);
+                basalChartHasData = true;
+            }
+
+            // DASHED: upcoming scheduled basal from the profile, "now" -> next midnight.
+            if (haveProfile) {
+                final List<PointValue> futurePts = new ArrayList<>();
+                final java.util.Calendar cal = java.util.Calendar.getInstance();
+                cal.setTimeInMillis(now);
+                final int nowHour = cal.get(java.util.Calendar.HOUR_OF_DAY);
+                double lastFutureRate = safeBasalRate(basalProfile, nowHour);
+                // Start at "now" (continues the delivered line, so no label here).
+                final HPointValue startP = new HPointValue((double) now / FUZZER, (float) lastFutureRate);
+                startP.setLabel("");
+                futurePts.add(startP);
+                // A stepped point with its U/hr label only where the scheduled rate changes.
+                for (int h = nowHour + 1; h < 24; h++) {
+                    final double rate = safeBasalRate(basalProfile, h);
+                    if (rate == lastFutureRate) continue;
+                    cal.setTimeInMillis(now);
+                    cal.set(java.util.Calendar.HOUR_OF_DAY, h);
+                    cal.set(java.util.Calendar.MINUTE, 0);
+                    cal.set(java.util.Calendar.SECOND, 0);
+                    cal.set(java.util.Calendar.MILLISECOND, 0);
+                    final HPointValue p = new HPointValue((double) cal.getTimeInMillis() / FUZZER, (float) rate);
+                    p.setLabel(fmtRate(rate));
+                    futurePts.add(p);
+                    lastFutureRate = rate;
+                }
+                // hold the last hour's rate out to next midnight (end of the schedule day); no label
+                cal.setTimeInMillis(now);
+                cal.set(java.util.Calendar.HOUR_OF_DAY, 0);
+                cal.set(java.util.Calendar.MINUTE, 0);
+                cal.set(java.util.Calendar.SECOND, 0);
+                cal.set(java.util.Calendar.MILLISECOND, 0);
+                cal.add(java.util.Calendar.DAY_OF_MONTH, 1);
+                final HPointValue endP = new HPointValue((double) cal.getTimeInMillis() / FUZZER, (float) safeBasalRate(basalProfile, 23));
+                endP.setLabel("");
+                futurePts.add(endP);
+
+                final Line future = new Line(futurePts);
+                future.setHasPoints(true);
+                future.setPointRadius(1);
+                future.setHasLabels(true); // label each upcoming scheduled rate change
+                future.setHasLines(true);
+                future.setSquare(true);
+                future.setStrokeWidth(2);
+                future.setPathEffect(new DashPathEffect(new float[]{14.0f, 8.0f}, 0));
+                future.setColor(android.graphics.Color.argb(150,
+                        android.graphics.Color.red(basalColor),
+                        android.graphics.Color.green(basalColor),
+                        android.graphics.Color.blue(basalColor)));
+                lines.add(future);
+                basalChartHasData = true;
+            }
+        } else if (!aplist.isEmpty()) {
+            // Percent fallback for sources without an absolute rate: stepped temp-basal %.
+            final List<PointValue> points = new ArrayList<>(aplist.size());
+            int last_percent = -1;
+            double last_timestamp = Double.MIN_VALUE;
+            int count = aplist.size();
+            for (APStatus item : aplist) {
+                final int pct = Math.min(BgReading.BG_READING_MAXIMUM_VALUE, Math.max(0, item.basal_percent));
+                if (--count == 0 || pct != last_percent) {
+                    final double fuzzedT = (double) item.timestamp / FUZZER;
+                    if (fuzzedT != last_timestamp) {
+                        points.add(new HPointValue(fuzzedT, (float) pct));
+                        last_timestamp = fuzzedT;
+                        last_percent = pct;
                     }
                 }
-
+            }
+            if (!points.isEmpty()) {
                 final Line line = new Line(points);
                 line.setFilled(true);
-                line.setFillFlipped(true);
                 line.setHasGradientToTransparent(true);
+                line.setGradientDivider(10f);
                 line.setHasPoints(false);
                 line.setStrokeWidth(1);
                 line.setHasLines(true);
                 line.setSquare(true);
-                line.setPointRadius(1);
-                line.setReverseYAxis(true);
-                line.setBackgroundUnclipped(true);
-                line.setGradientDivider(10f);
-                line.setColor(getCol(X.color_basal_tbr));
-                basalLines.add(line);
+                line.setColor(basalColor);
+                lines.add(line);
+                basalChartHasData = true;
             }
         }
 
-        return basalLines;
+        // Past/future separation: a translucent grey band over everything to the right of "now" plus a
+        // vertical "now" line. Shade goes first (behind the basal lines), now-line last (on top).
+        if (basalChartHasData) {
+            // The basal chart is non-interactive (Home forces its viewport), so a generous far edge
+            // here is harmless — it just needs to cover the mirrored window.
+            final double basalFarX = (double) (JoH.tsl() + 25L * Constants.HOUR_IN_MS) / FUZZER;
+            lines.add(0, futureShadeLine(ref, basalFarX));
+            lines.add(nowVerticalLine(ref));
+        }
+
+        basalChartMaxRate = ref;
+        final LineChartData data = new LineChartData(lines);
+        data.setAxisYLeft(basalYAxis(ref, absoluteMode));
+        data.setAxisXBottom(null); // the main chart above carries the shared time axis
+        return data;
+    }
+
+    // Left Y axis for the basal mini-graph: labelled gridlines at a "nice" step up to ref, in U/hr
+    // (absolute) or % (fallback), so the actual rates are easy to read off.
+    private Axis basalYAxis(final double ref, final boolean absoluteMode) {
+        final Axis axis = new Axis();
+        axis.setAutoGenerated(false);
+        final List<AxisValue> values = new ArrayList<>();
+        if (absoluteMode) {
+            final double step = basalAxisStep(ref);
+            for (double v = 0; v <= ref + 1e-9; v += step) {
+                values.add(new AxisValue(v).setLabel(fmtRate(v)));
+            }
+        } else {
+            final int top = (int) Math.max(100, ref);
+            for (int p = 0; p <= top; p += 50) values.add(new AxisValue(p).setLabel(p + "%"));
+        }
+        axis.setValues(values);
+        axis.setMaxLabelChars(5); // match the glucose axis so the plot areas line up horizontally
+        axis.setInside(true);
+        axis.setTextSize(axisTextSize);
+        axis.setHasLines(true); // gridlines at every step for readability
+        return axis;
+    }
+
+    // Translucent grey band covering the future (now -> farX), drawn behind data. topY sits at/above
+    // the chart's Y range; the chart clips the overflow so the band spans the full visible height.
+    // farX must be the chart's existing right edge — extending beyond it would inflate the maximum
+    // viewport and anchor the default view out in empty future space.
+    private Line futureShadeLine(final double topY, final double farX) {
+        final double nowX = (double) JoH.tsl() / FUZZER;
+        final List<PointValue> pts = new ArrayList<>(2);
+        pts.add(new HPointValue(nowX, (float) topY));
+        pts.add(new HPointValue(Math.max(farX, nowX), (float) topY));
+        final Line shade = new Line(pts);
+        shade.setHasPoints(false);
+        shade.setHasLines(false); // fill only — no visible top edge stroke
+        shade.setFilled(true);
+        shade.setColor(android.graphics.Color.rgb(145, 145, 150));
+        shade.setAreaTransparency(110); // grey fill — clearly distinguishes the future region
+        return shade;
+    }
+
+    // Thin vertical line marking the current time, spanning 0..topY (clipped to the viewport).
+    private Line nowVerticalLine(final double topY) {
+        final double nowX = (double) JoH.tsl() / FUZZER;
+        final List<PointValue> pts = new ArrayList<>(2);
+        pts.add(new HPointValue(nowX, 0f));
+        pts.add(new HPointValue(nowX, (float) topY));
+        final Line line = new Line(pts);
+        line.setHasPoints(false);
+        line.setHasLines(true);
+        line.setStrokeWidth(1);
+        line.setColor(android.graphics.Color.argb(170, 255, 255, 255));
+        return line;
     }
 
     // line illustrating result from step counter
@@ -777,7 +997,10 @@ public class BgGraphBuilder {
                 if (Pref.getBoolean("motion_tracking_enabled", false) && Pref.getBoolean("plot_motion", false)) {
                     lines.addAll(motionLine());
                 }
-                lines.addAll(basalLines());
+                // Basal now lives on its own dedicated mini-graph (see basalChartData()); it is no
+                // longer overlaid on the glucose axis. We still extend the future window here so the
+                // main chart scrolls far enough to line up with the basal projection / future IOB/COB.
+                extendWindowForBasalProjection();
                 lines.addAll(heartLines());
                 lines.addAll(stepsLines());
                 lines.addAll(predictiveLines());
@@ -860,6 +1083,13 @@ public class BgGraphBuilder {
             lines.add(treatments[1]); // blue dot in centre // has annotation
             lines.add(treatments[4]); // annotations
 
+            if (!simple) {
+                // Past/future separation: grey band over the future + a "now" line. The band ends at
+                // predictive_end_time (the existing right edge) so it never inflates the max viewport;
+                // inserted at index 0 to sit behind data, with the now line added on top.
+                lines.add(0, futureShadeLine(defaultMaxY, predictive_end_time));
+                lines.add(nowVerticalLine(defaultMaxY));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();

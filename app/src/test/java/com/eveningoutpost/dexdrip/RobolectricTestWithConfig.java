@@ -18,7 +18,9 @@ import org.robolectric.shadows.ShadowLog;
  * @author Asbjørn Aarrestad, asbjorn@aarrestad.com - 2018.03
  */
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = BuildConfig.targetSDK,
+// Run at minSdk (>= the manifest's minSdkVersion) rather than targetSDK (24, deliberately kept low),
+// because Robolectric refuses to load an app whose minSdk is higher than the SDK it emulates.
+@Config(sdk = BuildConfig.robolectricSDK,
       //  packageName = "com.eveningoutpost.dexdrip",
         application = TestingApplication.class
 )

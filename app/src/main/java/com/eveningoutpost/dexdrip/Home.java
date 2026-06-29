@@ -240,6 +240,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private BroadcastReceiver newDataReceiver;
     private BroadcastReceiver statusReceiver;
     public LineChartView chart;
+    // Dedicated basal mini-graph below the main chart; its X viewport is kept in sync with `chart`.
+    public LineChartView basalChart;
+    private float basalChartTop = 1f;
+    private float basalChartBottom = 0f;
     private ImageButton btnSpeak;
     private ImageButton btnNote;
     private ImageButton btnApprove;
@@ -1945,6 +1949,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
         Inevitable.task("home-resume-bg", 2000, () -> {
             InPenEntry.startIfEnabled();
+            com.eveningoutpost.dexdrip.tandem.TandemEntry.startIfEnabled(); // Tandem pump (read-only)
             EmergencyAssistActivity.checkPermissionRemoved();
             NightscoutUploader.launchDownloadRest();
             Pendiq.immortality(); // Experimental testing phase
@@ -2107,6 +2112,31 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         previewChart.setViewportChangeListener(new PreviewChartViewportListener());
         chart.setViewportCalculationEnabled(true);
         chart.setViewportChangeListener(new MainChartViewPortListener());
+
+        // Dedicated basal mini-graph: its own U/hr Y scale, but non-interactive — its X (time) range
+        // is mirrored from the main chart by the viewport listeners so the two stay aligned. Shown
+        // only when there is basal data to plot, otherwise it stays hidden and takes no space.
+        basalChart = findViewById(R.id.basal_chart);
+        if (basalChart != null) {
+            basalChart.setBackgroundColor(getCol(X.color_home_chart_background));
+            basalChart.setInteractive(false);
+            basalChart.setZoomEnabled(false);
+            basalChart.setScrollEnabled(false);
+            basalChart.setValueTouchEnabled(false);
+            basalChart.setViewportCalculationEnabled(true);
+            basalChart.setLineChartData(bgGraphBuilder.basalChartData());
+            basalChartTop = (float) bgGraphBuilder.basalChartMaxRate;
+            basalChartBottom = 0f;
+            basalChart.setVisibility(bgGraphBuilder.basalChartHasData ? View.VISIBLE : View.GONE);
+            // Pin the Y range to 0..maxRate; X is driven by the main chart (see syncBasalViewport).
+            final Viewport bMax = new Viewport(basalChart.getMaximumViewport());
+            bMax.top = basalChartTop;
+            bMax.bottom = basalChartBottom;
+            basalChart.setMaximumViewport(bMax);
+            basalChart.setViewportCalculationEnabled(false);
+            syncBasalViewport(chart.getCurrentViewport());
+        }
+
         updateStuff = true;
         //setViewport();
 
@@ -3727,6 +3757,14 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     }
 
     // classes
+    // Keep the basal mini-graph's time window aligned with the main chart (X only — its Y stays fixed
+    // to the basal U/hr range). The basal chart is non-interactive, so this never feeds back.
+    private void syncBasalViewport(Viewport mainViewport) {
+        if (basalChart == null || mainViewport == null || basalChart.getVisibility() != View.VISIBLE) return;
+        final Viewport bvp = new Viewport(mainViewport.left, basalChartTop, mainViewport.right, basalChartBottom);
+        basalChart.setCurrentViewport(bvp);
+    }
+
     private class MainChartViewPortListener implements ViewportChangeListener {
         @Override
         public synchronized void onViewportChanged(Viewport newViewport) {
@@ -3736,6 +3774,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 previewChart.setCurrentViewport(newViewport);
                 updatingChartViewport = false;
             }
+            syncBasalViewport(newViewport);
         }
     }
 
@@ -3749,6 +3788,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 tempViewport = newViewport;
                 updatingPreviewViewport = false;
             }
+            syncBasalViewport(newViewport);
             if (updateStuff) {
                 holdViewport.set(newViewport.left, newViewport.top, newViewport.right, newViewport.bottom);
                 if (d) {

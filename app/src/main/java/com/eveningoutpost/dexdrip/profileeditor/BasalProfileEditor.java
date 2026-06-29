@@ -203,16 +203,43 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
     }
 
     private void populateBasalNameSpinner() {
-        ArrayList<String> nameSpinnerArray = new ArrayList<>();
-        nameSpinnerArray.add("1");
-        nameSpinnerArray.add("2");
-        nameSpinnerArray.add("3");
-        nameSpinnerArray.add("4");
-        nameSpinnerArray.add("5");
+        final ArrayList<String> nameSpinnerArray = new ArrayList<>();
+        for (final String slot : BasalProfile.profiles()) nameSpinnerArray.add(BasalProfile.displayName(slot));
         ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, nameSpinnerArray);
         basalSelectSpinner.setAdapter(spinnerArrayAdapter);
-        basalSelectSpinner.setSelection(findSpinnerPositionForName(getLastBasalProfileName()));
+        basalSelectSpinner.setSelection(slotIndex(getLastBasalProfileName()));
         basalSelectSpinner.setOnItemSelectedListener(this);
+    }
+
+    // position of a profile slot ("1".."5") in the spinner
+    private int slotIndex(final String slot) {
+        final String[] slots = BasalProfile.profiles();
+        for (int i = 0; i < slots.length; i++) if (slots[i].equals(slot)) return i;
+        return 0;
+    }
+
+    /** Rename the active profile slot (menu action). */
+    public void basalEditRename(final MenuItem item) {
+        final String slot = getLastBasalProfileName();
+        final EditText input = new EditText(this);
+        input.setText(BasalProfile.getName(slot));
+        input.setHint("Profile name");
+        input.setSingleLine(true);
+        new androidx.appcompat.app.AlertDialog.Builder(this)
+                .setTitle("Rename profile " + slot)
+                .setView(input)
+                .setPositiveButton("Save", (d, w) -> {
+                    BasalProfile.setName(slot, input.getText().toString());
+                    populateBasalNameSpinner();
+                    refreshScreenElements();
+                })
+                .setNeutralButton("Clear", (d, w) -> {
+                    BasalProfile.setName(slot, "");
+                    populateBasalNameSpinner();
+                    refreshScreenElements();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void populateBasalStepSpinner() {
@@ -318,7 +345,7 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
 
         try {
             // TODO i18n string format
-            getSupportActionBar().setSubtitle(getString(R.string.basal_editor) + "    (loaded profile: " + getLastBasalProfileName() + ")");
+            getSupportActionBar().setSubtitle(getString(R.string.basal_editor) + "    (loaded profile: " + BasalProfile.displayName(getLastBasalProfileName()) + ")");
             getSupportActionBar().setTitle(span);
             fixElipsus(null); // how often do we actually need to do this??
             //get
@@ -514,8 +541,13 @@ public class BasalProfileEditor extends AppCompatActivity implements AdapterView
             PersistentStore.setLong(PREF_STORED_BASAL_STEP, position + 1); // increment so we know 0 is unset
             buttonsToMatchStep();
         } else if (parent == basalSelectSpinner) {
-            UserError.Log.d(TAG, "Name Spinner selected it: " + position);
-            setLastBasalProfileName(parent.getSelectedItem().toString());
+            // The spinner shows display names; map the position back to the slot id ("1".."5").
+            final String[] slots = BasalProfile.profiles();
+            final String slot = (position >= 0 && position < slots.length) ? slots[position] : "1";
+            UserError.Log.d(TAG, "Name Spinner selected position " + position + " -> slot " + slot);
+            setLastBasalProfileName(slot);
+            setChartFromSpinnerSelection();
+            refreshScreenElements();
         } else {
             UserError.Log.wtf(TAG, "Unknown spinner selected");
         }

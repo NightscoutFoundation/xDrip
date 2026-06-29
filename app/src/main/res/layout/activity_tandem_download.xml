@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#121212"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Header: pump logo + title -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+        <ImageView
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:src="@drawable/ic_tandem_pump"
+            android:contentDescription="Tandem pump" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:text="Tandem Pump"
+            android:textColor="#FFFFFF"
+            android:textSize="22sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tandemStatusText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="Read-only sync of a Tandem t:slim X2 / Mobi pump."
+        android:textColor="#B0BEC5"
+        android:textSize="13sp" />
+
+    <!-- ===== TAB BAR ===== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+        <Button android:id="@+id/tabBtnSync" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Sync" style="?android:attr/buttonBarButtonStyle" />
+        <Button android:id="@+id/tabBtnPump" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Pump" style="?android:attr/buttonBarButtonStyle" />
+        <Button android:id="@+id/tabBtnSettings" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Settings" style="?android:attr/buttonBarButtonStyle" />
+    </LinearLayout>
+    <View style="@style/TandemDivider" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <!-- ============ TAB: SYNC ============ -->
+        <LinearLayout
+            android:id="@+id/tabSync"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView style="@style/TandemSectionHeader" android:text="CONNECTION" />
+            <View style="@style/TandemDivider" />
+
+            <LinearLayout
+                android:id="@+id/tandemPairingRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp"
+                android:visibility="gone">
+                <EditText
+                    android:id="@+id/tandemPairingInput"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="6-digit code from pump"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#777777"
+                    android:inputType="textCapCharacters"
+                    android:digits="0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    android:autofillHints="" />
+                <Button
+                    android:id="@+id/tandemPairButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Pair" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/tandemConnectButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Enable &amp; Sync" />
+                <Button
+                    android:id="@+id/tandemDisableButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Disable" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/tandemForgetButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:text="Forget &amp; re-pair"
+                android:textColor="#FF8A80"
+                style="?android:attr/buttonBarButtonStyle" />
+
+            <TextView style="@style/TandemSectionHeader" android:text="SYNC" />
+            <View style="@style/TandemDivider" />
+            <LinearLayout style="@style/TandemRow">
+                <TextView style="@style/TandemRowLabel" android:text="Last sync" />
+                <TextView android:id="@+id/valLastSync" style="@style/TandemRowValue" android:text="—" />
+            </LinearLayout>
+            <LinearLayout style="@style/TandemRow">
+                <TextView style="@style/TandemRowLabel" android:text="Imported into xDrip" />
+                <TextView android:id="@+id/valImported" style="@style/TandemRowValue" android:text="—" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="6dp">
+                <Button
+                    android:id="@+id/tandemSyncButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Sync now" />
+                <Button
+                    android:id="@+id/tandemResyncButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Resync all"
+                    style="?android:attr/buttonBarButtonStyle" />
+            </LinearLayout>
+
+            <TextView style="@style/TandemSectionHeader" android:text="ACTIVITY LOG" />
+            <View style="@style/TandemDivider" />
+            <ScrollView
+                android:id="@+id/tandemLogScroll"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:background="#1A1A1A">
+                <TextView
+                    android:id="@+id/tandemLogText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="monospace"
+                    android:textColor="#80CBC4"
+                    android:textSize="11sp"
+                    android:padding="8dp"
+                    android:textIsSelectable="true" />
+            </ScrollView>
+        </LinearLayout>
+
+        <!-- ============ TAB: PUMP (live values) ============ -->
+        <ScrollView
+            android:id="@+id/tabPump"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView style="@style/TandemSectionHeader" android:text="PUMP STATUS" />
+                <View style="@style/TandemDivider" />
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Model" /><TextView android:id="@+id/valModel" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Connection" /><TextView android:id="@+id/valConn" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Battery" /><TextView android:id="@+id/valBattery" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Cartridge" /><TextView android:id="@+id/valCartridge" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Insulin on board" /><TextView android:id="@+id/valIob" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Current basal" /><TextView android:id="@+id/valBasal" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+
+                <TextView style="@style/TandemSectionHeader" android:text="CGM &amp; AUTOMATION" />
+                <View style="@style/TandemDivider" />
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Glucose" /><TextView android:id="@+id/valGlucose" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Control-IQ" /><TextView android:id="@+id/valControlIq" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Total daily insulin" /><TextView android:id="@+id/valTdd" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+
+                <TextView style="@style/TandemSectionHeader" android:text="THERAPY SETTINGS" />
+                <View style="@style/TandemDivider" />
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Active profile" /><TextView android:id="@+id/valProfile" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Carb ratio" /><TextView android:id="@+id/valCarbRatio" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Correction (ISF)" /><TextView android:id="@+id/valIsf" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Target BG" /><TextView android:id="@+id/valTarget" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+                <LinearLayout style="@style/TandemRow"><TextView style="@style/TandemRowLabel" android:text="Insulin duration" /><TextView android:id="@+id/valInsDur" style="@style/TandemRowValue" android:text="—" /></LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+
+        <!-- ============ TAB: SETTINGS (what to sync) ============ -->
+        <ScrollView
+            android:id="@+id/tabSettings"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <TextView style="@style/TandemSectionHeader" android:text="WHAT TO SYNC" />
+                <View style="@style/TandemDivider" />
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="Choose which data to pull from the pump, then go to Sync and tap Enable. Everything is read-only; you can change these any time."
+                    android:textColor="#B0BEC5" android:textSize="12sp" android:layout_marginBottom="8dp" />
+                <CheckBox android:id="@+id/syncBoluses" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:text="Boluses → treatments / IOB" />
+                <CheckBox android:id="@+id/syncCarbs" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:text="Carbs → treatments / COB" />
+                <CheckBox android:id="@+id/syncBasal" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:text="Basal delivery → basal line" />
+                <CheckBox android:id="@+id/syncProfile" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:text="Basal profile → xDrip basal profile" />
+                <CheckBox android:id="@+id/syncGlucose" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="#FFFFFF" android:text="Glucose (CGM) → BG graph" />
+                <TextView
+                    android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:text="⚠ Glucose can clash with a CGM already feeding this xDrip. Leave OFF unless this phone has no other CGM source."
+                    android:textColor="#FFB74D" android:textSize="11sp" android:layout_marginStart="32dp" />
+            </LinearLayout>
+        </ScrollView>
+    </FrameLayout>
+</LinearLayout>
