@@ -344,6 +344,11 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
             public Request request() {
                 return new Request.Builder().url("http://example.com").build();
             }
+
+            @Override
+            public okio.Timeout timeout() {
+                return okio.Timeout.NONE;
+            }
         };
     }
 }
