@@ -407,7 +407,7 @@
     <string name="settings_on_external_storage">Cargar/Guardar ajustes</string>
     <string name="get_notified_of_new_apk_releases">Ser notificado de nuevos lanzamientos apk</string>
     <string name="choose_stable_beta_or_alpha_releases">Elija versión estable, beta o alfa</string>
-    <string name="web_feedback_form_for_sending_messages">Formulario de contacto web para el envío de mensajes y valoraciones de xDrip+ para los desarrolladores</string>
+    <string name="web_feedback_form_for_sending_messages">Formulario de contacto web: envíe mensajes y valoraciones de xDrip+ a los desarrolladores</string>
     <string name="be_master_for_followers">Ser aplicación maestro</string>
     <string name="this_device_will_send_data_to_followers">Este dispositivo enviará datos a los seguidores</string>
     <string name="send_parakeet_map_location_to_followers">Enviar mapa de ubicación Parakeet a los seguidores</string>
@@ -719,7 +719,7 @@
     <string name="show_expiry_time">Mostrar la caducidad del sensor en base a 14,5 días</string>
     <string name="show_sensor_age">Mostrar la antigüedad del sensor en la pantalla principal</string>
     <string name="change_sensor_total_days">Cambio de sensor días totales</string>
-    <string name="nfc_scanning_xdrip_open">El escaneo NFC solo ocurrirá cuando xDrip+ esté visible</string>
+    <string name="nfc_scanning_xdrip_open">El escaneo NFC solo ocurrirá cuando la aplicación xDrip + esté visible</string>
     <string name="nfc_scanning_launcher">El escaneo NFC también funcionará desde la pantalla del lanzador de aplicaciones</string>
     <string name="scan_when_app_closed">Escanear cuando no estás en xDrip+</string>
     <string name="vibrate_scanning_status">Vibrar para indicar el estado de escaneo</string>
@@ -833,7 +833,7 @@
     <string name="force_english_text">Forzar idioma Inglés</string>
     <string name="using_local_language">Actualmente utilizando el idioma local de su dispositivo</string>
     <string name="forcing_alternate_language">Actualmente forzando el uso de un idioma alternativo</string>
-    <string name="need_alternate_language">Si necesita un lenguaje alternativo dentro de xDrip +</string>
+    <string name="need_alternate_language">Si necesita la traducción de un lenguaje alternativo dentro de xDrip+</string>
     <string name="chosse_language">Escoger un idioma específico</string>
     <string name="widget_range_lines">Lineas de rango del widget</string>
     <string name="show_range_on_widget">Muestra lineas de valores altos y bajos en el widget.</string>
@@ -996,7 +996,7 @@
     <string name="enable_update_checks">¿Habilitar comprobación de actualización?</string>
     <string name="you_can_easily_roll_back_dialog_msg">Con xDrip puedes volver fácilmente a las versiones anteriores con solo volver a ejecutar el instalador APK de la versión anterior en su carpeta de Descargas si no le gusta la nueva versión.\n\n¿Desea habilitar la comprobación de actualizaciones?</string>
     <string name="hey_fam">Hola Fam...</string>
-    <string name="you_have_update_checks_off">¡Ha desactivado las comprobación de actualizaciones!\n\nNosotros intentamos corregir errores y agregar nuevas funciones a xDrip+ a lo largo del tiempo.\n\nCada 60 días aparecerá este recordatorio para pedirle que active la verificación de actualizaciones.</string>
+    <string name="you_have_update_checks_off">¡Ha desactivado las comprobación de actualizaciones!\n\nIntentaremos corregir errores y agregar nuevas funciones a xDrip+ frecuentemente.\n\nCada 60 días aparecerá este recordatorio para pedirle que active la verificación de actualizaciones.</string>
     <string name="update_checking_enabled">Comprobación de actualizaciones activado!</string>
     <string name="cancel_alarm">¿Cancelar Alarma?</string>
     <string name="please_confirm_to_cancel_the_alert">¿Confirma la cancelación de la alerta?</string>

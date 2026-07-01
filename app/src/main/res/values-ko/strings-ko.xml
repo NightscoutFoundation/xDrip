@@ -407,7 +407,7 @@
     <string name="settings_on_external_storage">설정 불러오기/저장</string>
     <string name="get_notified_of_new_apk_releases">새로운 APK 릴리즈를 공지 받기</string>
     <string name="choose_stable_beta_or_alpha_releases">안정된 버전, 베타 버전 또는 알파 버전을 선택하세요.</string>
-    <string name="web_feedback_form_for_sending_messages">개발자에게 메시지와 xDrip+의 평가를 보내는 웹 피드백 포맷</string>
+    <string name="web_feedback_form_for_sending_messages">개발자에게 메시지와 평점을 보내기 위한 웹 피드백 양식</string>
     <string name="be_master_for_followers">팔로워를 위한 마스터 되기</string>
     <string name="this_device_will_send_data_to_followers">이 장치는 팔로워에게 데이터를 보낼 것입니다.</string>
     <string name="send_parakeet_map_location_to_followers">Parakeet map 위치를 팔로웨에게 보내세요.</string>
@@ -432,7 +432,7 @@
     <string name="sdcard_not_writable_cannot_save">SD 카드 쓰기 권한이 없어 저장할 수 없습니다</string>
     <string name="sdcard_not_readable">SD 카드를 읽을 수 없습니다</string>
     <string name="loading_settings_from_xdrip_mainline">XDrip의 메인 라인으로부터 세팅을을 불러오는 중..</string>
-    <string name="warning_settings_from_xdrip_and_plus_exist">XDrip과 xDrip+에서 경고 세팅이 존재합니다. - xDrip+를 불러오는 중</string>
+    <string name="warning_settings_from_xdrip_and_plus_exist">경고: xDrip과 xDrip+ 설정이 모두 존재합니다. xDrip+ 설정을 불러옵니다.</string>
     <string name="new_version_date_colon">"새 버전 날짜: "</string>
     <string name="old_version_date_colon">"구 버전 날짜: "</string>
     <string name="speak_your_note_text">메모 텍스트를 말하세요.</string>
