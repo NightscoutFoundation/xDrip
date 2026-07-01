@@ -511,9 +511,9 @@ public class CollectionServiceStarter {
             Log.d(TAG, String.format("Starting foreground service: %s", intent.getComponent().getClassName()));
             mContext.startForegroundService(intent);
         } catch (Exception e) {
-            Log.e(TAG, "Failed to start foreground service: " + e);
+            // If foreground fails (e.g. app is already in foreground), fall back to standard start
+            mContext.startService(intent);
         }
-        mContext.startService(intent);
     }
 
 }

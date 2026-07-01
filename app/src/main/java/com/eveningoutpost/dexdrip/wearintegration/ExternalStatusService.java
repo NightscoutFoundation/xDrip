@@ -11,6 +11,7 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import java.util.regex.Pattern;
@@ -34,7 +35,7 @@ public class ExternalStatusService extends android.app.Service {
     public void onCreate() {
         super.onCreate();
         Notification.Builder builder = new Notification.Builder(this,
-                com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels.ONGOING_CHANNEL);
+                NotificationChannels.ONGOING_CHANNEL);
 
         builder.setContentTitle("xDrip External Status")
                 .setSmallIcon(com.eveningoutpost.dexdrip.R.drawable.ic_launcher);
