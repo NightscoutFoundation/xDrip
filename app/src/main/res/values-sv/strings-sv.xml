@@ -829,6 +829,7 @@
     <string name="use_flair_colors">Använd stilfärger</string>
     <string name="upper_title_bar_flair">Stil på övre titelfältr</string>
     <string name="lower_button_bar_falir">Stil på undre knappfält</string>
+    <string name="title_language">Språk</string>
     <string name="force_english_text">Tvinga engelsk text</string>
     <string name="using_local_language">Anänder för närvarande din enhets lokala språk</string>
     <string name="forcing_alternate_language">Tvingar fär närvarande använding av ett annat språk</string>
@@ -1856,7 +1857,12 @@
     <string name="please_grant_permission">Vänligen tillåt åtkomst</string>
     <string name="drive_permission_blurb">För att automatiskt säkerhetskopiera behöver xDrip behörighet att använda din Google Drive.\n\nxDrip utvecklare kan inte komma åt någon av dina filer eller se din personliga information.</string>
     <string name="cloud_backup">Säkerhetskopiering i molnet​</string>
+    <string name="select_automatic_or_select_alternate">Välj Automatisk för att låta xDrip hantera filer i Google Drive eller välj en alternativ specifik fil för att återställa från annan källa.</string>
+    <string name="restoring_backup_will_erase_warning">Att återställa en backup kommer att skriva över dina nuvarande inställningar. \n\nÄr du säker på att du vill göra detta?</string>
+    <string name="you_cannot_undo_delete_alert">Du kommer inte att kunna ångra detta!\n\nÄr du säker på att du vill ta bort denna varning?</string>
+    <string name="this_backup_looks_like_came_from_different_format_string">Denna säkerhetskopia ser ut att komma från en annan enhet:\n%s\nÄr du säker på att du vill återställa från denna säkerhetskopia?</string>
     <string name="megabyte_format_string">%.1f MB</string>
+    <string name="manual_selection_google_drive_file_warning">Du har valt en fil från Google Drive, men detta hanteras inte automatiskt av xDrip så det kan endast användas för manuell säkerhetskopiering och återställning.\n\nIngen automatisk säkerhetskopiering kommer att ske med denna fil.\n\nFortsätt?</string>
     <string name="invalid_time">Ogiltig tid</string>
     <string name="none">inget</string>
     <string name="format_string_ago">%s sedan</string>
