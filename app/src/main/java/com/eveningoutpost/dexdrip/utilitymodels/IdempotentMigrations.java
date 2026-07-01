@@ -176,6 +176,8 @@ public class IdempotentMigrations {
         Pref.setBoolean("use_notification_channels", true);
         Pref.setBoolean("run_service_in_foreground", true);
         Pref.setBoolean("notification_channels_grouping", false);
+        Pref.setBoolean("use_number_icon_large", false);
+        Pref.setBoolean("number_icon_large_arrow", false);
 
     }
 

@@ -168,7 +168,7 @@ public class NotificationChannels {
 
         final Notification temp = wip.build();
         if (temp.getChannelId() == null) return null;
-        final int importance = temp.getChannelId().contains("ongoing") ? NotificationManager.IMPORTANCE_DEFAULT : NotificationManager.IMPORTANCE_HIGH;
+        final int importance = NotificationManager.IMPORTANCE_HIGH;
 
         // create generic audio attributes
         final AudioAttributes generic_audio = new AudioAttributes.Builder()
@@ -227,55 +227,27 @@ public class NotificationChannels {
 
     @TargetApi(26)
     public static NotificationChannel getChan(Notification.Builder wip) {
+        /*
+        This method should only be used for the ongoing notification.
+        No alert should use this method.
+         */
+        final String id = ONGOING_CHANNEL;
+        final int importance = Pref.getBooleanDefaultFalse("use_number_icon") ?
+                NotificationManager.IMPORTANCE_DEFAULT : NotificationManager.IMPORTANCE_LOW;
 
-        final Notification temp = wip.build();
-        if (temp.getChannelId() == null) return null;
-        final int importance = temp.getChannelId().contains("ongoing") ? NotificationManager.IMPORTANCE_DEFAULT : NotificationManager.IMPORTANCE_HIGH;
-
-        // create generic audio attributes
-        final AudioAttributes generic_audio = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                .build();
-
-        // create notification channel for hashing purposes from the existing notification builder
-        NotificationChannel template = new NotificationChannel(
-                temp.getChannelId(),
-                getString(temp.getChannelId()),
-                importance); // Change from IMPORTANCE_DEFAULT
-
-
-        // mirror the notification parameters in the channel
-        template.setVibrationPattern(temp.vibrate);
-        template.setSound(temp.sound, generic_audio);
-        template.setLightColor(temp.ledARGB);
-        if ((temp.ledOnMS != 0) && (temp.ledOffMS != 0))
-            template.enableLights(true); // weird how this doesn't work like vibration pattern
-        template.setDescription(temp.getChannelId() + " " + wip.hashCode());
-
-        // get a nice string to identify the hash
-        final String mhash = my_text_hash(template);
-        final String channelId = temp.getChannelId();
-        final String baseName = getBaseDisplayName(channelId);
-
-        // create another notification channel using the hash because id is immutable
+        // Simplify: Create the channel directly using the static ID
         final NotificationChannel channel = new NotificationChannel(
-                template.getId() + mhash,
-                baseName + mhash,
-                importance); // Change from IMPORTANCE_DEFAULT
+                id,
+                getBaseDisplayName(id),
+                importance);
 
-        // mirror the settings from the previous channel
-        channel.setSound(template.getSound(), generic_audio);
-        channel.setDescription(template.getDescription());
-        channel.setVibrationPattern(template.getVibrationPattern());
-        template.setLightColor(temp.ledARGB);
-        if ((temp.ledOnMS != 0) && (temp.ledOffMS != 0))
-            template.enableLights(true); // weird how this doesn't work like vibration pattern
-        template.setDescription(temp.getChannelId() + " " + wip.hashCode());
+        // Ongoing service should always be silent and not vibrate
+        channel.setSound(null, null);
+        channel.enableVibration(false);
+        channel.setShowBadge(false);
 
-        // create this channel if it doesn't exist or update text
         getNotifManager().createNotificationChannel(channel);
-        return  channel;
+        return channel;
     }
 
     private static String getBaseDisplayName(String channelId) {
