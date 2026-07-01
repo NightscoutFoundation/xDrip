@@ -421,7 +421,7 @@
     <string name="sdcard_not_writable_cannot_save">SDcard недоступна для записи - невозможно сохранить</string>
     <string name="sdcard_not_readable">SDCard недоступна для чтения</string>
     <string name="loading_settings_from_xdrip_mainline">Загрузка настроек из основной ветки xDrip</string>
-    <string name="warning_settings_from_xdrip_and_plus_exist">Настройки предупреждений xDrip и xDrip+ уже существуют − загрузка xDrip+</string>
+    <string name="warning_settings_from_xdrip_and_plus_exist">Есть настройки предупреждений из xDrip и xDrip+ - загрузка xDrip+</string>
     <string name="new_version_date_colon">"Дата новой версии: "</string>
     <string name="old_version_date_colon">"Дата старой версии: "</string>
     <string name="speak_your_note_text">Произнесите вслух текст заметки</string>
@@ -703,11 +703,11 @@
     <string name="show_expiry_time">Показывать время истечения срока датчика основываясь на 14,5 днях</string>
     <string name="show_sensor_age">Показывать возраст датчика на главном экране</string>
     <string name="change_sensor_total_days">Количество дней до замены датчика</string>
-    <string name="nfc_scanning_xdrip_open">Сканировать только когда приложение xDrip+ на экране</string>
+    <string name="nfc_scanning_xdrip_open">Сканирование NFC будет работать, только когда приложение xDrip+ открыто</string>
     <string name="nfc_scanning_launcher">Сканирование NFC будет также работать на экране запуска приложений</string>
-    <string name="scan_when_app_closed">Сканировать когда xDrip+ закрыт</string>
+    <string name="scan_when_app_closed">Сканировать, когда не в xDrip+</string>
     <string name="vibrate_scanning_status">Вибрировать при сканировании</string>
-    <string name="beep_when_scanning_within_app">Звуковое уведомление при сканировании приложением xDrip+</string>
+    <string name="beep_when_scanning_within_app">Сигнал при сканировании в приложении xDrip+</string>
     <string name="use_multi_block">Использовать более быстрый мультиблочный метод чтения</string>
     <string name="use_any_tag">Использовать метод оптимизации чтения с помощью any-tag</string>
     <string name="low_level_value">Низкоуровневое диагностическое/опытное значение</string>
@@ -816,7 +816,7 @@
     <string name="force_english_text">Меню на английском</string>
     <string name="using_local_language">В настоящий момент используется системный язык</string>
     <string name="forcing_alternate_language">В настоящий момент язык приложения принудительно изменен на английский</string>
-    <string name="need_alternate_language">Позволяет изменить язык приложения xDrip+ на выбранный</string>
+    <string name="need_alternate_language">Если вам нужен перевод на другой язык в xDrip+</string>
     <string name="chosse_language">Выбрать язык меню</string>
     <string name="widget_range_lines">Линии диапазона виджета</string>
     <string name="show_range_on_widget">Показывать линии верхнего и нижнего порога на виджете.</string>
@@ -937,7 +937,7 @@
     <string name="eng_mode_is_on">Инженерный режим включен. Пожалуйста, выключите его, если вы не уверены, что он нужен, так как он может вызывать неожиданное поведение.</string>
     <string name="yes">Да</string>
     <string name="enable">Включить</string>
-    <string name="xdrip_compatible_features">Функции %s xDrip+</string>
+    <string name="xdrip_compatible_features">xDrip+ %s функции</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
     <string name="enable_local_web_server_feature">Включить функцию локального веб-сервера для Garmin?</string>
@@ -976,13 +976,13 @@
     <string name="enable_update_checks">Включить проверку обновлений?</string>
     <string name="you_can_easily_roll_back_dialog_msg">С xDrip вы можете с легкостью \'откатиться\' на предыдущую версию приложения, для этого просто перезапустите установщик APK более старой версии приложения, если вам не нравится новая.\n\nХотите включить проверку обновлений?</string>
     <string name="hey_fam">Доступно обновление</string>
-    <string name="you_have_update_checks_off">Проверка обновлений отключена!\n\nРазработчики постоянно работают над исправлениями и новыми функциями xDrip+.\n\nНапоминание об активации обновлений будет появляться каждые 60 дней.</string>
+    <string name="you_have_update_checks_off">У вас выключены проверки обновлений!\n\nМы стараемся исправлять ошибки и добавлять новые функции в xDrip+ со временем.\n\nКаждые 60 дней это напоминание будет появляться, чтобы спросить вас о включении проверки обновлений.</string>
     <string name="update_checking_enabled">Проверка обновлений активирована!</string>
     <string name="cancel_alarm">Отменить уведомление?</string>
     <string name="please_confirm_to_cancel_the_alert">Пожалуйста подтвердите отмену уведомления?</string>
     <string name="yes_cancel">Да, отменить</string>
     <string name="warning_no_alert_will_be_played_in_silent_mode">Внимание, уведомления не будут отображаться в беззвучном режиме/режиме вибрации!!!</string>
-    <string name="automatic_message_from_xdrip">Сообщение отправлено автоматически из xDrip+</string>
+    <string name="automatic_message_from_xdrip">автоматическое сообщение из xDrip+</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">Экстренные сообщения</string>
     <string name="emergency_message_feature">Активания экстренных сообщений</string>
@@ -1180,7 +1180,7 @@
     <string name="need_permission_to_access_audio_files">Требуется разрешение для доступа к аудио файлам</string>
     <string name="need_contacts_permission_to_select_message_recipients">Требуется доступ к контактам для выбора получателей сообщения</string>
     <string name="need_storage_permission_to_access_all_ringtones">Требуется доступ к памяти устройства для доступа ко всем рингтонам</string>
-    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ необходимы дополнительные разрешения для корректной работы</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ должен быть в исключениях для правильной работы</string>
     <string name="overwrite_slope_engineering_only">Заменить угловой коэффициент (инженерная функция!)</string>
     <string name="overwrite_intercept_engineering_only">Заменить точку пересечения (инженерная функция!)</string>
     <string name="manual_overwrite_not_possible">Ручное изменение не возможно!</string>

@@ -829,6 +829,7 @@
     <string name="use_flair_colors">自訂標題/導覽列</string>
     <string name="upper_title_bar_flair">上方標題列</string>
     <string name="lower_button_bar_falir">下方導覽列</string>
+    <string name="title_language">語系</string>
     <string name="force_english_text">強制使用英文文字</string>
     <string name="using_local_language">目前使用您裝置的本地語系</string>
     <string name="forcing_alternate_language">目前已強制使用替代語系</string>

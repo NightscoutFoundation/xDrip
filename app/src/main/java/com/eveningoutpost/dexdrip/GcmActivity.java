@@ -849,7 +849,7 @@ public class GcmActivity extends FauxActivity {
 
         if (!InstalledApps.isGooglePlayInstalled(xdrip.getAppContext())) {
             if (JoH.pratelimit("gms-missing-msg", 86400)) {
-                final String msg = "Google Play services - not installed!\nInstall it or disable xDrip+ sync options";
+                final String msg = "Google Play services - not installed!\nInstall it or disable xDrip sync options";
                 JoH.static_toast_long(msg);
                 Home.toaststaticnext(msg);
             }

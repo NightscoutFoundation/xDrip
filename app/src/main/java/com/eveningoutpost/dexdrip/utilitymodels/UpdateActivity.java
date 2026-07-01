@@ -102,7 +102,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
             Log.i(TAG, "Checking for a software update, channel: " + channel);
 
             String subversion = "";
-            if (!context.getString(R.string.app_name).equals("xDrip+")) {
+            if (!context.getString(R.string.app_name).equals("xDrip")) {
                 subversion = context.getString(R.string.app_name).replaceAll("[^a-zA-Z0-9]", "");
                 Log.d(TAG, "Using subversion: " + subversion);
             }
@@ -502,7 +502,7 @@ public class UpdateActivity extends BaseAppCompatActivity {
                         try {
                             try {
                                 DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-                                dm.addCompletedDownload(filename, "xDrip+ update version " + newversion, false, "application/vnd.android.package-archive", getDownloadFolder() + "/" + filename, FILE_SIZE, true);
+                                dm.addCompletedDownload(filename, "xDrip update version " + newversion, false, "application/vnd.android.package-archive", getDownloadFolder() + "/" + filename, FILE_SIZE, true);
                             } catch (Exception e) {
                                 Log.e(TAG, "Download manager error: " + e);
                             }

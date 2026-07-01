@@ -195,7 +195,7 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
                 addAsection(INPEN_STATUS,"InPen Status");
             }
             if (Home.get_master_or_follower()) {
-                addAsection(XDRIP_PLUS_SYNC, "xDrip+ Sync Group");
+                addAsection(XDRIP_PLUS_SYNC, "xDrip Sync Group");
             }
             if (Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable")
                     || Pref.getBooleanDefaultFalse("cloud_storage_api_enable")

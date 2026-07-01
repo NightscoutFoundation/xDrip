@@ -829,6 +829,7 @@
     <string name="use_flair_colors">Персонализирано заглавие/Навигационна лента</string>
     <string name="upper_title_bar_flair">Горна лента за известия</string>
     <string name="lower_button_bar_falir">Долна лента за известия</string>
+    <string name="title_language">Език</string>
     <string name="force_english_text">Принудително английски текст</string>
     <string name="using_local_language">В момента се използва местният език на вашето устройство</string>
     <string name="forcing_alternate_language">В момента се налага използването на алтернативен език</string>
