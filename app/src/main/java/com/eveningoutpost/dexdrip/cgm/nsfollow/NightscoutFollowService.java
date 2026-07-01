@@ -1,9 +1,12 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.os.PowerManager;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import android.text.SpannableString;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -57,6 +60,16 @@ public class NightscoutFollowService extends ForegroundService {
     private static volatile long lastTreatmentTime = 0;
     private static volatile long treatmentReceivedDelay = 0;
 
+    @VisibleForTesting
+    static volatile Integer uploaderBattery = null;
+    @VisibleForTesting
+    static volatile Boolean uploaderCharging = null;
+
+    @VisibleForTesting
+    static boolean isNetworkAvailable(final ConnectivityManager cm) {
+        return cm != null && cm.getActiveNetwork() != null;
+    }
+
     private static long getLag() {
         // Wake delay derived from the nsfollow_lag setting.
         // Values represent seconds of a 5-minute sample period and are scaled
@@ -81,7 +94,6 @@ public class NightscoutFollowService extends ForegroundService {
             // Check service should be running
             if (!shouldServiceRun()) {
                 UserError.Log.d(TAG, "Stopping service due to shouldServiceRun() result");
-                //       msg("Stopping");
                 stopSelf();
                 return START_NOT_STICKY;
             }
@@ -92,6 +104,19 @@ public class NightscoutFollowService extends ForegroundService {
             if (lastBg != null) {
                 lastBgTime = lastBg.timestamp;
             }
+
+            // Always re-arm next wakeup, even if we skip the poll below
+            scheduleWakeUp();
+
+            // Skip network I/O when there is no data connection — saves wake lock extension,
+            // DNS resolution, and TCP handshake cost. The alarm above ensures we retry.
+            final ConnectivityManager cm =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (!isNetworkAvailable(cm)) {
+                UserError.Log.d(TAG, "No network — skipping poll");
+                return START_STICKY;
+            }
+
             if (lastBg == null || JoH.msSince(lastBg.timestamp) > DexCollectionType.getCurrentSamplePeriod()) {
                 if (JoH.ratelimit("last-ns-follow-poll", 5)) {
                     Inevitable.task("NS-Follow-Work", 200, () -> {
@@ -103,7 +128,6 @@ public class NightscoutFollowService extends ForegroundService {
                 UserError.Log.d(TAG, "Already have recent reading: " + JoH.msSince(lastBg.timestamp));
             }
 
-            scheduleWakeUp();
         } finally {
             JoH.releaseWakeLock(wl);
         }
@@ -127,6 +151,16 @@ public class NightscoutFollowService extends ForegroundService {
             treatmentReceivedDelay = JoH.msSince(lastTreatment.timestamp);
             lastTreatmentTime = lastTreatment.timestamp;
         }
+    }
+
+    static void updateUploaderStatus(final Integer battery, final Boolean charging) {
+        uploaderBattery = battery;
+        uploaderCharging = charging;
+    }
+
+    static void clearUploaderStatus() {
+        uploaderBattery = null;
+        uploaderCharging = null;
     }
 
     static void scheduleWakeUp() {
@@ -201,24 +235,25 @@ public class NightscoutFollowService extends ForegroundService {
         statuses.add(new StatusItem("BG receive delay", ageOfBgLastPoll, ageOfLastBgPollHighlight));
 
         if(NightscoutFollow.treatmentDownloadEnabled()) {
-            statuses.add(new StatusItem());
             statuses.add(new StatusItem("Latest Treatment", ageLastTreatment + (lastTreatment != null ? " ago" : "")));
             statuses.add(new StatusItem("Treatment receive delay", ageOfTreatmentWhenReceived));
         }
 
-        statuses.add(new StatusItem());
+        if (uploaderBattery != null) {
+            final String charging = Boolean.TRUE.equals(uploaderCharging) ? " (charging)" : "";
+            statuses.add(new StatusItem("Uploader battery", uploaderBattery + "%" + charging));
+        }
+
         statuses.add(new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago" : "")));
         statuses.add(new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())));
         if (lastBg != null) {
             statuses.add(new StatusItem("Last BG time", JoH.dateTimeText(lastBg.timestamp)));
         }
         statuses.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
-        statuses.add(new StatusItem());
         statuses.add(new StatusItem("Buggy handset", JoH.buggy_samsung ? gs(R.string.yes) : gs(R.string.no)));
         statuses.add(new StatusItem("Download treatments", NightscoutFollow.treatmentDownloadEnabled() ? gs(R.string.yes) : gs(R.string.no)));
 
         if (StringUtils.isNotBlank(lastState)) {
-            statuses.add(new StatusItem());
             statuses.add(new StatusItem("Last state", lastState));
         }
 
