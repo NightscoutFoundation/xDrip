@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.utils.framework.GzipRequestInterceptor;
 
 import org.junit.After;
 import org.junit.Before;
@@ -48,7 +49,7 @@ public class NightscoutUploaderGzipInterceptorTest extends RobolectricTestWithCo
 
     private OkHttpClient client() {
         return new OkHttpClient.Builder()
-                .addInterceptor(new NightscoutUploader.GzipRequestInterceptor())
+                .addInterceptor(new GzipRequestInterceptor(NightscoutUploader.NS_GZIP_DECIDER))
                 .build();
     }
 
