@@ -100,7 +100,6 @@ public class TidepoolUploader {
             final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
                     .addInterceptor(httpLoggingInterceptor)
                     .addInterceptor(new InfoInterceptor(TAG))
-                    //          .addInterceptor(new GzipRequestInterceptor())
                     .build();
 
             retrofit = new retrofit2.Retrofit.Builder()
