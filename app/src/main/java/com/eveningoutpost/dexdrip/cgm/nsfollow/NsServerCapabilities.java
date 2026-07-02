@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
 import androidx.annotation.VisibleForTesting;
 
-import java.util.function.LongSupplier;
+import com.eveningoutpost.dexdrip.models.JoH;
 
 /**
  * In-memory, per-URL record of Nightscout server capabilities that turned out to be unsupported
@@ -19,7 +19,9 @@ import java.util.function.LongSupplier;
  *       the cost of healing is at most one request per recheck window.</li>
  *   <li>The whole state resets immediately when the follow URL changes.</li>
  * </ul>
- * State is process-lifetime only; a cold start re-detects at most once.
+ * State is process-lifetime only; a cold start re-detects at most once. Time comes from
+ * {@link JoH#tsl()} (the project's wall-clock convention; {@code java.time.Clock} is avoided
+ * because minSdk 24 has no core-library desugaring).
  *
  * @author Asbjørn Aarrestad
  */
@@ -28,12 +30,8 @@ public final class NsServerCapabilities {
     /** How long to suppress devicestatus after a rejection before allowing a self-healing re-probe. */
     static final long DEVICESTATUS_RECHECK_MS = 6 * 60 * 60 * 1000L; // 6 hours
 
-    /** Clock indirection so the recheck window is testable without sleeping. */
-    @VisibleForTesting
-    static volatile LongSupplier clock = System::currentTimeMillis;
-
     private static volatile String currentUrl = "";
-    /** 0 = supported/never-marked; otherwise the timestamp of the last rejection. */
+    /** 0 = supported/never-marked; otherwise the {@link JoH#tsl()} timestamp of the last rejection. */
     private static volatile long deviceStatusUnsupportedAt = 0;
 
     private NsServerCapabilities() {
@@ -48,17 +46,29 @@ public final class NsServerCapabilities {
     }
 
     public static synchronized boolean supportsDeviceStatus(final String url) {
+        return supportsDeviceStatusAt(url, JoH.tsl());
+    }
+
+    /** Time-injected variant so the recheck window is deterministically testable. */
+    @VisibleForTesting
+    static synchronized boolean supportsDeviceStatusAt(final String url, final long nowMs) {
         syncUrl(url);
         if (deviceStatusUnsupportedAt == 0) {
             return true;
         }
         // Self-heal: once the recheck window elapses, allow a single re-probe through.
-        return clock.getAsLong() - deviceStatusUnsupportedAt >= DEVICESTATUS_RECHECK_MS;
+        return nowMs - deviceStatusUnsupportedAt >= DEVICESTATUS_RECHECK_MS;
     }
 
     public static synchronized void markDeviceStatusUnsupported(final String url) {
+        markDeviceStatusUnsupportedAt(url, JoH.tsl());
+    }
+
+    /** Time-injected variant so the recheck window is deterministically testable. */
+    @VisibleForTesting
+    static synchronized void markDeviceStatusUnsupportedAt(final String url, final long nowMs) {
         syncUrl(url);
-        deviceStatusUnsupportedAt = clock.getAsLong();
+        deviceStatusUnsupportedAt = nowMs;
     }
 
     /** Clears the unsupported flag — called when the endpoint responds successfully again. */
@@ -71,6 +81,5 @@ public final class NsServerCapabilities {
     public static synchronized void reset() {
         currentUrl = "";
         deviceStatusUnsupportedAt = 0;
-        clock = System::currentTimeMillis;
     }
 }
