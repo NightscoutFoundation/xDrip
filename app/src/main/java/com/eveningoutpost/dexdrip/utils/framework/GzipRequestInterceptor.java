@@ -14,6 +14,8 @@ import okio.Okio;
  * Gzips outgoing request bodies. By default every eligible request is gzipped; supply a
  * {@link GzipDecider} to gate gzipping per request (e.g. only when the server is known to
  * support it).
+ *
+ * @author Asbjørn Aarrestad
  */
 public class GzipRequestInterceptor implements Interceptor {
 
