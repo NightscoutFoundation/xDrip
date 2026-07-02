@@ -83,6 +83,19 @@ public class CalibrationTest extends RobolectricTestWithConfig {
         assertThat(calibration2.intercept).isWithin(0.001).of(15);
     }
 
+    /**
+     * Characterization: create() reads units/history prefs via
+     * PreferenceManager.getDefaultSharedPreferences() and returns null for out-of-range glucose.
+     * Exercises the second PreferenceManager call site (distinct from initialCalibration above),
+     * locking behaviour across the android.preference → androidx.preference import swap.
+     */
+    @Test
+    public void create_returnsNullWhenGlucoseOutOfRange() {
+        Calibration calibration = Calibration.create(10000, 0, RuntimeEnvironment.application);
+
+        assertThat(calibration).isNull();
+    }
+
     // ===== Internal Helpers ======================================================================
 
     private void addMockBgReading(int raw_data, int minutes, Sensor sensor) {

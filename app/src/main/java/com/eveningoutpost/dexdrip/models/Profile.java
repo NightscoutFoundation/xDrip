@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.models;
 
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;

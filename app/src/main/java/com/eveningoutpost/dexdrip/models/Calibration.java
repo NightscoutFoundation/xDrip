@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.models;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.provider.BaseColumns;
 import androidx.annotation.NonNull;
 import android.widget.Toast;
