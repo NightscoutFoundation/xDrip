@@ -24,8 +24,10 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
 /**
- * Characterization tests for the per-server gzip gating in NightscoutUploader's request
- * interceptor on okhttp 3.12.13. Pins current behavior before Phase E consolidation.
+ * Characterization tests for NightscoutUploader's per-server gzip gating, exercised through the
+ * shared {@link GzipRequestInterceptor} wired with {@link NightscoutUploader#NS_GZIP_DECIDER}.
+ * Pins that the {@code supportsGzip(host+port)} gate behaves exactly as the original inner-class
+ * interceptor did before Phase E consolidation.
  *
  * @author Asbjørn Aarrestad
  */
