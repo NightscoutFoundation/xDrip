@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Build;
 import android.preference.PreferenceManager;
@@ -22,6 +23,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
 import com.eveningoutpost.dexdrip.utilitymodels.IdempotentMigrations;
+import com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels;
 import com.eveningoutpost.dexdrip.utilitymodels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.VersionTracker;
@@ -103,6 +105,14 @@ public class xdrip extends Application {
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
 
+        IntentFilter externalFilter = new IntentFilter("com.eveningoutpost.dexdrip.ExternalStatusline");
+        registerReceiver(new com.eveningoutpost.dexdrip.wearintegration.ExternalStatusBroadcastReceiver(), externalFilter);
+        IntentFilter bgFilter = new IntentFilter();
+        bgFilter.addAction("com.eveningoutpost.dexdrip.NS_EMULATOR");
+        bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT");
+        bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT");
+        bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT");
+        registerReceiver(new NSEmulatorReceiver(), bgFilter);
 
         JobManager.create(this).addJobCreator(new XDripJobCreator());
         DailyJob.schedule();
@@ -133,6 +143,7 @@ public class xdrip extends Application {
         PluggableCalibration.invalidateCache();
         Poller.init();
         BgGraphBuilder.setLogging();
+        NotificationChannels.setupTestChannel();
     }
 
 

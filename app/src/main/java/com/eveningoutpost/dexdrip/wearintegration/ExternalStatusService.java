@@ -1,16 +1,17 @@
 package com.eveningoutpost.dexdrip.wearintegration;
 
-import android.app.IntentService;
+import android.app.Notification;
 import android.content.Intent;
-import androidx.annotation.NonNull;
-import androidx.legacy.content.WakefulBroadcastReceiver;
+import android.os.IBinder;
 
+import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.models.APStatus;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
 import java.util.regex.Pattern;
@@ -20,7 +21,7 @@ import lombok.val;
 /**
  * Created by adrian on 14/02/16.
  */
-public class ExternalStatusService extends IntentService {
+public class ExternalStatusService extends android.app.Service {
     //constants
     static final String EXTERNAL_STATUS_STORE = "external-status-store";
     static final String EXTERNAL_STATUS_STORE_TIME = "external-status-store-time";
@@ -30,9 +31,32 @@ public class ExternalStatusService extends IntentService {
     private static final int MAX_LEN = 70;
     private final static String TAG = ExternalStatusService.class.getSimpleName();
 
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Notification.Builder builder = new Notification.Builder(this,
+                NotificationChannels.ONGOING_CHANNEL);
+
+        builder.setContentTitle("xDrip External Status")
+                .setSmallIcon(com.eveningoutpost.dexdrip.R.drawable.ic_launcher);
+
+        startForeground(124, builder.build());
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent != null) {
+            final String action = intent.getAction();
+            if (ACTION_NEW_EXTERNAL_STATUSLINE.equals(action)) {
+                final String statusLine = intent.getStringExtra(EXTRA_STATUSLINE);
+                update(JoH.tsl(), statusLine, true);
+            }
+        }
+        stopSelf();
+        return START_NOT_STICKY;
+    }
+
     public ExternalStatusService() {
-        super("ExternalStatusService");
-        setIntentRedelivery(true);
     }
 
     private static boolean isCurrent(long timestamp) {
@@ -57,22 +81,8 @@ public class ExternalStatusService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
-
-        if (intent == null)
-            return;
-
-        try {
-            final String action = intent.getAction();
-            if (action == null) return;
-
-            if (ACTION_NEW_EXTERNAL_STATUSLINE.equals(action)) {
-                final String statusLine = intent.getStringExtra(EXTRA_STATUSLINE);
-                update(JoH.tsl(), statusLine, true);
-            }
-        } finally {
-            WakefulBroadcastReceiver.completeWakefulIntent(intent);
-        }
+    public IBinder onBind(Intent intent) {
+        return null;
     }
 
 
