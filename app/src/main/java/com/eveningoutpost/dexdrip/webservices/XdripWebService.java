@@ -13,7 +13,6 @@ import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.TriState;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 
 import java.io.BufferedInputStream;
@@ -27,6 +26,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -388,7 +388,7 @@ public class XdripWebService implements Runnable {
     }
 
     public static String hashPassword(final String secret) {
-        return secret.isEmpty() ? null : Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+        return secret.isEmpty() ? null : Hashing.sha1().hashBytes(secret.getBytes(StandardCharsets.UTF_8)).toString();
     }
 }
 
