@@ -647,12 +647,18 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Stopped scan due to timeout at: " + JoH.dateTimeText(tsl()));
         //noinspection NonAtomicOperationOnVolatileField
         scanTimeouts++;
-        if (scanTimeouts % 3 == 0 && genericBluetoothWatchdog()) {
+        if (scanTimeouts % 3 == 0 && genericBluetoothWatchdog()
+                && msSince(static_last_connected) < 3 * HOUR_IN_MS) {
             UserError.Log.e(TAG, "Scan timeout watchdog: resetting Bluetooth after " + scanTimeouts + " consecutive scan timeouts");
             JoH.niceRestartBluetooth(xdrip.getAppContext());
         }
         tryLoadingSavedMAC();
-        prepareToWakeup();
+        if (!minimize_scanning) {
+            UserError.Log.d(TAG, "Restarting scan immediately as minimize scanning is off");
+            changeState(SCAN);
+        } else {
+            prepareToWakeup();
+        }
     }
 
 
@@ -1561,11 +1567,14 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public void tryGattRefresh() {
+        if (connection == null) {
+            UserError.Log.d(TAG, "Gatt refresh skipped - no connection");
+            return;
+        }
         if (JoH.ratelimit("ob1-gatt-refresh", 60)) {
             if (Pref.getBoolean("use_gatt_refresh", true)) {
                 try {
-                    if (connection != null)
-                        UserError.Log.d(TAG, "Trying gatt refresh queue");
+                    UserError.Log.d(TAG, "Trying gatt refresh queue");
                     connection.queue((new GattRefreshOperation(0))).timeout(2, TimeUnit.SECONDS).subscribe(
                             readValue -> {
                                 UserError.Log.d(TAG, "Refresh OK: " + readValue);
