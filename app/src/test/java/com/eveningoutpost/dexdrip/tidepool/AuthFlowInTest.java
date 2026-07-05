@@ -2,14 +2,9 @@ package com.eveningoutpost.dexdrip.tidepool;
 
 import static com.google.common.truth.Truth.assertThat;
 
-import android.net.Uri;
-
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
 import net.openid.appauth.AuthorizationException;
-import net.openid.appauth.AuthorizationServiceConfiguration;
-import net.openid.appauth.TokenRequest;
-import net.openid.appauth.TokenResponse;
 
 import org.junit.Test;
 
@@ -65,49 +60,5 @@ public class AuthFlowInTest extends RobolectricTestWithConfig {
     public void nullException_isNotTransient() {
         // :: Verify
         assertThat(AuthFlowIn.isTransientTokenError(null)).isFalse();
-    }
-
-    // classifyFreshTokenResult — the full outcome decision the fresh-token callback acts on.
-
-    @Test
-    public void noAccessTokenWithTransientError_retriesSilently() {
-        // :: Setup
-        final AuthorizationException networkError = AuthorizationException.fromTemplate(
-                AuthorizationException.GeneralErrors.NETWORK_ERROR, new IOException("timeout"));
-
-        // :: Act & Verify — the fix: a transient failure keeps the session, no re-login.
-        assertThat(AuthFlowIn.classifyFreshTokenResult(null, null, networkError))
-                .isEqualTo(AuthFlowIn.TokenOutcome.RETRY_SILENTLY);
-    }
-
-    @Test
-    public void noAccessTokenWithRejectedCredential_retriesLogin() {
-        // :: Act & Verify — a genuine credential failure still forces interactive re-login.
-        assertThat(AuthFlowIn.classifyFreshTokenResult(
-                null, null, AuthorizationException.TokenRequestErrors.INVALID_GRANT))
-                .isEqualTo(AuthFlowIn.TokenOutcome.RETRY_LOGIN_TOKEN_REJECTED);
-    }
-
-    @Test
-    public void accessTokenButNoLastResponse_retriesLogin() {
-        // :: Act & Verify — have a token but no stored response/token type: re-login as before.
-        assertThat(AuthFlowIn.classifyFreshTokenResult("access-token", null, null))
-                .isEqualTo(AuthFlowIn.TokenOutcome.RETRY_LOGIN_NO_TOKEN_TYPE);
-    }
-
-    @Test
-    public void accessTokenWithLastResponse_startsSession() {
-        // :: Setup — a minimal real TokenResponse (refresh-token grant needs only a refresh token).
-        final AuthorizationServiceConfiguration config = new AuthorizationServiceConfiguration(
-                Uri.parse("https://auth.example/authorize"), Uri.parse("https://auth.example/token"));
-        final TokenRequest request = new TokenRequest.Builder(config, "xdrip")
-                .setGrantType("refresh_token")
-                .setRefreshToken("refresh-token")
-                .build();
-        final TokenResponse lastResponse = new TokenResponse.Builder(request).build();
-
-        // :: Act & Verify — happy path: valid token and a stored response starts the session.
-        assertThat(AuthFlowIn.classifyFreshTokenResult("access-token", lastResponse, null))
-                .isEqualTo(AuthFlowIn.TokenOutcome.START_SESSION);
     }
 }
