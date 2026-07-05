@@ -20,6 +20,7 @@ import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Response;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.Headers;
@@ -129,15 +130,11 @@ public class NightscoutFollow {
                     }
                 }
             }
-            if (JoH.ratelimit("nsfollow-devicestatus", 5 * 60)) {
+            if (NsServerCapabilities.supportsDeviceStatus(urlString)
+                    && JoH.ratelimit("nsfollow-devicestatus", 5 * 60)) {
                 try {
-                    getService().getDeviceStatus(session.url.getHashedSecret()).enqueue(
-                            new NightscoutCallback<>("NS devicestatus download", session,
-                                    statusList -> {
-                                        if (!statusList.isEmpty()) {
-                                            applyDeviceStatus(statusList.get(0));
-                                        }
-                                    }, null));
+                    getService().getDeviceStatus(session.url.getHashedSecret())
+                            .enqueue(new DeviceStatusCallback(session, urlString));
                 } catch (Exception e) {
                     UserError.Log.e(TAG, "Exception in devicestatus work() " + e);
                 }
@@ -187,5 +184,35 @@ public class NightscoutFollow {
         if (ds.uploaderBattery != null) return ds.uploaderBattery;
         if (ds.uploader != null) return ds.uploader.battery;
         return null;
+    }
+
+    /**
+     * Devicestatus callback that disables further devicestatus polling for this server when the
+     * endpoint is rejected with an HTTP 4xx (e.g. Juggluco returns 400 Bad Request).
+     */
+    private static final class DeviceStatusCallback extends NightscoutCallback<List<DeviceStatus>> {
+        private final String url;
+
+        DeviceStatusCallback(final Session session, final String url) {
+            super("NS devicestatus download", session, statusList -> {
+                if (!statusList.isEmpty()) {
+                    applyDeviceStatus(statusList.get(0));
+                }
+            }, null);
+            this.url = url;
+        }
+
+        @Override
+        public void onResponse(final Call<List<DeviceStatus>> call, final Response<List<DeviceStatus>> response) {
+            super.onResponse(call, response);
+            final int code = response.code();
+            if (response.isSuccessful()) {
+                // Self-heal: endpoint works, clear any prior unsupported mark for this server.
+                NsServerCapabilities.markDeviceStatusSupported(url);
+            } else if (code >= 400 && code < 500) {
+                UserError.Log.d(TAG, "devicestatus unsupported (" + code + ") — disabling for this server");
+                NsServerCapabilities.markDeviceStatusUnsupported(url);
+            }
+        }
     }
 }
