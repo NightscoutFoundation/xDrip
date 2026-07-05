@@ -41,8 +41,8 @@ public class AuthFlowInTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void invalidGrant_isNotTransient_soReloginStillHappens() {
-        // :: Verify — a revoked/expired refresh token must still force interactive re-login.
+    public void invalidGrant_isNotTransient() {
+        // :: Verify — a rejected credential (invalid_grant) is an OAuth token error, not transient.
         assertThat(AuthFlowIn.isTransientTokenError(
                 AuthorizationException.TokenRequestErrors.INVALID_GRANT)).isFalse();
     }
