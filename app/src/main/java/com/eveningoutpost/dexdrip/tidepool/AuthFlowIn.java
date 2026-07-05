@@ -6,6 +6,7 @@ import static com.eveningoutpost.dexdrip.tidepool.AuthFlowOut.eraseAuthState;
 
 import android.content.Intent;
 import android.os.Bundle;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -172,6 +173,24 @@ public class AuthFlowIn extends AppCompatActivity {
         }
     }
 
+    /**
+     * True when a fresh-token action failed for a transient reason — no connectivity or a
+     * server-side error — rather than a rejected credential. In these cases the stored refresh
+     * token is still presumably valid, so the next sync should retry the silent refresh instead
+     * of dropping the user into an interactive browser re-login. A genuinely expired/revoked
+     * refresh token surfaces as an OAuth token error (e.g. {@code invalid_grant}), not as one of
+     * these general errors, so it still correctly triggers re-login.
+     */
+    @VisibleForTesting
+    static boolean isTransientTokenError(final AuthorizationException ex) {
+        if (ex == null) {
+            return false;
+        }
+        return ex.type == AuthorizationException.TYPE_GENERAL_ERROR
+                && (ex.code == AuthorizationException.GeneralErrors.NETWORK_ERROR.code
+                || ex.code == AuthorizationException.GeneralErrors.SERVER_ERROR.code);
+    }
+
     public static void handleTokenLoginAndStartSession() {
         val state = AuthFlowOut.getAuthState();
         if (state != null) {
@@ -194,8 +213,12 @@ public class AuthFlowIn extends AppCompatActivity {
                         retryInitialLogin();
                     }
                 } else {
-                    Log.e(TAG, "Failing to use access token - trying initial login again");
-                    retryInitialLogin();
+                    if (isTransientTokenError(tokenException)) {
+                        Log.d(TAG, "Token refresh failed transiently - keeping session, will retry on next sync: " + tokenException);
+                    } else {
+                        Log.e(TAG, "Failing to use access token - trying initial login again");
+                        retryInitialLogin();
+                    }
                 }
             });
         } else {
