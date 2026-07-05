@@ -13,12 +13,15 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.internal.bind.TypeAdapters;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
@@ -64,6 +67,7 @@ public class RetrofitService {
 
         final Gson gson = new GsonBuilder()
                 .registerTypeAdapterFactory(UNRELIABLE_INTEGER_FACTORY)
+                .registerTypeAdapterFactory(EMPTY_OBJECT_AS_EMPTY_LIST)
                 .create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
@@ -185,4 +189,37 @@ public class RetrofitService {
         }
     };
     public static final TypeAdapterFactory UNRELIABLE_INTEGER_FACTORY = TypeAdapters.newFactory(int.class, Integer.class, UNRELIABLE_INTEGER);
+
+    /**
+     * Some Nightscout emulators (Juggluco) return an empty JSON object {@code {}} instead of an
+     * empty array {@code []} for an empty result set. This factory maps that to an empty list for
+     * any {@code List<...>} target, so a no-data poll is a normal empty result rather than a
+     * {@code BEGIN_ARRAY}/{@code BEGIN_OBJECT} parse failure. Real Nightscout returns {@code []},
+     * so it is unaffected.
+     */
+    public static final TypeAdapterFactory EMPTY_OBJECT_AS_EMPTY_LIST = new TypeAdapterFactory() {
+        @Override
+        public <T> TypeAdapter<T> create(final Gson gson, final TypeToken<T> type) {
+            if (!List.class.isAssignableFrom(type.getRawType())) {
+                return null;
+            }
+            final TypeAdapter<T> delegate = gson.getDelegateAdapter(this, type);
+            return new TypeAdapter<T>() {
+                @Override
+                @SuppressWarnings("unchecked")
+                public T read(final JsonReader in) throws IOException {
+                    if (in.peek() == JsonToken.BEGIN_OBJECT) {
+                        in.skipValue(); // consume {} and treat as empty
+                        return (T) new ArrayList<>();
+                    }
+                    return delegate.read(in);
+                }
+
+                @Override
+                public void write(final JsonWriter out, final T value) throws IOException {
+                    delegate.write(out, value);
+                }
+            };
+        }
+    };
 }
