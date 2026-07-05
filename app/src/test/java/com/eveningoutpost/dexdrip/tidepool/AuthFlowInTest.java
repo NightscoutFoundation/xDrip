@@ -48,6 +48,15 @@ public class AuthFlowInTest extends RobolectricTestWithConfig {
     }
 
     @Test
+    public void otherGeneralError_isNotTransient() {
+        // :: Verify — a general error that is not a connectivity/server failure (here: JSON
+        // deserialization, type 0 code 5) must NOT be transient. Without this the code-level
+        // discrimination would be dead and every general error would suppress re-login.
+        assertThat(AuthFlowIn.isTransientTokenError(
+                AuthorizationException.GeneralErrors.JSON_DESERIALIZATION_ERROR)).isFalse();
+    }
+
+    @Test
     public void nullException_isNotTransient() {
         // :: Verify
         assertThat(AuthFlowIn.isTransientTokenError(null)).isFalse();

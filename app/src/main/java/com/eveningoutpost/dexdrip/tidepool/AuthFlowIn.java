@@ -174,12 +174,9 @@ public class AuthFlowIn extends AppCompatActivity {
     }
 
     /**
-     * True when a fresh-token action failed for a transient reason — no connectivity or a
-     * server-side error — rather than a rejected credential. In these cases the stored refresh
-     * token is still presumably valid, so the next sync should retry the silent refresh instead
-     * of dropping the user into an interactive browser re-login. A genuinely expired/revoked
-     * refresh token surfaces as an OAuth token error (e.g. {@code invalid_grant}), not as one of
-     * these general errors, so it still correctly triggers re-login.
+     * True for a transient token-refresh failure (no connectivity or a server-side error), where the
+     * stored refresh token is still valid and the next sync should retry silently. A rejected
+     * credential instead surfaces as an OAuth token error ({@code invalid_grant}) and still forces re-login.
      */
     @VisibleForTesting
     static boolean isTransientTokenError(final AuthorizationException ex) {
