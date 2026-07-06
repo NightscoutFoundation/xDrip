@@ -11,9 +11,9 @@ import org.junit.Test;
 import java.io.IOException;
 
 /**
- * Tests for {@link AuthFlowIn#isTransientTokenError} — the classifier that decides whether a
- * failed Tidepool token refresh should be retried silently (transient network/server error) or
- * fall back to an interactive browser re-login (rejected credential).
+ * Tests for {@link AuthFlowIn#isTransientTokenError} — the predicate that classifies a failed
+ * Tidepool token refresh as transient (network/server error → retry silently on next sync) vs. a
+ * rejected credential (→ interactive browser re-login).
  *
  * @author Asbjørn Aarrestad
  */
