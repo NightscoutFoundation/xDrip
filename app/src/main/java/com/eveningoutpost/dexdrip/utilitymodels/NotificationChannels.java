@@ -155,14 +155,6 @@ public class NotificationChannels {
 
     }
 
-    private static boolean addChannelGroup() {
-        // If notifications are grouped, the BG number icon doesn't update
-        if (Pref.getBooleanDefaultFalse("use_number_icon")) {
-            return false;
-        }
-        return Pref.getBooleanDefaultFalse("notification_channels_grouping");
-    }
-
     @TargetApi(26)
     public static NotificationChannel getChan(NotificationCompat.Builder wip) {
 

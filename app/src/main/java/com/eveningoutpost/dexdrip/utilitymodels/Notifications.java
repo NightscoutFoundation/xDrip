@@ -568,12 +568,6 @@ public class Notifications extends IntentService {
                 .build();
     }*/
 
-    private boolean useOngoingChannel() {
-        return (Pref.getBooleanDefaultFalse("use_notification_channels") &&
-                Pref.getBooleanDefaultFalse("ongoing_notification_channel") &&
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O);
-    }
-
     //@TargetApi(Build.VERSION_CODES.O)
     public synchronized Notification createOngoingNotification(BgGraphBuilder bgGraphBuilder, Context context) {
         mContext = context;
