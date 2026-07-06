@@ -1434,6 +1434,8 @@
     <string name="title_ob1_g5_fallback_to_xdrip">Fallback to xDrip</string>
     <string name="summary_ob1_minimize_scanning">Use heuristics to minimize Bluetooth scanning + save power</string>
     <string name="title_ob1_minimize_scanning">Minimize Scanning</string>
+    <string name="summary_ob1_g7_recovery">Experimental. Adds extra scan/GATT/bond recovery for stuck G7 connections on low-end devices. Off = unchanged behaviour.</string>
+    <string name="title_ob1_g7_recovery">G7 signal-loss recovery</string>
     <string name="summary_ob1_avoid_scanning">Avoid scanning as much as possible (reduces battery usage further)</string>
     <string name="title_ob1_avoid_scanning">Avoid Scanning</string>
     <string name="summary_using_g6">I am using a Dex Sensor</string>

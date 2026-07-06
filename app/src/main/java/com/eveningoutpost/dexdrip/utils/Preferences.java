@@ -1275,6 +1275,15 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     settings.removePreference(findPreference("debug_miband4"));
                 }
 
+                if (!Home.get_engineering_mode()) {
+                    // G7 signal-loss recovery is an engineering-only experimental toggle
+                    final PreferenceCategory ob1Options = (PreferenceCategory) findPreference("ob1_options");
+                    final Preference g7Recovery = findPreference("ob1_g7_recovery");
+                    if (ob1Options != null && g7Recovery != null) {
+                        ob1Options.removePreference(g7Recovery);
+                    }
+                }
+
             } catch (Exception e) {
                 //
             }

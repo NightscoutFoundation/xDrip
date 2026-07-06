@@ -252,6 +252,8 @@ public class Ob1G5CollectionService extends G5BaseService {
     private static volatile boolean allow_scan_by_mac = false;
     private static volatile boolean use_auto_connect = false;
     private static volatile boolean minimize_scanning = false; // set by preference
+    private static volatile boolean ob1RecoveryEnabled = false; // set by preference "ob1_g7_recovery" (engineering mode only)
+    private static volatile long state_entered_ms = -1; // when the current state was entered (diagnostics only)
     private static volatile boolean always_scan = false;
     private static volatile boolean scan_next_run = true;
     private static final boolean always_discover = true;
@@ -490,7 +492,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 UserError.Log.d(TAG, "Not avoiding scanning due to connect failure level: " + connectNowFailures);
                 connectNowFailures++;
             }
-            if (alwaysMinimize && preScanFailureMarker) {
+            if (ob1RecoveryEnabled && alwaysMinimize && preScanFailureMarker) {
                 alwaysMinimize = false;
                 UserError.Log.e(TAG, "Not avoiding scanning due to mid-session connection failure");
             }
@@ -535,6 +537,7 @@ public class Ob1G5CollectionService extends G5BaseService {
         } else {
             UserError.Log.d(TAG, "Changing state from: " + state + " to " + new_state);
             state = new_state;
+            state_entered_ms = tsl();
             if (android_wear && wear_broadcast) {
                 msg(new_state.toString());
             }
@@ -628,8 +631,11 @@ public class Ob1G5CollectionService extends G5BaseService {
                         //.doOnUnsubscribe(this::clearSubscription)
                         .subscribeOn(Schedulers.io())
                         .subscribe(this::onScanResult, this::onScanFailure));
-                // Must be less than fail over timeout - always schedule so stuck BLE scans are detected
-                Inevitable.task(STOP_SCAN_TASK_ID, 320 * Constants.SECOND_IN_MS, this::stopScanWithTimeoutAndReschedule);
+                // Must be less than fail over timeout
+                if (minimize_scanning || ob1RecoveryEnabled) {
+                    // With recovery on, always schedule so stuck BLE scans are detected
+                    Inevitable.task(STOP_SCAN_TASK_ID, 320 * Constants.SECOND_IN_MS, this::stopScanWithTimeoutAndReschedule);
+                }
 
                 UserError.Log.d(TAG, "Scanning for: " + getTransmitterBluetoothName());
             } else {
@@ -647,13 +653,13 @@ public class Ob1G5CollectionService extends G5BaseService {
         UserError.Log.d(TAG, "Stopped scan due to timeout at: " + JoH.dateTimeText(tsl()));
         //noinspection NonAtomicOperationOnVolatileField
         scanTimeouts++;
-        if (scanTimeouts % 3 == 0 && genericBluetoothWatchdog()
+        if (ob1RecoveryEnabled && scanTimeouts % 3 == 0 && genericBluetoothWatchdog()
                 && msSince(static_last_connected) < 3 * HOUR_IN_MS) {
             UserError.Log.e(TAG, "Scan timeout watchdog: resetting Bluetooth after " + scanTimeouts + " consecutive scan timeouts");
             JoH.niceRestartBluetooth(xdrip.getAppContext());
         }
         tryLoadingSavedMAC();
-        if (!minimize_scanning) {
+        if (ob1RecoveryEnabled && !minimize_scanning) {
             UserError.Log.d(TAG, "Restarting scan immediately as minimize scanning is off");
             changeState(SCAN);
         } else {
@@ -876,6 +882,7 @@ public class Ob1G5CollectionService extends G5BaseService {
 
     // check required permissions and warn the user if they are wrong
     private static void checkPermissions() {
+        if (!ob1RecoveryEnabled) return;
         final android.content.Context ctx = xdrip.getAppContext();
         if (!BtPermissionCache.isBluetoothScanGranted(ctx)) {
             UserError.Log.wtf(TAG, "BLUETOOTH_SCAN permission is not granted");
@@ -1239,15 +1246,31 @@ public class Ob1G5CollectionService extends G5BaseService {
 
 
             scheduleWakeUp(MINUTE_IN_MS * 6, "fail-over");
+            ob1RecoveryEnabled = Pref.getBooleanDefaultFalse("ob1_g7_recovery");
+            // With recovery on, the fail-over reset also covers the active connect/auth/bond states.
+            final boolean stuckInExtraState = ob1RecoveryEnabled
+                    && ((state == CONNECT_NOW) || (state == CHECK_AUTH) || (state == GET_DATA)
+                    || (state == RESET) || (state == UNBOND));
             if ((state == BOND) || (state == PREBOND) || (state == DISCOVER) || (state == CONNECT)
-                    || (state == CONNECT_NOW) || (state == CHECK_AUTH) || (state == GET_DATA)
-                    || (state == RESET) || (state == UNBOND)) {
-                UserError.Log.e(TAG, "Fail-over wakeup: stuck in " + state + " after " + niceTimeScalar(msSince(last_connect_started)) + ", resetting to SCAN");
+                    || stuckInExtraState) {
+                if (ob1RecoveryEnabled) {
+                    final long inState = state_entered_ms > 0 ? msSince(state_entered_ms) : msSince(last_connect_started);
+                    UserError.Log.e(TAG, "Fail-over wakeup: stuck in " + state + " for " + niceTimeScalar(inState)
+                            + " (minimize=" + minimize_scanning + " connectNowFailures=" + connectNowFailures
+                            + " lastConnectFailed=" + lastConnectFailed + "), resetting to SCAN");
+                    if (state == CONNECT_NOW && minimize_scanning && !lastConnectFailed) {
+                        // See plan follow-up: a hung power-connect can be reset here without going through the
+                        // failure accounting, so it may loop without ever escalating minimize -> real scan.
+                        UserError.Log.e(TAG, "Fail-over reset of CONNECT_NOW while minimize-scanning active and no prior connect failure - hung power-connect may be masked without escalation");
+                    }
+                }
                 state = SCAN;
             }
 
-            BtPermissionCache.refresh(this);
-            checkPermissions();
+            if (ob1RecoveryEnabled) {
+                BtPermissionCache.refresh(this);
+                checkPermissions();
+            }
             checkAndEnableBT();
 
             Ob1G5StateMachine.restoreQueue();
@@ -1507,7 +1530,7 @@ public class Ob1G5CollectionService extends G5BaseService {
                 if (android_wear) {
                     UserError.Log.d(TAG, "Trying alternate reconnection strategy");
                     changeState(CONNECT_NOW);
-                } else {
+                } else if (ob1RecoveryEnabled) {
                     UserError.Log.e(TAG, "Connection failure in DISCOVER, bond reset not allowed, forcing scan");
                     changeState(SCAN);
                 }
@@ -1556,8 +1579,8 @@ public class Ob1G5CollectionService extends G5BaseService {
             return;
         }
 
-        if (state == CHECK_AUTH || state == GET_DATA || state == PREBOND
-                || state == BOND || state == RESET || state == UNBOND) {
+        if (ob1RecoveryEnabled && (state == CHECK_AUTH || state == GET_DATA || state == PREBOND
+                || state == BOND || state == RESET || state == UNBOND)) {
             UserError.Log.e(TAG, "Connection failure in " + state + ": " + throwable.getMessage() + ", forcing scan");
             preScanFailureMarker = true;
             tryGattRefresh();
@@ -1567,14 +1590,16 @@ public class Ob1G5CollectionService extends G5BaseService {
     }
 
     public void tryGattRefresh() {
-        if (connection == null) {
+        if (ob1RecoveryEnabled && connection == null) {
+            // Bail before consuming the ratelimit token (and before the NPE below) when there is no connection.
             UserError.Log.d(TAG, "Gatt refresh skipped - no connection");
             return;
         }
         if (JoH.ratelimit("ob1-gatt-refresh", 60)) {
             if (Pref.getBoolean("use_gatt_refresh", true)) {
                 try {
-                    UserError.Log.d(TAG, "Trying gatt refresh queue");
+                    if (connection != null)
+                        UserError.Log.d(TAG, "Trying gatt refresh queue");
                     connection.queue((new GattRefreshOperation(0))).timeout(2, TimeUnit.SECONDS).subscribe(
                             readValue -> {
                                 UserError.Log.d(TAG, "Refresh OK: " + readValue);
@@ -1653,9 +1678,9 @@ public class Ob1G5CollectionService extends G5BaseService {
                 break;
             case DISCONNECTING:
                 connection_state = "Disconnecting";
-                if (state == CONNECT || state == CONNECT_NOW || state == DISCOVER
+                if (ob1RecoveryEnabled && (state == CONNECT || state == CONNECT_NOW || state == DISCOVER
                         || state == CHECK_AUTH || state == PREBOND || state == BOND
-                        || state == GET_DATA || state == RESET || state == UNBOND) {
+                        || state == GET_DATA || state == RESET || state == UNBOND)) {
                     UserError.Log.e(TAG, "Disconnecting in active state: " + state + " after " + niceTimeScalar(msSince(last_connect_started)));
                 }
                 break;
@@ -1663,8 +1688,12 @@ public class Ob1G5CollectionService extends G5BaseService {
                 connection_state = "Disconnected";
                 JoH.releaseWakeLock(floatingWakeLock);
                 // Fallback if BLE state dropped but connect flow did not fail-cleanly.
+                // If onConnectionFailure() already handled this drop it will have moved us out of the
+                // active state via changeState() (which writes `state` synchronously), so the guard below
+                // then fails and we do not double-fire changeState(SCAN).
                 final long since_connect = msSince(last_connect_started);
-                if ((state == CONNECT || state == CONNECT_NOW || state == DISCOVER
+                if (ob1RecoveryEnabled
+                        && (state == CONNECT || state == CONNECT_NOW || state == DISCOVER
                         || state == CHECK_AUTH || state == PREBOND || state == BOND
                         || state == GET_DATA || state == RESET || state == UNBOND)
                         && since_connect > Constants.SECOND_IN_MS * 10

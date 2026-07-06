@@ -7,12 +7,15 @@ import android.os.Build;
 
 import androidx.core.content.ContextCompat;
 
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 
 /**
  * Caches BLE permission check results to avoid calling PackageManager during
  * scan/connect operations. Refreshed once per service wake cycle (~5 min).
  * Falls back to a live PackageManager check when the cache is cold or stale.
+ *
+ * @author psonnera
  */
 public class BtPermissionCache {
 
@@ -45,7 +48,7 @@ public class BtPermissionCache {
             } else {
                 cachedLocation = true;
             }
-            lastRefreshedMs = System.currentTimeMillis();
+            lastRefreshedMs = JoH.tsl();
             UserError.Log.d(TAG, "Refreshed: scan=" + cachedScan
                     + " connect=" + cachedConnect + " location=" + cachedLocation);
         } catch (Exception e) {
@@ -55,7 +58,7 @@ public class BtPermissionCache {
 
     private static boolean isFresh() {
         return lastRefreshedMs > 0
-                && (System.currentTimeMillis() - lastRefreshedMs) < MAX_CACHE_AGE_MS;
+                && (JoH.tsl() - lastRefreshedMs) < MAX_CACHE_AGE_MS;
     }
 
     /** Returns cached BLUETOOTH_SCAN grant state; falls back to live check when cache is stale. */
