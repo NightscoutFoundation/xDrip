@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 
 import com.eveningoutpost.dexdrip.models.APStatus;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -13,7 +14,9 @@ import com.eveningoutpost.dexdrip.NewDataObserver;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utils.jobs.BackgroundQueue;
 
+import java.util.concurrent.Executor;
 import java.util.regex.Pattern;
 
 import lombok.val;
@@ -30,6 +33,13 @@ public class ExternalStatusService extends android.app.Service {
     //public static final String RECEIVER_PERMISSION = "com.eveningoutpost.dexdrip.permissions.RECEIVE_EXTERNAL_STATUSLINE";
     private static final int MAX_LEN = 70;
     private final static String TAG = ExternalStatusService.class.getSimpleName();
+
+    // onStartCommand runs on the main thread; update() does synchronous SQLite I/O, so it is
+    // dispatched here. BackgroundQueue is xDrip's sequential background processor, so it preserves
+    // the ordering the old IntentService gave us (avoids overlapping broadcasts racing
+    // createEfficientRecord()'s read-then-write).
+    @VisibleForTesting
+    static Executor dispatchExecutor = BackgroundQueue::post;
 
     @Override
     public void onCreate() {
@@ -49,10 +59,15 @@ public class ExternalStatusService extends android.app.Service {
             final String action = intent.getAction();
             if (ACTION_NEW_EXTERNAL_STATUSLINE.equals(action)) {
                 final String statusLine = intent.getStringExtra(EXTRA_STATUSLINE);
-                update(JoH.tsl(), statusLine, true);
+                final long timestamp = JoH.tsl(); // capture arrival time on the calling thread
+                dispatchExecutor.execute(() -> {
+                    update(timestamp, statusLine, true);
+                    stopSelf(startId);
+                });
+                return START_NOT_STICKY;
             }
         }
-        stopSelf();
+        stopSelf(startId);
         return START_NOT_STICKY;
     }
 
