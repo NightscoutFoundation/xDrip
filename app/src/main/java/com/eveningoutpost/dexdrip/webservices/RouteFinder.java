@@ -42,6 +42,10 @@ public class RouteFinder {
         // support for nightscout style barebones status.json endpoint
         routes.add(new RouteInfo("status.json", "WebServiceStatus"));
 
+        // support for nightscout style profile.json endpoint
+        routes.add(new RouteInfo("profile.json", "WebServiceProfile"));
+        routes.add(new RouteInfo("api/v1/profile.json", "WebServiceProfile"));
+
         // support for working with step counter
         routes.add(new RouteInfo("steps/", "WebServiceSteps"));
 

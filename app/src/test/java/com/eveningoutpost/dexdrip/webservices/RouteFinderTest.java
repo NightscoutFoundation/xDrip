@@ -5,6 +5,7 @@ import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.DateUtil;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.Treatments;
+import com.eveningoutpost.dexdrip.profileeditor.BasalProfile;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.utilitymodels.NanoStatus;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -19,6 +20,7 @@ import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.Arrays;
 
 import static com.google.common.truth.Truth.assertWithMessage;
 
@@ -221,6 +223,74 @@ public class RouteFinderTest extends RobolectricTestWithConfig {
         } catch (JSONException e) {
             return null;
         }
+    }
+
+    @Test
+    public void test_WebServiceProfile() {
+        final RouteFinder routeFinder = new RouteFinder();
+
+        // no saved profile blocks: falls back to a single default block from prefs
+        Pref.setString("profile_carb_ratio_default", "12");
+        Pref.setString("profile_insulin_sensitivity_default", "45");
+        Pref.setString("profile_carb_absorption_default", "30");
+        Pref.setString("units", "mgdl");
+
+        // two basal segments covering 12 hours each
+        BasalProfile.save(BasalProfile.getActiveRateName(), Arrays.asList(0.8, 1.2));
+
+        WebResponse response = routeFinder.handleRoute("profile.json");
+        validResponse("profile.json", response);
+
+        JSONArray parsed;
+        try {
+            parsed = new JSONArray(new String(response.bytes));
+            JSONObject profile = parsed.getJSONObject(0);
+            JSONObject defaultBlock = profile.getJSONObject("store").getJSONObject("Default");
+
+            assertWithMessage("units")
+                    .that(defaultBlock.getString("units"))
+                    .isEqualTo("mg/dl");
+
+            JSONObject carbratio = defaultBlock.getJSONArray("carbratio").getJSONObject(0);
+            assertWithMessage("carbratio time")
+                    .that(carbratio.getString("time"))
+                    .isEqualTo("00:00");
+            assertWithMessage("carbratio value")
+                    .that(carbratio.getDouble("value"))
+                    .isEqualTo(12.0);
+
+            JSONObject sens = defaultBlock.getJSONArray("sens").getJSONObject(0);
+            assertWithMessage("sens value")
+                    .that(sens.getDouble("value"))
+                    .isEqualTo(45.0);
+
+            assertWithMessage("carbs_hr")
+                    .that(defaultBlock.getDouble("carbs_hr"))
+                    .isEqualTo(30.0);
+
+            JSONArray basal = defaultBlock.getJSONArray("basal");
+            assertWithMessage("basal segment count")
+                    .that(basal.length())
+                    .isEqualTo(2);
+            assertWithMessage("basal segment 0 time")
+                    .that(basal.getJSONObject(0).getString("time"))
+                    .isEqualTo("00:00");
+            assertWithMessage("basal segment 0 value")
+                    .that(basal.getJSONObject(0).getDouble("value"))
+                    .isEqualTo(0.8);
+            assertWithMessage("basal segment 1 time")
+                    .that(basal.getJSONObject(1).getString("time"))
+                    .isEqualTo("12:00");
+            assertWithMessage("basal segment 1 value")
+                    .that(basal.getJSONObject(1).getDouble("value"))
+                    .isEqualTo(1.2);
+        } catch (JSONException e) {
+            throw new RuntimeException(e);
+        }
+
+        // also reachable via the nightscout style api/v1 path
+        response = routeFinder.handleRoute("api/v1/profile.json");
+        validResponse("api/v1/profile.json", response);
     }
 
     @Test
