@@ -35,6 +35,7 @@ import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
+import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusBroadcastReceiverWrapper;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
 
@@ -106,13 +107,13 @@ public class xdrip extends Application {
         new IdempotentMigrations(getApplicationContext()).performAll();
 
         IntentFilter externalFilter = new IntentFilter("com.eveningoutpost.dexdrip.ExternalStatusline");
-        registerReceiver(new com.eveningoutpost.dexdrip.wearintegration.ExternalStatusBroadcastReceiver(), externalFilter);
+        registerReceiver(new ExternalStatusBroadcastReceiverWrapper(), externalFilter);
         IntentFilter bgFilter = new IntentFilter();
         bgFilter.addAction("com.eveningoutpost.dexdrip.NS_EMULATOR");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT");
-        registerReceiver(new NSEmulatorReceiver(), bgFilter);
+        registerReceiver(new NSEmulatorReceiverWrapper(), bgFilter);
 
         JobManager.create(this).addJobCreator(new XDripJobCreator());
         DailyJob.schedule();
