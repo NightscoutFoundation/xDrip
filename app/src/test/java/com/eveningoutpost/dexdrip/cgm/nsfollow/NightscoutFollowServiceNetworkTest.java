@@ -47,4 +47,46 @@ public class NightscoutFollowServiceNetworkTest extends RobolectricTestWithConfi
         // :: Verify
         assertThat(NightscoutFollowService.isNetworkAvailable(cm)).isTrue();
     }
+
+    // ===== isLoopbackUrl =========================================================================
+
+    @Test
+    public void isLoopbackUrl_trueForIpv4Loopback() {
+        assertThat(NightscoutFollowService.isLoopbackUrl("http://127.0.0.1:17580/")).isTrue();
+    }
+
+    @Test
+    public void isLoopbackUrl_trueForLocalhostAndIpv6() {
+        assertThat(NightscoutFollowService.isLoopbackUrl("http://localhost:1979/")).isTrue();
+        assertThat(NightscoutFollowService.isLoopbackUrl("http://[::1]:1979/")).isTrue();
+    }
+
+    @Test
+    public void isLoopbackUrl_falseForRemoteHostAndBlank() {
+        assertThat(NightscoutFollowService.isLoopbackUrl("https://my.ns.example.com/")).isFalse();
+        assertThat(NightscoutFollowService.isLoopbackUrl("")).isFalse();
+        assertThat(NightscoutFollowService.isLoopbackUrl(null)).isFalse();
+    }
+
+    // ===== shouldPoll ============================================================================
+
+    @Test
+    public void shouldPoll_trueForLoopback_evenWithNoNetwork() {
+        // :: Setup — airplane mode: CM present, no active network
+        final ConnectivityManager cm = mock(ConnectivityManager.class);
+        when(cm.getActiveNetwork()).thenReturn(null);
+
+        // :: Verify — loopback still polls
+        assertThat(NightscoutFollowService.shouldPoll(cm, "http://127.0.0.1:17580/")).isTrue();
+    }
+
+    @Test
+    public void shouldPoll_falseForRemote_whenNoNetwork() {
+        // :: Setup — no active network
+        final ConnectivityManager cm = mock(ConnectivityManager.class);
+        when(cm.getActiveNetwork()).thenReturn(null);
+
+        // :: Verify — remote host is skipped when offline
+        assertThat(NightscoutFollowService.shouldPoll(cm, "https://my.ns.example.com/")).isFalse();
+    }
 }

@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,6 +71,27 @@ public class NightscoutFollowService extends ForegroundService {
         return cm != null && cm.getActiveNetwork() != null;
     }
 
+    @VisibleForTesting
+    static boolean isLoopbackUrl(final String url) {
+        if (url == null || url.isEmpty()) return false;
+        try {
+            String host = URI.create(url).getHost();
+            if (host == null) return false;
+            host = host.toLowerCase();
+            if (host.startsWith("[")) host = host.substring(1, host.length() - 1); // strip IPv6 brackets
+            return host.equals("localhost")
+                    || host.equals("::1")
+                    || host.startsWith("127.");
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    @VisibleForTesting
+    static boolean shouldPoll(final ConnectivityManager cm, final String url) {
+        return isNetworkAvailable(cm) || isLoopbackUrl(url);
+    }
+
     private static long getLag() {
         // Wake delay derived from the nsfollow_lag setting.
         // Values represent seconds of a 5-minute sample period and are scaled
@@ -110,10 +132,12 @@ public class NightscoutFollowService extends ForegroundService {
 
             // Skip network I/O when there is no data connection — saves wake lock extension,
             // DNS resolution, and TCP handshake cost. The alarm above ensures we retry.
+            // Loopback targets (e.g. Juggluco on 127.0.0.1) are always reachable, even in
+            // airplane mode, so never skip them.
             final ConnectivityManager cm =
                     (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            if (!isNetworkAvailable(cm)) {
-                UserError.Log.d(TAG, "No network — skipping poll");
+            if (!shouldPoll(cm, Pref.getString("nsfollow_url", ""))) {
+                UserError.Log.d(TAG, "No network and non-loopback target — skipping poll");
                 return START_STICKY;
             }
 
