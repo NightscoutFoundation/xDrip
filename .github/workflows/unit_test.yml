@@ -1,10 +1,10 @@
-name: Unit Test
+name: Unit Test & Build APK (ICR_ISF_profile)
 
 on:
   push:
-    branches: [ master ]
+    branches: [ ICR_ISF_profile ]
   pull_request:
-    branches: [ master ]
+    branches: [ ICR_ISF_profile ]
 
 jobs:
   build:
@@ -27,3 +27,8 @@ jobs:
         arguments: assembleProdRelease testProdReleaseUnitTest
     - name: Check Output
       run: bash ./etc/CheckBuild/check-release.sh test
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: xdrip-prod-release
+        path: app/build/outputs/apk/prod/release/*.apk
