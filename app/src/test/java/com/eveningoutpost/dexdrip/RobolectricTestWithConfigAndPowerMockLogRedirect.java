@@ -28,7 +28,9 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 
 @RunWith(RobolectricTestRunner.class)
-@Config(sdk = BuildConfig.targetSDK,
+// Run at minSdk (>= the manifest's minSdkVersion); targetSDK (24) is below minSdk now, which
+// Robolectric rejects ("Requires newer sdk version"). See RobolectricTestWithConfig.
+@Config(sdk = BuildConfig.robolectricSDK,
         //packageName = "com.eveningoutpost.dexdrip",
         application = TestingApplication.class)
 

@@ -39,6 +39,28 @@ public class BasalProfile {
         return Pref.getString(ACTIVE_BASAL_PROFILE, "1");
     }
 
+    private static final String NAME_PREFIX = "BASAL-PROFILE-NAME-";
+
+    /** The fixed profile slot identifiers ("1".."5"). */
+    public static String[] profiles() {
+        return PROFILE_NAMES.clone();
+    }
+
+    /** Custom name for a profile slot, or empty string if unnamed. */
+    public static String getName(final String ref) {
+        return Pref.getString(NAME_PREFIX + ref, "");
+    }
+
+    public static void setName(final String ref, final String name) {
+        Pref.setString(NAME_PREFIX + ref, name == null ? "" : name.trim());
+    }
+
+    /** Label to show for a slot: its custom name if set, otherwise the slot number. */
+    public static String displayName(final String ref) {
+        final String n = getName(ref);
+        return (n == null || n.trim().isEmpty()) ? ref : n.trim();
+    }
+
     private static <T> int howManyMatch(final List<T> segments, final int start, final int maxMatches) {
         val current = segments.get(start);
         int matches = 1;

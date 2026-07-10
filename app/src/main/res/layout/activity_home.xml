@@ -51,6 +51,18 @@
                 android:layout_height="wrap_content"
                 android:minHeight="?attr/actionBarSize" />
 
+            <!-- Dedicated basal-rate mini-graph: a short band drawn ABOVE the main BG chart in real
+                 U/hr, with its X axis kept in sync with the main chart. Hidden (GONE) by default and
+                 shown by Home only when there is basal data to plot, so the main graph's glucose axis
+                 is never cluttered with basal. -->
+            <lecho.lib.hellocharts.view.LineChartView
+                android:id="@+id/basal_chart"
+                android:layout_width="match_parent"
+                android:layout_height="104dp"
+                android:layout_marginTop="0dp"
+                android:padding="0dp"
+                android:visibility="gone" />
+
             <RelativeLayout
                 android:id="@+id/home_layout_holder"
                 android:layout_width="match_parent"

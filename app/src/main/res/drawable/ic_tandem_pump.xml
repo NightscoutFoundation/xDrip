@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">
+    <!-- Pump body with a screen cut-out (insulin pump silhouette) -->
+    <path
+        android:fillColor="#FF757575"
+        android:fillType="evenOdd"
+        android:pathData="M7,1.5 L17,1.5 A2.5,2.5 0 0 1 19.5,4 L19.5,20 A2.5,2.5 0 0 1 17,22.5 L7,22.5 A2.5,2.5 0 0 1 4.5,20 L4.5,4 A2.5,2.5 0 0 1 7,1.5 Z M8.4,4.6 L15.6,4.6 L15.6,10.4 L8.4,10.4 Z" />
+    <!-- Insulin droplet -->
+    <path
+        android:fillColor="#FF757575"
+        android:pathData="M12,13 C13.2,14.7 14.1,15.85 14.1,17.1 A2.1,2.1 0 0 1 9.9,17.1 C9.9,15.85 10.8,14.7 12,13 Z" />
+</vector>
