@@ -3,6 +3,9 @@ package com.eveningoutpost.dexdrip.cgm.nsfollow;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 
 import org.junit.Before;
@@ -99,5 +102,41 @@ public class NightscoutFollowServiceMegaStatusTest extends RobolectricTestWithCo
 
         // :: Verify — neither row present
         assertThat(hasLabel(items, "Uploader battery")).isFalse();
+    }
+
+    // ===== Redundant absolute timestamps =========================================================
+    // The page shows each fact once, as an age relative to now. The absolute wall-clock variants
+    // said the same thing and made the reader do the subtraction, so they are not listed.
+
+    @Test
+    public void megaStatus_omitsAbsoluteLastBgTime_butKeepsRelativeLatestBg() {
+        // :: Setup — a reading exists, so the absolute row would have been shown before
+        insertReading(JoH.tsl() - Constants.MINUTE_IN_MS);
+
+        // :: Act
+        List<StatusItem> items = NightscoutFollowService.megaStatus();
+
+        // :: Verify
+        assertThat(hasLabel(items, "Last BG time")).isFalse();
+        assertThat(hasLabel(items, "Latest BG")).isTrue();
+        assertThat(valueFor(items, "Latest BG")).endsWith(" ago");
+    }
+
+    @Test
+    public void megaStatus_omitsAbsoluteNextPollTime_butKeepsRelativeNextPollIn() {
+        // :: Act
+        List<StatusItem> items = NightscoutFollowService.megaStatus();
+
+        // :: Verify
+        assertThat(hasLabel(items, "Next poll time")).isFalse();
+        assertThat(hasLabel(items, "Next poll in")).isTrue();
+    }
+
+    private void insertReading(final long timestamp) {
+        final BgReading bg = new BgReading();
+        bg.calculated_value = 120.0;
+        bg.raw_data = 120.0;
+        bg.timestamp = timestamp;
+        bg.save();
     }
 }
