@@ -9,17 +9,55 @@ import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.g
 import static com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService.getTBRInt;
 import static com.google.common.truth.Truth.assertWithMessage;
 
+import android.app.Service;
+import android.content.Intent;
+
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 
+import org.junit.After;
 import org.junit.Test;
+import org.robolectric.Robolectric;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executor;
 
 import lombok.val;
 
 // jamorham
 
 public class ExternalStatusServiceTest extends RobolectricTestWithConfig {
+
+    private final Executor originalDispatchExecutor = ExternalStatusService.dispatchExecutor;
+
+    @After
+    public void restoreDispatchExecutor() {
+        ExternalStatusService.dispatchExecutor = originalDispatchExecutor;
+    }
+
+    /**
+     * Off {@code IntentService}, {@code onStartCommand} runs on the main thread. The status update
+     * does synchronous SQLite I/O, so it must be handed to the background executor rather than run
+     * inline on the calling thread. This captures the scheduled work without running it to prove it
+     * is deferred.
+     */
+    @Test
+    public void onStartCommandDefersStatusUpdateToExecutor() {
+        val scheduled = new ArrayList<Runnable>();
+        ExternalStatusService.dispatchExecutor = scheduled::add;
+
+        val intent = new Intent(ExternalStatusService.ACTION_NEW_EXTERNAL_STATUSLINE);
+        val service = Robolectric.buildService(ExternalStatusService.class, intent).create().get();
+
+        val result = service.onStartCommand(intent, 0, 42);
+
+        assertWithMessage("status update must be handed to the executor, not executed inline on the calling thread")
+                .that(scheduled).hasSize(1);
+        assertWithMessage("service should not be sticky")
+                .that(result).isEqualTo(Service.START_NOT_STICKY);
+    }
 
     final String tbr1 =  "Loop Disabled\n10% 0.55U 0g"; // typical
     final String tbr2 =  "Loop Disabled\n999% 15% 0.55U 0g"; // weird
