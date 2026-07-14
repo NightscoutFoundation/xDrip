@@ -1,7 +1,9 @@
 package com.eveningoutpost.dexdrip;
 
+import java.lang.ref.WeakReference;
 import java.text.MessageFormat;
 import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -13,10 +15,14 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 
 import android.util.TypedValue;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.AlertType;
@@ -65,9 +71,10 @@ public class SnoozeActivity extends ActivityWithMenu {
         ActiveBgAlert aba = ActiveBgAlert.getOnly();
         if (aba != null) {
             AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
+            // CHG7 A1: activeBgAlert can be null (test alert, removed alert type)
             if (disableType == SnoozeType.ALL_ALERTS
-                    || (activeBgAlert.above && disableType == SnoozeType.HIGH_ALERTS)
-                    || (!activeBgAlert.above && disableType == SnoozeType.LOW_ALERTS)
+                    || (activeBgAlert != null && activeBgAlert.above && disableType == SnoozeType.HIGH_ALERTS)
+                    || (activeBgAlert != null && !activeBgAlert.above && disableType == SnoozeType.LOW_ALERTS)
             ) {
                 //active bg alert exists which is a type that is being disabled so let's remove it completely from the database
                 ActiveBgAlert.ClearData();
@@ -157,7 +164,7 @@ public class SnoozeActivity extends ActivityWithMenu {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Home.get_holo()) { setTheme(R.style.OldAppThemeNoTitleBar); }
+        applyThemeChoice(); // CHG1
         JoH.fixActionBar(this);
         setContentView(R.layout.activity_snooze);
         alertStatus = (TextView) findViewById(R.id.alert_status);
@@ -172,6 +179,250 @@ public class SnoozeActivity extends ActivityWithMenu {
             buttonSnooze.setTextSize(TypedValue.COMPLEX_UNIT_SP, 30);
         }
         displayStatus();
+        registerOverlayInstance(); // CHG6 BVD2
+    }
+
+    // CHG1: overridden by SnoozeOverlayActivity to keep the floating overlay theme from the manifest
+    protected void applyThemeChoice() {
+        if (Home.get_holo()) { setTheme(R.style.OldAppThemeNoTitleBar); }
+    }
+
+    // CHG1: overridden by SnoozeOverlayActivity so that closing the snooze screen restores the previous app
+    protected boolean openHomeAfterSnooze() {
+        return true;
+    }
+
+    // CHG6 BVD1: the overlay and lock-screen variants disable the navigation drawer; the
+    // alarm pop-ups are modal and on the lock screen the menu must not open without unlocking
+    protected void lockNavigationDrawer() {
+        try {
+            ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+        } catch (Exception e) {
+            Log.e(TAG, "Could not lock navigation drawer: " + e);
+        }
+    }
+
+    // CHG6 BVD2: live overlay-mode snooze screens (openHomeAfterSnooze() == false) so they
+    // can be closed when the alert is snoozed or cleared through another channel
+    private static final CopyOnWriteArrayList<WeakReference<SnoozeActivity>> overlayInstances = new CopyOnWriteArrayList<>();
+
+    private void registerOverlayInstance() {
+        if (!openHomeAfterSnooze()) {
+            overlayInstances.add(new WeakReference<SnoozeActivity>(this));
+        }
+    }
+
+    private void unregisterOverlayInstance() {
+        for (WeakReference<SnoozeActivity> ref : overlayInstances) {
+            final SnoozeActivity instance = ref.get();
+            if (instance == null || instance == this) {
+                overlayInstances.remove(ref);
+            }
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterOverlayInstance(); // CHG6 BVD2
+        super.onDestroy();
+    }
+
+    /**
+     * CHG6 BVD2+BVD3: called by AlertPlayer whenever the alert is snoozed or cleared,
+     * through whatever channel (buttons, notification, watch, remote, automation, glucose
+     * recovery). Closes any open overlay / lock-screen snooze screen so the previous app
+     * or lock screen is restored, and clears the volume-key double-press state.
+     */
+    public static void alertEnded() {
+        resetVolumeKeyConfirmation();
+        for (WeakReference<SnoozeActivity> ref : overlayInstances) {
+            final SnoozeActivity instance = ref.get();
+            if (instance != null && !instance.isFinishing()) {
+                // CHG13 ER3: re-check at execution time - on an alert hand-over
+                // (startAlert clears the old record and immediately creates a new,
+                // un-snoozed one) the screen must stay for the new alert instead of
+                // being closed by the clean-up of the old one
+                JoH.runOnUiThread(() -> {
+                    if (!ActiveBgAlert.currentlyAlerting() && !instance.isFinishing()) {
+                        instance.finish();
+                    }
+                });
+            }
+        }
+    }
+
+    // CHG6 BVD3: clear a pending first press and dismiss its confirmation toast
+    public static void resetVolumeKeyConfirmation() {
+        pendingVolumeKeyCode = -1;
+        pendingVolumeKeyUuid = null; // CHG7 A2
+        JoH.runOnUiThread(SnoozeActivity::cancelVolumeKeyConfirmToast);
+    }
+
+    // CHG4: double-press confirmation state for the volume-key snooze, shared by all screens
+    private static final long VOLUME_KEY_CONFIRM_WINDOW_MS = 1500;
+    private static int pendingVolumeKeyCode = -1;
+    private static long pendingVolumeKeySince = 0;
+    private static String pendingVolumeKeyUuid; // CHG7 A2: the alert the first press was for
+    private static Toast volumeKeyConfirmToast;
+
+    /**
+     * CHG3: volume-key snooze ("Buttons silence alarms"), shared by Home and all snooze
+     * screens. Returns true when an active alert was actually snoozed. Callers use
+     * volumeKeyConsumed() to decide whether the key event itself is consumed (CHG4
+     * addendum A: no volume changes while an alarm is alerting).
+     *
+     * CHG4: snoozing requires pressing the same volume button twice within 1.5 seconds
+     * while the alert is actually alerting; the first press shows a confirmation toast
+     * which is dismissed the moment the second press arrives. Auto-repeat events from a
+     * held button do not count as a second press.
+     */
+    public static boolean volumeKeySnooze(final KeyEvent event) {
+        switch (event.getKeyCode()) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                if (event.getRepeatCount() != 0) break; // held button is not a double press
+                final ActiveBgAlert aba = ActiveBgAlert.getOnly();
+                if (aba == null) break;
+                // CHG7 A1: clean up an orphaned record (alert type missing, e.g. after a test
+                // alert or a removed alert type) so the keys return to normal volume control
+                // (CHG13 ER4: placed before the enabled check so the cleanup also runs while
+                // the overlay option is off)
+                if (aba.is_snoozed && ActiveBgAlert.alertTypegetOnly(aba) == null) {
+                    ActiveBgAlert.ClearData();
+                    recheckAlerts();
+                    break;
+                }
+                if (!volumeKeySnoozeEnabled()) break; // CHG11
+                if (aba.is_snoozed) break; // nothing to do when already snoozed
+                final long now = JoH.tsl();
+                if (event.getKeyCode() == pendingVolumeKeyCode
+                        // CHG7 A2: the second press only counts for the same alert
+                        && aba.alert_uuid != null && aba.alert_uuid.equals(pendingVolumeKeyUuid)
+                        && (now - pendingVolumeKeySince) <= VOLUME_KEY_CONFIRM_WINDOW_MS) {
+                    pendingVolumeKeyCode = -1;
+                    pendingVolumeKeyUuid = null;
+                    cancelVolumeKeyConfirmToast();
+                    AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
+                    JoH.static_toast_long(gs(volumeKeySnoozedText(event.getKeyCode()))); // CHG7 A5
+                    Log.ueh(TAG, "Snoozing alert due to double volume button press");
+                    return true;
+                }
+                // first press, a different volume key, or the window expired: (re)arm
+                // CHG7 A5: point out explicitly when a different button was pressed within the window
+                final boolean wrongButton = pendingVolumeKeyCode != -1
+                        && pendingVolumeKeyCode != event.getKeyCode()
+                        && (now - pendingVolumeKeySince) <= VOLUME_KEY_CONFIRM_WINDOW_MS;
+                pendingVolumeKeyCode = event.getKeyCode();
+                pendingVolumeKeyUuid = aba.alert_uuid; // CHG7 A2
+                pendingVolumeKeySince = now;
+                showVolumeKeyConfirmToast(wrongButton
+                        ? R.string.volume_button_wrong_button
+                        : volumeKeyConfirmText(event.getKeyCode()));
+                break;
+        }
+        return false;
+    }
+
+    // CHG7 A5: per-button confirmation text for the first press
+    private static int volumeKeyConfirmText(final int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                return R.string.volume_down_confirm_snooze;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                return R.string.volume_up_confirm_snooze;
+            default:
+                return R.string.press_same_volume_button_again;
+        }
+    }
+
+    // CHG7 A5: per-button text for the snoozing toast
+    private static int volumeKeySnoozedText(final int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+                return R.string.snoozing_due_volume_down_button_press;
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                return R.string.snoozing_due_volume_up_button_press;
+            default:
+                return R.string.snoozing_due_button_press;
+        }
+    }
+
+    /**
+     * CHG4 addendum A: while a BG alert is alerting and 'Buttons silence alarms' is
+     * enabled, the volume keys are reserved for snoozing: consuming both the DOWN and UP
+     * events (including auto-repeats) prevents any change of the phone's sound volume.
+     */
+    public static boolean volumeKeyConsumed(final int keyCode) {
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:
+            case KeyEvent.KEYCODE_VOLUME_UP:
+            case KeyEvent.KEYCODE_VOLUME_MUTE:
+                return volumeKeySnoozeEnabled() // CHG11
+                        && ActiveBgAlert.currentlyAlerting();
+        }
+        return false;
+    }
+
+    /**
+     * CHG11: 'Buttons silence alarms' depends on 'Snooze screen over other apps' (user
+     * decision 2026-07-10). Enforced here as well as in the preference screen, so a stored
+     * value cannot activate the feature while the (greyed out) parent option is off.
+     * CHG13 ER1: both options default to enabled, matching their XML defaults, so
+     * volume-key snooze keeps working out of the box also on upgraded installs.
+     */
+    public static boolean volumeKeySnoozeEnabled() {
+        return Pref.getBoolean(SnoozeOverlayActivity.PREF_SNOOZE_OVER_OTHER_APPS, true)
+                && Pref.getBoolean("buttons_silence_alert", true);
+    }
+
+    // CHG4: the confirmation toast is kept as a reference so the second press can dismiss it
+    // instantly (CHG7 A5: the text now varies per button)
+    private static void showVolumeKeyConfirmToast(final int textResId) {
+        try {
+            cancelVolumeKeyConfirmToast();
+            volumeKeyConfirmToast = Toast.makeText(xdrip.getAppContext(),
+                    gs(textResId), Toast.LENGTH_SHORT);
+            volumeKeyConfirmToast.show();
+        } catch (Exception e) {
+            Log.e(TAG, "Could not show volume key confirmation toast: " + e);
+        }
+    }
+
+    private static void cancelVolumeKeyConfirmToast() {
+        try {
+            if (volumeKeyConfirmToast != null) {
+                volumeKeyConfirmToast.cancel();
+                volumeKeyConfirmToast = null;
+            }
+        } catch (Exception e) {
+            //
+        }
+    }
+
+    // CHG3: volume keys snooze the active alert on the snooze screens too; the overlay and
+    // lock-screen variants then close themselves so the previous app or lock screen is restored
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        // CHG4 addendum A: decide before the snooze handler flips the alerting state, so
+        // the snoozing press itself is consumed as well
+        final boolean consume = volumeKeyConsumed(event.getKeyCode());
+        if (volumeKeySnooze(event)) {
+            if (!openHomeAfterSnooze()) {
+                finish();
+            } else {
+                displayStatus();
+            }
+        }
+        if (consume) return true; // CHG4 addendum A: block the volume change
+        return super.onKeyDown(keyCode, event);
+    }
+
+    // CHG4 addendum A: also consume the volume-key UP events while blocking is active
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (volumeKeyConsumed(event.getKeyCode())) return true;
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
@@ -207,9 +458,11 @@ public class SnoozeActivity extends ActivityWithMenu {
             public void onClick(View v) {
                 int intValue = getTimeFromSnoozeValue(snoozeValue.getValue());
                 AlertPlayer.getPlayer().Snooze(getApplicationContext(), intValue);
-                Intent intent = new Intent(getApplicationContext(), Home.class);
-                if (ActiveBgAlert.getOnly() != null) {
-                    startActivity(intent);
+                if (openHomeAfterSnooze()) { // CHG1: the overlay variant skips this so the previous app is restored
+                    Intent intent = new Intent(getApplicationContext(), Home.class);
+                    if (ActiveBgAlert.getOnly() != null) {
+                        startActivity(intent);
+                    }
                 }
                 finish();
             }
@@ -307,7 +560,9 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     }
     public static void recheckAlerts() {
-        Notifications.start();
+        // CHG8: same service run as Notifications.start() but without the 10-second rate
+        // limit, so the notification snooze line updates promptly after a snooze
+        Notifications.staticUpdateNotification();
         JoH.startService(MissedReadingService.class); // TODO this should be rate limited or similar as it is polled in various locations leading to excessive cpu
     }
 
@@ -351,7 +606,9 @@ public class SnoozeActivity extends ActivityWithMenu {
             return;
         }
         if(aba != null && activeBgAlert== null) {
-            Log.wtf(TAG, "ERRRO displayStatus: aba != null, but activeBgAlert == null exiting...");
+            // CHG7 A1: an orphaned record (test alert, removed alert type) is no longer
+            // deleted during the lookup, so report it instead of logging an error
+            alertStatus.setText(gs(R.string.alert_type_not_found));
             return;
         }
         long now = new Date().getTime();
@@ -374,8 +631,13 @@ public class SnoozeActivity extends ActivityWithMenu {
         } else {
             sendRemoteSnooze.setVisibility(View.GONE);
             if(!aba.ready_to_alarm()) {
-                status = MessageFormat.format("Active alert exists named \"{0}\" {1,choice,0#Alert will rerise at|1#Alert snoozed until} {2,time} ({3} minutes left)",
-                        activeBgAlert.name, aba.is_snoozed ? 1 : 0 , new Date(aba.next_alert_at),(aba.next_alert_at - now) / 60000);
+                // CHG7 A5: show seconds when under two minutes remain instead of "0 minutes left"
+                final long msLeft = aba.next_alert_at - now;
+                final String timeLeft = msLeft < 120000
+                        ? (msLeft / 1000) + " seconds left"
+                        : (msLeft / 60000) + " minutes left";
+                status = MessageFormat.format("Active alert exists named \"{0}\" {1,choice,0#Alert will rerise at|1#Alert snoozed until} {2,time} ({3})",
+                        activeBgAlert.name, aba.is_snoozed ? 1 : 0, new Date(aba.next_alert_at), timeLeft);
             } else {
                 status = getString(R.string.active_alert_exists_named)+" \"" + activeBgAlert.name + "\" "+getString(R.string.bracket_not_snoozed);
             }
