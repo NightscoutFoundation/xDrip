@@ -43,6 +43,7 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 import android.preference.RingtonePreference;
 import android.preference.SwitchPreference;
+import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
@@ -63,6 +64,7 @@ import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.SnoozeOverlayActivity;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.alert.Registry;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
@@ -2209,6 +2211,25 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         }
                         return true;
                     }
+                });
+            } catch (Exception e) {
+                //
+            }
+
+            // CHG1: showing the snooze screen over other apps needs the system permission
+            // "Display over other apps", which the user grants on the system settings screen
+            try {
+                findPreference(SnoozeOverlayActivity.PREF_SNOOZE_OVER_OTHER_APPS).setOnPreferenceChangeListener((preference, newValue) -> {
+                    if ((Boolean) newValue && !Settings.canDrawOverlays(preference.getContext())) {
+                        JoH.static_toast_long(gs(R.string.please_allow_display_over_other_apps));
+                        try {
+                            startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                    Uri.parse("package:" + preference.getContext().getPackageName())));
+                        } catch (Exception e) {
+                            startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION));
+                        }
+                    }
+                    return true;
                 });
             } catch (Exception e) {
                 //
