@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.alert;
 import static com.eveningoutpost.dexdrip.models.JoH.cancelNotification;
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.XDRIP_UPDATE_NOTIFICATION_ID;
+import static com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels.GENERAL_CHANNEL;
 import static com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity.AUTO_UPDATE_PREFS_NAME;
 
 import android.app.PendingIntent;
@@ -46,7 +47,7 @@ public class UpdateAvailable extends BaseAlert {
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         val channel = Pref.getString("update_channel", "beta"); // get the current update channel
-        showNotification(xdrip.gs(R.string.xdrip_update), xdrip.gs(R.string.a_new_version_on_channel_1_s_is_available, channel), pendingIntent, notificationId, null, true, true, null, null, null, false);
+        showNotification(xdrip.gs(R.string.xdrip_update), xdrip.gs(R.string.a_new_version_on_channel_1_s_is_available, channel), pendingIntent, notificationId, GENERAL_CHANNEL, true, true, null, null, null, false);
         UserError.Log.uel(TAG, "A new version is available");
         return true;
     }

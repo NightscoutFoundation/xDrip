@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.models;
 import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
 import static android.content.Context.ALARM_SERVICE;
 import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
+import static com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels.GENERAL_CHANNEL;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -1584,11 +1585,11 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
-        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, null);
+        showNotification(title, content, intent, notificationId, GENERAL_CHANNEL, sound, vibrate, deleteIntent, sound_uri, null);
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
-        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, bigmsg);
+        showNotification(title, content, intent, notificationId, GENERAL_CHANNEL, sound, vibrate, deleteIntent, sound_uri, bigmsg);
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {

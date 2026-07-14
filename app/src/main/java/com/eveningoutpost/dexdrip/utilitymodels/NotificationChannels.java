@@ -49,6 +49,8 @@ public class NotificationChannels {
     public static final String CALIBRATION_CHANNEL = "calibrationChannel";
     public static final String ONGOING_CHANNEL = "ongoingChannel";
     public static final String ICON_TEST_CHANNEL = "numberIconTestChannel";
+    public static final String GENERAL_CHANNEL = "generalChannel"; // This should be used for all existing notifications that have null for their channel.
+    public static final String SENSOR_EXPIRY_CHANNEL = "sensorExpiryChannel";
 
     // get a localized string for each channel / group name
     public static String getString(String id) {
@@ -270,6 +272,24 @@ public class NotificationChannels {
                 NotificationManager.IMPORTANCE_DEFAULT);
         channel.enableVibration(true);
         channel.setSound(null, null); // Keep it silent
+        getNotifManager().createNotificationChannel(channel);
+    }
+
+    public static void setupGeneralChannel() {
+        NotificationChannel channel = new NotificationChannel(
+                GENERAL_CHANNEL,
+                "xDrip general",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        channel.enableVibration(true);
+        getNotifManager().createNotificationChannel(channel);
+    }
+
+    public static void setupSensorExpiryChannel() {
+        NotificationChannel channel = new NotificationChannel(
+                SENSOR_EXPIRY_CHANNEL,
+                "xDrip general",
+                NotificationManager.IMPORTANCE_DEFAULT);
+        channel.enableVibration(true);
         getNotifManager().createNotificationChannel(channel);
     }
 

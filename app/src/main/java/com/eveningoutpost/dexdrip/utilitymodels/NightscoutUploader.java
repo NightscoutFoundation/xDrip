@@ -81,6 +81,7 @@ import retrofit2.http.PUT;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 
+import static com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels.GENERAL_CHANNEL;
 import static com.nightscout.core.barcode.NSBarcodeConfigKeys.API_CONFIG;
 import static com.nightscout.core.barcode.NSBarcodeConfigKeys.API_URI;
 
@@ -535,7 +536,7 @@ public class NightscoutUploader {
         long firstInconsistentMultiSiteUploadTime = PersistentStore.getLong(TAG + "_firstInconsistentMultiSiteUploadTime"); // Updating the local representation of the last inconsistent upload time
         if (PersistentStore.getBoolean(TAG + "_inconsistentMultiSteUpload")) { // If there has been a failure to upload and the queue has been cleared
             if (Pref.getBooleanDefaultFalse("warn_nightscout_multi_site_upload_failure")) { // Issue notification only if enabled
-                JoH.showNotification(xdrip.gs(R.string.title_nightscout_upload_failure_backfill_required), null, null, Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, null, false, false, null, null, xdrip.gs(R.string.nightscout_upload_failure_backfill_required, JoH.dateTimeText(firstInconsistentMultiSiteUploadTime)), true);
+                JoH.showNotification(xdrip.gs(R.string.title_nightscout_upload_failure_backfill_required), null, null, Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, GENERAL_CHANNEL, false, false, null, null, xdrip.gs(R.string.nightscout_upload_failure_backfill_required, JoH.dateTimeText(firstInconsistentMultiSiteUploadTime)), true);
             }
             UserError.Log.uel(TAG, "Inconsistent Multi-site Nightscout upload - Backfill recommended - First failure: " + JoH.dateTimeText(firstInconsistentMultiSiteUploadTime));
             PersistentStore.setBoolean(TAG + "_inconsistentMultiSteUpload", false); // We have notified.  Clearing the flag

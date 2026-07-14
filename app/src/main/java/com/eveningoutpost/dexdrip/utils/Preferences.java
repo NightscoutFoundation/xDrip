@@ -6,6 +6,7 @@ import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.models.JoH.tolerantParseDouble;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.clearDataWhenTransmitterIdEntered;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.OUT_OF_RANGE_GLUCOSE_ENTRY_ID;
+import static com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels.GENERAL_CHANNEL;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getBestCollectorHardwareName;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
@@ -1059,14 +1060,14 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 mySettingString = doMgdl ? max + "" : JoH.qs(max * Constants.MGDL_TO_MMOLL, 1) + "";
                 Pref.setString(pref_key, mySettingString); // Set the preference to max
                 UserError.Log.uel(TAG, xdrip.gs(R.string.pref_was_greater_than_max, pref_key)); // Inform the user that xDrip is changing the setting value
-                showNotification(pref_key, xdrip.gs(R.string.setting_pref_to_max), null, notificationId, null, false, false, null, null, null, true);
+                showNotification(pref_key, xdrip.gs(R.string.setting_pref_to_max), null, notificationId, GENERAL_CHANNEL, false, false, null, null, null, true);
             }
         } else if (mySettingMgdl < min) { // If the preference value is less than min, correct it and notify.
             // This will only happen if user has entered a preference setting value out of range before the listener range limit update has been merged.
             mySettingString = doMgdl ? min + "" : JoH.qs(min * Constants.MGDL_TO_MMOLL, 1) + "";
             Pref.setString(pref_key, mySettingString); // Set the preference to min
             UserError.Log.uel(TAG, xdrip.gs(R.string.pref_was_less_than_min, pref_key)); // Inform the user that xDrip is changing the setting value
-            showNotification(pref_key, xdrip.gs(R.string.setting_pref_to_min), null, notificationId, null, false, false, null, null, null, true);
+            showNotification(pref_key, xdrip.gs(R.string.setting_pref_to_min), null, notificationId, GENERAL_CHANNEL, false, false, null, null, null, true);
 
         }
     }

@@ -6,6 +6,7 @@ import static com.eveningoutpost.dexdrip.models.JoH.niceTimeScalarNatural;
 import static com.eveningoutpost.dexdrip.models.JoH.showNotification;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SENSORY_EXPIRY_NOTIFICATION_ID;
+import static com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels.SENSOR_EXPIRY_CHANNEL;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.g5model.SensorDays;
@@ -48,7 +49,7 @@ public class SensorExpiry extends BaseAlert {
         val notificationId = SENSORY_EXPIRY_NOTIFICATION_ID;
         cancelNotification(notificationId);
         val expireMsg = xdrip.gs(R.string.sensor_will_expire_in, expiry);
-        showNotification(xdrip.gs(R.string.sensor_expiring), expireMsg, null, notificationId, null, true, true, null, null, null, true);
+        showNotification(xdrip.gs(R.string.sensor_expiring), expireMsg, null, notificationId, SENSOR_EXPIRY_CHANNEL, true, true, null, null, null, true);
         Treatments.create_note("Warning: " + expireMsg, tsl()); // TODO i18n but note classifier also needs updating for that
         UserError.Log.uel(TAG, "Sensor will expire soon");
         return true;
