@@ -15,7 +15,7 @@ import java.util.ArrayList;
  * <p>Regression coverage for xDrip discussion #4617: in legacy (single-insulin) mode a null
  * bolus profile made the injection list come back empty, so IoB/COB/prediction silently vanished.
  *
- * @author Asbjørn Aarrestad - 2026.07 - asbjorn@aarrestad.com
+ * @author Asbjørn Aarrestad - 2026.07
  */
 public class InsulinManagerTest extends RobolectricTestWithConfig {
 
