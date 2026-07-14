@@ -12,6 +12,7 @@ import android.media.AudioAttributes;
 import androidx.core.app.NotificationCompat;
 
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -113,7 +114,7 @@ public class NotificationChannels {
         res = (res.equals("")) ? res : "  " + res;
 
         int counter = 1;
-        while (counter < 10 && isSoundDifferent(x.getId() + res + ((counter > 1) ? counter : ""), x)) {
+        while (counter < 10 && isSoundDifferent(x.getId() + res + ((counter > 1) ? counter : "") + importanceSuffix(x.getId()), x)) {
             counter++;
         }
         if (counter != 1) res += "" + counter;
@@ -155,6 +156,35 @@ public class NotificationChannels {
 
     }
 
+    /**
+     * CHG14 (port of CHG7 A3 + CHG13 ER2 onto the reworked upstream channel code):
+     * Android ignores the DEFAULT->HIGH importance change for channels that already
+     * exist, so upgraded installs keep a default-importance glucose alert channel and
+     * full-screen intents (the CHG2 lock-screen snooze screen) stay silently broken for
+     * exactly those users. For the glucose alert channel of users who actually need the
+     * full-screen intent (Wake Screen enabled, or at least one active alert overriding
+     * silent mode) the channel id carries a "!" marker, which migrates those installs to
+     * a fresh high-importance channel. Everyone else keeps their existing channel and its
+     * customisations; the AlertPlayer event-log diagnostic covers any remaining gap.
+     */
+    private static boolean bgMigrationWanted(final String baseChannelId) {
+        if (!BG_ALERT_CHANNEL.equals(baseChannelId)) return false;
+        if (Pref.getBooleanDefaultFalse("wake_phone_during_alerts")) return true;
+        try {
+            for (AlertType alert : AlertType.getAllActive()) {
+                if (alert.override_silent_mode) return true;
+            }
+        } catch (Exception e) {
+            //
+        }
+        return false;
+    }
+
+    // CHG14: id marker for the migrated glucose alert channel
+    private static String importanceSuffix(final String baseChannelId) {
+        return bgMigrationWanted(baseChannelId) ? "!" : "";
+    }
+
     @TargetApi(26)
     public static NotificationChannel getChan(NotificationCompat.Builder wip) {
 
@@ -194,10 +224,23 @@ public class NotificationChannels {
         final String baseName = getBaseDisplayName(channelId);
 
         // create another notification channel using the hash because id is immutable
+        // CHG14: the "!" marker migrates upgraded installs of full-screen-intent users to
+        // a fresh high-importance glucose alert channel (see bgMigrationWanted)
         final NotificationChannel channel = new NotificationChannel(
-                template.getId() + mhash,
+                template.getId() + mhash + importanceSuffix(channelId),
                 baseName + mhash,
                 importance); // Change from IMPORTANCE_DEFAULT
+        if (BG_ALERT_CHANNEL.equals(channelId)) {
+            try {
+                // CHG14: remove the channel-id variant that is not in use, so Android
+                // settings show a single glucose alert channel (a deleted channel
+                // resurrects with its previous settings when its id is recreated later)
+                getNotifManager().deleteNotificationChannel(
+                        template.getId() + mhash + (bgMigrationWanted(channelId) ? "" : "!"));
+            } catch (Exception e) {
+                //
+            }
+        }
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
