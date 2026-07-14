@@ -38,10 +38,15 @@ public class AlertTypeTest extends RobolectricTestWithConfig {
     /** Characterization: returns null while alerts are snoozed via alerts_disabled_until. */
     @Test
     public void get_highest_active_alert_returnsNullWhenAlertsDisabled() {
+        // :: Setup
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         prefs.edit().putLong("alerts_disabled_until", new Date().getTime() + 60_000).commit();
 
-        assertThat(AlertType.get_highest_active_alert(xdrip.getAppContext(), 100)).isNull();
+        // :: Act
+        AlertType highestActiveAlert = AlertType.get_highest_active_alert(xdrip.getAppContext(), 100);
+
+        // :: Verify
+        assertThat(highestActiveAlert).isNull();
     }
 
     // --- toSettings ---
@@ -49,8 +54,10 @@ public class AlertTypeTest extends RobolectricTestWithConfig {
     /** Characterization: toSettings serialises the alert table into the saved_alerts preference. */
     @Test
     public void toSettings_writesSavedAlertsPreference() {
+        // :: Act
         boolean result = AlertType.toSettings(xdrip.getAppContext());
 
+        // :: Verify
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         assertThat(result).isTrue();
         assertThat(prefs.contains("saved_alerts")).isTrue();
@@ -61,9 +68,14 @@ public class AlertTypeTest extends RobolectricTestWithConfig {
     /** Characterization: fromSettings returns true (no-op) when no saved_alerts string is present. */
     @Test
     public void fromSettings_returnsTrueWhenNothingSaved() {
+        // :: Setup
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         prefs.edit().putString("saved_alerts", "").commit();
 
-        assertThat(AlertType.fromSettings(xdrip.getAppContext())).isTrue();
+        // :: Act
+        boolean result = AlertType.fromSettings(xdrip.getAppContext());
+
+        // :: Verify
+        assertThat(result).isTrue();
     }
 }

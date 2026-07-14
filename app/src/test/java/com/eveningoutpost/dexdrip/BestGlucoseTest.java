@@ -29,6 +29,10 @@ public class BestGlucoseTest extends RobolectricTestWithConfig {
     /** Characterization: with no readings in the database, getDisplayGlucose returns null. */
     @Test
     public void getDisplayGlucose_returnsNullWhenNoReadings() {
-        assertThat(BestGlucose.getDisplayGlucose()).isNull();
+        // :: Act
+        final BestGlucose.DisplayGlucose displayGlucose = BestGlucose.getDisplayGlucose();
+
+        // :: Verify
+        assertThat(displayGlucose).isNull();
     }
 }

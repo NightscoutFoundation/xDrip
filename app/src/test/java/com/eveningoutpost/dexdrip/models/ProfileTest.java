@@ -56,11 +56,14 @@ public class ProfileTest extends RobolectricTestWithConfig {
      */
     @Test
     public void reloadPreferences_appliesInsulinActionTimeFromDefaultPrefs() {
+        // :: Setup
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext());
         prefs.edit().putString("xplus_insulin_dia", "5.5").commit();
 
+        // :: Act
         Profile.reloadPreferences();
 
+        // :: Verify
         assertThat(Profile.insulinActionTime(1651949922000L)).isEqualTo(5.5d);
     }
 }

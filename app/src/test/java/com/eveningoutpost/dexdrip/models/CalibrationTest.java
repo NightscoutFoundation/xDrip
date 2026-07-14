@@ -91,8 +91,10 @@ public class CalibrationTest extends RobolectricTestWithConfig {
      */
     @Test
     public void create_returnsNullWhenGlucoseOutOfRange() {
+        // :: Act
         Calibration calibration = Calibration.create(10000, 0, RuntimeEnvironment.application);
 
+        // :: Verify
         assertThat(calibration).isNull();
     }
 

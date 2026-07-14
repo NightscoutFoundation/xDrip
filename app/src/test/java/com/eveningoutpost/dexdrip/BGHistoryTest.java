@@ -33,8 +33,10 @@ public class BGHistoryTest extends RobolectricTestWithConfig {
     /** Characterization: the activity builds, populating the statistics text view via prefs. */
     @Test
     public void onCreate_buildsAndPopulatesStatistics() {
+        // :: Act
         BGHistory activity = Robolectric.buildActivity(BGHistory.class).create().get();
 
+        // :: Verify
         assertThat(activity).isNotNull();
         TextView stats = activity.findViewById(R.id.historystats);
         assertThat(stats).isNotNull();
