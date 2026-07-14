@@ -3,6 +3,8 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.models.Accuracy;
+import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
+import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -10,11 +12,14 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.calibrations.PluggableCalibration.getCalibrationPlugin;
@@ -179,6 +184,19 @@ public class StatusLine {
                 }
             }
 
+        }
+
+        // CHG5: inform on snoozed alert (CHG12: uses the same string resource as the
+        // ongoing notification, with the alert name, like "Alert h2 snoozed until 14:05")
+        if (Pref.getBoolean("status_line_snoozed_alert", false)) {
+            final ActiveBgAlert aba = ActiveBgAlert.getOnly();
+            if (aba != null && aba.is_snoozed && aba.next_alert_at != null) {
+                final AlertType alertType = ActiveBgAlert.alertTypegetOnly();
+                if (alertType != null) {
+                    final String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(aba.next_alert_at));
+                    append(sb, xdrip.getAppContext().getString(R.string.notification_alert_snoozed_until, alertType.name, time));
+                }
+            }
         }
 
         if (Pref.getBoolean("status_line_time", false)) {
