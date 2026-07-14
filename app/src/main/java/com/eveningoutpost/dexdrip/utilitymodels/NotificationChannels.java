@@ -278,7 +278,7 @@ public class NotificationChannels {
     public static void setupGeneralChannel() {
         NotificationChannel channel = new NotificationChannel(
                 GENERAL_CHANNEL,
-                "xDrip general",
+                "General",
                 NotificationManager.IMPORTANCE_DEFAULT);
         channel.enableVibration(true);
         getNotifManager().createNotificationChannel(channel);
@@ -287,7 +287,7 @@ public class NotificationChannels {
     public static void setupSensorExpiryChannel() {
         NotificationChannel channel = new NotificationChannel(
                 SENSOR_EXPIRY_CHANNEL,
-                "xDrip general",
+                "Sensor expiry",
                 NotificationManager.IMPORTANCE_DEFAULT);
         channel.enableVibration(true);
         getNotifManager().createNotificationChannel(channel);
