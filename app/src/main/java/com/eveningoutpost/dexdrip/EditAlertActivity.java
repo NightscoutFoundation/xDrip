@@ -37,12 +37,14 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
+import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.ActivityWithMenu;
@@ -575,7 +577,14 @@ public class EditAlertActivity extends ActivityWithMenu {
                             if (uuid == null) {
                                 Log.wtf(TAG, "Error remove pressed, while we were adding an alert");
                             } else {
+                                // CHG7 A1: stop and clear the active alert when it belongs to the
+                                // alert type being removed, so no orphaned record or sound remains
+                                final ActiveBgAlert aba = ActiveBgAlert.getOnly();
+                                if (aba != null && uuid.equals(aba.alert_uuid)) {
+                                    AlertPlayer.getPlayer().stopAlert(mContext, true, false);
+                                }
                                 AlertType.remove_alert(uuid);
+                                SnoozeActivity.recheckAlerts();
                                 startWatchUpdaterService(mContext, WatchUpdaterService.ACTION_SYNC_ALERTTYPE, TAG);
                             }
                             Intent returnIntent = new Intent();
@@ -906,6 +915,8 @@ public class EditAlertActivity extends ActivityWithMenu {
     }
 
 
+    private static final long TEST_ALERT_DELAY_MS = 5000; // CHG9
+
     public void testAlert() {
         // Check that values are ok.
         double threshold = parseDouble(alertThreshold.getText().toString());
@@ -953,7 +964,18 @@ public class EditAlertActivity extends ActivityWithMenu {
                 JoH.static_toast_long(getString(R.string.volume_profile_set_to_silent));
             }
 
-            AlertType.testAlert(alertText.getText().toString(), above, threshold, allDay, 1, mp3_file, timeStart, timeEnd, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, mContext);
+            // CHG9: fire the test alert after a short delay instead of immediately, so the
+            // user can switch to another app or turn the screen off first to exercise the
+            // CHG1 overlay and CHG2 lock-screen presentations; repeated presses within the
+            // delay reschedule the same task (deduped by Inevitable)
+            final String name = alertText.getText().toString();
+            final double thresholdFinal = threshold;
+            final boolean allDayFinal = allDay;
+            final int timeStartFinal = timeStart;
+            final int timeEndFinal = timeEnd;
+            JoH.static_toast_long(getString(R.string.test_alert_fires_in_5_seconds));
+            Inevitable.task("chg9-delayed-test-alert", TEST_ALERT_DELAY_MS, () ->
+                    AlertType.testAlert(name, above, thresholdFinal, allDayFinal, 1, mp3_file, timeStartFinal, timeEndFinal, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, mContext));
         } catch (NullPointerException e) {
             JoH.static_toast_long("Snooze value is not a number - cannot test");
         }
