@@ -53,8 +53,21 @@
                     android:summary="@string/alarms_silenced_during_telephone_calls"
                     android:title="@string/dont_alarm_during_phone_calls" />
 
+                <!-- CHG1: snooze screen over other apps (CHG11: moved directly above
+                     'Buttons silence alarms', which now depends on it; CHG13/ER1: default
+                     on, so volume-key snooze keeps working out of the box) -->
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:key="snooze_over_other_apps"
+                    android:summary="@string/snooze_over_other_apps_summary"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="@string/snooze_over_other_apps" />
+
+                <!-- CHG11: only togglable while 'Snooze screen over other apps' is enabled -->
                 <CheckBoxPreference
                     android:defaultValue="true"
+                    android:dependency="snooze_over_other_apps"
                     android:key="buttons_silence_alert"
                     android:summary="@string/volume_buttons_snooze"
                     android:title="@string/buttons_silence_alarms" />
