@@ -53,6 +53,12 @@ public class ActiveBgAlert extends Model {
         return activeBgAlert != null && !activeBgAlert.is_snoozed;
     }
 
+    // CHG8: an active alert exists and is snoozed
+    public static boolean currentlySnoozed() {
+        final ActiveBgAlert activeBgAlert = getOnly();
+        return activeBgAlert != null && activeBgAlert.is_snoozed;
+    }
+
     public static boolean alertSnoozeOver() {
         ActiveBgAlert activeBgAlert = getOnly();
         if (activeBgAlert == null) {
@@ -124,8 +130,9 @@ public class ActiveBgAlert extends Model {
         AlertType alert = AlertType.get_alert(aba.alert_uuid);
         if(alert == null) {
             Log.d(TAG, "alertTypegetOnly did not find the active alert as part of existing alerts. returning null");
-            // removing the alert to be in a better state.
-            ClearData();
+            // CHG7 A1: no longer destructively clears the record during a lookup (that broke
+            // snoozing of test alerts); orphans are cleaned up by startAlert/ClockTick, the
+            // volume-key handler and the alert remove handler
             return null;
         }
         if(!alert.uuid.equals(aba.alert_uuid)) {
