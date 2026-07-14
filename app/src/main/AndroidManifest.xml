@@ -71,6 +71,8 @@
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
     <uses-permission android:name="android.permission.SET_WALLPAPER" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- CHG1: show the snooze screen over other apps -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.MANAGE_HEALTH_DATA" />
     <uses-permission android:name="android.permission.MANAGE_HEALTH_PERMISSIONS" />
     <uses-permission android:name="android.permission.health.READ_HEART_RATE" />
@@ -413,6 +415,28 @@
             android:name=".SnoozeActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/snooze" />
+        <!-- CHG1: floating snooze screen shown over the current foreground app; runs in its
+             own task so that finishing it restores the previously used app -->
+        <activity
+            android:name=".SnoozeOverlayActivity"
+            android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/snooze"
+            android:launchMode="singleInstance"
+            android:taskAffinity=""
+            android:theme="@style/SnoozeOverlayTheme" />
+        <!-- CHG2: full-screen snooze screen shown above the lock screen (without unlocking)
+             when an alert fires while the screen is off or the device is locked; own task so
+             that finishing it simply reveals the lock screen again -->
+        <activity
+            android:name=".SnoozeLockScreenActivity"
+            android:configChanges="orientation|screenSize"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:label="@string/snooze"
+            android:launchMode="singleInstance"
+            android:taskAffinity="" />
         <activity
             android:name=".FakeNumbers"
             android:label="@string/title_activity_fake_numbers" />
