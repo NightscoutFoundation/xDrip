@@ -1585,11 +1585,11 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri) {
-        showNotification(title, content, intent, notificationId, GENERAL_CHANNEL, sound, vibrate, deleteIntent, sound_uri, null);
+        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, null);
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
-        showNotification(title, content, intent, notificationId, GENERAL_CHANNEL, sound, vibrate, deleteIntent, sound_uri, bigmsg);
+        showNotification(title, content, intent, notificationId, null, sound, vibrate, deleteIntent, sound_uri, bigmsg);
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg) {
@@ -1597,6 +1597,9 @@ public class JoH {
     }
 
     public static void showNotification(String title, String content, PendingIntent intent, int notificationId, String channelId, boolean sound, boolean vibrate, PendingIntent deleteIntent, Uri sound_uri, String bigmsg, boolean highPriority) {
+        if (channelId == null) {
+            channelId = GENERAL_CHANNEL;
+        }
         final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent, channelId);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
         if (vibrate) mBuilder.setVibrate(vibratePattern);
