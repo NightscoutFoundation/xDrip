@@ -40,8 +40,10 @@ public class XdripNotificationCompatTest extends RobolectricTestWithConfig {
      */
     @Test
     public void unresolvableBuilderFallsBackToAnExistingGeneralChannel() {
+        // Setup and act
         final Notification n = XdripNotificationCompat.build(builderWithChannel(null));
 
+        // Verify
         assertWithMessage("fallback channel id")
                 .that(n.getChannelId())
                 .isEqualTo(NotificationChannels.GENERAL_CHANNEL);
@@ -55,6 +57,7 @@ public class XdripNotificationCompatTest extends RobolectricTestWithConfig {
     /** build() never emits a notification without a channel, on any path. */
     @Test
     public void buildNeverLeavesANullChannelId() {
+        // Act and verify
         assertWithMessage("resolved builder has a channel")
                 .that(XdripNotificationCompat.build(builderWithChannel(NotificationChannels.GENERAL_CHANNEL)).getChannelId())
                 .isNotNull();
@@ -66,8 +69,10 @@ public class XdripNotificationCompatTest extends RobolectricTestWithConfig {
     /** A resolved notification is delivered on a channel that exists, as an independent alert. */
     @Test
     public void resolvedBuilderIsDeliverableAndNotAGroupSummary() {
+        // Setup and act
         final Notification n = XdripNotificationCompat.build(builderWithChannel(NotificationChannels.GENERAL_CHANNEL));
 
+        // Verify
         assertWithMessage("channel exists")
                 .that(notificationManager().getNotificationChannel(n.getChannelId()))
                 .isNotNull();

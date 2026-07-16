@@ -41,8 +41,10 @@ public class JoHShowNotificationTest extends RobolectricTestWithConfig {
     /** A caller that supplies no channel still gets a notification, on a channel that exists. */
     @Test
     public void nullChannelNotificationIsDeliveredOnAnExistingChannel() {
+        // Act
         JoH.showNotification("title", "body", null, 4242, null, false, false, null, null, null, false);
 
+        // Verify
         final Notification n = delivered(4242);
         assertWithMessage("channel it landed on exists")
                 .that(notificationManager().getNotificationChannel(n.getChannelId()))
@@ -57,9 +59,11 @@ public class JoHShowNotificationTest extends RobolectricTestWithConfig {
      */
     @Test
     public void sensorExpiryChannelNotificationIsDeliveredWithAReadableName() {
+        // Act
         JoH.showNotification("Sensor expiring", "soon", null, 4243,
                 NotificationChannels.SENSOR_EXPIRY_CHANNEL, true, true, null, null, null, true);
 
+        // Verify
         final Notification n = delivered(4243);
         assertWithMessage("channel exists")
                 .that(notificationManager().getNotificationChannel(n.getChannelId()))
@@ -78,8 +82,10 @@ public class JoHShowNotificationTest extends RobolectricTestWithConfig {
      */
     @Test
     public void shorterOverloadWithoutChannelIsDeliveredOnAnExistingChannel() {
+        // Act
         JoH.showNotification("title", "body", null, 4244, false, false, false);
 
+        // Verify
         final Notification n = delivered(4244);
         assertWithMessage("channel it landed on exists")
                 .that(notificationManager().getNotificationChannel(n.getChannelId()))

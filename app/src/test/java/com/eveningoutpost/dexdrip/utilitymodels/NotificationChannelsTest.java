@@ -34,6 +34,7 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
     /** The general fallback channel resolves to a human-readable name, not its raw id. */
     @Test
     public void generalChannelResolvesToAReadableName() {
+        // Act and verify
         assertWithMessage("general channel name")
                 .that(NotificationChannels.getString(NotificationChannels.GENERAL_CHANNEL))
                 .isEqualTo("General");
@@ -42,6 +43,7 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
     /** The sensor-expiry channel resolves to a human-readable name, not its raw id. */
     @Test
     public void sensorExpiryChannelResolvesToAReadableName() {
+        // Act and verify
         assertWithMessage("sensor expiry channel name")
                 .that(NotificationChannels.getString(NotificationChannels.SENSOR_EXPIRY_CHANNEL))
                 .isEqualTo("Sensor expiry");
@@ -50,6 +52,7 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
     /** An id with no mapping is returned unchanged. */
     @Test
     public void unknownChannelIdIsReturnedUnchanged() {
+        // Act and verify
         assertWithMessage("unknown id passthrough")
                 .that(NotificationChannels.getString("no-such-channel-id"))
                 .isEqualTo("no-such-channel-id");
@@ -75,9 +78,11 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
      */
     @Test
     public void differentVibrationYieldsDifferentChannels() {
+        // Act
         final NotificationChannel vibrating = NotificationChannels.getChan(builder().setVibrate(pattern));
         final NotificationChannel silent = NotificationChannels.getChan(builder());
 
+        // Verify
         assertWithMessage("distinct channels for distinct settings")
                 .that(vibrating.getId())
                 .isNotEqualTo(silent.getId());
@@ -86,9 +91,11 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
     /** Identical settings must reuse one channel, not spawn duplicates. */
     @Test
     public void identicalSettingsShareOneChannel() {
+        // Act
         final NotificationChannel first = NotificationChannels.getChan(builder().setVibrate(pattern));
         final NotificationChannel second = NotificationChannels.getChan(builder().setVibrate(pattern));
 
+        // Verify
         assertWithMessage("shared channel for identical settings")
                 .that(first.getId())
                 .isEqualTo(second.getId());
@@ -99,10 +106,12 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
     /** Each setup method registers its channel under the intended readable name. */
     @Test
     public void setupMethodsCreateNamedChannels() {
+        // Act
         NotificationChannels.setupGeneralChannel();
         NotificationChannels.setupSensorExpiryChannel();
         NotificationChannels.setupTestChannel();
 
+        // Verify
         assertWithMessage("general").that(nameOf(NotificationChannels.GENERAL_CHANNEL)).isEqualTo("General");
         assertWithMessage("sensor expiry").that(nameOf(NotificationChannels.SENSOR_EXPIRY_CHANNEL)).isEqualTo("Sensor expiry");
         assertWithMessage("icon test").that(nameOf(NotificationChannels.ICON_TEST_CHANNEL)).isEqualTo("xDrip Icon Test");
@@ -119,9 +128,11 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
     /** The ongoing/foreground channel must be silent and must not vibrate. */
     @Test
     public void ongoingChannelIsSilentAndDoesNotVibrate() {
+        // Act
         final NotificationChannel ongoing = NotificationChannels.getChan(
                 new android.app.Notification.Builder(RuntimeEnvironment.getApplication().getApplicationContext()));
 
+        // Verify
         assertWithMessage("ongoing id").that(ongoing.getId()).isEqualTo(NotificationChannels.ONGOING_CHANNEL);
         assertWithMessage("ongoing is silent").that(ongoing.getSound()).isNull();
         assertWithMessage("ongoing does not vibrate").that(ongoing.shouldVibrate()).isFalse();
