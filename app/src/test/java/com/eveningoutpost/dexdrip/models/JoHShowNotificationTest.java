@@ -31,7 +31,9 @@ public class JoHShowNotificationTest extends RobolectricTestWithConfig {
         assertWithMessage("exactly one notification delivered")
                 .that(shadowOf(notificationManager()).size())
                 .isEqualTo(1);
-        return shadowOf(notificationManager()).getNotification(id);
+        final Notification n = shadowOf(notificationManager()).getNotification(id);
+        assertWithMessage("a notification was posted under id " + id).that(n).isNotNull();
+        return n;
     }
 
     // ---- null channel: the general fallback path ----------------------------
@@ -65,5 +67,22 @@ public class JoHShowNotificationTest extends RobolectricTestWithConfig {
         assertWithMessage("channel name is readable, not the raw id")
                 .that(notificationManager().getNotificationChannel(n.getChannelId()).getName().toString())
                 .startsWith("Sensor expiry");
+    }
+
+    // ---- shorter overloads still deliver -----------------------------------
+
+    /**
+     * A shorter overload that omits the channel id still delivers, on a channel that exists —
+     * i.e. the null → General path is reachable through the whole public surface, not just the
+     * widest overload.
+     */
+    @Test
+    public void shorterOverloadWithoutChannelIsDeliveredOnAnExistingChannel() {
+        JoH.showNotification("title", "body", null, 4244, false, false, false);
+
+        final Notification n = delivered(4244);
+        assertWithMessage("channel it landed on exists")
+                .that(notificationManager().getNotificationChannel(n.getChannelId()))
+                .isNotNull();
     }
 }
