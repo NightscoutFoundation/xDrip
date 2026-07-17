@@ -273,6 +273,16 @@
     <string name="hardware_data_source">Hardware Data Source</string>
     <string name="enter_ten_character_dexcom_receiver_serial">Enter 10-character Dexcom Receiver serial number</string>
     <string name="dexcom_transmitter_id">Dexcom Transmitter ID</string>
+    <string name="new_transmitter_id">New Transmitter ID</string>
+    <string name="new_transmitter_id_summary">ID of the sensor currently soaking/pre-warming</string>
+    <string name="delay_change_for">Delay Change For</string>
+    <string name="delay_change_for_summary">Minutes to wait before switching to the new ID</string>
+    <string name="enter_delay_minutes_default_30">Enter delay in minutes (default is 30 minutes)</string>
+    <string name="delay_capped_at_end_of_sensor_life">Delay capped at end of sensor life: %1$d mins</string>
+    <string name="soak_warmup_tooltip">Reminder: New G7 sensors require 30 minutes to warm up.</string>
+    <string name="new_sensor_ready_title">New Sensor Ready</string>
+    <string name="new_sensor_ready_msg">Please go to System Status to switch sensors.</string>
+    <string name="auto_switched_to_new_transmitter">Automatically switched to new Transmitter ID: %s</string>
     <string name="run_collector_in_foreground">Run Collector in foreground</string>
     <string name="shows_a_persistent_notification">Shows a persistent notification graph, visible on lock-screen and prevents Android killing the service.</string>
     <string name="title_collector_in_foreground">Collector in foreground</string>

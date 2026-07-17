@@ -48,10 +48,12 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bytehamster.lib.preferencesearch.SearchConfiguration;
@@ -69,6 +71,7 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
 import com.eveningoutpost.dexdrip.cgm.dex.TxIdHelper;
+import com.eveningoutpost.dexdrip.g5model.SensorDays;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
@@ -2515,10 +2518,58 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     }).start();
 
                     sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, transmitterId1);
+
+                    // Clear pending auto-switch if manual change occurs
+                    Pref.setString("dex_txid_next", "");
+                    Pref.setLong("dex_txid_next_time", 0);
+                    updateNextIdSummary((EditTextPreference) findPreference("dex_txid_next"));
                 });
 
                 return false; // don't allow by default - handled by callback
             });
+
+            final EditTextPreference nextTransmitterId = (EditTextPreference) findPreference("dex_txid_next");
+            if (nextTransmitterId != null) {
+                nextTransmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+                TxIdHelper.attachValidator(nextTransmitterId.getEditText());
+                if (DexCollectionType.isG7()) {
+                    nextTransmitterId.setDialogMessage(getString(R.string.soak_warmup_tooltip));
+                }
+                nextTransmitterId.setOnPreferenceChangeListener((preference, newValue) -> {
+                    final String val = (String) newValue;
+                    if (val.isEmpty()) {
+                        Pref.setString(preference.getKey(), "");
+                        ((EditTextPreference) preference).setText("");
+                        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, "");
+                        Pref.setLong("dex_txid_next_time", 0);
+                        Pref.setString("dex_txid_delay", "");
+                        final EditTextPreference nextDelay = (EditTextPreference) findPreference("dex_txid_delay");
+                        if (nextDelay != null) {
+                            nextDelay.setText("");
+                        }
+                        updateNextIdSummary((EditTextPreference) preference);
+                        return false;
+                    }
+                    TxIdHelper.handleTransmitterEntry(val, getActivity(), id -> {
+                        showDelayDialog(id, (EditTextPreference) preference);
+                    });
+                    return false;
+                });
+                nextTransmitterId.setOnPreferenceClickListener(preference -> {
+                    String nextId = Pref.getStringDefaultBlank("dex_txid_next");
+                    if (!nextId.isEmpty()) {
+                        showDelayDialog(nextId, (EditTextPreference) preference);
+                        return true;
+                    }
+                    return false;
+                });
+                updateNextIdSummary(nextTransmitterId);
+            }
+
+            final EditTextPreference nextDelay = (EditTextPreference) findPreference("dex_txid_delay");
+            if (nextDelay != null) {
+                ((PreferenceGroup) findPreference("collection_category")).removePreference(nextDelay);
+            }
 
             // when changing collection method
             collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -2975,6 +3026,85 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
 
         private static int pebbleType = 1;
+
+        private void updateNextIdSummary(EditTextPreference preference) {
+            if (preference == null) return;
+            String nextId = Pref.getStringDefaultBlank("dex_txid_next");
+            if (nextId.isEmpty()) {
+                preference.setSummary(getString(R.string.new_transmitter_id_summary));
+                return;
+            }
+            int delayMinutes = JoH.tolerantParseInt(Pref.getString("dex_txid_delay", ""), 0);
+            long switchTime = Pref.getLong("dex_txid_next_time", 0);
+            if (switchTime > 0) {
+                preference.setSummary(nextId + " - Starting in " + delayMinutes + " minutes (" + JoH.hourMinuteString(switchTime) + ")");
+            } else {
+                preference.setSummary(nextId);
+            }
+        }
+
+        private void updateNextSwitchTime() {
+            String nextId = Pref.getStringDefaultBlank("dex_txid_next");
+            if (nextId.isEmpty()) {
+                Pref.setLong("dex_txid_next_time", 0);
+                updateNextIdSummary((EditTextPreference) findPreference("dex_txid_next"));
+                return;
+            }
+            int delayMinutes = JoH.tolerantParseInt(Pref.getString("dex_txid_delay", "30"), 30);
+            long switchTime = JoH.tsl() + (delayMinutes * 60000L);
+            Pref.setLong("dex_txid_next_time", switchTime);
+
+            updateNextIdSummary((EditTextPreference) findPreference("dex_txid_next"));
+        }
+
+        private void showDelayDialog(final String id, final EditTextPreference nextIdPref) {
+            final EditText input = new EditText(getActivity());
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            String currentDelay = Pref.getString("dex_txid_delay", "");
+            input.setText(currentDelay.isEmpty() ? "30" : currentDelay);
+            input.setSelection(input.getText().length());
+
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(getString(R.string.delay_change_for))
+                    .setMessage(getString(R.string.enter_delay_minutes_default_30))
+                    .setView(input)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        String val = input.getText().toString();
+                        if (isNumeric(val)) {
+                            Pref.setString("dex_txid_next", id);
+                            nextIdPref.setText(id);
+                            setAndValidateDelay(val);
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
+                        Pref.setString("dex_txid_next", "");
+                        nextIdPref.setText("");
+                        Pref.setLong("dex_txid_next_time", 0);
+                        Pref.setString("dex_txid_delay", "");
+                        updateNextIdSummary(nextIdPref);
+                    })
+                    .setCancelable(false)
+                    .show();
+        }
+
+        private void setAndValidateDelay(String val) {
+            if (isNumeric(val)) {
+                int minutes = Integer.parseInt(val);
+                if (minutes < 1) minutes = 1;
+                long maxMs = SensorDays.get().getRemainingSensorPeriodInMs();
+                if (maxMs > 0) {
+                    int maxMinutes = (int) (maxMs / 60000);
+                    if (minutes > maxMinutes) {
+                        minutes = maxMinutes;
+                        JoH.static_toast_long(String.format(getString(R.string.delay_capped_at_end_of_sensor_life), minutes));
+                    }
+                }
+                String validatedVal = String.valueOf(minutes);
+                Pref.setString("dex_txid_delay", validatedVal);
+                updateNextSwitchTime();
+            }
+        }
+
         private void enablePebble(int newValueInt, boolean enabled, Context context) {
             Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
             if (pebbleType == 1) {
