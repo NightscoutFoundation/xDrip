@@ -70,6 +70,7 @@ import com.eveningoutpost.dexdrip.alert.Registry;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
+import com.eveningoutpost.dexdrip.cgm.dex.SoakSchedule;
 import com.eveningoutpost.dexdrip.cgm.dex.TxIdHelper;
 import com.eveningoutpost.dexdrip.g5model.SensorDays;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
@@ -1573,6 +1574,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
+            // "New Transmitter ID" (soak & handoff) is a DexcomG5/OB1-only field; captured here so
+            // it can be shown/hidden alongside the other Dexcom prefs below.
+            final EditTextPreference nextTransmitterId = (EditTextPreference) findPreference("dex_txid_next");
            // final Preference closeGatt = findPreference("close_gatt_on_ble_disconnect");
 
             final Preference pebbleSync2 = findPreference("broadcast_to_pebble_type");
@@ -2138,6 +2142,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (collectionType == DexCollectionType.DexcomG5) {
                     try {
                         collectionCategory.addPreference(transmitterId);
+                        collectionCategory.addPreference(nextTransmitterId);
 
                         collectionCategory.addPreference(g5_settings_screen);
                         //collectionCategory.addPreference(g5nonraw);
@@ -2151,6 +2156,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 } else {
                     try {
                         // collectionCategory.removePreference(transmitterId);
+                        collectionCategory.removePreference(nextTransmitterId);
 
                         collectionCategory.removePreference(g5_settings_screen);
                        // collectionCategory.removePreference(scanConstantly);
@@ -2519,53 +2525,44 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                     sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, transmitterId1);
 
-                    // Clear pending auto-switch if manual change occurs
-                    Pref.setString("dex_txid_next", "");
-                    Pref.setLong("dex_txid_next_time", 0);
-                    updateNextIdSummary((EditTextPreference) findPreference("dex_txid_next"));
+                    // Clear any pending auto-switch if the active id is changed manually
+                    SoakSchedule.deactivate();
+                    final EditTextPreference nextIdPref = (EditTextPreference) findPreference("dex_txid_next");
+                    if (nextIdPref != null) {
+                        nextIdPref.setText("");
+                        updateNextIdSummary(nextIdPref);
+                    }
                 });
 
                 return false; // don't allow by default - handled by callback
             });
 
-            final EditTextPreference nextTransmitterId = (EditTextPreference) findPreference("dex_txid_next");
             if (nextTransmitterId != null) {
                 nextTransmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
                 TxIdHelper.attachValidator(nextTransmitterId.getEditText());
                 if (DexCollectionType.isG7()) {
                     nextTransmitterId.setDialogMessage(getString(R.string.soak_warmup_tooltip));
                 }
+                // Tapping the field always opens the id editor (pre-filled with any pending id),
+                // so a queued switch can be edited or blanked to cancel it.
                 nextTransmitterId.setOnPreferenceChangeListener((preference, newValue) -> {
-                    final String val = (String) newValue;
+                    final EditTextPreference pref = (EditTextPreference) preference;
+                    final String val = ((String) newValue).trim();
                     if (val.isEmpty()) {
-                        Pref.setString(preference.getKey(), "");
-                        ((EditTextPreference) preference).setText("");
-                        sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, "");
-                        Pref.setLong("dex_txid_next_time", 0);
-                        Pref.setString("dex_txid_delay", "");
-                        final EditTextPreference nextDelay = (EditTextPreference) findPreference("dex_txid_delay");
-                        if (nextDelay != null) {
-                            nextDelay.setText("");
-                        }
-                        updateNextIdSummary((EditTextPreference) preference);
+                        // Blanking the field cancels any pending switch (and forgets the delay).
+                        SoakSchedule.clearAll();
+                        pref.setText("");
+                        updateNextIdSummary(pref);
                         return false;
                     }
-                    TxIdHelper.handleTransmitterEntry(val, getActivity(), id -> {
-                        showDelayDialog(id, (EditTextPreference) preference);
-                    });
-                    return false;
-                });
-                nextTransmitterId.setOnPreferenceClickListener(preference -> {
-                    String nextId = Pref.getStringDefaultBlank("dex_txid_next");
-                    if (!nextId.isEmpty()) {
-                        showDelayDialog(nextId, (EditTextPreference) preference);
-                        return true;
-                    }
+                    TxIdHelper.handleTransmitterEntry(val, getActivity(), id ->
+                            showDelayDialog(id, pref));
                     return false;
                 });
                 updateNextIdSummary(nextTransmitterId);
             }
 
+            // "dex_txid_delay" is collected through showDelayDialog, not shown as its own row.
             final EditTextPreference nextDelay = (EditTextPreference) findPreference("dex_txid_delay");
             if (nextDelay != null) {
                 ((PreferenceGroup) findPreference("collection_category")).removePreference(nextDelay);
@@ -2639,6 +2636,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     if ((collectionType != DexCollectionType.DexbridgeWixel)
                             && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
                         collectionCategory.removePreference(transmitterId);
+                        collectionCategory.removePreference(nextTransmitterId);
                         //collectionCategory.removePreference(closeGatt);
                         //TODO Bridge battery display support
                     } else {
@@ -2648,6 +2646,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                     if (collectionType == DexCollectionType.DexcomG5) {
                         collectionCategory.addPreference(transmitterId);
+                        collectionCategory.addPreference(nextTransmitterId);
                         // TODO add debug menu
                     }
 
@@ -3029,39 +3028,24 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
         private void updateNextIdSummary(EditTextPreference preference) {
             if (preference == null) return;
-            String nextId = Pref.getStringDefaultBlank("dex_txid_next");
+            final String nextId = SoakSchedule.pendingId();
             if (nextId.isEmpty()) {
                 preference.setSummary(getString(R.string.new_transmitter_id_summary));
                 return;
             }
-            int delayMinutes = JoH.tolerantParseInt(Pref.getString("dex_txid_delay", ""), 0);
-            long switchTime = Pref.getLong("dex_txid_next_time", 0);
+            final long switchTime = SoakSchedule.switchTime();
             if (switchTime > 0) {
-                preference.setSummary(nextId + " - Starting in " + delayMinutes + " minutes (" + JoH.hourMinuteString(switchTime) + ")");
+                preference.setSummary(getString(R.string.soak_summary_pending, nextId,
+                        SoakSchedule.storedDelayMinutes(), JoH.hourMinuteString(switchTime)));
             } else {
                 preference.setSummary(nextId);
             }
         }
 
-        private void updateNextSwitchTime() {
-            String nextId = Pref.getStringDefaultBlank("dex_txid_next");
-            if (nextId.isEmpty()) {
-                Pref.setLong("dex_txid_next_time", 0);
-                updateNextIdSummary((EditTextPreference) findPreference("dex_txid_next"));
-                return;
-            }
-            int delayMinutes = JoH.tolerantParseInt(Pref.getString("dex_txid_delay", "30"), 30);
-            long switchTime = JoH.tsl() + (delayMinutes * 60000L);
-            Pref.setLong("dex_txid_next_time", switchTime);
-
-            updateNextIdSummary((EditTextPreference) findPreference("dex_txid_next"));
-        }
-
         private void showDelayDialog(final String id, final EditTextPreference nextIdPref) {
             final EditText input = new EditText(getActivity());
             input.setInputType(InputType.TYPE_CLASS_NUMBER);
-            String currentDelay = Pref.getString("dex_txid_delay", "");
-            input.setText(currentDelay.isEmpty() ? "30" : currentDelay);
+            input.setText(String.valueOf(SoakSchedule.delayMinutesOrDefault()));
             input.setSelection(input.getText().length());
 
             new AlertDialog.Builder(getActivity())
@@ -3069,40 +3053,28 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     .setMessage(getString(R.string.enter_delay_minutes_default_30))
                     .setView(input)
                     .setPositiveButton(android.R.string.ok, (dialog, which) -> {
-                        String val = input.getText().toString();
-                        if (isNumeric(val)) {
-                            Pref.setString("dex_txid_next", id);
-                            nextIdPref.setText(id);
-                            setAndValidateDelay(val);
+                        // Blank or non-numeric input falls back to the default rather than
+                        // silently queueing nothing.
+                        final int requested = JoH.tolerantParseInt(input.getText().toString(),
+                                SoakSchedule.DEFAULT_DELAY_MINUTES);
+                        final long remainingMs = SensorDays.get().getRemainingSensorPeriodInMs();
+                        final int minutes = SoakSchedule.clampDelay(requested, remainingMs);
+                        if (minutes == SoakSchedule.CANNOT_SCHEDULE) {
+                            // Under a minute of sensor life left: refuse instead of switching now.
+                            JoH.static_toast_long(getString(R.string.soak_no_sensor_life_left));
+                            return;
                         }
-                    })
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> {
-                        Pref.setString("dex_txid_next", "");
-                        nextIdPref.setText("");
-                        Pref.setLong("dex_txid_next_time", 0);
-                        Pref.setString("dex_txid_delay", "");
+                        if (minutes < requested) {
+                            JoH.static_toast_long(String.format(
+                                    getString(R.string.delay_capped_at_end_of_sensor_life), minutes));
+                        }
+                        SoakSchedule.queue(id, minutes, JoH.tsl());
+                        nextIdPref.setText(id);
                         updateNextIdSummary(nextIdPref);
                     })
-                    .setCancelable(false)
+                    // Cancel just dismisses; any existing schedule is left untouched.
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
                     .show();
-        }
-
-        private void setAndValidateDelay(String val) {
-            if (isNumeric(val)) {
-                int minutes = Integer.parseInt(val);
-                if (minutes < 1) minutes = 1;
-                long maxMs = SensorDays.get().getRemainingSensorPeriodInMs();
-                if (maxMs > 0) {
-                    int maxMinutes = (int) (maxMs / 60000);
-                    if (minutes > maxMinutes) {
-                        minutes = maxMinutes;
-                        JoH.static_toast_long(String.format(getString(R.string.delay_capped_at_end_of_sensor_life), minutes));
-                    }
-                }
-                String validatedVal = String.valueOf(minutes);
-                Pref.setString("dex_txid_delay", validatedVal);
-                updateNextSwitchTime();
-            }
         }
 
         private void enablePebble(int newValueInt, boolean enabled, Context context) {

@@ -279,6 +279,9 @@
     <string name="delay_change_for_summary">Minutes to wait before switching to the new ID</string>
     <string name="enter_delay_minutes_default_30">Enter delay in minutes (default is 30 minutes)</string>
     <string name="delay_capped_at_end_of_sensor_life">Delay capped at end of sensor life: %1$d mins</string>
+    <string name="soak_no_sensor_life_left">Not enough sensor life left to schedule a switch</string>
+    <string name="soak_summary_pending">%1$s - Starting in %2$d minutes (%3$s)</string>
+    <string name="soak_next_transmitter_note">Next Transmitter: %1$s at %2$s</string>
     <string name="soak_warmup_tooltip">Reminder: New G7 sensors require 30 minutes to warm up.</string>
     <string name="new_sensor_ready_title">New Sensor Ready</string>
     <string name="new_sensor_ready_msg">Please go to System Status to switch sensors.</string>

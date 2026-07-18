@@ -41,6 +41,7 @@ import com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.cgm.dex.SoakSchedule;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.TransmitterData;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -178,19 +179,14 @@ public class SystemStatusFragment extends Fragment {
     }
 
     private void checkAndPerformAutoSwitch() {
-        final String nextId = Pref.getStringDefaultBlank("dex_txid_next");
-        if (!nextId.isEmpty()) {
-            final long switchTime = Pref.getLong("dex_txid_next_time", 0);
-            if (switchTime > 0 && JoH.ts() >= (switchTime - 60000)) {
-                performAutoSwitch(nextId);
-            }
+        if (SoakSchedule.isDue(JoH.tsl())) {
+            performAutoSwitch(SoakSchedule.pendingId());
         }
     }
 
     private void performAutoSwitch(final String nextId) {
         Pref.setString("dex_txid", nextId);
-        Pref.setString("dex_txid_next", "");
-        Pref.setLong("dex_txid_next_time", 0);
+        SoakSchedule.deactivate();
 
         new Thread(() -> {
             UserError.Log.d(TAG, "Automatically switching to new Transmitter ID: " + nextId);
@@ -474,11 +470,10 @@ public class SystemStatusFragment extends Fragment {
 
     private void setNotes() {
         try {
-            final String nextId = Pref.getStringDefaultBlank("dex_txid_next");
-            if (!nextId.isEmpty()) {
-                final long switchTime = Pref.getLong("dex_txid_next_time", 0);
+            if (SoakSchedule.isPending()) {
+                final long switchTime = SoakSchedule.switchTime();
                 if (switchTime > 0) {
-                    notes.append("\n- Next Transmitter: " + nextId + " at " + JoH.hourMinuteString(switchTime));
+                    notes.append("\n- " + gs(R.string.soak_next_transmitter_note, SoakSchedule.pendingId(), JoH.hourMinuteString(switchTime)));
                 }
             }
 
