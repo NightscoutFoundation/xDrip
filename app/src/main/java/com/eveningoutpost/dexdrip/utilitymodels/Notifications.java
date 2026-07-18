@@ -975,6 +975,17 @@ public class Notifications extends IntentService {
         OtherAlert(context, type, context.getString(R.string.new_sensor_ready_title), context.getString(R.string.new_sensor_ready_msg), soakTimerNotificationId, NotificationChannels.BG_ALERT_CHANNEL, true, 3600, intent);
     }
 
+    public static void cancelNotification(int notificationId) {
+        try {
+            final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (mNotifyMgr != null) {
+                mNotifyMgr.cancel(notificationId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to cancel notification: " + notificationId, e);
+        }
+    }
+
     public static void persistentHighAlert(Context context, boolean on, String msg) {
         final String type = "persistent_high_alert";
         if (on) {

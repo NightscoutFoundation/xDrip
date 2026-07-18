@@ -112,6 +112,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Experience;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil;
@@ -2527,6 +2528,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                     // Clear any pending auto-switch if the active id is changed manually
                     SoakSchedule.deactivate();
+                    Notifications.cancelNotification(Notifications.soakTimerNotificationId);
                     final EditTextPreference nextIdPref = (EditTextPreference) findPreference("dex_txid_next");
                     if (nextIdPref != null) {
                         nextIdPref.setText("");
@@ -2551,6 +2553,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     if (val.isEmpty()) {
                         // Blanking the field cancels any pending switch (and forgets the delay).
                         SoakSchedule.clearAll();
+                        Notifications.cancelNotification(Notifications.soakTimerNotificationId);
                         pref.setText("");
                         updateNextIdSummary(pref);
                         return false;

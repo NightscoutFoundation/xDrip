@@ -42,6 +42,7 @@ import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.cgm.dex.SoakSchedule;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.TransmitterData;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -187,15 +188,20 @@ public class SystemStatusFragment extends Fragment {
     private void performAutoSwitch(final String nextId) {
         Pref.setString("dex_txid", nextId);
         SoakSchedule.deactivate();
+        Notifications.cancelNotification(Notifications.soakTimerNotificationId);
+
+        // Capture the Activity while we are still on the UI thread and attached; the background
+        // thread must not rely on safeGetContext(), which falls back to the (non-Activity) app
+        // context after detach and would silently skip the location/permission prompt.
+        final Activity activity = getActivity();
 
         new Thread(() -> {
             UserError.Log.d(TAG, "Automatically switching to new Transmitter ID: " + nextId);
             clearDataWhenTransmitterIdEntered(nextId);
             CollectionServiceStarter.restartCollectionServiceBackground();
             Home.staticRefreshBGCharts();
-            final Context context = safeGetContext();
-            if (context instanceof Activity) {
-                LocationHelper.requestLocationForBluetooth((Activity) context);
+            if (activity != null) {
+                activity.runOnUiThread(() -> LocationHelper.requestLocationForBluetooth(activity));
             }
         }).start();
 

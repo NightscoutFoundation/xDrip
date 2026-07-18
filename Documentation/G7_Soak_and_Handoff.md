@@ -45,6 +45,11 @@ The whole flow is two short interactions with the phone, and fewer than five tap
 5. Done. The field's summary now shows the queued ID, the minutes remaining, and the target time,
    e.g. `2222 - Starting in 60 minutes (09:47)`.
 
+> **Note:** the switch may fire up to a minute before the target time, so it isn't missed in the
+> gap between reading cycles. A practical consequence is that a very short delay (a minute or two)
+> effectively becomes due straight away; the default of 30 minutes and any normal soak time are
+> unaffected.
+
    ![Field summary showing the queued ID and countdown](images/g7-soak-4-summary.png)
 
 The pending switch also appears under **System Status → Other Notes**, so you can confirm it at a
