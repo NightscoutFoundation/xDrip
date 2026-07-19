@@ -6,6 +6,7 @@ import static com.eveningoutpost.dexdrip.tidepool.AuthFlowOut.eraseAuthState;
 
 import android.content.Intent;
 import android.os.Bundle;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -13,6 +14,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 
 import net.openid.appauth.AppAuthConfiguration;
+import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
 import net.openid.appauth.AuthorizationResponse;
 
@@ -172,36 +174,64 @@ public class AuthFlowIn extends AppCompatActivity {
         }
     }
 
+    /**
+     * True for a transient token-refresh failure (no connectivity or a server-side error), where the
+     * stored refresh token is still valid and the next sync should retry silently. A rejected
+     * credential instead surfaces as an OAuth token error ({@code invalid_grant}) and still forces re-login.
+     */
+    @VisibleForTesting
+    static boolean isTransientTokenError(final AuthorizationException ex) {
+        if (ex == null) {
+            return false;
+        }
+        return ex.type == AuthorizationException.TYPE_GENERAL_ERROR
+                && (ex.code == AuthorizationException.GeneralErrors.NETWORK_ERROR.code
+                || ex.code == AuthorizationException.GeneralErrors.SERVER_ERROR.code);
+    }
+
     public static void handleTokenLoginAndStartSession() {
         val state = AuthFlowOut.getAuthState();
         if (state != null) {
             val service = AuthFlowOut.getAuthService();
-            state.performActionWithFreshTokens(service, (accessToken, idToken, tokenException) -> {
-                if (tokenException != null) {
-                    Log.e(TAG, "Got exception token: " + tokenException);
-                }
-                if (accessToken != null) {
-                    val lastReponse = state.getLastTokenResponse();
-                    if (lastReponse != null) {
-                        val session = new Session(lastReponse.tokenType, TidepoolUploader.getSESSION_TOKEN_HEADER());
-                        session.authReply = new MAuthReply(idToken);
-                        session.token = accessToken;
-                        session.authReply.userid = Pref.getStringDefaultBlank(PREF_TIDEPOOL_SUB_NAME);
-                        TidepoolUploader.startSession(session, false);
-                        AuthFlowOut.saveAuthState();
-                    } else {
-                        Log.e(TAG, "Failing to get response / token type - trying initial login again");
-                        retryInitialLogin();
-                    }
-                } else {
-                    Log.e(TAG, "Failing to use access token - trying initial login again");
-                    retryInitialLogin();
-                }
-            });
+            state.performActionWithFreshTokens(service,
+                    (accessToken, idToken, tokenException) -> onFreshTokenResult(state, accessToken, idToken, tokenException));
         } else {
             Log.e(TAG, "Failing to get state - trying initial login");
             retryInitialLogin();
         }
+    }
+
+    /**
+     * Act on the result of a fresh-token request. A usable access token with a stored response starts a
+     * session; a missing token forces interactive re-login unless the failure was transient
+     * ({@link #isTransientTokenError}), in which case the next sync retries the silent refresh.
+     */
+    private static void onFreshTokenResult(final AuthState state, final String accessToken,
+                                           final String idToken, final AuthorizationException ex) {
+        if (ex != null) {
+            Log.e(TAG, "Got exception token: " + ex);
+        }
+        if (accessToken == null) {
+            if (isTransientTokenError(ex)) {
+                Log.d(TAG, "Token refresh failed transiently - keeping session, will retry on next sync: " + ex);
+            } else {
+                Log.e(TAG, "Failing to use access token - trying initial login again");
+                retryInitialLogin();
+            }
+            return;
+        }
+        val lastResponse = state.getLastTokenResponse();
+        if (lastResponse == null) {
+            Log.e(TAG, "Failing to get response / token type - trying initial login again");
+            retryInitialLogin();
+            return;
+        }
+        val session = new Session(lastResponse.tokenType, TidepoolUploader.getSESSION_TOKEN_HEADER());
+        session.authReply = new MAuthReply(idToken);
+        session.token = accessToken;
+        session.authReply.userid = Pref.getStringDefaultBlank(PREF_TIDEPOOL_SUB_NAME);
+        TidepoolUploader.startSession(session, false);
+        AuthFlowOut.saveAuthState();
     }
 
     private static void retryInitialLogin() {
