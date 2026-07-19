@@ -17,6 +17,8 @@ Patches are welcomed! To ensure the best all round results they need be a good f
 
 The best way to get patches accepted is to discuss your ideas with project maintainers using [Discussions](https://github.com/NightscoutFoundation/xDrip/discussions) prior to implementation and discuss how to structure things so that they can fit well within the project and also the rationale for the change.
 
+Check the [development guide](DEVELOPMENT_GUIDE.md) on how to setup your dev environment.
+
 #### Copyright of submitted contributions
 
 Any submitted patches and pull requests must either be the original work of the submitter or be available under a suitable open source license which is compatible with inclusion in a GPL licensed project.
