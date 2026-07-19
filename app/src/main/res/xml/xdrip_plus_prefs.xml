@@ -846,6 +846,12 @@
                     android:targetPackage="@string/local_target_package">
                 </intent>
             </Preference>
+
+            <CheckBoxPreference
+                android:defaultValue="false"
+                android:key="exponential_model_enabled"
+                android:summary="@string/summary_exponential_insulin_model"
+                android:title="@string/exponential_insulin_model" />
         </PreferenceCategory>
 
         <PreferenceScreen
