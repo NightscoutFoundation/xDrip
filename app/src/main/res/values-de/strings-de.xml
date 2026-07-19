@@ -802,7 +802,8 @@
     <string name="rising_threshold">Warngrenze \"BZ steigend\"</string>
     <string name="set_sound_for_bg_alerts">Setze den Ton, der für Glukosealarme benutzt wird.</string>
     <string name="alert_sound">Alarmton</string>
-    <string name="override_silent_mode_these">Lautlos-Modus bei diesen Alarmen überschreiben</string>
+    <string name="override_silent_mode_these">"Nicht stören" ignorieren</string>
+    <string name="no_effect_when_using_notification_channels">Diese Einstellung hat keinen Effekt, wenn die Benachrichtigungskanal-Funktion aktiviert ist. Das Verhalten kann dann in den Android-Benachrichtigungseinstellungen geändert werden.</string>
     <string name="persistent_repeat_max">Maximal alle x Minuten wiederholen</string>
     <string name="momentum_indicates_low">Wenn der Trend anzeigt, dass eine Unterzuckerung bevorsteht</string>
     <string name="notify_on_low_battery_level">Benachrichtigen, wenn der Ladezustand niedrig wird.</string>
