@@ -26,8 +26,8 @@ import okhttp3.mockwebserver.RecordedRequest;
 
 /**
  * Tests for {@link NightscoutFollow#work} entry-fetching strategy.
- * Verifies that date-based filtering is used when a prior reading exists,
- * and that count-only is used on first run (no local readings).
+ * Verifies that date-based filtering is used both when a prior reading exists and on first run
+ * (no local readings), so a brand-new phone still backfills the last 24 hours.
  *
  * @author Asbjørn Aarrestad
  */
@@ -188,11 +188,12 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
         assertThat(actualCutoff).isAtLeast(expectedCutoffFloor);
     }
 
-    // ===== Count-only on first run (no prior readings) =======================================
+    // ===== First run (no prior readings) still backfills 24h =================================
 
     @Test
-    public void work_usesCountOnly_whenNoLastReading() throws Exception {
-        // :: Setup — DB is empty (no BgReadings)
+    public void work_backfills24Hours_whenNoLastReading() throws Exception {
+        // :: Setup — DB is empty (no BgReadings), as on a brand-new phone
+        final long expectedCutoffFloor = JoH.tsl() - Constants.DAY_IN_MS - 2000L;
         server.setDispatcher(new okhttp3.mockwebserver.Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) {
@@ -204,14 +205,18 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
         NightscoutFollow.work(false);
         awaitCallbacks();
 
-        // :: Verify — entries request has count but no date filter
+        // :: Verify — first run uses the date filter with a ~now-24h cutoff (not just count=10)
         List<String> paths = drainRequestPaths();
         String entriesPath = paths.stream()
                 .filter(p -> p.contains("entries"))
                 .findFirst()
                 .orElse("");
-        assertThat(entriesPath).contains("count=");
         String decoded = URLDecoder.decode(entriesPath, "UTF-8");
-        assertThat(decoded).doesNotContain("find[date][$gt]");
+        assertThat(decoded).contains("find[date][$gt]=");
+        assertThat(decoded).contains("count=2880");
+        String afterGt = decoded.substring(decoded.indexOf("find[date][$gt]=") + "find[date][$gt]=".length());
+        long actualCutoff = Long.parseLong(afterGt.split("&")[0]);
+        assertThat(actualCutoff).isAtLeast(expectedCutoffFloor);
+        assertThat(actualCutoff).isLessThan(JoH.tsl());
     }
 }

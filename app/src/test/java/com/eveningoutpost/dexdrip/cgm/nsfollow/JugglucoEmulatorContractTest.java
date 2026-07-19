@@ -110,7 +110,7 @@ public class JugglucoEmulatorContractTest extends RobolectricTestWithConfig {
 
     @Test
     public void entriesArray_isImported() throws Exception {
-        // :: Setup — fresh DB → count-based query; Juggluco returns a real array
+        // :: Setup — fresh DB → 24h date-filtered query; Juggluco returns a real array
         final long ts = JoH.tsl() - 120_000L;
         useJugglucoDispatcher("[{\"sgv\":142,\"date\":" + ts + ",\"direction\":\"Flat\",\"type\":\"sgv\"}]");
 
