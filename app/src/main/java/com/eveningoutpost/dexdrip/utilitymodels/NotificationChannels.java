@@ -75,6 +75,8 @@ public class NotificationChannels {
         map.put(BG_PERSISTENT_HIGH_CHANNEL, xdrip.getAppContext().getString(R.string.persistent_high_alert));
         map.put(CALIBRATION_CHANNEL, xdrip.getAppContext().getString(R.string.calibration_alerts));
         map.put(ONGOING_CHANNEL, "Ongoing Notification");
+        map.put(GENERAL_CHANNEL, "General");
+        map.put(SENSOR_EXPIRY_CHANNEL, "Sensor expiry");
     }
 
 

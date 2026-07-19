@@ -18,8 +18,11 @@ public class XdripNotificationCompat extends NotificationCompat {
         try {
             id = NotificationChannels.getChan(builder).getId();
         } catch (Exception e) {
-            // Fallback to generic alert channel if the guesser fails
-            id = NotificationChannels.BG_ALERT_CHANNEL;
+            // Guesser failed. Fall back to the general channel and make sure it exists,
+            // otherwise the notification is silently dropped on API 26+.
+            id = NotificationChannels.GENERAL_CHANNEL;
+            NotificationChannels.setupGeneralChannel();
+            UserError.Log.e(TAG, "getChan() failed, fell back to GENERAL_CHANNEL: " + e);
         }
         builder.setChannelId(id);
 
