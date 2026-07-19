@@ -48,10 +48,12 @@ import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import android.text.InputFilter;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.bytehamster.lib.preferencesearch.SearchConfiguration;
@@ -68,7 +70,9 @@ import com.eveningoutpost.dexdrip.alert.Registry;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
+import com.eveningoutpost.dexdrip.cgm.dex.SoakSchedule;
 import com.eveningoutpost.dexdrip.cgm.dex.TxIdHelper;
+import com.eveningoutpost.dexdrip.g5model.SensorDays;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
@@ -108,6 +112,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Experience;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
 import com.eveningoutpost.dexdrip.utilitymodels.Intents;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utilitymodels.SpeechUtil;
@@ -1570,6 +1575,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             final Preference scanShare = findPreference("scan_share2_barcode");
             final EditTextPreference transmitterId = (EditTextPreference) findPreference("dex_txid");
+            // "New Transmitter ID" (soak & handoff) is a DexcomG5/OB1-only field; captured here so
+            // it can be shown/hidden alongside the other Dexcom prefs below.
+            final EditTextPreference nextTransmitterId = (EditTextPreference) findPreference("dex_txid_next");
            // final Preference closeGatt = findPreference("close_gatt_on_ble_disconnect");
 
             final Preference pebbleSync2 = findPreference("broadcast_to_pebble_type");
@@ -2135,6 +2143,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (collectionType == DexCollectionType.DexcomG5) {
                     try {
                         collectionCategory.addPreference(transmitterId);
+                        collectionCategory.addPreference(nextTransmitterId);
 
                         collectionCategory.addPreference(g5_settings_screen);
                         //collectionCategory.addPreference(g5nonraw);
@@ -2148,6 +2157,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 } else {
                     try {
                         // collectionCategory.removePreference(transmitterId);
+                        collectionCategory.removePreference(nextTransmitterId);
 
                         collectionCategory.removePreference(g5_settings_screen);
                        // collectionCategory.removePreference(scanConstantly);
@@ -2515,10 +2525,51 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     }).start();
 
                     sBindPreferenceSummaryToValueListener.onPreferenceChange(preference, transmitterId1);
+
+                    // Clear any pending auto-switch if the active id is changed manually
+                    SoakSchedule.deactivate();
+                    Notifications.cancelNotification(Notifications.soakTimerNotificationId);
+                    final EditTextPreference nextIdPref = (EditTextPreference) findPreference("dex_txid_next");
+                    if (nextIdPref != null) {
+                        nextIdPref.setText("");
+                        updateNextIdSummary(nextIdPref);
+                    }
                 });
 
                 return false; // don't allow by default - handled by callback
             });
+
+            if (nextTransmitterId != null) {
+                nextTransmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+                TxIdHelper.attachValidator(nextTransmitterId.getEditText());
+                if (DexCollectionType.isG7()) {
+                    nextTransmitterId.setDialogMessage(getString(R.string.soak_warmup_tooltip));
+                }
+                // Tapping the field always opens the id editor (pre-filled with any pending id),
+                // so a queued switch can be edited or blanked to cancel it.
+                nextTransmitterId.setOnPreferenceChangeListener((preference, newValue) -> {
+                    final EditTextPreference pref = (EditTextPreference) preference;
+                    final String val = ((String) newValue).trim();
+                    if (val.isEmpty()) {
+                        // Blanking the field cancels any pending switch (and forgets the delay).
+                        SoakSchedule.clearAll();
+                        Notifications.cancelNotification(Notifications.soakTimerNotificationId);
+                        pref.setText("");
+                        updateNextIdSummary(pref);
+                        return false;
+                    }
+                    TxIdHelper.handleTransmitterEntry(val, getActivity(), id ->
+                            showDelayDialog(id, pref));
+                    return false;
+                });
+                updateNextIdSummary(nextTransmitterId);
+            }
+
+            // "dex_txid_delay" is collected through showDelayDialog, not shown as its own row.
+            final EditTextPreference nextDelay = (EditTextPreference) findPreference("dex_txid_delay");
+            if (nextDelay != null) {
+                ((PreferenceGroup) findPreference("collection_category")).removePreference(nextDelay);
+            }
 
             // when changing collection method
             collectionMethod.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -2588,6 +2639,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     if ((collectionType != DexCollectionType.DexbridgeWixel)
                             && (collectionType != DexCollectionType.WifiDexBridgeWixel)) {
                         collectionCategory.removePreference(transmitterId);
+                        collectionCategory.removePreference(nextTransmitterId);
                         //collectionCategory.removePreference(closeGatt);
                         //TODO Bridge battery display support
                     } else {
@@ -2597,6 +2649,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                     if (collectionType == DexCollectionType.DexcomG5) {
                         collectionCategory.addPreference(transmitterId);
+                        collectionCategory.addPreference(nextTransmitterId);
                         // TODO add debug menu
                     }
 
@@ -2975,6 +3028,58 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         }
 
         private static int pebbleType = 1;
+
+        private void updateNextIdSummary(EditTextPreference preference) {
+            if (preference == null) return;
+            final String nextId = SoakSchedule.pendingId();
+            if (nextId.isEmpty()) {
+                preference.setSummary(getString(R.string.new_transmitter_id_summary));
+                return;
+            }
+            final long switchTime = SoakSchedule.switchTime();
+            if (switchTime > 0) {
+                preference.setSummary(getString(R.string.soak_summary_pending, nextId,
+                        SoakSchedule.storedDelayMinutes(), JoH.hourMinuteString(switchTime)));
+            } else {
+                preference.setSummary(nextId);
+            }
+        }
+
+        private void showDelayDialog(final String id, final EditTextPreference nextIdPref) {
+            final EditText input = new EditText(getActivity());
+            input.setInputType(InputType.TYPE_CLASS_NUMBER);
+            input.setText(String.valueOf(SoakSchedule.delayMinutesOrDefault()));
+            input.setSelection(input.getText().length());
+
+            new AlertDialog.Builder(getActivity())
+                    .setTitle(getString(R.string.delay_change_for))
+                    .setMessage(getString(R.string.enter_delay_minutes_default_30))
+                    .setView(input)
+                    .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                        // Blank or non-numeric input falls back to the default rather than
+                        // silently queueing nothing.
+                        final int requested = JoH.tolerantParseInt(input.getText().toString(),
+                                SoakSchedule.DEFAULT_DELAY_MINUTES);
+                        final long remainingMs = SensorDays.get().getRemainingSensorPeriodInMs();
+                        final int minutes = SoakSchedule.clampDelay(requested, remainingMs);
+                        if (minutes == SoakSchedule.CANNOT_SCHEDULE) {
+                            // Under a minute of sensor life left: refuse instead of switching now.
+                            JoH.static_toast_long(getString(R.string.soak_no_sensor_life_left));
+                            return;
+                        }
+                        if (minutes < requested) {
+                            JoH.static_toast_long(String.format(
+                                    getString(R.string.delay_capped_at_end_of_sensor_life), minutes));
+                        }
+                        SoakSchedule.queue(id, minutes, JoH.tsl());
+                        nextIdPref.setText(id);
+                        updateNextIdSummary(nextIdPref);
+                    })
+                    // Cancel just dismisses; any existing schedule is left untouched.
+                    .setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.dismiss())
+                    .show();
+        }
+
         private void enablePebble(int newValueInt, boolean enabled, Context context) {
             Log.d(TAG,"enablePebble called with: "+newValueInt+" "+enabled);
             if (pebbleType == 1) {
