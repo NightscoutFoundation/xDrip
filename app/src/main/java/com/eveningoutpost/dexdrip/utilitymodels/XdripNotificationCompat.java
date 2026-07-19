@@ -27,8 +27,6 @@ public class XdripNotificationCompat extends NotificationCompat {
         builder.setGroup(null);
         builder.setGroupSummary(false);
 
-        builder.setCategory(NotificationCompat.CATEGORY_ALARM);
-
         final Notification n = builder.build();
 
         UserError.Log.d(TAG, "NotifCompat: chan=" + id +
