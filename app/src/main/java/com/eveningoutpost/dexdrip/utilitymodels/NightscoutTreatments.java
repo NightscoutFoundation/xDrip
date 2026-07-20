@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.DateUtil;
@@ -30,6 +31,7 @@ public class NightscoutTreatments {
 
     public static boolean processTreatmentResponse(final String response) throws Exception {
         boolean new_data = false;
+        boolean new_bloodtest = false;
 
         final JSONArray jsonArray = new JSONArray(response);
         for (int i = 0; i < jsonArray.length(); i++) {
@@ -77,6 +79,7 @@ public class NightscoutTreatments {
                                 bt.uuid = uuid; // override random uuid with nightscout one
                                 bt.saveit();
                                 new_data = true;
+                                new_bloodtest = true;
                                 UserError.Log.ueh(TAG, "Received new Bloodtest data from Nightscout: " + BgGraphBuilder.unitized_string_with_units_static(mgdl) + " @ " + JoH.dateTimeText(timestamp));
                             } else {
                                 UserError.Log.d(TAG, "Error creating bloodtest record: " + mgdl + " mgdl " + tr.toString());
@@ -204,6 +207,11 @@ public class NightscoutTreatments {
                     }
                 }
             }
+        }
+        if (new_bloodtest) {
+            // fan newly downloaded blood tests out over xDrip sync so other family
+            // devices get the marker without downloading from Nightscout themselves
+            GcmActivity.syncBloodTests();
         }
         return new_data;
     }
