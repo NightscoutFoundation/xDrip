@@ -28,6 +28,7 @@ public class NightscoutTreatments {
 
     private static final HashSet<String> bad_uuids = new HashSet<>();
     private static final HashSet<String> bad_bloodtest_uuids = new HashSet<>();
+    private static final HashSet<String> logged_non_finger_ids = new HashSet<>();
 
     public static boolean processTreatmentResponse(final String response) throws Exception {
         boolean new_data = false;
@@ -90,7 +91,9 @@ public class NightscoutTreatments {
                                 UserError.Log.d(TAG, "Already a bloodtest with uuid: " + uuid);
                         }
                     } else {
-                        if (JoH.quietratelimit("blood-test-type-finger", 2)) {
+                        // the same entries reappear in every download pass - complain only once
+                        // per entry, but keep rechecking so a later edit to Finger gets imported
+                        if (logged_non_finger_ids.add(nightscout_id)) {
                             UserError.Log.e(TAG, "Cannot use bloodtest which is not type Finger: " + tr.getString("glucoseType"));
                         }
                     }
