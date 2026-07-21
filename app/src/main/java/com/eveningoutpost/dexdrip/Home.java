@@ -691,7 +691,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                     && !xdrip.isRunningTest()
                     && JoH.pratelimit("overlay-permission-prompt", 3600)) {
                 JoH.show_ok_dialog(this, gs(R.string.please_allow_permission),
-                        gs(R.string.overlay_permission_needed_message), () -> {
+                        // CHG15 literal pending the follow-up strings PR
+                        "The snooze screen over other apps and the lock screen is enabled, but the Android permission 'Display over other apps' is not granted. Tap OK and allow it on the next screen.", () -> {
                             try {
                                 startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                         Uri.parse("package:" + getPackageName())));

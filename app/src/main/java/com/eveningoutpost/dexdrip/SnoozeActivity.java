@@ -304,7 +304,7 @@ public class SnoozeActivity extends ActivityWithMenu {
                     pendingVolumeKeyUuid = null;
                     cancelVolumeKeyConfirmToast();
                     AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
-                    JoH.static_toast_long(gs(volumeKeySnoozedText(event.getKeyCode()))); // CHG7 A5
+                    JoH.static_toast_long(volumeKeySnoozedText(event.getKeyCode())); // CHG7 A5 / CHG15
                     Log.ueh(TAG, "Snoozing alert due to double volume button press");
                     return true;
                 }
@@ -317,34 +317,36 @@ public class SnoozeActivity extends ActivityWithMenu {
                 pendingVolumeKeyUuid = aba.alert_uuid; // CHG7 A2
                 pendingVolumeKeySince = now;
                 showVolumeKeyConfirmToast(wrongButton
-                        ? R.string.volume_button_wrong_button
+                        ? "Double press the same volume button to snooze" // CHG15 literal
                         : volumeKeyConfirmText(event.getKeyCode()));
                 break;
         }
         return false;
     }
 
-    // CHG7 A5: per-button confirmation text for the first press
-    private static int volumeKeyConfirmText(final int keyCode) {
+    // CHG7 A5: per-button confirmation text for the first press (CHG15: English literals
+    // pending the follow-up strings PR)
+    private static String volumeKeyConfirmText(final int keyCode) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                return R.string.volume_down_confirm_snooze;
+                return "Press the volume DOWN button again to snooze";
             case KeyEvent.KEYCODE_VOLUME_UP:
-                return R.string.volume_up_confirm_snooze;
+                return "Press the volume UP button again to snooze";
             default:
-                return R.string.press_same_volume_button_again;
+                return "Press the same volume button again to snooze the alert";
         }
     }
 
-    // CHG7 A5: per-button text for the snoozing toast
-    private static int volumeKeySnoozedText(final int keyCode) {
+    // CHG7 A5: per-button text for the snoozing toast (CHG15: English literals; the mute
+    // path keeps the existing translated resource)
+    private static String volumeKeySnoozedText(final int keyCode) {
         switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
-                return R.string.snoozing_due_volume_down_button_press;
+                return "Snoozing alert due to double volume DOWN button press";
             case KeyEvent.KEYCODE_VOLUME_UP:
-                return R.string.snoozing_due_volume_up_button_press;
+                return "Snoozing alert due to double volume UP button press";
             default:
-                return R.string.snoozing_due_button_press;
+                return gs(R.string.snoozing_due_button_press);
         }
     }
 
@@ -377,12 +379,12 @@ public class SnoozeActivity extends ActivityWithMenu {
     }
 
     // CHG4: the confirmation toast is kept as a reference so the second press can dismiss it
-    // instantly (CHG7 A5: the text now varies per button)
-    private static void showVolumeKeyConfirmToast(final int textResId) {
+    // instantly (CHG7 A5: the text varies per button; CHG15: plain text parameter)
+    private static void showVolumeKeyConfirmToast(final String text) {
         try {
             cancelVolumeKeyConfirmToast();
             volumeKeyConfirmToast = Toast.makeText(xdrip.getAppContext(),
-                    gs(textResId), Toast.LENGTH_SHORT);
+                    text, Toast.LENGTH_SHORT);
             volumeKeyConfirmToast.show();
         } catch (Exception e) {
             Log.e(TAG, "Could not show volume key confirmation toast: " + e);
@@ -608,7 +610,7 @@ public class SnoozeActivity extends ActivityWithMenu {
         if(aba != null && activeBgAlert== null) {
             // CHG7 A1: an orphaned record (test alert, removed alert type) is no longer
             // deleted during the lookup, so report it instead of logging an error
-            alertStatus.setText(gs(R.string.alert_type_not_found));
+            alertStatus.setText("Alert type not found"); // CHG15 literal
             return;
         }
         long now = new Date().getTime();

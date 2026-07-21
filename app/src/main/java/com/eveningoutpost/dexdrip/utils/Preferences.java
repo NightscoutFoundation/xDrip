@@ -2221,7 +2221,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             try {
                 findPreference(SnoozeOverlayActivity.PREF_SNOOZE_OVER_OTHER_APPS).setOnPreferenceChangeListener((preference, newValue) -> {
                     if ((Boolean) newValue && !Settings.canDrawOverlays(preference.getContext())) {
-                        JoH.static_toast_long(gs(R.string.please_allow_display_over_other_apps));
+                        JoH.static_toast_long("Please allow xDrip to display over other apps"); // CHG15 literal
                         try {
                             startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                     Uri.parse("package:" + preference.getContext().getPackageName())));

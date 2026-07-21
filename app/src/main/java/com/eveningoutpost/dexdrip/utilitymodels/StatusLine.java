@@ -12,10 +12,8 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.calibrations.CalibrationAbstract;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusService;
-import com.eveningoutpost.dexdrip.xdrip;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -194,7 +192,7 @@ public class StatusLine {
                 final AlertType alertType = ActiveBgAlert.alertTypegetOnly();
                 if (alertType != null) {
                     final String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(aba.next_alert_at));
-                    append(sb, xdrip.getAppContext().getString(R.string.notification_alert_snoozed_until, alertType.name, time));
+                    append(sb, Notifications.snoozeLineText(alertType.name, time)); // CHG15: shared literal
                 }
             }
         }

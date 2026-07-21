@@ -723,6 +723,12 @@ public class Notifications extends IntentService {
         return XdripNotification.build(b);
     }
 
+    // CHG15: shared English literal pending the follow-up strings PR; single source so the
+    // ongoing notification and the extra status line stay identical (CHG12)
+    public static String snoozeLineText(final String alertName, final String until) {
+        return "Alert " + alertName + " snoozed until " + until;
+    }
+
     // CHG8: appends the snoozed-alert line to the ongoing notification summary; spans of
     // the base text are preserved
     private CharSequence withSnoozeLine(final CharSequence base, final Context context) {
@@ -750,7 +756,7 @@ public class Notifications extends IntentService {
                 }
             }
             final String time = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(new Date(aba.next_alert_at));
-            return "\n" + String.format(context.getString(R.string.notification_alert_snoozed_until), alertType.name, time);
+            return "\n" + snoozeLineText(alertType.name, time); // CHG15
         } catch (Exception e) {
             Log.e(TAG, "Could not build snooze line: " + e);
             return "";

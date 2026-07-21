@@ -973,7 +973,7 @@ public class EditAlertActivity extends ActivityWithMenu {
             final boolean allDayFinal = allDay;
             final int timeStartFinal = timeStart;
             final int timeEndFinal = timeEnd;
-            JoH.static_toast_long(getString(R.string.test_alert_fires_in_5_seconds));
+            JoH.static_toast_long("Test alert will fire in 5 seconds - switch apps or turn the screen off to test"); // CHG15 literal
             Inevitable.task("chg9-delayed-test-alert", TEST_ALERT_DELAY_MS, () ->
                     AlertType.testAlert(name, above, thresholdFinal, allDayFinal, 1, mp3_file, timeStartFinal, timeEndFinal, overrideSilentMode, forceSpeaker, defaultSnooze, vibrate, mContext));
         } catch (NullPointerException e) {

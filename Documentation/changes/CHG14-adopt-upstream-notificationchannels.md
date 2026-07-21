@@ -73,6 +73,25 @@ transferred as wholesale copies). `NotificationChannels.java` was the only real 
 The CHG7/A3 and CHG13/ER2 register sections are annotated as superseded by this change.
 The Wear module is untouched.
 
+## Merge trial (2026-07-14) — passed
+
+The full transfer was rehearsed locally in `C:\xampp\htdocs\xDrip-merged` (a copy of the
+2026-07-13 upstream master):
+
+1. The 9 upstream-untouched files, the CHG14 `NotificationChannels.java` and the
+   `Documentation/changes` register were copied in as-is.
+2. The 6 files with non-overlapping upstream changes were combined with a real three-way
+   merge (`git merge-file`, base = 2026-07-03 snapshot): **0 conflicts in all six**.
+3. Spot checks confirmed every merged file contains both sides (our CHG markers **and**
+   the upstream changes, e.g. the storage-permission fix in `Home`, the removed
+   `setGroup` in `AlertPlayer`, the removed `use_notification_channels` options).
+4. The changed set of the merged tree versus the new master is **exactly the 16
+   application files** of this change series.
+5. A full `:app:assembleFastDebug` of the merged tree (min/targetSdk 26) is **green**
+   (BUILD SUCCESSFUL, 117 tasks).
+
+The merged tree is therefore ready to serve as the content of the pull-request branch.
+
 ## Test plan
 
 1. Fresh install, gate off → glucose alert channel `bgAlertChannel<hash>` exists at
