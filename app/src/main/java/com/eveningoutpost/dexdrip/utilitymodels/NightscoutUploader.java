@@ -190,13 +190,34 @@ public class NightscoutUploader {
     }
 
     public static void launchDownloadRest() {
-        if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
-                && Pref.getBooleanDefaultFalse("cloud_storage_api_download_enable")) {
+        // Download does not require upload (cloud_storage_api_enable) to be on: with only
+        // the download switch enabled this is a read-only Nightscout treatments client,
+        // e.g. so a device can receive BG checks / notes entered in AAPS via Nightscout
+        // while something else (AAPS) remains the sole uploader.
+        if (Pref.getBooleanDefaultFalse("cloud_storage_api_download_enable")
+                && haveValidBaseUrl()) {
             if (JoH.ratelimit("cloud_treatment_download", 60)) {
                 final NightscoutUploader uploader = new NightscoutUploader(xdrip.getAppContext());
                 uploader.downloadRest(500);
             }
         }
+    }
+
+    // quietly skip download when the base url is unset, template or unparseable
+    private static boolean haveValidBaseUrl() {
+        final String base = Pref.getString("cloud_storage_api_base", "").trim();
+        if (base.isEmpty() || base.contains("{") || base.contains("}")) return false;
+        for (String url : base.split(" ")) {
+            url = url.trim();
+            if (url.isEmpty()) continue;
+            try {
+                new URI(url);
+                return true;
+            } catch (URISyntaxException e) {
+                // try any further space separated entries
+            }
+        }
+        return false;
     }
 
     public static boolean isNightscoutCompatible(String url) {
