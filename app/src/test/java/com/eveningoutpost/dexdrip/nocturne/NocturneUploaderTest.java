@@ -4,8 +4,17 @@ import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.Treatments;
 import com.eveningoutpost.dexdrip.nocturne.NocturneUploader.TreatmentRoute;
 
-import org.json.JSONObject;
 import org.junit.Test;
+import org.nightscoutfoundation.nocturne.model.BolusKind;
+import org.nightscoutfoundation.nocturne.model.CreateBolusRequest;
+import org.nightscoutfoundation.nocturne.model.CreateCarbIntakeRequest;
+import org.nightscoutfoundation.nocturne.model.CreateMealRequest;
+import org.nightscoutfoundation.nocturne.model.DeviceEventType;
+import org.nightscoutfoundation.nocturne.model.GlucoseDirection;
+import org.nightscoutfoundation.nocturne.model.UpsertCalibrationRequest;
+import org.nightscoutfoundation.nocturne.model.UpsertDeviceEventRequest;
+import org.nightscoutfoundation.nocturne.model.UpsertMeterGlucoseRequest;
+import org.nightscoutfoundation.nocturne.model.UpsertNoteRequest;
 
 import java.util.TimeZone;
 
@@ -188,82 +197,112 @@ public class NocturneUploaderTest extends RobolectricTestWithConfig {
     private static final long TEST_TIMESTAMP = 1700000000000L;
 
     @Test
-    public void mapBloodTest_containsExpectedFields() throws Exception {
-        final JSONObject obj = NocturneUploader.mapBloodTest(120.0, TEST_TIMESTAMP, "Contour Next");
-        assertThat(obj.getDouble("mgdl")).isEqualTo(120.0);
-        assertThat(obj.getString("device")).isEqualTo("Contour Next");
-        assertThat(obj.getString("app")).isEqualTo("xDrip+");
-        assertThat(obj.getString("dataSource")).isEqualTo("xdrip");
-        assertThat(obj.getString("timestamp")).isNotEmpty();
-        assertThat(obj.getInt("utcOffset")).isEqualTo(
+    public void mapBloodTest_containsExpectedFields() {
+        final UpsertMeterGlucoseRequest request = NocturneUploader.mapBloodTest(120.0, TEST_TIMESTAMP, "Contour Next");
+        assertThat(request.getMgdl()).isEqualTo(120.0);
+        assertThat(request.getDevice()).isEqualTo("Contour Next");
+        assertThat(request.getApp()).isEqualTo("xDrip+");
+        assertThat(request.getDataSource()).isEqualTo("xdrip");
+        assertThat(request.getTimestamp()).isNotNull();
+        assertThat(request.getTimestamp().toInstant().toEpochMilli()).isEqualTo(TEST_TIMESTAMP);
+        assertThat(request.getUtcOffset()).isEqualTo(
                 TimeZone.getDefault().getOffset(TEST_TIMESTAMP) / 60000);
     }
 
     @Test
-    public void mapCalibration_containsExpectedFields() throws Exception {
-        final JSONObject obj = NocturneUploader.mapCalibration(TEST_TIMESTAMP, 1.05, 10.0, 1.0);
-        assertThat(obj.getDouble("slope")).isEqualTo(1.05);
-        assertThat(obj.getDouble("intercept")).isEqualTo(10.0);
-        assertThat(obj.getDouble("scale")).isEqualTo(1.0);
-        assertThat(obj.getString("app")).isEqualTo("xDrip+");
-        assertThat(obj.getString("dataSource")).isEqualTo("xdrip");
-        assertThat(obj.has("device")).isTrue();
+    public void mapCalibration_containsExpectedFields() {
+        final UpsertCalibrationRequest request = NocturneUploader.mapCalibration(TEST_TIMESTAMP, 1.05, 10.0, 1.0);
+        assertThat(request.getSlope()).isEqualTo(1.05);
+        assertThat(request.getIntercept()).isEqualTo(10.0);
+        assertThat(request.getScale()).isEqualTo(1.0);
+        assertThat(request.getApp()).isEqualTo("xDrip+");
+        assertThat(request.getDataSource()).isEqualTo("xdrip");
+        assertThat(request.getDevice()).isNotNull();
     }
 
     @Test
-    public void mapBolus_containsExpectedFields() throws Exception {
-        final JSONObject obj = NocturneUploader.mapBolus(TEST_TIMESTAMP, 5.5, "NovoRapid", "sync-123");
-        assertThat(obj.getDouble("insulin")).isEqualTo(5.5);
-        assertThat(obj.getString("kind")).isEqualTo("Manual");
-        assertThat(obj.getString("insulinType")).isEqualTo("NovoRapid");
-        assertThat(obj.getString("syncIdentifier")).isEqualTo("sync-123");
-        assertThat(obj.getString("dataSource")).isEqualTo("xdrip");
+    public void mapBolus_containsExpectedFields() {
+        final CreateBolusRequest request = NocturneUploader.mapBolus(TEST_TIMESTAMP, 5.5, "NovoRapid", "sync-123");
+        assertThat(request.getInsulin()).isEqualTo(5.5);
+        assertThat(request.getKind()).isEqualTo(BolusKind.MANUAL);
+        assertThat(request.getInsulinType()).isEqualTo("NovoRapid");
+        assertThat(request.getSyncIdentifier()).isEqualTo("sync-123");
+        assertThat(request.getDataSource()).isEqualTo("xdrip");
     }
 
     @Test
-    public void mapBolus_nullInsulinType_fieldAbsent() throws Exception {
-        final JSONObject obj = NocturneUploader.mapBolus(TEST_TIMESTAMP, 3.0, null, "sync-456");
-        assertThat(obj.has("insulinType")).isFalse();
-        assertThat(obj.getDouble("insulin")).isEqualTo(3.0);
+    public void mapBolus_nullInsulinType_fieldAbsent() {
+        final CreateBolusRequest request = NocturneUploader.mapBolus(TEST_TIMESTAMP, 3.0, null, "sync-456");
+        assertThat(request.getInsulinType()).isNull();
+        assertThat(request.getInsulin()).isEqualTo(3.0);
     }
 
     @Test
-    public void mapCarbIntake_containsExpectedFields() throws Exception {
-        final JSONObject obj = NocturneUploader.mapCarbIntake(TEST_TIMESTAMP, 45.0, "sync-789");
-        assertThat(obj.getDouble("carbs")).isEqualTo(45.0);
-        assertThat(obj.getString("syncIdentifier")).isEqualTo("sync-789");
-        assertThat(obj.getString("dataSource")).isEqualTo("xdrip");
+    public void mapCarbIntake_containsExpectedFields() {
+        final CreateCarbIntakeRequest request = NocturneUploader.mapCarbIntake(TEST_TIMESTAMP, 45.0, "sync-789");
+        assertThat(request.getCarbs()).isEqualTo(45.0);
+        assertThat(request.getSyncIdentifier()).isEqualTo("sync-789");
+        assertThat(request.getDataSource()).isEqualTo("xdrip");
     }
 
     @Test
-    public void mapMeal_containsExpectedFields() throws Exception {
-        final JSONObject obj = NocturneUploader.mapMeal(TEST_TIMESTAMP, 5.0, 60.0, "sync-meal");
-        assertThat(obj.getDouble("insulin")).isEqualTo(5.0);
-        assertThat(obj.getDouble("carbs")).isEqualTo(60.0);
-        assertThat(obj.getString("syncIdentifier")).isEqualTo("sync-meal");
+    public void mapMeal_containsExpectedFields() {
+        final CreateMealRequest request = NocturneUploader.mapMeal(TEST_TIMESTAMP, 5.0, 60.0, "sync-meal");
+        assertThat(request.getInsulin()).isEqualTo(5.0);
+        assertThat(request.getCarbs()).isEqualTo(60.0);
+        assertThat(request.getSyncIdentifier()).isEqualTo("sync-meal");
     }
 
     @Test
-    public void mapNote_containsExpectedFields() throws Exception {
-        final JSONObject obj = NocturneUploader.mapNote(TEST_TIMESTAMP, "Felt dizzy", "Note", "sync-note");
-        assertThat(obj.getString("text")).isEqualTo("Felt dizzy");
-        assertThat(obj.getString("eventType")).isEqualTo("Note");
-        assertThat(obj.getBoolean("isAnnouncement")).isFalse();
-        assertThat(obj.getString("syncIdentifier")).isEqualTo("sync-note");
+    public void mapNote_containsExpectedFields() {
+        final UpsertNoteRequest request = NocturneUploader.mapNote(TEST_TIMESTAMP, "Felt dizzy", "Note", "sync-note");
+        assertThat(request.getText()).isEqualTo("Felt dizzy");
+        assertThat(request.getEventType()).isEqualTo("Note");
+        assertThat(request.getIsAnnouncement()).isFalse();
+        assertThat(request.getSyncIdentifier()).isEqualTo("sync-note");
     }
 
     @Test
-    public void mapDeviceEvent_containsExpectedFields() throws Exception {
-        final JSONObject obj = NocturneUploader.mapDeviceEvent(TEST_TIMESTAMP, "Sensor Start", "New G7", "sync-dev");
-        assertThat(obj.getString("eventType")).isEqualTo("SensorStart");
-        assertThat(obj.getString("notes")).isEqualTo("New G7");
-        assertThat(obj.getString("syncIdentifier")).isEqualTo("sync-dev");
+    public void mapDeviceEvent_containsExpectedFields() {
+        final UpsertDeviceEventRequest request = NocturneUploader.mapDeviceEvent(TEST_TIMESTAMP, "Sensor Start", "New G7", "sync-dev");
+        assertThat(request.getEventType()).isEqualTo(DeviceEventType.SENSOR_START);
+        assertThat(request.getNotes()).isEqualTo("New G7");
+        assertThat(request.getSyncIdentifier()).isEqualTo("sync-dev");
     }
 
     @Test
-    public void mapDeviceEvent_nullNotes_fieldAbsent() throws Exception {
-        final JSONObject obj = NocturneUploader.mapDeviceEvent(TEST_TIMESTAMP, "Site Change", null, "sync-dev2");
-        assertThat(obj.has("notes")).isFalse();
-        assertThat(obj.getString("eventType")).isEqualTo("SiteChange");
+    public void mapDeviceEvent_nullNotes_fieldAbsent() {
+        final UpsertDeviceEventRequest request = NocturneUploader.mapDeviceEvent(TEST_TIMESTAMP, "Site Change", null, "sync-dev2");
+        assertThat(request.getNotes()).isNull();
+        assertThat(request.getEventType()).isEqualTo(DeviceEventType.SITE_CHANGE);
+    }
+
+    // ---- Conversion helper tests ----
+
+    @Test
+    public void toOffsetDateTime_preservesInstant() {
+        assertThat(NocturneUploader.toOffsetDateTime(TEST_TIMESTAMP).toInstant().toEpochMilli())
+                .isEqualTo(TEST_TIMESTAMP);
+    }
+
+    @Test
+    public void directionFromSlopeName_mapsKnownValues() {
+        assertThat(NocturneUploader.directionFromSlopeName("DoubleUp")).isEqualTo(GlucoseDirection.DOUBLE_UP);
+        assertThat(NocturneUploader.directionFromSlopeName("Flat")).isEqualTo(GlucoseDirection.FLAT);
+        assertThat(NocturneUploader.directionFromSlopeName("FortyFiveDown")).isEqualTo(GlucoseDirection.FORTY_FIVE_DOWN);
+    }
+
+    @Test
+    public void directionFromSlopeName_mapsSpacedLegacyNames() {
+        assertThat(NocturneUploader.directionFromSlopeName("NOT COMPUTABLE")).isEqualTo(GlucoseDirection.NOT_COMPUTABLE);
+        assertThat(NocturneUploader.directionFromSlopeName("NOT_COMPUTABLE")).isEqualTo(GlucoseDirection.NOT_COMPUTABLE);
+        assertThat(NocturneUploader.directionFromSlopeName("OUT OF RANGE")).isEqualTo(GlucoseDirection.RATE_OUT_OF_RANGE);
+    }
+
+    @Test
+    public void directionFromSlopeName_unknownOrEmpty_returnsNull() {
+        assertThat(NocturneUploader.directionFromSlopeName("SomethingElse")).isNull();
+        assertThat(NocturneUploader.directionFromSlopeName("")).isNull();
+        assertThat(NocturneUploader.directionFromSlopeName(null)).isNull();
     }
 }

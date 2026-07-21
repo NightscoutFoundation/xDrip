@@ -1306,6 +1306,7 @@
     <string name="nocturne_disconnect">Disconnect</string>
     <string name="nocturne_disconnected">Disconnected from Nocturne</string>
     <string name="nocturne_set_url_first">Please set your Nocturne instance URL first</string>
+    <string name="nocturne_requires_android_8">Nocturne sync requires Android 8.0 or newer</string>
     <string name="nocturne_connecting">Connecting to Nocturne...</string>
     <string name="nocturne_start_auth_failed">Failed to start authorization. Check your Nocturne URL.</string>
     <string name="nocturne_device_code_body_auto">Enter this code on your Nocturne instance:\n\n%1$s\n\nThe code expires in %2$d minutes.\n\nTap \'Open Browser\' to go to the approval page.</string>

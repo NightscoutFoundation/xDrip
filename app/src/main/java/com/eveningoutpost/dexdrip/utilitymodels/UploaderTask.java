@@ -63,7 +63,7 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
             if (Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
                 circuits.add(UploaderQueue.INFLUXDB_RESTAPI);
             }
-            if (Pref.getBooleanDefaultFalse("nocturne_upload_enable")) {
+            if (Pref.getBooleanDefaultFalse("nocturne_upload_enable") && NocturneUploader.isSupported()) {
                 if (Pref.getBoolean("nocturne_use_mobile", true) || JoH.isLANConnected()) {
                     circuits.add(UploaderQueue.NOCTURNE_RESTAPI);
                 }
@@ -192,7 +192,9 @@ public class UploaderTask extends AsyncTask<String, Void, Void> {
                             SyncService.startSyncService(2000);
                         }
 
-                    } else {
+                    } else if (THIS_QUEUE == UploaderQueue.NOCTURNE_RESTAPI) {
+                        // Scoped to Nocturne to avoid changing retry behavior of the
+                        // long-established uploaders; their queues drain on later ticks.
                         Log.d(TAG, UploaderQueue.getCircuitName(THIS_QUEUE) + " upload failed, scheduling retry");
                         SyncService.startSyncService(Constants.MINUTE_IN_MS * 6);
                     }

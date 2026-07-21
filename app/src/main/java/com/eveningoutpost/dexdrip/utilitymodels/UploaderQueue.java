@@ -156,7 +156,8 @@ public class UploaderQueue extends Model {
                 | (Pref.getBooleanDefaultFalse("cloud_storage_api_enable") ? NIGHTSCOUT_RESTAPI : 0)
                 | (Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable") ? INFLUXDB_RESTAPI : 0)
                 | (Pref.getBooleanDefaultFalse("wear_sync") ? WATCH_WEARAPI : 0)
-                | (Pref.getBooleanDefaultFalse("nocturne_upload_enable") ? NOCTURNE_RESTAPI : 0);
+                | (Pref.getBooleanDefaultFalse("nocturne_upload_enable")
+                        && com.eveningoutpost.dexdrip.nocturne.NocturneUploader.isSupported() ? NOCTURNE_RESTAPI : 0);
         if (result.bitfield_wanted == 0) return null; // no queue required
         result.timestamp = JoH.tsl();
         result.reference_id = obj.getId();

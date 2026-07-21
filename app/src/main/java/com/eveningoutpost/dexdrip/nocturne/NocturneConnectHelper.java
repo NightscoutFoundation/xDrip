@@ -46,6 +46,12 @@ public class NocturneConnectHelper {
             final boolean autoOpenBrowser,
             final boolean skipConnectedCheck) {
 
+        if (!NocturneUploader.isSupported()) {
+            Toast.makeText(activity, R.string.nocturne_requires_android_8, Toast.LENGTH_LONG).show();
+            runOnUiThreadSafely(activity, onFinish);
+            return;
+        }
+
         if (!skipConnectedCheck && NocturneOAuthService.isConnected()) {
             new AlertDialog.Builder(activity)
                     .setTitle(R.string.nocturne)
