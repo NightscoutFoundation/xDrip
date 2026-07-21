@@ -187,9 +187,14 @@ public class NanoStatus {
                 UserError.Log.d(TAG, "keepfollower updated called: " + prefix + " " + rateLimit);
                 if (rateLimit == 0 || JoH.pratelimit("keep-follower-updated" + prefix, rateLimit)) {
                     final String serialized = SpannableSerializer.serializeSpannableString(nanoStatusColor(prefix.equals("") ? "collector" : prefix));
-                    if (PersistentStore.updateStringIfDifferent(LAST_COLLECTOR_STATUS_STORE + prefix, serialized)) {
-                        Inevitable.task("update-follower-to-nanostatus" + prefix, 500, () ->
-                                GcmActivity.sendNanoStatusUpdate(prefix, PersistentStore.getString(LAST_COLLECTOR_STATUS_STORE + prefix)));
+                    // record what was sent, not what was computed, so an update which never
+                    // went out is retried instead of being remembered as delivered
+                    if (!serialized.equals(PersistentStore.getString(LAST_COLLECTOR_STATUS_STORE + prefix))) {
+                        Inevitable.task("update-follower-to-nanostatus" + prefix, 500, () -> {
+                            if (GcmActivity.sendNanoStatusUpdate(prefix, serialized)) {
+                                PersistentStore.setString(LAST_COLLECTOR_STATUS_STORE + prefix, serialized);
+                            }
+                        });
                     }
                 } else {
                     UserError.Log.d(TAG, "Ratelimiting keepFollowerUpdated check on " + prefix + " @ " + rateLimit);
