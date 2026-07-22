@@ -4,26 +4,29 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.utilitymodels.Pref;
-
 /**
- * Created by adrian on 14/02/16.
+ * Lightweight manifest-registered receiver.
+ *
+ * This keeps the registered receiver tiny until a broadcast is actually received,
+ * then lazily creates and reuses the real receiver.
  */
 public class ExternalStatusBroadcastReceiver extends BroadcastReceiver {
 
-
-    private static final String TAG = ExternalStatusBroadcastReceiver.class.getSimpleName();
+    private static volatile ExternalStatusBroadcastReceiverCore receiverInstance;
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (Pref.getBoolean("accept_external_status", true)) {
-            Intent serviceIntent = new Intent(context, ExternalStatusService.class)
-                    .setAction(ExternalStatusService.ACTION_NEW_EXTERNAL_STATUSLINE)
-                    .putExtras(intent);
-            context.startForegroundService(serviceIntent);
-        } else {
-            UserError.Log.d(TAG, "Not accepting external status line due to preference switch");
+        getReceiverInstance().onReceive(context, intent);
+    }
+
+    private static ExternalStatusBroadcastReceiverCore getReceiverInstance() {
+        if (receiverInstance == null) {
+            synchronized (ExternalStatusBroadcastReceiver.class) {
+                if (receiverInstance == null) {
+                    receiverInstance = new ExternalStatusBroadcastReceiverCore();
+                }
+            }
         }
+        return receiverInstance;
     }
 }
