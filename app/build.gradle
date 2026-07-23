@@ -322,7 +322,7 @@ dependencies {
     implementation "com.polidea.rxandroidble2:rxandroidble:1.12.1"
    // implementation  'io.reactivex.rxjava2:rxandroid:2.1.1'
    // implementation  'com.jakewharton.rxrelay2:rxrelay:2.1.1'
-    implementation 'com.google.guava:guava:24.1-android'
+    implementation 'com.google.guava:guava:33.6.0-android'
    // implementation 'com.embarkmobile:zxing-android-minimal:2.0.0@aar'
   //  implementation 'com.embarkmobile:zxing-android-integration:2.0.0@aar'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'

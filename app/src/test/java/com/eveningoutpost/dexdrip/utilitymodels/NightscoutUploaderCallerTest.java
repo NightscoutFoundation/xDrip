@@ -9,7 +9,6 @@ import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.Calibration;
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 
 import org.json.JSONArray;
@@ -43,7 +42,7 @@ public class NightscoutUploaderCallerTest extends RobolectricTestWithConfig {
 
     private static final String SECRET = "my-api-secret";
     private static final String EXPECTED_HASHED_SECRET =
-            Hashing.sha1().hashBytes(SECRET.getBytes(Charsets.UTF_8)).toString();
+            Hashing.sha1().hashBytes(SECRET.getBytes(StandardCharsets.UTF_8)).toString();
 
     private MockWebServer server;
     private SharedPreferences prefs;
