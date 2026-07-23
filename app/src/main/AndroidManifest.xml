@@ -332,6 +332,13 @@
                 <action android:name="android.bluetooth.headset.profile.action.AUDIO_STATE_CHANGED" />
             </intent-filter>
         </receiver>
+        <receiver
+            android:name=".wearintegration.ExternalStatusBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.ExternalStatusline" />
+            </intent-filter>
+        </receiver>
         <receiver android:name=".utils.DisconnectReceiver">
             <intent-filter>
                 <action android:name="android.bluetooth.device.action.ACL_DISCONNECTED" />
@@ -631,6 +638,15 @@
         <receiver android:name=".LibreAlarmReceiver">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".NSEmulatorReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT" />
+                <action android:name="com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT" />
             </intent-filter>
         </receiver>
         <receiver android:name=".receivers.aidex.AidexReceiver">

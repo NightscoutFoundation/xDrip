@@ -36,7 +36,7 @@ public class NSEmulatorReceiverTest extends RobolectricTestWithConfig {
         json_object.put("sgv", 148);
         json_object.put("direction", "SingleUp");
 
-        final BgReading result = NSEmulatorReceiver.bgReadingInsertFromData(json_object.getLong("date"),
+        final BgReading result = NSEmulatorReceiverCore.bgReadingInsertFromData(json_object.getLong("date"),
                 json_object.getDouble("sgv"),
                 BgReading.slopefromName(json_object.getString("direction")),
                 true);
