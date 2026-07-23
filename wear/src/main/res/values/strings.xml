@@ -197,6 +197,7 @@
     <string name="bg_readings_table">BgReadings Table</string>
     <string name="calibration_data_table">Calibration Table</string>
     <string name="BloodTestTable">BloodTest Table</string>
+    <string name="UserErrorTable">UserError Table</string>
     <string name="TreatmentsTable">Treatments Table</string>
     <string name="notify_refreshdb">Requested Wear DB refresh</string>
     <string name="notify_table_size">Table %1$s contains %2$d entries.</string>

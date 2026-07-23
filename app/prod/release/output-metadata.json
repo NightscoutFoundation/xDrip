@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.eveningoutpost.dexdrip",
+  "variantName": "prodRelease",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 1603091400,
+      "versionName": "a55bcc04b-g7_update-2025.11.23",
+      "outputFile": "app-prod-release.apk"
+    }
+  ],
+  "elementType": "File"
+}

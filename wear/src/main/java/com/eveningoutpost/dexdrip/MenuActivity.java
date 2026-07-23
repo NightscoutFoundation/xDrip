@@ -14,6 +14,7 @@ import com.eveningoutpost.dexdrip.tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.tables.BloodTestTable;
 import com.eveningoutpost.dexdrip.tables.CalibrationDataTable;
 import com.eveningoutpost.dexdrip.tables.TreatmentsTable;
+import com.eveningoutpost.dexdrip.tables.UserErrorTable;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
@@ -176,7 +177,9 @@ public class MenuActivity extends Activity {
             //View DB Tables:
             case "bloodtest":
                 bloodtesttabbutton.setBackgroundColor(onColor);
-                startIntent(BloodTestTable.class);// TODO get mgdl or mmol here
+                // Replace Table with UserErrorTable to show log entries
+                startIntent(UserErrorTable.class);
+                // startIntent(BloodTestTable.class);// TODO get mgdl or mmol here
                 break;
             case "treatments":
                 treatmenttabbutton.setBackgroundColor(onColor);

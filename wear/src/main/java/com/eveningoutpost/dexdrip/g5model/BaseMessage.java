@@ -18,10 +18,10 @@ public class BaseMessage {
     long postExecuteGuardTime = 50;
     @Expose
     public volatile byte[] byteSequence;
-    public ByteBuffer data;
+    public volatile ByteBuffer data;
 
 
-    void init(final byte opcode, final int length) {
+    protected void init(final byte opcode, final int length) {
         data = ByteBuffer.allocate(length).order(ByteOrder.LITTLE_ENDIAN);
         data.put(opcode);
         if (length == 1) {
@@ -72,6 +72,16 @@ public class BaseMessage {
             sb.append(String.format(Locale.US, "%d", (x & 0xff)));
         }
         return sb.toString();
+    }
+
+    static long longFromData(final ByteBuffer data, final int length) {
+        long result = 0;
+        int shift = 0;
+        for (int i = 0; i < length; i++) {
+            result += (((long) getUnsignedByte(data)) << shift);
+            shift += 8;
+        }
+        return result;
     }
 
     static int getUnixTime() {
