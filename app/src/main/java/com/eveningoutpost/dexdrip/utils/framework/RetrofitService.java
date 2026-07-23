@@ -4,7 +4,6 @@ import static com.eveningoutpost.dexdrip.models.JoH.emptyString;
 
 import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
 
-import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.store.FastStore;
 import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;

@@ -1,4 +1,4 @@
-package com.eveningoutpost.dexdrip.cgm.nsfollow;
+package com.eveningoutpost.dexdrip.utils.framework;
 
 import java.io.IOException;
 
@@ -10,14 +10,33 @@ import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
 
-// TODO make reusable
-
+/**
+ * Gzips outgoing request bodies. By default every eligible request is gzipped; supply a
+ * {@link GzipDecider} to gate gzipping per request (e.g. only when the server is known to
+ * support it).
+ *
+ * @author Asbjørn Aarrestad
+ */
 public class GzipRequestInterceptor implements Interceptor {
+
+    private static final GzipDecider ALWAYS = request -> true;
+
+    private final GzipDecider decider;
+
+    public GzipRequestInterceptor() {
+        this(ALWAYS);
+    }
+
+    public GzipRequestInterceptor(GzipDecider decider) {
+        this.decider = decider;
+    }
+
     @Override
     public okhttp3.Response intercept(Chain chain) throws IOException {
         final Request originalRequest = chain.request();
         if (originalRequest.body() == null
-                || originalRequest.header("Content-Encoding") != null) {
+                || originalRequest.header("Content-Encoding") != null
+                || !decider.shouldGzip(originalRequest)) {
             return chain.proceed(originalRequest);
         }
 
@@ -48,7 +67,4 @@ public class GzipRequestInterceptor implements Interceptor {
             }
         };
     }
-
 }
-
-
