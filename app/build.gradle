@@ -337,7 +337,6 @@ dependencies {
     implementation 'uk.com.robust-it:cloning:1.9.5'
     implementation 'com.github.amlcurran.showcaseview:library:5.4.3'
     // implementation 'com.itextpdf:itextg:5.5.9'
-    implementation 'com.github.jamorham:QR-Code-generator:d0454644af'
     // Pebble-Trend, needs to be checked if really needed
     //implementation 'com.android.support:multidex:1.0.1'
     implementation 'ar.com.hjg:pngj:2.1.0'
