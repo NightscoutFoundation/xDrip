@@ -640,7 +640,8 @@
                 <action android:name="com.eveningoutpost.dexdrip.FROM_LIBRE_ALARM" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".NSEmulatorReceiver">
+        <receiver android:name=".NSEmulatorReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.eveningoutpost.dexdrip.NS_EMULATOR" />
                 <action android:name="com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT" />
