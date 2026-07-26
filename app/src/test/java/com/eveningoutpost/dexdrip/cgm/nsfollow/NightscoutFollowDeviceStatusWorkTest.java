@@ -12,8 +12,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -31,6 +31,9 @@ import okhttp3.mockwebserver.RecordedRequest;
 public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithConfig {
 
     private MockWebServer server;
+
+    /** Paths of every request the dispatcher has served, in arrival order. */
+    private final List<String> requestPaths = new CopyOnWriteArrayList<>();
 
     @Before
     public void setUpServer() throws Exception {
@@ -51,7 +54,9 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
     /**
      * Configure the server with a path-aware dispatcher so that concurrent requests
-     * receive the correct responses regardless of arrival order.
+     * receive the correct responses regardless of arrival order. Every path served is
+     * recorded in {@link #requestPaths}, which unlike {@code takeRequest()} does not
+     * consume the request and can therefore be polled while waiting.
      *
      * @param deviceStatusBody JSON body to return for {@code /devicestatus} requests
      */
@@ -59,6 +64,7 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
         server.setDispatcher(new Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) {
+                requestPaths.add(String.valueOf(request.getPath()));
                 if (request.getPath() != null && request.getPath().contains("devicestatus")) {
                     return new MockResponse().setBody(deviceStatusBody);
                 }
@@ -76,24 +82,17 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
     // ===== Rate limiting =========================================================================
 
     @Test
-    public void work_sendsDeviceStatusRequest_whenNotRateLimited() throws Exception {
-        // :: Setup — entries, treatments, devicestatus responses
-        server.enqueue(new MockResponse().setBody("[]"));   // entries
-        server.enqueue(new MockResponse().setBody("[]"));   // treatments (if requested)
-        server.enqueue(new MockResponse().setBody("[{\"uploaderBattery\":77,\"date\":1700000000000}]"));
+    public void work_sendsDeviceStatusRequest_whenNotRateLimited() {
+        // :: Setup
+        usePathDispatcher("[{\"uploaderBattery\":77,\"date\":1700000000000}]");
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitAtMost(() -> server.getRequestCount() >= 3);
+        awaitAtMost(() -> requestPaths.toString().contains("devicestatus"));
 
-        // :: Verify — a devicestatus request was among those sent
-        final List<String> paths = new ArrayList<>();
-        for (int i = 0; i < server.getRequestCount(); i++) {
-            final RecordedRequest r = server.takeRequest(1, TimeUnit.SECONDS);
-            assertThat(r).isNotNull();
-            paths.add(r.getPath());
-        }
-        assertThat(paths.toString()).contains("devicestatus");
+        // :: Verify — a devicestatus request was among those sent. Waiting on the same
+        // condition is not vacuous: if it never arrives the wait expires and this fails.
+        assertThat(requestPaths.toString()).contains("devicestatus");
     }
 
     @Test
