@@ -41,6 +41,10 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
         PumpStatus.setReservoir(-1);
         // Clear rate limiter so devicestatus fetch is not throttled
         JoH.clearRatelimit("nsfollow-devicestatus");
+        // uploaderCharging is a static volatile Boolean that Robolectric does not reset between
+        // tests. The charging tests wait for it to become non-null, so a value left over from a
+        // sibling test would satisfy that wait instantly and hand a stale value to the assertion.
+        NightscoutFollowService.clearUploaderStatus();
     }
 
     /**
