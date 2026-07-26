@@ -16,6 +16,10 @@ import java.time.Duration;
 
 import lombok.val;
 
+// Required: without instrumenting JoH, ShadowSystemClock.advanceBy() does not reach
+// JoH.tsl(), and the "expired" assertions below fail (measured 2026-07-26). This forces
+// a second Robolectric classloader for this class, which is the source of its slower
+// runtime relative to the rest of the suite.
 @Config(instrumentedPackages = {"com.eveningoutpost.dexdrip.models.JoH"})
 public class PersistTest extends RobolectricTestWithConfig {
 
