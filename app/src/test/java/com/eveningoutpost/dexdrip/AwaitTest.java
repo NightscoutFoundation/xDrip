@@ -2,8 +2,12 @@ package com.eveningoutpost.dexdrip;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import org.junit.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -42,5 +46,23 @@ public class AwaitTest extends RobolectricTestWithConfig {
         // :: Verify — it waited out the cap and returned rather than throwing
         assertThat(elapsedMs).isAtLeast(100L);
         assertThat(elapsedMs).isLessThan(1500L);
+    }
+
+    // ===== Drains the paused main looper =========================================================
+
+    @Test
+    public void awaitAtMost_runsTasksPostedToTheMainLooper() throws Exception {
+        // :: Setup — a background thread posts to the main looper, which Robolectric leaves paused
+        final AtomicBoolean ran = new AtomicBoolean(false);
+        final Handler main = new Handler(Looper.getMainLooper());
+        final Thread poster = new Thread(() -> main.post(() -> ran.set(true)));
+        poster.start();
+        poster.join();
+
+        // :: Act
+        Await.awaitAtMost(ran::get, 1000);
+
+        // :: Verify — the posted task ran, which only happens if the looper was drained
+        assertThat(ran.get()).isTrue();
     }
 }

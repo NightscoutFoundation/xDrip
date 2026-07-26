@@ -12,6 +12,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -82,10 +84,16 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitAtMost(() -> server.getRequestCount() > 0);
+        awaitAtMost(() -> server.getRequestCount() >= 3);
 
-        // :: Verify — at least one request reached the server
-        assertThat(server.getRequestCount()).isGreaterThan(0);
+        // :: Verify — a devicestatus request was among those sent
+        final List<String> paths = new ArrayList<>();
+        for (int i = 0; i < server.getRequestCount(); i++) {
+            final RecordedRequest r = server.takeRequest(1, TimeUnit.SECONDS);
+            assertThat(r).isNotNull();
+            paths.add(r.getPath());
+        }
+        assertThat(paths.toString()).contains("devicestatus");
     }
 
     @Test
@@ -106,8 +114,9 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
         int requestCount = server.getRequestCount();
         assertThat(requestCount).isAtLeast(1);
         for (int i = 0; i < requestCount; i++) {
-            String path = server.takeRequest(1, TimeUnit.SECONDS).getPath();
-            assertThat(path).doesNotContain("devicestatus");
+            final RecordedRequest r = server.takeRequest(1, TimeUnit.SECONDS);
+            assertThat(r).isNotNull();
+            assertThat(r.getPath()).doesNotContain("devicestatus");
         }
     }
 
