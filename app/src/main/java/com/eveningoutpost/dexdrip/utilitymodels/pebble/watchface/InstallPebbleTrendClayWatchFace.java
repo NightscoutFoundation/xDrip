@@ -25,7 +25,7 @@ public class InstallPebbleTrendClayWatchFace extends InstallPebbleWatchFace {
     }
 
     protected String getOutputFilename() {
-        return "xDrip-plus-pebble-clay-auto-install.pbw";
+        return "xDrip-Pebble-E.pbw";
     }
 
 
