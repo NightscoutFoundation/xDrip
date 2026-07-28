@@ -51,6 +51,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected static final int SYNC_KEY = 1000;
     protected static final int PLATFORM_KEY = 1001;
     protected static final int VERSION_KEY = 1002;
+    protected static final int TREND_SIZE = 1003;
 
 
     protected static final int MAX_VALUES =60*24;

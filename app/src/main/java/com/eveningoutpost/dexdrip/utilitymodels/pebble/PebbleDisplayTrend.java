@@ -87,6 +87,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
     private static long pebble_platform = -1;
     private static String pebble_app_version = "";
     private static long pebble_sync_value = 0;
+    private static long pebble_trend_size = 0;
     private static boolean sentInitialSync = false;
 
     private boolean no_signal = false;
@@ -169,24 +170,26 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
             pebble_sync_value = data.getUnsignedIntegerAsLong(SYNC_KEY);
             pebble_platform = data.getUnsignedIntegerAsLong(PLATFORM_KEY);
             pebble_app_version = data.getString(VERSION_KEY);
-            Log.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version);
+            pebble_trend_size = data.getUnsignedIntegerAsLong(TREND_SIZE);
+            Log.d(TAG, "receiveData: pebble_sync_value=" + pebble_sync_value + ", pebble_platform=" + pebble_platform + ", pebble_app_version=" + pebble_app_version + ", pebble_trend_size=" +pebble_trend_size);
 
-                switch ((int) pebble_platform) {
-                    case 0:
-                        if (PebbleUtil.pebbleDisplayType != PebbleDisplayType.TrendClassic) {
-                            PebbleUtil.pebbleDisplayType = PebbleDisplayType.TrendClassic;
-                            //JoH.static_toast_short("Switching to Pebble Classic Trend");
-                            Log.d(TAG, "Changing to Classic Trend due to platform id");
-                        }
-                        break;
-                }
+            switch ((int) pebble_platform) {
+                case 0:
+                    if (PebbleUtil.pebbleDisplayType != PebbleDisplayType.TrendClassic) {
+                        PebbleUtil.pebbleDisplayType = PebbleDisplayType.TrendClassic;
+                        //JoH.static_toast_short("Switching to Pebble Classic Trend");
+                        Log.d(TAG, "Changing to Classic Trend due to platform id");
+                    }
+                    break;
+            }
 
         } else {
             Log.d(TAG, "receiveData: pebble_app_version not known");
         }
         } catch (NullPointerException e) {
             Log.e(TAG, "Got exception trying to parse data from pebble: " + e);
-    }
+        }
+
     }
 
 
@@ -310,8 +313,17 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
         //create a sparkline bitmap to send to the pebble
 
         final Bitmap blankTrend;
-        if (clearTrend) { blankTrend = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888); Log.d(TAG,"Attempting to blank trend"); } else { blankTrend = null; didTrend=true; }
+        if (clearTrend) {
+            blankTrend = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888);
+            Log.d(TAG,"Attempting to blank trend");
+        } else {
+            blankTrend = null; didTrend=true;
+        }
 
+        if(pebble_trend_size == 0) {
+            Log.d(TAG, "No pebble_trend-size, returning.");
+            return;
+        }
 
         Log.i(TAG, "sendTrendToPebble called: sendStep= " + sendStep + ", messageInTransit= " + messageInTransit + //
                 ", transactionFailed= " + transactionFailed + ", sendStep= " + sendStep);
@@ -347,15 +359,17 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                 Log.d(TAG, "sendTrendToPebble: highLine is " + highLine + ", lowLine is " + lowLine + ",trendPeriod is " + trendPeriod);
                 Bitmap bgTrend = new BgSparklineBuilder(this.context)
                         .setBgGraphBuilder(this.bgGraphBuilder)
-                            .setStart(System.currentTimeMillis() - 60000 * 60 * trendPeriod)
-                            .setEnd(System.currentTimeMillis())
-                        .setHeightPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 63 : 84) // 84
-                        .setWidthPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 84 : 144) // 144
-                            .showHighLine(highLine)
-                            .showLowLine(lowLine)
-                            .setTinyDots(Pref.getBoolean("pebble_tiny_dots", false))
-                            .setSmallDots(!Pref.getBoolean("pebble_tiny_dots", false))
-                            .build();
+                        .setStart(System.currentTimeMillis() - 60000 * 60 * trendPeriod)
+                        .setEnd(System.currentTimeMillis())
+                        //.setHeightPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 63 : 84) // 84
+                        .setHeightPx((int) (pebble_trend_size & 0xff))
+                        //.setWidthPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 84 : 144) // 144
+                        .setWidthPx((int) ((pebble_trend_size & 0xff00) >> 8 ))
+                        .showHighLine(highLine)
+                        .showLowLine(lowLine)
+                        .setTinyDots(Pref.getBoolean("pebble_tiny_dots", false))
+                        .setSmallDots(!Pref.getBoolean("pebble_tiny_dots", false))
+                        .build();
 
                 //encode the trend bitmap as a PNG
 
