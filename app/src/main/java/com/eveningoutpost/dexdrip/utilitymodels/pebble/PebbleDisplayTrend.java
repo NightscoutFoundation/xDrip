@@ -286,9 +286,9 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
             // TODO I think special message is only appropriate with flat trend
             if (bgReadingS.equalsIgnoreCase(msg)) {
                 this.dictionary.addString(MESSAGE_KEY, PreferenceManager.getDefaultSharedPreferences(this.context).getString("pebble_special_text", "BAZINGA!"));
-        } else {
+            } else {
                 this.dictionary.addString(MESSAGE_KEY, "");
-        }
+            }
         } else {
             Log.v(TAG, "buildDictionary: latest mBgReading is null, so sending default values");
             this.dictionary.addString(ICON_KEY, getSlopeOrdinal());
@@ -373,7 +373,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
 
                 //encode the trend bitmap as a PNG
 
-                final byte[] img = SimpleImageEncoder.encodeBitmapAsPNG(clearTrend ? blankTrend : bgTrend, true, PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 2 : 16, true);
+                final byte[] img = SimpleImageEncoder.encodeBitmapAsPNG(clearTrend ? blankTrend : bgTrend, true, PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 2 : 64, true);
 
                 if (debugPNG) {
                     try {
