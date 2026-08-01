@@ -15,6 +15,7 @@
         <item>Libre (patched App)</item>
         <item>640G / EverSense</item>
         <item>Medtrum A6</item>
+        <item>Medtrum Follower</item>
         <item>Nightscout Follower</item>
         <item>Dex Share Follower</item>
         <item>Web Follower</item>
@@ -40,6 +41,7 @@
         <item>LibreReceiver</item>
         <item>NSEmulator</item>
         <item>Medtrum</item>
+        <item>MedtrumFollower</item>
         <item>NSFollower</item>
         <item>SHFollower</item>
         <item>WebFollower</item>
@@ -48,6 +50,15 @@
         <item>AidexReceiver</item>
         <item>CLFollower</item>
         <item>Disabled</item>
+    </string-array>
+
+    <string-array name="medtrum_follow_server_entries">
+        <item>Europe (.eu)</item>
+        <item>France (.fr)</item>
+    </string-array>
+    <string-array name="medtrum_follow_server_values">
+        <item>eu</item>
+        <item>fr</item>
     </string-array>
 
      <string-array name="EnableStreamingMethods">

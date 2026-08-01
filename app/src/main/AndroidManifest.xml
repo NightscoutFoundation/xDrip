@@ -884,6 +884,9 @@
             android:name=".cgm.nsfollow.NightscoutFollowService"
             android:foregroundServiceType="dataSync" />
         <service
+            android:name=".cgm.medtrumfollow.MedtrumFollowService"
+            android:foregroundServiceType="dataSync" />
+        <service
             android:name=".insulin.inpen.InPenService"
             android:foregroundServiceType="connectedDevice|location" />
         <service

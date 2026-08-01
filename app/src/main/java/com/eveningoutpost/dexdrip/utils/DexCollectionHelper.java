@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.cgm.medtrumfollow.MedtrumFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.plugin.Dialog;
@@ -81,6 +82,22 @@ public class DexCollectionHelper {
                             Home.staticRefreshBGCharts();
                             CollectionServiceStarter.restartCollectionServiceBackground();
                         });
+                break;
+
+            case MedtrumFollow:
+                textSettingDialog(activity,
+                        "medtrum_follow_user", "EasyView username",
+                        "Enter the dedicated EasyView follower (caregiver) username or email",
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+                        () -> textSettingDialog(activity,
+                                "medtrum_follow_password", "EasyView password",
+                                "Enter the EasyView follower password",
+                                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD,
+                                () -> {
+                                    Home.staticRefreshBGCharts();
+                                    MedtrumFollowService.resetInstanceAndInvalidateSession();
+                                    CollectionServiceStarter.restartCollectionServiceBackground();
+                                }));
                 break;
 
             case SHFollow:

@@ -1386,6 +1386,14 @@
     <string name="title_medtrum_use_native">Medtrum Native</string>
     <string name="summary_medtrum_a_hex">Hex diagnostic test value</string>
     <string name="title_medtrum_a_hex">Medtrum Debug</string>
+    <string name="title_medtrum_follow_user">EasyView username</string>
+    <string name="summary_medtrum_follow_user">Username or email address of the dedicated EasyView follower account</string>
+    <string name="title_medtrum_follow_password">EasyView password</string>
+    <string name="summary_medtrum_follow_password">Password of the dedicated EasyView follower account</string>
+    <string name="title_medtrum_follow_server">EasyView server</string>
+    <string name="summary_medtrum_follow_server">Server region used by the EasyView account</string>
+    <string name="title_medtrum_follow_patient">Followed patient</string>
+    <string name="summary_medtrum_follow_patient">Patient username or email; leave empty to use the first patient with sensor data</string>
     <string name="summary_nsfollow_url">Web address for following</string>
     <string name="title_nsfollow_url">Nightscout Follow URL</string>
     <string name="summary_nsfollow_download_treatments">Also download treatments from Nightscout as follower</string>

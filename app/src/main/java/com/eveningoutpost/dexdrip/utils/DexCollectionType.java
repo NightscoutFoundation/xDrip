@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.MockDataSource;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
+import com.eveningoutpost.dexdrip.cgm.medtrumfollow.MedtrumFollowService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.WebFollowService;
@@ -52,6 +53,7 @@ public enum DexCollectionType {
     WebFollow("WebFollower"),
     CLFollow("CLFollower"),
     Medtrum("Medtrum"),
+    MedtrumFollow("MedtrumFollower"),
     UiBased("UiBased"),
     GluPro("GluPro"),
     Disabled("Disabled"),
@@ -97,13 +99,13 @@ public enum DexCollectionType {
         Collections.addAll(usesXbridge, DexbridgeWixel, WifiDexBridgeWixel);
         Collections.addAll(usesFiltered, DexbridgeWixel, WifiDexBridgeWixel, DexcomG5, WifiWixel, Follower, Mock); // Bluetooth and Wifi+Bluetooth need dynamic mode
         Collections.addAll(usesLibre, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi, LibreReceiver);
-        Collections.addAll(isPassive, NSEmulator, NSFollow, SHFollow, WebFollow, LibreReceiver, UiBased, CLFollow, AidexReceiver);
-        Collections.addAll(canNotStartStopOrCal, NSFollow, SHFollow, WebFollow, UiBased, CLFollow, Disabled); // Collectors that cannot start/stop sensor or submit calibration
+        Collections.addAll(isPassive, NSEmulator, NSFollow, SHFollow, WebFollow, MedtrumFollow, LibreReceiver, UiBased, CLFollow, AidexReceiver);
+        Collections.addAll(canNotStartStopOrCal, NSFollow, SHFollow, WebFollow, MedtrumFollow, UiBased, CLFollow, Disabled); // Collectors that cannot start/stop sensor or submit calibration
         Collections.addAll(alwaysNativeCal, Follower, GluPro); // always allow calibration entry
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // parakeet separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, Mock);
         Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery
-        Collections.addAll(newerCollector, NSFollow, SHFollow, WebFollow, CLFollow, GluPro);
+        Collections.addAll(newerCollector, NSFollow, SHFollow, WebFollow, MedtrumFollow, CLFollow, GluPro);
     }
 
 
@@ -228,6 +230,8 @@ public enum DexCollectionType {
                 return WifiCollectionService.class;
             case Medtrum:
                 return MedtrumCollectionService.class;
+            case MedtrumFollow:
+                return MedtrumFollowService.class;
             case Follower:
             case LibreReceiver:
                 return DoNothingService.class;
@@ -317,6 +321,8 @@ public enum DexCollectionType {
                 return "Network libre";
             case NSFollow:
                 return "Nightscout";
+            case MedtrumFollow:
+                return "Medtrum EasyView";
             case SHFollow:
                 return "Share";
             case UiBased:
@@ -384,6 +390,8 @@ public enum DexCollectionType {
             case NSFollow:
                 long samplePeriodInMinutes = Pref.getStringToInt("nsfollow_sample_period_in_minutes", 5);
                 return Constants.MINUTE_IN_MS * Math.max(1, samplePeriodInMinutes);
+            case MedtrumFollow:
+                return 2 * Constants.MINUTE_IN_MS;
             case Mock:
                 int mockInterval = Pref.getInt(MockDataSource.PREF_INTERVAL, 5) ;
                 return mockInterval * Constants.MINUTE_IN_MS;

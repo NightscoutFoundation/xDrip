@@ -10,6 +10,7 @@ import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.GluPro;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.MedtrumFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.WebFollow;
@@ -62,6 +63,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.ShotStateStore;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cgm.medtrum.MedtrumCollectionService;
+import com.eveningoutpost.dexdrip.cgm.medtrumfollow.MedtrumFollowService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.WebFollowService;
@@ -134,6 +136,7 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
     private static final String BLUEJAY_STATUS = "BlueJay";
     private static final String INPEN_STATUS = "InPen";
     private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
+    private static final String MEDTRUM_FOLLOW = "Medtrum Follow";
     private static final String SHARE_FOLLOW = "Dex Share Follow";
     private static final String WEB_FOLLOW = "Web Follower";
     private static final String CARELINK_FOLLOW = "CareLink Follow";
@@ -213,6 +216,9 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
             if(dexCollectionType.equals(NSFollow)) {
                 addAsection(NIGHTSCOUT_FOLLOW, "Nightscout Follow Status");
             }
+            if(dexCollectionType.equals(MedtrumFollow)) {
+                addAsection(MEDTRUM_FOLLOW, "Medtrum Follow Status");
+            }
             if(dexCollectionType.equals(SHFollow)) {
                 addAsection(SHARE_FOLLOW, "Dex Share Follow Status");
             }
@@ -278,6 +284,9 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
                 break;
             case NIGHTSCOUT_FOLLOW:
                 la.addRows(NightscoutFollowService.megaStatus());
+                break;
+            case MEDTRUM_FOLLOW:
+                la.addRows(MedtrumFollowService.megaStatus());
                 break;
             case SHARE_FOLLOW:
                 la.addRows(ShareFollowService.megaStatus());
