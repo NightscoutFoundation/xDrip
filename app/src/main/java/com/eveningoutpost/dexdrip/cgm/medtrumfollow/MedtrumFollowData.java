@@ -137,7 +137,7 @@ final class MedtrumFollowData {
 
     private static double toMgDl(final double value) {
         return value <= MAX_GLUCOSE_MG_DL / Constants.MMOLL_TO_MGDL
-                ? value * Constants.MMOLL_TO_MGDL : value;
+                ? Math.round(value * Constants.MMOLL_TO_MGDL) : value;
     }
 
     private static boolean isValidGlucose(final double valueMgDl) {
