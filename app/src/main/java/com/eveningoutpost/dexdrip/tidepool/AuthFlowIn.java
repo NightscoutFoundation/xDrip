@@ -206,8 +206,9 @@ public class AuthFlowIn extends AppCompatActivity {
      * session; a missing token forces interactive re-login unless the failure was transient
      * ({@link #isTransientTokenError}), in which case the next sync retries the silent refresh.
      */
-    private static void onFreshTokenResult(final AuthState state, final String accessToken,
-                                           final String idToken, final AuthorizationException ex) {
+    @VisibleForTesting
+    static void onFreshTokenResult(final AuthState state, final String accessToken,
+                                   final String idToken, final AuthorizationException ex) {
         if (ex != null) {
             Log.e(TAG, "Got exception token: " + ex);
         }

@@ -1,12 +1,17 @@
 package com.eveningoutpost.dexdrip.tidepool;
 
 import static com.google.common.truth.Truth.assertThat;
+import static org.robolectric.Shadows.shadowOf;
+
+import android.os.Looper;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 
+import net.openid.appauth.AuthState;
 import net.openid.appauth.AuthorizationException;
 
 import org.junit.Test;
+import org.robolectric.shadows.ShadowToast;
 
 import java.io.IOException;
 
@@ -60,5 +65,41 @@ public class AuthFlowInTest extends RobolectricTestWithConfig {
     public void nullException_isNotTransient() {
         // :: Verify
         assertThat(AuthFlowIn.isTransientTokenError(null)).isFalse();
+    }
+
+    /**
+     * The predicate tests above pin the classification. These two pin what the classification is
+     * actually used for — whether a failed refresh escalates to the interactive browser login.
+     * Entering that flow announces itself with a "Connecting to Tidepool" toast
+     * ({@link AuthFlowOut#doTidePoolInitialLogin}), which is the observable difference the reporter
+     * in #4605 sees as a login page appearing on a flaky network.
+     */
+    @Test
+    public void transientNetworkError_keepsSessionInsteadOfLaunchingLogin() {
+        // :: Setup — AppAuth hands back no access token plus {"type":0,"code":3} when the silent
+        // refresh cannot reach the server. This is the exact failure captured in #4608's log.
+        final AuthorizationException networkError = AuthorizationException.fromTemplate(
+                AuthorizationException.GeneralErrors.NETWORK_ERROR, new IOException("no route to host"));
+
+        // :: Act
+        AuthFlowIn.onFreshTokenResult(new AuthState(), null, null, networkError);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify — no interactive login was started, so no login page is pushed at the user.
+        assertThat(ShadowToast.getTextOfLatestToast()).isNull();
+    }
+
+    @Test
+    public void rejectedCredential_stillLaunchesInteractiveLogin() {
+        // :: Setup — a refresh token the server refuses is not transient; the user genuinely has to
+        // log in again. This guards against the fix suppressing re-login across the board.
+        final AuthorizationException invalidGrant = AuthorizationException.TokenRequestErrors.INVALID_GRANT;
+
+        // :: Act
+        AuthFlowIn.onFreshTokenResult(new AuthState(), null, null, invalidGrant);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo("Connecting to Tidepool");
     }
 }
