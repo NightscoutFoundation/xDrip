@@ -3,11 +3,9 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
 
-import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -507,16 +505,11 @@ public class CollectionServiceStarter {
 
     @SuppressWarnings("ConstantConditions")
     private void startServiceCompat(final Intent intent) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            //    && BuildConfig.targetSDK >= Build.VERSION_CODES.N
-                && ForegroundServiceStarter.shouldRunCollectorInForeground()) {
-            try {
-                Log.d(TAG, String.format("Starting oreo foreground service: %s", intent.getComponent().getClassName()));
-            } catch (NullPointerException e) {
-                Log.d(TAG, "Null pointer exception in startServiceCompat");
-            }
+        try {
+            Log.d(TAG, String.format("Starting foreground service: %s", intent.getComponent().getClassName()));
             mContext.startForegroundService(intent);
-        } else {
+        } catch (Exception e) {
+            // If foreground fails (e.g. app is already in foreground), fall back to standard start
             mContext.startService(intent);
         }
     }
