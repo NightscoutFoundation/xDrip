@@ -364,6 +364,7 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                         //.setHeightPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 63 : 84) // 84
                         .setHeightPx((int) (pebble_trend_size & 0xff))
                         //.setWidthPx(PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 84 : 144) // 144
+                        .noLowLineFill(true)
                         .setWidthPx((int) ((pebble_trend_size & 0xff00) >> 8 ))
                         .showHighLine(highLine)
                         .showLowLine(lowLine)
