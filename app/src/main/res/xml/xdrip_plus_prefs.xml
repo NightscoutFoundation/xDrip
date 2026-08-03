@@ -750,22 +750,6 @@
                     android:switchTextOff="@string/short_off_text_for_switches"
                     android:switchTextOn="@string/short_on_text_for_switches"
                     android:title="@string/title_use_number_icon" />
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:dependency="number_icon_tested"
-                    android:key="use_number_icon_large"
-                    android:summary="@string/summary_use_number_icon_large"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/title_use_number_icon_large" />
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:dependency="use_number_icon_large"
-                    android:key="number_icon_large_arrow"
-                    android:summary="@string/summary_number_icon_large_arrow"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/title_number_icon_large_arrow" />
             </PreferenceScreen>
             <SwitchPreference
                 android:defaultValue="false"

@@ -151,6 +151,12 @@ public class InsulinManager {
 
     public static Insulin getBolusProfile() {
         checkInitialized();
+        if (bolusProfile == null && profiles != null && !profiles.isEmpty()) {
+            // profiles loaded but the pointer was never set (partial init / publish race):
+            // fall back to the same default LoadDisabledProfilesFromPrefs() uses, so a legacy
+            // dose never produces an empty injection list and IoB never silently reads zero.
+            bolusProfile = profiles.get(0);
+        }
         return bolusProfile;
     }
 
