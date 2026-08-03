@@ -5,13 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.util.SparseArray;
 
-import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.utilitymodels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.util.HashMap;
@@ -63,18 +60,12 @@ public class WakeLockTrampoline extends BroadcastReceiver {
 
         ComponentName startResult;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-            //    && BuildConfig.targetSDK >= Build.VERSION_CODES.N
-                && ForegroundServiceStarter.shouldRunCollectorInForeground()) {
-            try {
-                UserError.Log.d(TAG, String.format("Starting oreo foreground service: %s", serviceIntent.getComponent().getClassName()));
-            } catch (NullPointerException e) {
-                UserError.Log.d(TAG, "Null pointer exception in startServiceCompat");
-            }
-            startResult = context.startForegroundService(serviceIntent);
-        } else {
-            startResult = context.startService(serviceIntent);
+        try {
+            UserError.Log.d(TAG, String.format("Starting oreo foreground service: %s", serviceIntent.getComponent().getClassName()));
+        } catch (NullPointerException e) {
+            UserError.Log.d(TAG, "Null pointer exception in startServiceCompat");
         }
+        startResult = context.startForegroundService(serviceIntent);
         if (D) UserError.Log.d(TAG, "Start result: " + startResult);
 
     }

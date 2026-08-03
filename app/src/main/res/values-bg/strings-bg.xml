@@ -117,7 +117,7 @@
     <string name="add_widget">Добави widget</string>
     <string name="title_activity_alert_list">Списък Известия</string>
     <string name="speaktreatment">Изговори манипулацията</string>
-    <string name="title_activity_update">xDrip+ има налична актуализация</string>
+    <string name="title_activity_update">Налична е актуализация</string>
     <string name="title_activity_display_qrcode">Сподели настройки чрез QR код</string>
     <string name="title_activity_send_feed_back">Изпрати обратна връзка на Jamorham</string>
     <string name="title_activity_save_logs">Запазване на логовете</string>
@@ -204,10 +204,10 @@
     <string name="deel_settings_for_algs">По-подробни настройки за алгоритмите</string>
     <string name="low_level_prediction_values">Стойности на предсказание за ниска КЗ</string>
     <string name="glucose_drop_for_one_unit">Глюкозен спад за 1 единица инсулин</string>
-    <string name="xdrip_plus_prediction_settings">xDrip+ Настройки на симулация за предвиждане</string>
+    <string name="xdrip_plus_prediction_settings">Настройки на симулация за предвиждане</string>
     <string name="settings_for_syncing">Настройки за синхронизация между слушалки</string>
-    <string name="xdrip_plus_sync_settings">xDrip+ синхронизиращи настройки</string>
-    <string name="xdrip_plus_update_settings">xDrip+ Ъпдейт настройки</string>
+    <string name="xdrip_plus_sync_settings">xDrip синхронизиращи настройки</string>
+    <string name="xdrip_plus_update_settings">Настройки за актуализация</string>
     <string name="automatic_update_check">Автоматична актуализация</string>
     <string name="update_channel">Канал за обновления</string>
     <string name="send_crash_errors_to_developer">Изпращане на грешки на разработчика</string>
@@ -224,7 +224,7 @@
     <string name="calibration_alerts">Известия за калибрация</string>
     <string name="missed_reading_alert">Пропуснато известие при прочитане</string>
     <string name="other_alerts">Други Известия</string>
-    <string name="extra_alerts_xdrip_plus">Допълнителни Известия (xDrip+)</string>
+    <string name="extra_alerts_xdrip_plus">Допълнителни Известия (xDrip)</string>
     <string name="persistent_high_alert">Известие за продължително висока КЗ</string>
     <string name="persistent_high_alert_enable">Включи</string>
     <string name="title_persistent_high_threshold">Праг</string>
@@ -237,8 +237,8 @@
     <string name="extrapolate_data_to_try_to_predict_lows">Екстраполиране на данните в опит да се предвиди ниска КЗ</string>
     <string name="alarm_at_forecasted_low_mins">Аларма при предвиждане на Ниски стойности(Кз)</string>
     <string name="title_forecast_low_threshold">Праг</string>
-    <string name="other_xdrip_plus_alerts">Други xDrip+ известия</string>
-    <string name="xdrip_plus_display_settings">xDrip+ Персонализиране</string>
+    <string name="other_xdrip_plus_alerts">Други xDrip известия</string>
+    <string name="xdrip_plus_display_settings">Персонализиране</string>
     <string name="display_customisations">Покажи персонализация</string>
     <string name="insulin_carb_ratios_etc_for_models">Инсулин, Въглехидратно съотношение и др. за модели</string>
     <string name="grams_of_carbohydrate_one_unit_covers">Грамове въглехидрати покриващи 1 единица</string>
@@ -322,7 +322,7 @@
     <string name="reset">Ресет</string>
     <string name="pebble_and_android_wear_options">Опции за различни часовници</string>
     <string name="customize_colours">Избор на цветове</string>
-    <string name="xdrip_plus_color_settings">xDrip+ Цветови Настройки</string>
+    <string name="xdrip_plus_color_settings">Цветови Настройки</string>
     <string name="summary_font_settings">Персонализиране на шрифтове</string>
     <string name="title_font_settings">Настройки на шрифта</string>
     <string name="summary_enlarge_fonts_on_large_screens">Автоматично увеличаване на размера на шрифта на големи екрани, като например таблети</string>
@@ -332,7 +332,7 @@
     <string name="in_range_glucose_values">Глюкозни стойности в диапазон</string>
     <string name="default_color_selected">Цвят по подразбиране избран</string>
     <string name="color_bg_values">Цветове на КЗ отчитания и стрелка на тенденция</string>
-    <string name="xdrip_plus_extra_settings">xDrip+ допълнителни настройки</string>
+    <string name="xdrip_plus_extra_settings">Допълнителни настройки</string>
     <string name="example_chart">Примерна графика</string>
     <string name="treatments_prediction_curves">Криви на Лечение / Предвиждащи</string>
     <string name="carbs_per_unit">Въглехидрати на единица инсл.</string>
@@ -417,7 +417,7 @@
     <string name="automatic_updates_crash_reports_and_feedback">Автоматични актуализации, отчети за сривове и обратна връзка с програмиста</string>
     <string name="crowd_sourced_translation">Превод от тълпа</string>
     <string name="please_enter_your_question_or_comments_here">Моля, въведете своя въпрос или коментар тук.\n\nАко предоставите имейл адрес, може да получите отговор.\n\n</string>
-    <string name="optional_contact_info_here_eg_email">Допълнителена информация за контакт. например: email адрес</string>
+    <string name="optional_contact_info_here_eg_email">Допълнителна информация за контакт. например: email адрес</string>
     <string name="send_message">Изпрати Съобщение</string>
     <string name="save_logs">Запазване на логовете</string>
     <string name="please_indicate_what_you_think_of_the_app_generally">Моля, оценете приложението</string>
@@ -432,7 +432,7 @@
     <string name="sdcard_not_writable_cannot_save">SD картата не позволява запис - не може да се запише</string>
     <string name="sdcard_not_readable">SD картата не може да се прочете</string>
     <string name="loading_settings_from_xdrip_mainline">Зареждане на настройки от xDrip mainline</string>
-    <string name="warning_settings_from_xdrip_and_plus_exist">Внимание съществуват настройки за предупреждение от xDrip и xDrip+ - зареждане на xDrip+</string>
+    <string name="warning_settings_from_xdrip_and_plus_exist">Внимание съществуват настройки от стар и некущ и xDrip - използване на текущите настройки</string>
     <string name="new_version_date_colon">"Дата на новата версия: "</string>
     <string name="old_version_date_colon">"Дата на старата версия: "</string>
     <string name="speak_your_note_text">Изговаряне текста на бележката си</string>
@@ -719,11 +719,11 @@
     <string name="show_expiry_time">Покажи времето на изтичане на сензора въз основа на 14,5 дни</string>
     <string name="show_sensor_age">Показване на възрастта на сензора на главния екран</string>
     <string name="change_sensor_total_days">Промяна на общия брой дни на сензора</string>
-    <string name="nfc_scanning_xdrip_open">NFC сканирането ще се извърши само когато приложението xDrip+ е видимо</string>
+    <string name="nfc_scanning_xdrip_open">NFC сканирането ще се извърши само когато приложението xDrip е видимо</string>
     <string name="nfc_scanning_launcher">NFC сканирането ще работи и от екрана за стартиране на приложения</string>
-    <string name="scan_when_app_closed">Сканирай, когато не сте в xDrip+</string>
+    <string name="scan_when_app_closed">Сканирай, когато не сте в xDrip</string>
     <string name="vibrate_scanning_status">Вибриране за показване състоянието на сканирането</string>
-    <string name="beep_when_scanning_within_app">Звуков сигнал при сканиране в приложението xDrip+</string>
+    <string name="beep_when_scanning_within_app">Звуков сигнал при сканиране в приложението xDrip</string>
     <string name="use_multi_block">Използвайте по-бърз метод за четене на много блокове</string>
     <string name="use_any_tag">Използвайте метод за четене, оптимизиран за произволен етикет</string>
     <string name="low_level_value">Ниско ниво на диагностична/прототипна стойност</string>
@@ -833,7 +833,7 @@
     <string name="force_english_text">Принудително английски текст</string>
     <string name="using_local_language">В момента се използва местният език на вашето устройство</string>
     <string name="forcing_alternate_language">В момента се налага използването на алтернативен език</string>
-    <string name="need_alternate_language">Ако имате нужда от превод на алтернативен език в xDrip+</string>
+    <string name="need_alternate_language">Ако имате нужда от превод на алтернативен език в xDrip</string>
     <string name="chosse_language">Изберете конкретен език</string>
     <string name="widget_range_lines">Линии на диапазона на widget</string>
     <string name="show_range_on_widget">Показване на висока и долна линия на widget.</string>
@@ -865,7 +865,7 @@
     <string name="are_you_sure_you_wish_to_snooze_all_other_devices_in_your_sync_group">Сигурни ли сте, че искате да отложите всички други устройства във вашата група за синхронизиране?</string>
     <string name="yes_send_it">ДА, изпрати го!</string>
     <string name="movement_detection_and_vehicle_mode">Откриване на движение и режим на превозно средство</string>
-    <string name="xdrip_motion_tracking">xDrip+ Проследяване на движение</string>
+    <string name="xdrip_motion_tracking">Проследяване на движение</string>
     <string name="detect_motion_types">Използвайте сензори за откриване на видове движение</string>
     <string name="enable_motion_tracking">Активирайте проследяването на движението</string>
     <string name="display_motion_types">Съхранявайте скорошни типове движения и ги нанасяйте върху основната графика</string>
@@ -957,7 +957,7 @@
     <string name="eng_mode_is_on">Инженеринг режим активиран. Моля деактивирайте освен, ако не сте сигурни, че ви е нужен, тъй като може да предизвика неочаквани резултати.</string>
     <string name="yes">Да</string>
     <string name="enable">Включи</string>
-    <string name="xdrip_compatible_features">xDrip+ %s функции</string>
+    <string name="xdrip_compatible_features">xDrip %s функции</string>
     <string name="garmin">Garmin</string>
     <string name="fitbit">Fitbit</string>
     <string name="enable_local_web_server_feature">Активиране на функцията за локален уеб сървър за часовник Garmin?</string>
@@ -996,13 +996,13 @@
     <string name="enable_update_checks">Активиране на проверките за актуализация?</string>
     <string name="you_can_easily_roll_back_dialog_msg">С xDrip можете лесно да се върнете към предишни версии, просто като стартирате отново инсталатора на APK за старата версия в папката си за изтегляния, ако новата версия не ви харесва\n\nИскате ли да активирате проверките за актуализация?</string>
     <string name="hey_fam">Hey Fam...</string>
-    <string name="you_have_update_checks_off">Проверките за актуализации са изключени!\n\nОпитваме се да оправяме проблеми и да добавяме нови функционалности в xDrip+ с течение на времето.\n\nНа всеки 60 дни това напомняне ще се показва, за да ви помоли да включите проверката за актуализации.</string>
+    <string name="you_have_update_checks_off">Проверките за актуализации са изключени!\n\nОпитваме се да оправяме проблеми и да добавяме нови функционалности в xDrip с течение на времето.\n\nНа всеки 60 дни това напомняне ще се показва, за да ви помоли да включите проверката за актуализации.</string>
     <string name="update_checking_enabled">Проверката на актуализацията е активирана!</string>
     <string name="cancel_alarm">Отмени Аларма?</string>
     <string name="please_confirm_to_cancel_the_alert">Моля, потвърдете за отмяната на предупреждението?</string>
     <string name="yes_cancel">Да, Откажи</string>
     <string name="warning_no_alert_will_be_played_in_silent_mode">Предупрежденията, няма да се възпроизвежда, когато телефонът е в безшумен/вибриращ режим!!!</string>
-    <string name="automatic_message_from_xdrip">автоматично съобщение от xDrip+</string>
+    <string name="automatic_message_from_xdrip">автоматично съобщение от xDrip</string>
     <string name="zero_zero_zero_zero">0000</string>
     <string name="emergency_messages">Спешни съобщения</string>
     <string name="emergency_message_feature">Функция за спешни съобщения</string>
@@ -1146,7 +1146,7 @@
     <string name="weekdays">Делнични дни</string>
     <string name="weekends">Уикенди</string>
     <string name="mega_priority">Мега-приоритет</string>
-    <string name="xdrip_reminders">xDrip+ Напомняния</string>
+    <string name="xdrip_reminders">Напомняния</string>
     <string name="button_15_min">15 Мин</string>
     <string name="button_2_hour">2 Часа</string>
     <string name="button_1_day">1 Ден</string>
@@ -1200,7 +1200,7 @@
     <string name="need_permission_to_access_audio_files">Необходимо е разрешение за достъп до аудио файлове</string>
     <string name="need_contacts_permission_to_select_message_recipients">Необходимо е разрешение за контакти, за да изберете получатели на съобщения</string>
     <string name="need_storage_permission_to_access_all_ringtones">Необходимо е разрешение за достъп до всички мелодии</string>
-    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip+ се нуждае от разрешен списък за правилна работа</string>
+    <string name="xdrip_needs_whitelisting_for_proper_performance">xDrip се нуждае от разрешен списък за правилна работа</string>
     <string name="overwrite_slope_engineering_only">Презаписване на наклон (само инженерство!)</string>
     <string name="overwrite_intercept_engineering_only">Презаписване на прихващането (само инженерство!)</string>
     <string name="manual_overwrite_not_possible">Не е възможно ръчно презаписване!</string>
@@ -1463,7 +1463,7 @@
     <string name="summary_plus_accept_follower_actions">Ще се приемат лечения, калибриране и други действия от последователи</string>
     <string name="title_plus_accept_follower_actions">Приемане на действия на последователи</string>
     <string name="summary_plus_whole_house">Участвайте в мрежа за цял дом</string>
-    <string name="summary_plus_xdrip_cloud">Когато използвате новите xDrip+ облачни сървъри, тази настройка трябва да е една и съща и за мастъра и за последователите.</string>
+    <string name="summary_plus_xdrip_cloud">Когато използвате новите xDrip облачни сървъри, тази настройка трябва да е една и съща и за мастъра и за последователите.</string>
     <string name="title_plus_whole_house">Цял Дом</string>
     <string name="summary_libre_whole_house_collector">Този телефон ще бъде колекционер в цялата домашна мрежа</string>
     <string name="title_libre_whole_house_collector">Libre цяла къща</string>
@@ -1632,7 +1632,7 @@
     <string name="unusual_internal_context_problem__please_report">Необичаен вътрешен проблем със съдържание - моля, докладвайте</string>
     <string name="cannot_start__please_report_context_problem">Не може да започне - моля, докладвайте за проблем с контекста</string>
     <string name="xdrip_will_not_work_below_android_version_42">xDrip+ няма да работи на Android под версия 4.2</string>
-    <string name="xdrip_oop2_not_installed">xDrip+ се нуждае от OOP2 за работа със сензори Libre2/LibreUS.</string>
+    <string name="xdrip_oop2_not_installed">xDrip се нуждае от OOP2 за работа със сензори Libre2/LibreUS.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Това приложение се нуждае да е добавено в списък за оптимизация на батерията като изключение или няма да работи добре. Моля, нулирайте предпочитанията на приложението</string>
     <string name="setting_disabled_">Настройката е деактивирана :)</string>
     <string name="yes_please">Да, моля</string>
@@ -1751,8 +1751,8 @@
     <string name="share_database">Споделете база данни...</string>
     <string name="title_motion_detection_warning">Предупреждение за откриване на движение</string>
     <string name="message_motion_detection_warning">Откриването на движение при активност е експериментално и само някои телефони са съвместими. Основната му цел е да открива режим на превозно средство.\n\nПри тестове изглежда, че телефоните от по-висок клас са най-вероятно да имат сензорите, необходими за работата му. Това също може да изтощи батерията ви.\n\nЗа движение, свързано с упражнения, броячите на крачките на Smartwatch работят по-добре.</string>
-    <string name="title_variant">Използвате вариант xDrip+</string>
-    <string name="message_variant">xDrip+ variants позволяват едновременно инсталиране на множество приложения. Или за специфична употреба, или за да позволите на xDrip-Experimental и xDrip+ да бъдат инсталирани едновременно.\n\nПри variants някои неща може да не работят правилно, тъй като едно или друго приложение има ексклузивен достъп, например сдвояване с Bluetooth. Обратната връзка и докладите за грешки относно вариантите са добре дошли!</string>
+    <string name="title_variant">Използвате вариант xDrip</string>
+    <string name="message_variant">xDrip variants позволяват едновременно инсталиране на множество приложения. Или за специфична употреба, или за да позволите на xDrip-Experimental и xDrip да бъдат инсталирани едновременно.\n\nПри variants някои неща може да не работят правилно, тъй като едно или друго приложение има ексклузивен достъп, например сдвояване с Bluetooth. Обратната връзка и докладите за грешки относно вариантите са добре дошли!</string>
     <string name="expires_unknown">Изтича: ???</string>
     <string name="sensor_expired">ИЗТЕКЪЛ!</string>
     <plurals name="sensor_expires">
@@ -1821,7 +1821,8 @@
     <string name="backing_up">Архивиране...</string>
     <string name="did_backup_ok">Направен бакъп ок</string>
     <string name="backup_failed">Бакъп неуспешен</string>
-    <string name="automatically_manage_backup">Автоматично управление</string>
+    <string name="automatically_manage_backup">Автоматично управление
+</string>
     <string name="use_alternate_file">Използване алтернативен файл</string>
     <string name="choose_backup_file">Избери бакъп файл</string>
     <string name="select_alternate_file">Изберил алтернативен файл</string>
@@ -1946,14 +1947,14 @@
     <string name="speak">Говори</string>
     <string name="graph_note">Графична Бележка</string>
     <string name="reminder_alternate_title">Алтернативно заглавие на напомняне</string>
-    <string name="default_xdrip_reminder_sound">Звук за напомняне по подразбиране в xDrip+</string>
+    <string name="default_xdrip_reminder_sound">Звук за напомняне по подразбиране в xDrip</string>
     <string name="custom_audio_file">Персонализиран аудио файл</string>
     <string name="android_ringtone_alarm">Мелодия/аларма за Android</string>
     <string name="first_successful_connection_to_transmitter">"Първа успешна връзка с трансмитер %1$s"</string>
     <string name="first_successful_connection_to_transmitter_em">"Първа успешна връзка с трансмитер %1$s с mac %2$s"</string>
     <string name="sensor_expiring">Сензорът изтича</string>
     <string name="sensor_will_expire_in">Сензорът ще изтече след %1$s</string>
-    <string name="xdrip_update">xDrip+ Ъпдейт</string>
+    <string name="xdrip_update">xDrip Ъпдейт</string>
     <string name="a_new_version_on_channel_1_s_is_available">Налична е нова версия в канал %1$s</string>
     <string name="today">Днес</string>
     <string name="yesterday">Вчера</string>
@@ -1986,7 +1987,7 @@
     <string name="default_xdrip_sound">Звук по подразбиране на xDrip</string>
     <string name="error_with_value">Грешка със стойност</string>
     <string name="turn_feature_off_on">Включване/изключване на функцията</string>
-    <string name="glupro_activity_title">xDrip+ GluPro</string>
+    <string name="glupro_activity_title">xDrip GluPro</string>
     <string name="glupro_status">Състояние на глюкозния профил</string>
     <string name="sending_blood_tests_to_transmitter">Изпращане на кръвни изследвания към трансмитер</string>
     <string name="glupro_bluetooth_scanning">Сканиране с Bluetooth</string>
