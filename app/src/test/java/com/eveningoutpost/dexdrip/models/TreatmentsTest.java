@@ -6,6 +6,7 @@ import com.eveningoutpost.dexdrip.insulin.InsulinManager;
 
 import org.junit.Test;
 
+import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -155,5 +156,26 @@ public class TreatmentsTest extends RobolectricTestWithConfig {
         assertWithMessage("test before").that(before).isEqualTo(30);
         assertWithMessage("test after").that(after).isEqualTo(5);
         Treatments.delete_all();
+    }
+
+    /** Force a private static InsulinManager field, to simulate a partially-initialized manager. */
+    private static void setInsulinManagerField(final String name, final Object value) throws Exception {
+        final Field f = InsulinManager.class.getDeclaredField(name);
+        f.setAccessible(true);
+        f.set(null, value);
+    }
+
+    @Test
+    public void legacyDose_convertsToInjection_whenBolusPointerWasNull() throws Exception {
+        // :: Setup - profiles loaded, but simulate the broken null-pointer state (#4617)
+        InsulinManager.getDefaultInstance();
+        setInsulinManagerField("bolusProfile", null);
+
+        // :: Act - the exact conversion the legacy IoB path runs for a plain insulin dose
+        final List<InsulinInjection> injections = Treatments.convertLegacyDoseToBolusInjectionList(2.0);
+
+        // :: Verify - a usable injection is produced, so IoB will not silently read zero
+        assertThat(injections).hasSize(1);
+        assertThat(injections.get(0).getUnits()).isEqualTo(2.0);
     }
 }
