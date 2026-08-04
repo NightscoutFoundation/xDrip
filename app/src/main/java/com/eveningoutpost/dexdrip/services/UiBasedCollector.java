@@ -106,6 +106,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackages.add("com.microtech.aidexx.diaexport.mmoll"); //for microtech germany version, typo is intentional!
         coOptedPackages.add("com.microtech.aidexx.smart.mmoll"); //for microtech Brazil version
+        coOptedPackages.add("com.microtech.aidexx.grx1.mmoll"); //for GlucoRx India Vixxa version
         coOptedPackages.add("com.ottai.seas");
         coOptedPackages.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackages.add("com.sisensing.eco"); //for SiSensing Eco China version
@@ -130,6 +131,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.diaexport.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.smart.mmoll"); //for microtech Brazil version
+        coOptedPackagesAll.add("com.microtech.aidexx.grx1.mmoll"); //for GlucoRx India Vixxa version
         coOptedPackagesAll.add("com.ottai.seas");
         coOptedPackagesAll.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackagesAll.add("com.sisensing.eco"); //for SiSensing Eco China version
