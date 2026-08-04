@@ -28,6 +28,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.VersionTracker;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.SentryCrashReporting;
 import com.eveningoutpost.dexdrip.utils.jobs.DailyJob;
 import com.eveningoutpost.dexdrip.utils.jobs.XDripJobCreator;
@@ -35,7 +36,7 @@ import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
-import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusBroadcastReceiver;
+import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusBroadcastReceiverWrapper;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
 
@@ -106,14 +107,17 @@ public class xdrip extends Application {
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
 
+        if (DexCollectionType.getDexCollectionType() == DexCollectionType.NSEmulator) { // Enable the manifest path after a reboot.
+            NSEmulatorReceiver.setManifestReceiverEnabled(getApplicationContext(), true);
+        }
         IntentFilter externalFilter = new IntentFilter("com.eveningoutpost.dexdrip.ExternalStatusline");
-        registerReceiver(new ExternalStatusBroadcastReceiver(), externalFilter);
+        registerReceiver(new ExternalStatusBroadcastReceiverWrapper(), externalFilter);
         IntentFilter bgFilter = new IntentFilter();
         bgFilter.addAction("com.eveningoutpost.dexdrip.NS_EMULATOR");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT");
-        registerReceiver(new NSEmulatorReceiver(), bgFilter);
+        registerReceiver(new NSEmulatorReceiver(true), bgFilter);
 
         JobManager.create(this).addJobCreator(new XDripJobCreator());
         DailyJob.schedule();

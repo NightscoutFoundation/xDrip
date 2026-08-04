@@ -8,6 +8,7 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.NSEmulatorReceiver;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.services.DexCollectionService;
@@ -238,6 +239,8 @@ public class CollectionServiceStarter {
     private void start(Context context, String collection_method) {
         Log.d(TAG, "start called: " + collection_method);
         this.mContext = context;
+        // Enable manifest receiver only if 640G/Eversense is selected
+        NSEmulatorReceiver.setManifestReceiverEnabled(context, collection_method.equals("NSEmulator"));
         xdrip.checkAppContext(context);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this.mContext);
 
