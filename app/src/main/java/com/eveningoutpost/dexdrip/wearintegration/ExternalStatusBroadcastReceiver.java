@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
  */
 public class ExternalStatusBroadcastReceiver extends BroadcastReceiver {
 
+
     private static final String TAG = ExternalStatusBroadcastReceiver.class.getSimpleName();
 
     @Override
