@@ -1,9 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+import static com.eveningoutpost.dexdrip.Await.awaitAtMost;
 import static com.google.common.truth.Truth.assertThat;
-import static org.robolectric.Shadows.shadowOf;
-
-import android.os.Looper;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -14,6 +12,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.Dispatcher;
@@ -32,6 +32,9 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
     private MockWebServer server;
 
+    /** Paths of every request the dispatcher has served, in arrival order. */
+    private final List<String> requestPaths = new CopyOnWriteArrayList<>();
+
     @Before
     public void setUpServer() throws Exception {
         super.setUp();
@@ -43,26 +46,17 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
         PumpStatus.setReservoir(-1);
         // Clear rate limiter so devicestatus fetch is not throttled
         JoH.clearRatelimit("nsfollow-devicestatus");
-    }
-
-    /**
-     * Wait for OkHttp async callbacks and drain the Android main looper.
-     * <p>
-     * Retrofit posts {@code enqueue()} callbacks to the Android main looper. In Robolectric's
-     * PAUSED looper mode the main looper does not run automatically, so we must:
-     * <ol>
-     *   <li>Sleep briefly to let OkHttp complete the request and post to the main looper.</li>
-     *   <li>Call {@code shadowOf(getMainLooper()).idle()} to drain all pending tasks.</li>
-     * </ol>
-     */
-    private static void awaitCallbacks() throws InterruptedException {
-        Thread.sleep(300);
-        shadowOf(Looper.getMainLooper()).idle();
+        // uploaderCharging is a static volatile Boolean that Robolectric does not reset between
+        // tests. The charging tests wait for it to become non-null, so a value left over from a
+        // sibling test would satisfy that wait instantly and hand a stale value to the assertion.
+        NightscoutFollowService.clearUploaderStatus();
     }
 
     /**
      * Configure the server with a path-aware dispatcher so that concurrent requests
-     * receive the correct responses regardless of arrival order.
+     * receive the correct responses regardless of arrival order. Every path served is
+     * recorded in {@link #requestPaths}, which unlike {@code takeRequest()} does not
+     * consume the request and can therefore be polled while waiting.
      *
      * @param deviceStatusBody JSON body to return for {@code /devicestatus} requests
      */
@@ -70,6 +64,7 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
         server.setDispatcher(new Dispatcher() {
             @Override
             public MockResponse dispatch(RecordedRequest request) {
+                requestPaths.add(String.valueOf(request.getPath()));
                 if (request.getPath() != null && request.getPath().contains("devicestatus")) {
                     return new MockResponse().setBody(deviceStatusBody);
                 }
@@ -87,20 +82,17 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
     // ===== Rate limiting =========================================================================
 
     @Test
-    public void work_sendsDeviceStatusRequest_whenNotRateLimited() throws Exception {
-        // :: Setup — entries, treatments, devicestatus responses
-        server.enqueue(new MockResponse().setBody("[]"));   // entries
-        server.enqueue(new MockResponse().setBody("[]"));   // treatments (if requested)
-        server.enqueue(new MockResponse().setBody("[{\"uploaderBattery\":77,\"date\":1700000000000}]"));
+    public void work_sendsDeviceStatusRequest_whenNotRateLimited() {
+        // :: Setup
+        usePathDispatcher("[{\"uploaderBattery\":77,\"date\":1700000000000}]");
 
         // :: Act
         NightscoutFollow.work(false);
-        // Wait for OkHttp async callbacks: pump/drain the main looper until
-        // Retrofit delivers its callbacks from the background OkHttp thread.
-        awaitCallbacks();
+        awaitAtMost(() -> requestPaths.toString().contains("devicestatus"));
 
-        // :: Verify — at least one request reached the server
-        assertThat(server.getRequestCount()).isGreaterThan(0);
+        // :: Verify — a devicestatus request was among those sent. Waiting on the same
+        // condition is not vacuous: if it never arrives the wait expires and this fails.
+        assertThat(requestPaths.toString()).contains("devicestatus");
     }
 
     @Test
@@ -113,14 +105,17 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
+        // Anchor on the entries request, which is always sent, before counting. Without this
+        // the count can be 0, the loop below never runs, and the test passes vacuously.
+        awaitAtMost(() -> server.getRequestCount() > 0);
 
         // :: Verify — devicestatus request was NOT made (only entries/treatments hit the server)
-        // Drain all requests made, confirm none hit the devicestatus path
         int requestCount = server.getRequestCount();
+        assertThat(requestCount).isAtLeast(1);
         for (int i = 0; i < requestCount; i++) {
-            String path = server.takeRequest(1, TimeUnit.SECONDS).getPath();
-            assertThat(path).doesNotContain("devicestatus");
+            final RecordedRequest r = server.takeRequest(1, TimeUnit.SECONDS);
+            assertThat(r).isNotNull();
+            assertThat(r.getPath()).doesNotContain("devicestatus");
         }
     }
 
@@ -133,7 +128,7 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
+        awaitAtMost(() -> PumpStatus.getBattery() == 88.0);
 
         // :: Verify
         assertThat(PumpStatus.getBattery()).isWithin(0.001).of(88.0);
@@ -146,7 +141,7 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
+        awaitAtMost(() -> PumpStatus.getReservoirString().contains("14.5"));
 
         // :: Verify
         assertThat(PumpStatus.getReservoirString()).contains("14.5");
@@ -159,7 +154,7 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
+        awaitAtMost(() -> PumpStatus.getBattery() == 65.0);
 
         // :: Verify
         assertThat(PumpStatus.getBattery()).isWithin(0.001).of(65.0);
@@ -174,7 +169,7 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
+        awaitAtMost(() -> NightscoutFollowService.uploaderCharging != null);
 
         // :: Verify — false is non-null, charging row will show "No"
         assertThat(NightscoutFollowService.uploaderCharging).isFalse();
@@ -187,7 +182,7 @@ public class NightscoutFollowDeviceStatusWorkTest extends RobolectricTestWithCon
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
+        awaitAtMost(() -> NightscoutFollowService.uploaderCharging != null);
 
         // :: Verify
         assertThat(NightscoutFollowService.uploaderCharging).isTrue();
