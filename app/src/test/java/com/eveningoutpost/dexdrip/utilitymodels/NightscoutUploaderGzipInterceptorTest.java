@@ -1,8 +1,9 @@
-package com.eveningoutpost.dexdrip.cgm.nsfollow;
+package com.eveningoutpost.dexdrip.utilitymodels;
 
 import static com.google.common.truth.Truth.assertThat;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.utils.framework.GzipRequestInterceptor;
 
 import org.junit.After;
 import org.junit.Before;
@@ -12,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.util.zip.GZIPInputStream;
 
+import okhttp3.HttpUrl;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -22,29 +24,40 @@ import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
 
 /**
- * Characterization tests for {@link GzipRequestInterceptor} on okhttp 3.12.13.
+ * Characterization tests for NightscoutUploader's per-server gzip gating, exercised through the
+ * shared {@link GzipRequestInterceptor} wired with {@link NightscoutUploader#NS_GZIP_DECIDER}.
+ * Pins that the {@code supportsGzip(host+port)} gate behaves exactly as the original inner-class
+ * interceptor did before Phase E consolidation.
  *
  * @author Asbjørn Aarrestad
  */
-public class GzipRequestInterceptorTest extends RobolectricTestWithConfig {
+public class NightscoutUploaderGzipInterceptorTest extends RobolectricTestWithConfig {
 
+    private static final String MARKER_PREFIX = "ns-end-supports-gzip-";
     private static final MediaType JSON = MediaType.parse("application/json");
 
     private MockWebServer server;
-    private OkHttpClient client;
 
     @Before
     public void setUpServer() throws Exception {
         server = new MockWebServer();
         server.start();
-        client = new OkHttpClient.Builder()
-                .addInterceptor(new GzipRequestInterceptor())
-                .build();
     }
 
     @After
     public void tearDown() throws Exception {
         if (server != null) server.shutdown();
+    }
+
+    private OkHttpClient client() {
+        return new OkHttpClient.Builder()
+                .addInterceptor(new GzipRequestInterceptor(NightscoutUploader.NS_GZIP_DECIDER))
+                .build();
+    }
+
+    private void markSupportsGzip(HttpUrl url, boolean value) {
+        final String id = url.uri().getHost() + url.uri().getPort();
+        PersistentStore.setBoolean(MARKER_PREFIX + id, value);
     }
 
     private static String gunzip(byte[] gzipped) throws Exception {
@@ -58,16 +71,18 @@ public class GzipRequestInterceptorTest extends RobolectricTestWithConfig {
     }
 
     @Test
-    public void postWithBody_isGzippedAndTagged() throws Exception {
+    public void postWithBody_serverSupportsGzip_isGzippedAndTagged() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
+        final HttpUrl url = server.url("/upload");
+        markSupportsGzip(url, true);
         final Request request = new Request.Builder()
-                .url(server.url("/upload"))
+                .url(url)
                 .post(RequestBody.create(JSON, "{\"a\":1}"))
                 .build();
 
         // :: Act
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = client().newCall(request).execute()) {
             assertThat(response.isSuccessful()).isTrue();
         }
 
@@ -78,13 +93,37 @@ public class GzipRequestInterceptorTest extends RobolectricTestWithConfig {
     }
 
     @Test
+    public void postWithBody_serverGzipUnknown_passesThroughUncompressed() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setResponseCode(200));
+        final HttpUrl url = server.url("/upload");
+        // no marker set -> supportsGzip returns false
+        final Request request = new Request.Builder()
+                .url(url)
+                .post(RequestBody.create(JSON, "{\"a\":1}"))
+                .build();
+
+        // :: Act
+        try (Response response = client().newCall(request).execute()) {
+            assertThat(response.isSuccessful()).isTrue();
+        }
+
+        // :: Verify
+        final RecordedRequest recorded = server.takeRequest();
+        assertThat(recorded.getHeader("Content-Encoding")).isNull();
+        assertThat(recorded.getBody().readUtf8()).isEqualTo("{\"a\":1}");
+    }
+
+    @Test
     public void getWithoutBody_passesThroughUntouched() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
-        final Request request = new Request.Builder().url(server.url("/ping")).get().build();
+        final HttpUrl url = server.url("/ping");
+        markSupportsGzip(url, true);
+        final Request request = new Request.Builder().url(url).get().build();
 
         // :: Act
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = client().newCall(request).execute()) {
             assertThat(response.isSuccessful()).isTrue();
         }
 
@@ -98,14 +137,16 @@ public class GzipRequestInterceptorTest extends RobolectricTestWithConfig {
     public void requestAlreadyEncoded_passesThroughUntouched() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
+        final HttpUrl url = server.url("/upload");
+        markSupportsGzip(url, true);
         final Request request = new Request.Builder()
-                .url(server.url("/upload"))
+                .url(url)
                 .header("Content-Encoding", "identity")
                 .post(RequestBody.create(JSON, "already"))
                 .build();
 
         // :: Act
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = client().newCall(request).execute()) {
             assertThat(response.isSuccessful()).isTrue();
         }
 
