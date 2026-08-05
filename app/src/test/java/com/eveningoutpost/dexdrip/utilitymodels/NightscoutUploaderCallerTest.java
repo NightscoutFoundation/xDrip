@@ -22,6 +22,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +46,16 @@ public class NightscoutUploaderCallerTest extends RobolectricTestWithConfig {
     private static final String EXPECTED_HASHED_SECRET =
             Hashing.sha1().hashBytes(SECRET.getBytes(Charsets.UTF_8)).toString();
 
+    /**
+     * Test URLs must use a host containing a dot. {@code NightscoutUploader.TryResolveName()}
+     * treats a dotless host as an mDNS candidate, appends ".local" and blocks for
+     * {@code Mdns.NORMAL_RESOLVE_TIMEOUT_MS} (5 s) before falling back to the original URL.
+     * {@code server.getHostName()} returns "localhost", which triggers exactly that.
+     * The address is pinned rather than derived from the server: an IPv6 loopback appears
+     * in a URI as "[::1]", which is also dotless and would take the same slow path.
+     */
+    private static final String LOOPBACK_HOST = "127.0.0.1";
+
     private MockWebServer server;
     private SharedPreferences prefs;
 
@@ -52,7 +63,7 @@ public class NightscoutUploaderCallerTest extends RobolectricTestWithConfig {
     public void setUpServer() throws IOException {
         super.setUp();
         server = new MockWebServer();
-        server.start();
+        server.start(InetAddress.getByName(LOOPBACK_HOST), 0);
         prefs = PreferenceManager.getDefaultSharedPreferences(
                 org.robolectric.RuntimeEnvironment.application);
     }
@@ -67,8 +78,7 @@ public class NightscoutUploaderCallerTest extends RobolectricTestWithConfig {
     @Test
     public void uploadRest_hashesSecretWithSha1_andSendsAsApiSecretHeader() throws Exception {
         // :: Setup
-        final String baseUrl = "http://" + SECRET + "@" + server.getHostName()
-                + ":" + server.getPort() + "/api/v1/";
+        final String baseUrl = baseUrl();
         prefs.edit()
                 .putBoolean("cloud_storage_api_enable", true)
                 .putString("cloud_storage_api_base", baseUrl)
@@ -103,8 +113,7 @@ public class NightscoutUploaderCallerTest extends RobolectricTestWithConfig {
         // :: Setup
         final long timestamp = 1700000000000L;
         final double bgValue = 185.0;
-        final String baseUrl = "http://" + SECRET + "@" + server.getHostName()
-                + ":" + server.getPort() + "/api/v1/";
+        final String baseUrl = baseUrl();
         prefs.edit()
                 .putBoolean("cloud_storage_api_enable", true)
                 .putString("cloud_storage_api_base", baseUrl)
@@ -146,8 +155,7 @@ public class NightscoutUploaderCallerTest extends RobolectricTestWithConfig {
     @Test
     public void uploadRest_whenServerReturns500_returnsFalse() throws Exception {
         // :: Setup
-        final String baseUrl = "http://" + SECRET + "@" + server.getHostName()
-                + ":" + server.getPort() + "/api/v1/";
+        final String baseUrl = baseUrl();
         prefs.edit()
                 .putBoolean("cloud_storage_api_enable", true)
                 .putString("cloud_storage_api_base", baseUrl)
@@ -216,6 +224,11 @@ public class NightscoutUploaderCallerTest extends RobolectricTestWithConfig {
         return bg;
     }
 
+    /** Base URL with embedded secret, pointed at the mock server. */
+    private String baseUrl() {
+        return "http://" + SECRET + "@" + LOOPBACK_HOST + ":" + server.getPort() + "/api/v1/";
+    }
+
     private void enqueueSuccessResponses(int count) {
         for (int i = 0; i < count; i++) {
             server.enqueue(new MockResponse().setResponseCode(200)
@@ -224,21 +237,20 @@ public class NightscoutUploaderCallerTest extends RobolectricTestWithConfig {
     }
 
     /**
-     * Finds the first request whose path matches the given prefix.
-     * Drains up to 10 requests from the server within a short timeout.
+     * Returns the first POST request whose path starts with the given prefix,
+     * or null if none arrives. Returns as soon as it matches: draining further
+     * would block until {@code takeRequest} times out.
      */
     private RecordedRequest findRequestByPath(String pathPrefix) throws InterruptedException {
-        RecordedRequest match = null;
         for (int i = 0; i < 10; i++) {
             final RecordedRequest req = server.takeRequest(2, TimeUnit.SECONDS);
-            if (req == null) break;
-            if (req.getPath() != null && req.getPath().startsWith(pathPrefix) && "POST".equals(req.getMethod())) {
-                if (match == null) {
-                    match = req;
-                }
+            if (req == null) return null;
+            if (req.getPath() != null && req.getPath().startsWith(pathPrefix)
+                    && "POST".equals(req.getMethod())) {
+                return req;
             }
         }
-        return match;
+        return null;
     }
 
     /**
