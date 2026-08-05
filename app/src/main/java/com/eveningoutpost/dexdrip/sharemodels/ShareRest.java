@@ -156,7 +156,7 @@ public class ShareRest {
                                     MediaType contentType = response.body().contentType();
                                     String bodyString = response.body().string();
                                     Log.d(TAG, "Response body: " + bodyString);
-                                    return response.newBuilder().body(ResponseBody.create(contentType, bodyString)).build();
+                                    return response.newBuilder().body(ResponseBody.create(bodyString, contentType)).build();
                                 } else
                                     return response;
 

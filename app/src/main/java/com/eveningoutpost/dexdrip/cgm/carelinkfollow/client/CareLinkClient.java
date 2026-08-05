@@ -666,7 +666,7 @@ public class CareLinkClient {
 
         gson = new GsonBuilder().create();
 
-        requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), gson.toJson(userJson));
+        requestBody = RequestBody.create(gson.toJson(userJson), MediaType.get("application/json; charset=utf-8"));
 
 
         //new endpoint url

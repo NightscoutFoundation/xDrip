@@ -574,7 +574,7 @@ public class NightscoutUploader {
         }
 
         if (array.length() > 0) {//KS
-            final RequestBody body = RequestBody.create(MediaType.parse("application/json"), array.toString());
+            final RequestBody body = RequestBody.create(array.toString(), MediaType.parse("application/json"));
             final Response<ResponseBody> r = nightscoutService.upload(secret, body).execute();
             if (!r.isSuccessful()) throw new UploaderException(r.message(), r.code());
             checkGzipSupport(r);
@@ -704,7 +704,7 @@ public class NightscoutUploader {
         json.put("dateString", format.format(record.timestamp));
         json.put("sgv", (int) record.calculated_value);
         json.put("direction", record.slopeName());
-        return RequestBody.create(MediaType.parse("application/json"), json.toString());
+        return RequestBody.create(json.toString(), MediaType.parse("application/json"));
     }
 
     private void populateV1APIMeterReadingEntry(JSONArray array, Calibration record) throws Exception {
@@ -857,7 +857,7 @@ public class NightscoutUploader {
             }
             // handle insert types
             if (insert_array.length() != 0) {
-                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), insert_array.toString());
+                final RequestBody body = RequestBody.create(insert_array.toString(), MediaType.parse("application/json"));
                 final Response<ResponseBody> r;
                 if (apiSecret != null) {
                     r = nightscoutService.uploadTreatments(apiSecret, body).execute();
@@ -882,7 +882,7 @@ public class NightscoutUploader {
                     JSONObject item = (JSONObject) upsert_array.get(i);
                     final String match_uuid = item.getString("uuid");
                     item.put("_id", uuid_to_id(match_uuid));
-                    final RequestBody body = RequestBody.create(MediaType.parse("application/json"), item.toString());
+                    final RequestBody body = RequestBody.create(item.toString(), MediaType.parse("application/json"));
                     final Response<ResponseBody> r;
                     if (apiSecret != null) {
                         r = nightscoutService.upsertTreatments(apiSecret, body).execute();
@@ -946,7 +946,7 @@ public class NightscoutUploader {
                 }
                 // send to nightscout - update counter
 
-                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), data.toString());
+                final RequestBody body = RequestBody.create(data.toString(), MediaType.parse("application/json"));
                 Response<ResponseBody> r;
 
                 r = nightscoutService.uploadActivity(apiSecret, body).execute();
@@ -994,7 +994,7 @@ public class NightscoutUploader {
                 }
                 // send to nightscout - update counter
 
-                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), data.toString());
+                final RequestBody body = RequestBody.create(data.toString(), MediaType.parse("application/json"));
                 Response<ResponseBody> r;
 
                 r = nightscoutService.uploadActivity(apiSecret, body).execute();
@@ -1045,7 +1045,7 @@ public class NightscoutUploader {
                 }
                 // send to nightscout - update counter
 
-                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), data.toString());
+                final RequestBody body = RequestBody.create(data.toString(), MediaType.parse("application/json"));
                 Response<ResponseBody> r;
 
                 r = nightscoutService.uploadActivity(apiSecret, body).execute();
@@ -1169,7 +1169,7 @@ public class NightscoutUploader {
                 //}
                 //}
 
-                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), json.toString());
+                final RequestBody body = RequestBody.create(json.toString(), MediaType.parse("application/json"));
                 Response<ResponseBody> r;
                 if (apiSecret != null) {
                     r = nightscoutService.uploadDeviceStatus(apiSecret, body).execute();
