@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.ResponseBody;
@@ -76,7 +77,7 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
                 };
 
         // :: Act
-        callback.onResponse(dummyCall(), Response.error(500, ResponseBody.create(null, "")));
+        callback.onResponse(dummyCall(), Response.error(500, ResponseBody.create("", (MediaType) null)));
 
         // :: Verify
         assertThat(retryWasCalled.get()).isTrue();
@@ -117,7 +118,7 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
                 };
 
         // :: Act
-        callback.onResponse(dummyCall(), Response.error(500, ResponseBody.create(null, "")));
+        callback.onResponse(dummyCall(), Response.error(500, ResponseBody.create("", (MediaType) null)));
 
         // :: Verify
         assertThat(retryWasCalled.get()).isFalse();
@@ -152,7 +153,7 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
                 };
 
         // :: Act
-        callback.onResponse(dummyCall(), Response.error(500, ResponseBody.create(null, "")));
+        callback.onResponse(dummyCall(), Response.error(500, ResponseBody.create("", (MediaType) null)));
 
         // :: Verify
         assertThat(capturedThrowable.get()).isSameInstanceAs(networkError);
@@ -187,10 +188,10 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
         Call<ResponseBody> call = dummyCall();
 
         // :: Act — first 500 triggers re-auth (synchronous via mock)
-        callback.onResponse(call, Response.error(500, ResponseBody.create(null, "")));
+        callback.onResponse(call, Response.error(500, ResponseBody.create("", (MediaType) null)));
 
         // Second 500 (attempts == 1) must go directly to delegate without re-auth
-        Response<ResponseBody> second500 = Response.error(500, ResponseBody.create(null, ""));
+        Response<ResponseBody> second500 = Response.error(500, ResponseBody.create("", (MediaType) null));
         callback.onResponse(call, second500);
 
         // :: Verify
@@ -289,7 +290,7 @@ public class AuthenticatingCallbackTest extends RobolectricTestWithConfig {
     private void simulateReAuthWithHttpError(int code) {
         Answer<Void> answer = invocation -> {
             Callback<String> cb = invocation.getArgument(0);
-            cb.onResponse(mockGetSessionIdCall, Response.error(code, ResponseBody.create(null, "")));
+            cb.onResponse(mockGetSessionIdCall, Response.error(code, ResponseBody.create("", (MediaType) null)));
             return null;
         };
         doAnswer(answer).when(mockGetSessionIdCall).enqueue(any(Callback.class));

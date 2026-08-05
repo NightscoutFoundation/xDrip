@@ -53,7 +53,7 @@ public class ShareRestTest extends RobolectricTestWithConfig {
         // :: Act
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(server.url("/test"))
-                .post(RequestBody.create(okhttp3.MediaType.parse("application/json"), "{}"))
+                .post(RequestBody.create("{}", okhttp3.MediaType.parse("application/json")))
                 .build();
         client.newCall(request).execute();
         RecordedRequest recorded = server.takeRequest();
