@@ -310,8 +310,8 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
     }
 
     private synchronized void sendTrendToPebble(boolean clearTrend) {
+        int png_depth;
         //create a sparkline bitmap to send to the pebble
-
         final Bitmap blankTrend;
         if (clearTrend) {
             blankTrend = Bitmap.createBitmap(1,1,Bitmap.Config.ARGB_8888);
@@ -373,8 +373,14 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                         .build();
 
                 //encode the trend bitmap as a PNG
-
-                final byte[] img = SimpleImageEncoder.encodeBitmapAsPNG(clearTrend ? blankTrend : bgTrend, true, PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 2 : 64, true);
+                if((pebble_trend_size & 0x80000000) == 0x80000000) {
+                    Log.d(TAG,"sendTrendToPebble: Pebble requested PNG8 depth");
+                    png_depth = 64;
+                } else {
+                    Log.d(TAG, "sendTrendToPebble: Pebble did not request PNG8, creating PNG4 depth");
+                    png_depth = 16;
+                }
+                final byte[] img = SimpleImageEncoder.encodeBitmapAsPNG(clearTrend ? blankTrend : bgTrend, true, PebbleUtil.pebbleDisplayType == PebbleDisplayType.TrendClassic ? 2: png_depth, true);
 
                 if (debugPNG) {
                     try {
