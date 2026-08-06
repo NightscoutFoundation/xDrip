@@ -1,5 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.medtrumfollow;
 
+import static com.eveningoutpost.dexdrip.xdrip.gs;
+
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -9,6 +11,7 @@ import android.text.SpannableString;
 
 import androidx.annotation.Nullable;
 
+import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -122,19 +125,19 @@ public class MedtrumFollowService extends ForegroundService {
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> statuses = new ArrayList<>();
         final BgReading lastBg = BgReading.lastNoSenssor();
-        statuses.add(new StatusItem("Latest BG", lastBg == null ? "n/a"
-                : JoH.niceTimeScalar(JoH.msSince(lastBg.timestamp)) + " ago"));
-        statuses.add(new StatusItem("BG receive delay", bgReceiveDelay <= 0 ? "n/a"
+        statuses.add(new StatusItem(gs(R.string.latest_bg), lastBg == null ? gs(R.string.n_a)
+                : JoH.niceTimeScalar(JoH.msSince(lastBg.timestamp)) + gs(R.string.ago)));
+        statuses.add(new StatusItem(gs(R.string.bg_receive_delay), bgReceiveDelay <= 0 ? gs(R.string.n_a)
                 : JoH.niceTimeScalar(bgReceiveDelay)));
-        statuses.add(new StatusItem("Last poll", lastPoll <= 0 ? "n/a"
-                : JoH.niceTimeScalar(JoH.msSince(lastPoll)) + " ago"));
-        statuses.add(new StatusItem("Next poll in", wakeupTime <= 0 ? "n/a"
+        statuses.add(new StatusItem(gs(R.string.last_poll), lastPoll <= 0 ? gs(R.string.n_a)
+                : JoH.niceTimeScalar(JoH.msSince(lastPoll)) + gs(R.string.ago)));
+        statuses.add(new StatusItem(gs(R.string.next_poll_in), wakeupTime <= 0 ? gs(R.string.n_a)
                 : JoH.niceTimeScalar(wakeupTime - JoH.tsl())));
         if (downloader != null && !downloader.getSelectedPatient().isEmpty()) {
-            statuses.add(new StatusItem("EasyView patient", downloader.getSelectedPatient()));
+            statuses.add(new StatusItem(gs(R.string.easyview_patient), downloader.getSelectedPatient()));
         }
         if (downloader != null && !downloader.getStatus().isEmpty()) {
-            statuses.add(new StatusItem("Last state", downloader.getStatus()));
+            statuses.add(new StatusItem(gs(R.string.last_state), downloader.getStatus()));
         }
         return statuses;
     }

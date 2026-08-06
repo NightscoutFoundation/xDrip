@@ -2106,4 +2106,20 @@
     <string name="click">Click</string>
     <string name="to_use_this_instead">to use this instead?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">The transmitter ID or pairing code you have entered is incorrect and would not work.\n\nPlease double-check the details and try again.</string>
+    <string name="please_enter_easyview_username_and_password">Please enter EasyView username and password</string>
+    <string name="download_already_in_progress">Download already in progress</string>
+    <string name="logging_in_to_medtrum_easyview">Logging in to Medtrum EasyView</string>
+    <string name="easyview_login_failed">"EasyView login failed: "</string>
+    <string name="easyview_login_did_not_return_a_session_cookie">EasyView login did not return a session cookie</string>
+    <string name="easyview_login_connection_error">"EasyView login connection error: "</string>
+    <string name="easyview_download_connection_error">"EasyView download connection error: "</string>
+    <string name="easyview_download_failed">"EasyView download failed: "</string>
+    <string name="latest_bg">Latest BG</string>
+    <string name="ago">" ago"</string>
+    <string name="bg_receive_delay">BG receive delay</string>
+    <string name="n_a">n/a</string>
+    <string name="last_poll">Last poll</string>
+    <string name="next_poll_in">Next poll in</string>
+    <string name="easyview_patient">EasyView patient</string>
+    <string name="last_state">Last state</string>
 </resources>
