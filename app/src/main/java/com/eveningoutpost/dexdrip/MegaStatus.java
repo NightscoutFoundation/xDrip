@@ -217,7 +217,7 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
                 addAsection(NIGHTSCOUT_FOLLOW, "Nightscout Follow Status");
             }
             if(dexCollectionType.equals(MedtrumFollow)) {
-                addAsection(MEDTRUM_FOLLOW, "Medtrum Follow Status");
+                addAsection(MEDTRUM_FOLLOW, "Medtrum follow status");
             }
             if(dexCollectionType.equals(SHFollow)) {
                 addAsection(SHARE_FOLLOW, "Dex Share Follow Status");

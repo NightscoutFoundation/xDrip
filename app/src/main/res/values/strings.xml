@@ -2107,6 +2107,8 @@
     <string name="to_use_this_instead">to use this instead?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">The transmitter ID or pairing code you have entered is incorrect and would not work.\n\nPlease double-check the details and try again.</string>
     <string name="please_enter_easyview_username_and_password">Please enter EasyView username and password</string>
+    <string name="enter_easyview_follower_email">Enter the dedicated EasyView follower (caregiver) username or email</string>
+    <string name="enter_easyview_follower_password">Enter the EasyView follower password</string>
     <string name="download_already_in_progress">Download already in progress</string>
     <string name="logging_in_to_medtrum_easyview">Logging in to Medtrum EasyView</string>
     <string name="easyview_login_failed">"EasyView login failed: "</string>

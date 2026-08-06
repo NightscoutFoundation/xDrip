@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.clearDataWhenTransmitterIdEntered;
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.booleanSettingDialog;
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.textSettingDialog;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 02/03/2018.
@@ -86,12 +87,12 @@ public class DexCollectionHelper {
 
             case MedtrumFollow:
                 textSettingDialog(activity,
-                        "medtrum_follow_user", "EasyView username",
-                        "Enter the dedicated EasyView follower (caregiver) username or email",
+                        "medtrum_follow_user", gs(R.string.title_medtrum_follow_user),
+                        gs(R.string.enter_easyview_follower_email),
                         InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
                         () -> textSettingDialog(activity,
-                                "medtrum_follow_password", "EasyView password",
-                                "Enter the EasyView follower password",
+                                "medtrum_follow_password", gs(R.string.title_medtrum_follow_password),
+                                gs(R.string.enter_easyview_follower_password),
                                 InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD,
                                 () -> {
                                     Home.staticRefreshBGCharts();
