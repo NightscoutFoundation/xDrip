@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -35,7 +36,7 @@ import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
 import com.eveningoutpost.dexdrip.services.broadcastservice.BroadcastEntry;
-import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusBroadcastReceiverWrapper;
+import com.eveningoutpost.dexdrip.wearintegration.ExternalStatusBroadcastReceiver;
 import com.eveningoutpost.dexdrip.webservices.XdripWebService;
 import com.evernote.android.job.JobManager;
 
@@ -106,14 +107,27 @@ public class xdrip extends Application {
         JoH.ratelimit("policy-never", 3600); // don't on first load
         new IdempotentMigrations(getApplicationContext()).performAll();
 
-        IntentFilter externalFilter = new IntentFilter("com.eveningoutpost.dexdrip.ExternalStatusline");
-        registerReceiver(new ExternalStatusBroadcastReceiverWrapper(), externalFilter);
         IntentFilter bgFilter = new IntentFilter();
         bgFilter.addAction("com.eveningoutpost.dexdrip.NS_EMULATOR");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_DECODE_FARM_RESULT");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_DECODE_BLE_RESULT");
         bgFilter.addAction("com.eveningoutpost.dexdrip.OOP2_BLUETOOTH_ENABLE_RESULT");
-        registerReceiver(new NSEmulatorReceiverWrapper(), bgFilter);
+
+        registerReceiver(new NSEmulatorReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getComponent() != null) return; // Ignore Explicit (Manifest handles it)
+                super.onReceive(context, intent);
+            }
+        }, bgFilter);
+
+        registerReceiver(new ExternalStatusBroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (intent.getComponent() != null) return; // Ignore Explicit
+                super.onReceive(context, intent);
+            }
+        }, new IntentFilter("com.eveningoutpost.dexdrip.ExternalStatusline"));
 
         JobManager.create(this).addJobCreator(new XDripJobCreator());
         DailyJob.schedule();
