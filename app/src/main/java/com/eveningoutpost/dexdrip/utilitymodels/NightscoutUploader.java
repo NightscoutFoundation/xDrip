@@ -28,7 +28,6 @@ import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.eveningoutpost.dexdrip.utils.framework.GzipDecider;
 import com.eveningoutpost.dexdrip.utils.framework.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -48,6 +47,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -404,7 +404,7 @@ public class NightscoutUploader {
                 }
 
                 if (apiVersion == 1) {
-                    final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                    final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(StandardCharsets.UTF_8)).toString();
                     final Response<ResponseBody> r;
                     if (hashedSecret != null) {
                         doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
@@ -505,7 +505,7 @@ public class NightscoutUploader {
                 final NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
 
                 if (apiVersion == 1) {
-                    String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                    String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(StandardCharsets.UTF_8)).toString();
                     doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
                     doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords, tups, THIS_QUEUE);
                 } else {

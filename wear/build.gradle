@@ -131,7 +131,7 @@ dependencies {
 
 
     implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
-    implementation("com.google.guava:guava:24.1-android") {
+    implementation("com.google.guava:guava:33.6.0-android") {
         exclude group: "com.google.guava", module: "listenablefuture"
     }
 
