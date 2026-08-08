@@ -516,11 +516,14 @@ public class GcmActivity extends FauxActivity {
         return false;
     }
 
-    public static void sendNanoStatusUpdate(final String prefix, final String json) {
+    // returns true when the update was actually queued for sending
+    public static boolean sendNanoStatusUpdate(final String prefix, final String json) {
         if (JoH.pratelimit("gcm-nscu" + prefix, 30)) {
             UserError.Log.d(TAG, "Sending nano status update: " + prefix + " " + json);
             sendMessage("nscu" + prefix, json);
+            return true;
         }
+        return false;
     }
 
     public static void sendMimeoGraphUpdate(final String json) {
