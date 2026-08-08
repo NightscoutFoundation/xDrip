@@ -53,10 +53,26 @@
                     android:summary="@string/alarms_silenced_during_telephone_calls"
                     android:title="@string/dont_alarm_during_phone_calls" />
 
+                <!-- CHG1: snooze screen over other apps (CHG11: moved directly above
+                     'Buttons silence alarms', which now depends on it; CHG13/ER1: default
+                     on, so volume-key snooze keeps working out of the box; CHG15: texts as
+                     English literals pending the follow-up strings PR) -->
+                <SwitchPreference
+                    android:defaultValue="true"
+                    android:key="snooze_over_other_apps"
+                    android:summary="When a glucose alert is raised while the screen is on and unlocked, show the snooze screen on top of the app currently in use. After snoozing, the previous app is restored. Requires the system permission: Display over other apps"
+                    android:switchTextOff="@string/short_off_text_for_switches"
+                    android:switchTextOn="@string/short_on_text_for_switches"
+                    android:title="Snooze screen over other apps" />
+
+                <!-- CHG11: only togglable while 'Snooze screen over other apps' is enabled
+                     (CHG15: summary as English literal; the original volume_buttons_snooze
+                     resource and its translations are untouched) -->
                 <CheckBoxPreference
                     android:defaultValue="true"
+                    android:dependency="snooze_over_other_apps"
                     android:key="buttons_silence_alert"
-                    android:summary="@string/volume_buttons_snooze"
+                    android:summary="Press the same volume button twice within 1.5 seconds to snooze. Works wherever the snooze screen appears; for a dark or locked screen also enable Wake Screen or 'Override silent mode'"
                     android:title="@string/buttons_silence_alarms" />
 
                 <CheckBoxPreference

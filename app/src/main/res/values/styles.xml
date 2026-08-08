@@ -47,6 +47,14 @@
         <item name="windowNoTitle">true</item>
 
     </style>
+
+    <!-- CHG1: floating theme for the snooze screen shown over other apps. A floating window
+         keeps the app behind it running and in control of the display orientation, so it can
+         be restored unchanged after snoozing -->
+    <style name="SnoozeOverlayTheme" parent="AppTheme">
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+    </style>
     <style name="KeypadButton">
         <item name="android:layout_margin">5dp</item>
         <item name="android:background">#666666</item>

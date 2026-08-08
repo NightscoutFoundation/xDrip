@@ -444,6 +444,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             if (Experience.installedForAtLeast(5 * Constants.MINUTE_IN_MS)) {
                 checkBatteryOptimization();
             }
+            checkOverlayPermission(); // CHG13 ER1
         }
 
 
@@ -678,6 +679,35 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         }
         return true;
+    }
+
+    // CHG13 ER1: the snooze-over-other-apps option is enabled by default; when the system
+    // permission "Display over other apps" is missing, prompt the user at startup to grant
+    // it right away (same pattern as the battery-optimization check above)
+    private void checkOverlayPermission() {
+        try {
+            if (Pref.getBoolean(SnoozeOverlayActivity.PREF_SNOOZE_OVER_OTHER_APPS, true)
+                    && !Settings.canDrawOverlays(this)
+                    && !xdrip.isRunningTest()
+                    && JoH.pratelimit("overlay-permission-prompt", 3600)) {
+                JoH.show_ok_dialog(this, gs(R.string.please_allow_permission),
+                        // CHG15 literal pending the follow-up strings PR
+                        "The snooze screen over other apps and the lock screen is enabled, but the Android permission 'Display over other apps' is not granted. Tap OK and allow it on the next screen.", () -> {
+                            try {
+                                startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                        Uri.parse("package:" + getPackageName())));
+                            } catch (Exception e) {
+                                try {
+                                    startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION));
+                                } catch (Exception e2) {
+                                    JoH.static_toast_long("Unable to open system settings");
+                                }
+                            }
+                        });
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Could not check overlay permission: " + e);
+        }
     }
 
     ////
@@ -3641,28 +3671,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (event.getKeyCode()) {
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-            case KeyEvent.KEYCODE_VOLUME_UP:
-            case KeyEvent.KEYCODE_VOLUME_MUTE:
-                if (JoH.quietratelimit("button-press", 5)) {
-                    if (Pref.getBooleanDefaultFalse("buttons_silence_alert")) {
-                        final ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
-                        if (activeBgAlert != null) {
-                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
-                            JoH.static_toast_long(getString(R.string.snoozing_due_button_press));
-                            UserError.Log.ueh(TAG, "Snoozing alert due to volume button press");
-                        } else {
-                            if (d) UserError.Log.d(TAG, "no active alert to snooze");
-                        }
-                    } else {
-                        if (d) UserError.Log.d(TAG, "No action as preference is disabled");
-                    }
-                }
-                break;
-        }
+        // CHG4 addendum A: decide before the snooze handler flips the alerting state
+        final boolean consume = SnoozeActivity.volumeKeyConsumed(event.getKeyCode());
+        SnoozeActivity.volumeKeySnooze(event); // CHG3/CHG4: shared with the snooze screens
         if (d) Log.d(TAG, "Keydown event: " + keyCode + " event: " + event.toString());
+        if (consume) return true; // CHG4 addendum A: block the volume change
         return super.onKeyDown(keyCode, event);
+    }
+
+    // CHG4 addendum A: also consume the volume-key UP events while blocking is active
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (SnoozeActivity.volumeKeyConsumed(event.getKeyCode())) return true;
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override

@@ -7,6 +7,7 @@ import static com.eveningoutpost.dexdrip.models.JoH.stopAndReleasePlayer;
 import static com.eveningoutpost.dexdrip.receiver.InfoContentProvider.ping;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -15,9 +16,11 @@ import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
+import android.provider.Settings;
 import android.preference.PreferenceManager;
 import androidx.core.app.NotificationCompat;
 
@@ -31,6 +34,8 @@ import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
+import com.eveningoutpost.dexdrip.SnoozeLockScreenActivity;
+import com.eveningoutpost.dexdrip.SnoozeOverlayActivity;
 import com.eveningoutpost.dexdrip.utilitymodels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
 import com.eveningoutpost.dexdrip.ui.FlashLight;
@@ -202,6 +207,7 @@ public class AlertPlayer {
         Log.d(TAG, "stopAlert: stop called ClearData " + ClearData + "  ThreadID " + Thread.currentThread().getId());
         if (ClearData) {
             ActiveBgAlert.ClearData();
+            SnoozeActivity.alertEnded(); // CHG6 BVD2+BVD3: the alert is gone - close overlay snooze screens
         }
         if (clearIfSnoozeFinished) {
             ActiveBgAlert.ClearIfSnoozeFinished();
@@ -258,6 +264,7 @@ public class AlertPlayer {
         ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
         if (activeBgAlert == null) {
             Log.e(TAG, "Error, snooze was called but no alert is active.");
+            SnoozeActivity.alertEnded(); // CHG6 BVD2+BVD3: still close any stale overlay snooze screens
             if (from_interactive) GcmActivity.sendSnoozeToRemote();
             return;
         }
@@ -265,6 +272,12 @@ public class AlertPlayer {
             repeatTime = GuessDefaultSnoozeTime();
         }
         activeBgAlert.snooze(repeatTime);
+        // CHG6 BVD2+BVD3: close overlay snooze screens, clear double-press state
+        // (CHG13 ER3: called after snooze() so the guarded runnable sees the settled state)
+        SnoozeActivity.alertEnded();
+        // CHG12: refresh the ongoing notification immediately so the snooze line appears
+        // right after snoozing instead of at the next scheduled evaluation
+        Notifications.staticUpdateNotification();
         if (from_interactive) GcmActivity.sendSnoozeToRemote();
     }
 
@@ -273,7 +286,8 @@ public class AlertPlayer {
         // try to work out default
         AlertType alert = ActiveBgAlert.alertTypegetOnly();
         if (alert != null) {
-            repeatTime = alert.default_snooze;
+            // CHG7 A5: fall back to the type-based default when no per-alert time is set
+            repeatTime = alert.default_snooze != 0 ? alert.default_snooze : SnoozeActivity.getDefaultSnooze(alert.above);
             Log.d(TAG, "Selecting default snooze time: " + repeatTime);
         } else {
             repeatTime = 30; // pick a number if we cannot even find the default
@@ -293,6 +307,7 @@ public class AlertPlayer {
             return;
         }
         activeBgAlert.snooze(repeatTime);
+        Notifications.staticUpdateNotification(); // CHG12: prompt snooze-line refresh
     }
 
     // Check the state and alarm if needed
@@ -551,6 +566,18 @@ public class AlertPlayer {
             );
         }
         boolean overrideSilent = alert.override_silent_mode;
+
+        // CHG2: when a full-screen presentation is wanted (override silent mode or Wake
+        // Screen), target the full-screen intent at the lock-screen snooze screen. It
+        // previously targeted Home, only for override-silent alerts with an audible
+        // profile, and stayed behind the keyguard. The system only fires a full-screen
+        // intent while the screen is off or the keyguard is showing.
+        if (SnoozeLockScreenActivity.fullScreenWanted(overrideSilent)) {
+            UserError.Log.d(TAG, "Setting full screen intent");
+            builder.setCategory(NotificationCompat.CATEGORY_ALARM);
+            builder.setFullScreenIntent(notificationIntent(context, new Intent(context, SnoozeLockScreenActivity.class)), true);
+        }
+
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
             float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
             // While minsFromStartPlaying <= MAX_VIBRATING_MINUTES, we only vibrate ...
@@ -568,12 +595,6 @@ public class AlertPlayer {
             Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
 
             boolean forceSpeaker = alert.force_speaker;
-
-            if (overrideSilent) {
-                UserError.Log.d(TAG, "Setting full screen intent");
-                builder.setCategory(NotificationCompat.CATEGORY_ALARM);
-                builder.setFullScreenIntent(notificationIntent(context, new Intent(context, Home.class)), true);
-            }
 
             if (notSilencedDueToCall()) {
                 if (overrideSilent || isLoudPhone(context)) {
@@ -597,7 +618,45 @@ public class AlertPlayer {
         Log.ueh("Alerting", contentLog);
         final NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
-        mNotifyMgr.notify(Notifications.exportAlertNotificationId, XdripNotificationCompat.build(builder));
+        final Notification builtNotification = XdripNotificationCompat.build(builder);
+        // CHG7 A3: a full-screen intent is silently ignored when the channel importance is
+        // below HIGH; warn in the event log so the cause is discoverable
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                && SnoozeLockScreenActivity.fullScreenWanted(overrideSilent)) {
+            try {
+                final NotificationChannel channel = mNotifyMgr.getNotificationChannel(builtNotification.getChannelId());
+                if (channel != null && channel.getImportance() != NotificationManager.IMPORTANCE_UNSPECIFIED
+                        && channel.getImportance() < NotificationManager.IMPORTANCE_HIGH) {
+                    if (JoH.pratelimit("chg7-fsi-channel-importance", 3600)) {
+                        UserError.Log.ueh(TAG, "Glucose alert notification channel importance is below HIGH - the full-screen snooze screen may not appear while locked");
+                    }
+                }
+            } catch (Exception e) {
+                //
+            }
+        }
+        mNotifyMgr.notify(Notifications.exportAlertNotificationId, builtNotification);
+
+        if (SnoozeLockScreenActivity.screenOffOrLocked(context)) {
+            // CHG2: screen off or device locked - show the snooze screen above the lock
+            // screen directly when possible (the full-screen intent above is the fallback)
+            SnoozeLockScreenActivity.launchIfWanted(context, overrideSilent);
+            // CHG11 P4: explain in the event log why volume-key snooze cannot work right now
+            if (SnoozeActivity.volumeKeySnoozeEnabled()
+                    && !SnoozeLockScreenActivity.fullScreenWanted(overrideSilent)
+                    && JoH.pratelimit("chg11-volume-snooze-lock-hint", 3600)) {
+                UserError.Log.ueh(TAG, "Volume-key snooze cannot work now: the screen is off or locked and no snooze screen appears - enable Wake Screen or the alert's Override silent mode");
+            }
+        } else {
+            // CHG1: optionally show the snooze screen on top of the app currently in use
+            SnoozeOverlayActivity.launchIfEnabled(context);
+            // CHG11 P4: explain in the event log why volume-key snooze may not work over other apps
+            if (SnoozeActivity.volumeKeySnoozeEnabled()
+                    && !Settings.canDrawOverlays(context)
+                    && JoH.pratelimit("chg11-volume-snooze-overlay-hint", 3600)) {
+                UserError.Log.ueh(TAG, "Volume-key snooze may not work over other apps: the permission 'Display over other apps' is not granted");
+            }
+        }
 
         // send to bluejay
         BlueJayEntry.sendAlertIfEnabled((alert.above ? "High" : "Low") + " Alert " + bgValue + " " + alert.name); // string text is used to determine alert type
