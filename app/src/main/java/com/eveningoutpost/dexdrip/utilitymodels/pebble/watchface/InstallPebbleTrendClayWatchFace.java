@@ -20,12 +20,12 @@ public class InstallPebbleTrendClayWatchFace extends InstallPebbleWatchFace {
 
 
     protected InputStream openRawResource() {
-        // jstevensog latest watchface
-        return getResources().openRawResource(R.raw.xdrip_pebble2);
+        // jstevensog latest clay enabled and enhanced watchface for all Pebble platforms
+        return getResources().openRawResource(R.raw.xdrip_pebble_e);
     }
 
     protected String getOutputFilename() {
-        return "xDrip-plus-pebble-clay-auto-install.pbw";
+        return "xDrip-Pebble-E.pbw";
     }
 
 
