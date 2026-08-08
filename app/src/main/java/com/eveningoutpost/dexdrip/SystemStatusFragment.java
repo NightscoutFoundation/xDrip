@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -40,6 +41,8 @@ import com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
+import com.eveningoutpost.dexdrip.cgm.dex.SoakSchedule;
+import com.eveningoutpost.dexdrip.utilitymodels.Notifications;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.TransmitterData;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -48,6 +51,7 @@ import com.eveningoutpost.dexdrip.services.DexCollectionService;
 import com.eveningoutpost.dexdrip.services.G5CollectionService;
 import com.eveningoutpost.dexdrip.services.TransmitterRereadHelper;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.SensorStatus;
 import com.eveningoutpost.dexdrip.databinding.ActivitySystemStatusBinding;
 import com.eveningoutpost.dexdrip.ui.MicroStatus;
@@ -62,6 +66,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
+import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.clearDataWhenTransmitterIdEntered;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.getTransmitterID;
 import static com.eveningoutpost.dexdrip.utils.DatabaseUtil.getDataBaseSizeInBytes;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
@@ -171,6 +176,37 @@ public class SystemStatusFragment extends Fragment {
         final IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(WatchUpdaterService.ACTION_BLUETOOTH_COLLECTION_SERVICE_UPDATE);
         LocalBroadcastManager.getInstance(safeGetContext()).registerReceiver(serviceDataReceiver, intentFilter);
+        checkAndPerformAutoSwitch();
+    }
+
+    private void checkAndPerformAutoSwitch() {
+        if (SoakSchedule.isDue(JoH.tsl())) {
+            performAutoSwitch(SoakSchedule.pendingId());
+        }
+    }
+
+    private void performAutoSwitch(final String nextId) {
+        Pref.setString("dex_txid", nextId);
+        SoakSchedule.deactivate();
+        Notifications.cancelNotification(Notifications.soakTimerNotificationId);
+
+        // Capture the Activity while we are still on the UI thread and attached; the background
+        // thread must not rely on safeGetContext(), which falls back to the (non-Activity) app
+        // context after detach and would silently skip the location/permission prompt.
+        final Activity activity = getActivity();
+
+        new Thread(() -> {
+            UserError.Log.d(TAG, "Automatically switching to new Transmitter ID: " + nextId);
+            clearDataWhenTransmitterIdEntered(nextId);
+            CollectionServiceStarter.restartCollectionServiceBackground();
+            Home.staticRefreshBGCharts();
+            if (activity != null) {
+                activity.runOnUiThread(() -> LocationHelper.requestLocationForBluetooth(activity));
+            }
+        }).start();
+
+        JoH.static_toast_long(gs(R.string.auto_switched_to_new_transmitter, nextId));
+        set_current_values();
     }
 
     @Override
@@ -231,6 +267,7 @@ public class SystemStatusFragment extends Fragment {
     //}
 
     private void set_current_values() {
+        checkAndPerformAutoSwitch();
         notes.setText("");
         activeBluetoothDevice = ActiveBluetoothDevice.first();
         mBluetoothManager = (BluetoothManager) safeGetContext().getSystemService(Context.BLUETOOTH_SERVICE);
@@ -439,6 +476,12 @@ public class SystemStatusFragment extends Fragment {
 
     private void setNotes() {
         try {
+            if (SoakSchedule.isPending()) {
+                final long switchTime = SoakSchedule.switchTime();
+                if (switchTime > 0) {
+                    notes.append("\n- " + gs(R.string.soak_next_transmitter_note, SoakSchedule.pendingId(), JoH.hourMinuteString(switchTime)));
+                }
+            }
 
             if ((mBluetoothManager == null) || (mBluetoothManager.getAdapter() == null)) {
                 notes.append("\n- This device does not seem to support bluetooth");

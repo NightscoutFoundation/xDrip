@@ -173,6 +173,21 @@
             android:summary="@string/transmitter_id"
             android:title="@string/dexcom_transmitter_id" />
 
+        <EditTextPreference
+            android:key="dex_txid_next"
+            android:title="@string/new_transmitter_id"
+            android:summary="@string/new_transmitter_id_summary"
+            android:inputType="textNoSuggestions|textVisiblePassword|textCapCharacters"
+            android:maxLines="1"
+            android:singleLine="true" />
+
+        <EditTextPreference
+            android:key="dex_txid_delay"
+            android:title="@string/delay_change_for"
+            android:summary="@string/delay_change_for_summary"
+            android:inputType="number"
+            android:shouldDisableView="true" />
+
         <CheckBoxPreference
             android:key="medtrum_use_native"
             android:defaultValue="true"
