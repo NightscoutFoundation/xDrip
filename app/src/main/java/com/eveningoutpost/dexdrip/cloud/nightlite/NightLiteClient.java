@@ -91,7 +91,7 @@ public class NightLiteClient {
                 val urlString = url.getProtocol() + "://" + url.getHost() + "/upload?" + query;
                 val apiKey = pathElements.get(0);
                 UserError.Log.d(TAG, "url string: " + urlString);
-                val body = RequestBody.create(MediaType.parse("application/octet-stream"), bytes);
+                val body = RequestBody.create(bytes, MediaType.parse("application/octet-stream"));
 
                 val request = new Request.Builder()
                         .url(urlString)

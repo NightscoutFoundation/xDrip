@@ -66,7 +66,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
     public void upload_withApiSecret_postsToEntries() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
-        final RequestBody body = RequestBody.create(JSON, "[{\"sgv\":120}]");
+        final RequestBody body = RequestBody.create("[{\"sgv\":120}]", JSON);
 
         // :: Act
         final Response<ResponseBody> response = service.upload(API_SECRET, body).execute();
@@ -84,7 +84,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
     public void upload_withoutApiSecret_postsToEntries() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
-        final RequestBody body = RequestBody.create(JSON, "[{\"sgv\":120}]");
+        final RequestBody body = RequestBody.create("[{\"sgv\":120}]", JSON);
 
         // :: Act
         final Response<ResponseBody> response = service.upload(body).execute();
@@ -102,7 +102,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
     public void uploadDeviceStatus_withoutApiSecret_postsToDevicestatus() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
-        final RequestBody body = RequestBody.create(JSON, "{\"device\":\"xDrip\"}");
+        final RequestBody body = RequestBody.create("{\"device\":\"xDrip\"}", JSON);
 
         // :: Act
         final Response<ResponseBody> response = service.uploadDeviceStatus(body).execute();
@@ -119,7 +119,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
     public void uploadDeviceStatus_withApiSecret_postsToDevicestatus() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
-        final RequestBody body = RequestBody.create(JSON, "{\"device\":\"xDrip\"}");
+        final RequestBody body = RequestBody.create("{\"device\":\"xDrip\"}", JSON);
 
         // :: Act
         final Response<ResponseBody> response = service.uploadDeviceStatus(API_SECRET, body).execute();
@@ -152,7 +152,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
     public void uploadTreatments_postsToTreatments() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
-        final RequestBody body = RequestBody.create(JSON, "{\"eventType\":\"Correction Bolus\"}");
+        final RequestBody body = RequestBody.create("{\"eventType\":\"Correction Bolus\"}", JSON);
 
         // :: Act
         final Response<ResponseBody> response = service.uploadTreatments(API_SECRET, body).execute();
@@ -169,7 +169,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
     public void upsertTreatments_putsToTreatments() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
-        final RequestBody body = RequestBody.create(JSON, "{\"eventType\":\"Correction Bolus\"}");
+        final RequestBody body = RequestBody.create("{\"eventType\":\"Correction Bolus\"}", JSON);
 
         // :: Act
         final Response<ResponseBody> response = service.upsertTreatments(API_SECRET, body).execute();
@@ -238,7 +238,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
     public void uploadActivity_postsToActivity() throws Exception {
         // :: Setup
         server.enqueue(new MockResponse().setResponseCode(200));
-        final RequestBody body = RequestBody.create(JSON, "{\"mills\":1234567890}");
+        final RequestBody body = RequestBody.create("{\"mills\":1234567890}", JSON);
 
         // :: Act
         final Response<ResponseBody> response = service.uploadActivity(API_SECRET, body).execute();
@@ -270,7 +270,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
                 gzipRetrofit.create(NightscoutUploader.NightscoutService.class);
 
         final String payload = "[{\"sgv\":120,\"type\":\"sgv\",\"direction\":\"Flat\"}]";
-        final RequestBody body = RequestBody.create(JSON, payload);
+        final RequestBody body = RequestBody.create(payload, JSON);
 
         // :: Act
         final Response<ResponseBody> response = gzipService.upload(API_SECRET, body).execute();

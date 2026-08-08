@@ -76,7 +76,7 @@ public class NightscoutCallbackTest extends RobolectricTestWithConfig {
 
         // :: Act
         callback.onResponse(null, Response.error(401,
-                ResponseBody.create(MediaType.parse("text/plain"), "")));
+                ResponseBody.create("", MediaType.parse("text/plain"))));
 
         // :: Verify
         assertThat(populatorCalled.get()).isFalse();

@@ -78,7 +78,7 @@ public class NightscoutUploaderGzipInterceptorTest extends RobolectricTestWithCo
         markSupportsGzip(url, true);
         final Request request = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create(JSON, "{\"a\":1}"))
+                .post(RequestBody.create("{\"a\":1}", JSON))
                 .build();
 
         // :: Act
@@ -100,7 +100,7 @@ public class NightscoutUploaderGzipInterceptorTest extends RobolectricTestWithCo
         // no marker set -> supportsGzip returns false
         final Request request = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create(JSON, "{\"a\":1}"))
+                .post(RequestBody.create("{\"a\":1}", JSON))
                 .build();
 
         // :: Act
@@ -142,7 +142,7 @@ public class NightscoutUploaderGzipInterceptorTest extends RobolectricTestWithCo
         final Request request = new Request.Builder()
                 .url(url)
                 .header("Content-Encoding", "identity")
-                .post(RequestBody.create(JSON, "already"))
+                .post(RequestBody.create("already", JSON))
                 .build();
 
         // :: Act

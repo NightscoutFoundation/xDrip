@@ -66,7 +66,7 @@ public class GzipRequestInterceptorTest extends RobolectricTestWithConfig {
         server.enqueue(new MockResponse().setResponseCode(200));
         final Request request = new Request.Builder()
                 .url(server.url("/upload"))
-                .post(RequestBody.create(JSON, "{\"a\":1}"))
+                .post(RequestBody.create("{\"a\":1}", JSON))
                 .build();
 
         // :: Act
@@ -104,7 +104,7 @@ public class GzipRequestInterceptorTest extends RobolectricTestWithConfig {
         final Request request = new Request.Builder()
                 .url(server.url("/upload"))
                 .header("Content-Encoding", "identity")
-                .post(RequestBody.create(JSON, "already"))
+                .post(RequestBody.create("already", JSON))
                 .build();
 
         // :: Act
@@ -126,7 +126,7 @@ public class GzipRequestInterceptorTest extends RobolectricTestWithConfig {
         server.enqueue(new MockResponse().setResponseCode(200));
         final Request request = new Request.Builder()
                 .url(server.url("/upload"))
-                .post(RequestBody.create(JSON, "{\"a\":1}"))
+                .post(RequestBody.create("{\"a\":1}", JSON))
                 .build();
 
         // :: Act
@@ -146,7 +146,7 @@ public class GzipRequestInterceptorTest extends RobolectricTestWithConfig {
         server.enqueue(new MockResponse().setResponseCode(200));
         final Request request = new Request.Builder()
                 .url(server.url("/upload"))
-                .post(RequestBody.create(JSON, "{\"a\":1}"))
+                .post(RequestBody.create("{\"a\":1}", JSON))
                 .build();
 
         // :: Act

@@ -145,7 +145,7 @@ public class WebDeposit {
             return;
         }
 
-        val body = RequestBody.create(MediaType.parse("application/json"), data.toString().getBytes(StandardCharsets.UTF_8));
+        val body = RequestBody.create(data.toString().getBytes(StandardCharsets.UTF_8), MediaType.parse("application/json"));
         Call<DepositReply1> call;
 
         if ("T".equals(type)) {

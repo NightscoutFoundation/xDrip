@@ -65,6 +65,7 @@ import okhttp3.ConnectionPool;
 import okhttp3.Cookie;
 import okhttp3.FormBody;
 import okhttp3.HttpUrl;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -440,7 +441,7 @@ public class CareLinkAuthenticator {
                 .build();
         requestBuilder = new Request.Builder()
                 .url(url)
-                .post(RequestBody.create(null, new byte[0]))
+                .post(RequestBody.create(new byte[0], (MediaType) null))
                 .addHeader("Accept", "application/json, text/plain, */*")
                 .addHeader("Accept-Language", "en;q=0.9, *;q=0.8")
                 .addHeader("Connection", "keep-alive")
