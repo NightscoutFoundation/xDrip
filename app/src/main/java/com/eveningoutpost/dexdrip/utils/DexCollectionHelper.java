@@ -12,6 +12,7 @@ import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.cgm.medtrumfollow.MedtrumFollowService;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.plugin.Dialog;
@@ -20,6 +21,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import static com.eveningoutpost.dexdrip.services.Ob1G5CollectionService.clearDataWhenTransmitterIdEntered;
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.booleanSettingDialog;
 import static com.eveningoutpost.dexdrip.ui.dialog.QuickSettingsDialogs.textSettingDialog;
+import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 /**
  * Created by jamorham on 02/03/2018.
@@ -81,6 +83,22 @@ public class DexCollectionHelper {
                             Home.staticRefreshBGCharts();
                             CollectionServiceStarter.restartCollectionServiceBackground();
                         });
+                break;
+
+            case MedtrumFollow:
+                textSettingDialog(activity,
+                        "medtrum_follow_user", gs(R.string.title_medtrum_follow_user),
+                        gs(R.string.enter_easyview_follower_email),
+                        InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+                        () -> textSettingDialog(activity,
+                                "medtrum_follow_password", gs(R.string.title_medtrum_follow_password),
+                                gs(R.string.enter_easyview_follower_password),
+                                InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD,
+                                () -> {
+                                    Home.staticRefreshBGCharts();
+                                    MedtrumFollowService.resetInstanceAndInvalidateSession();
+                                    CollectionServiceStarter.restartCollectionServiceBackground();
+                                }));
                 break;
 
             case SHFollow:

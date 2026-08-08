@@ -69,6 +69,7 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
 import com.eveningoutpost.dexdrip.cgm.dex.TxIdHelper;
+import com.eveningoutpost.dexdrip.cgm.medtrumfollow.MedtrumFollowService;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
@@ -1403,6 +1404,25 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final Preference nsFollowUrl = findPreference("nsfollow_url");
             final Preference nsFollowSamplePeriod = findPreference("nsfollow_sample_period_in_minutes"); // Show the Nightscout follow sample period setting only when NS follow is the data source
             final Preference nsFollowLag = findPreference("nsfollow_lag"); // Show the Nightscout follow wake delay setting only when NS follow is the data source
+            final Preference medtrumFollowUser = findPreference("medtrum_follow_user");
+            final Preference medtrumFollowPassword = findPreference("medtrum_follow_password");
+            final Preference medtrumFollowServer = findPreference("medtrum_follow_server");
+            final Preference medtrumFollowPatient = findPreference("medtrum_follow_patient");
+            final Preference.OnPreferenceChangeListener medtrumFollowListener = (preference, newValue) -> {
+                MedtrumFollowService.resetInstanceAndInvalidateSession();
+                CollectionServiceStarter.restartCollectionServiceBackground();
+                return true;
+            };
+            medtrumFollowUser.setOnPreferenceChangeListener(medtrumFollowListener);
+            medtrumFollowPassword.setOnPreferenceChangeListener(medtrumFollowListener);
+            medtrumFollowServer.setOnPreferenceChangeListener(medtrumFollowListener);
+            medtrumFollowPatient.setOnPreferenceChangeListener(medtrumFollowListener);
+            if (collectionType != DexCollectionType.MedtrumFollow) {
+                collectionCategory.removePreference(medtrumFollowUser);
+                collectionCategory.removePreference(medtrumFollowPassword);
+                collectionCategory.removePreference(medtrumFollowServer);
+                collectionCategory.removePreference(medtrumFollowPatient);
+            }
             try {
                 nsFollowUrl.setOnPreferenceChangeListener((preference, newValue) -> {
                     NightscoutFollow.resetInstance();
@@ -2605,6 +2625,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         collectionCategory.addPreference(nsFollowDownload);
                         collectionCategory.addPreference(nsFollowSamplePeriod);
                         collectionCategory.addPreference(nsFollowLag);
+                    }
+
+                    if (collectionType == DexCollectionType.MedtrumFollow) {
+                        collectionCategory.addPreference(medtrumFollowUser);
+                        collectionCategory.addPreference(medtrumFollowPassword);
+                        collectionCategory.addPreference(medtrumFollowServer);
+                        collectionCategory.addPreference(medtrumFollowPatient);
+                    } else {
+                        collectionCategory.removePreference(medtrumFollowUser);
+                        collectionCategory.removePreference(medtrumFollowPassword);
+                        collectionCategory.removePreference(medtrumFollowServer);
+                        collectionCategory.removePreference(medtrumFollowPatient);
                     }
 
                     if (collectionType == DexCollectionType.Follower) {
