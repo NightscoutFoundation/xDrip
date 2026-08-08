@@ -21,6 +21,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.ForegroundServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.InstalledApps;
 import com.eveningoutpost.dexdrip.utilitymodels.NanoStatus;
+import com.eveningoutpost.dexdrip.utilitymodels.NightscoutUploader;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
 import com.eveningoutpost.dexdrip.ui.helpers.Span;
@@ -139,6 +140,14 @@ public class DoNothingService extends Service {
                 if (minsago > 6) {
                     if (Home.get_follower()) GcmActivity.requestPing();
                     sleep_time = (minsago < 60) ? ((minsago / 6) * 1000) : 1000; // increase sleep time up to 10s for first hour or revert
+                }
+
+                if (Home.get_follower()) {
+                    // read-only Nightscout treatments download (BG checks / notes entered in
+                    // AAPS) also from the background, not only when the Home screen is opened
+                    // - no-op unless cloud_storage_api_download_enable is set, internally rate
+                    // limited and never uploads anything
+                    NightscoutUploader.launchDownloadRest();
                 }
 
                 try {
