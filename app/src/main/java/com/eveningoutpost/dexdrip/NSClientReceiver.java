@@ -244,7 +244,8 @@ public class NSClientReceiver extends BroadcastReceiver {
             return;
         }
         UserError.Log.uel(TAG, "Deleting treatment deleted remotely: " + uuid);
-        Treatments.delete_by_uuid(uuid, true); // interactive so followers are told as well
+        // interactive so followers are told, not uploaded as it came from there
+        Treatments.delete_by_uuid(uuid, true, false);
     }
 
     private void process_SGV_json(String sgv_json) {
