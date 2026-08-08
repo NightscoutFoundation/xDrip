@@ -214,11 +214,37 @@ public class NSClientReceiver extends BroadcastReceiver {
                 UserError.Log.wtf(TAG, "Got exception trying to handle NS treatment json: " + e + " " + treatment_json);
             }
 
+            // A deleted treatment is resent with isValid false rather than as a removal
+            // action, so an invalidated record means delete rather than add.
+            if (Boolean.FALSE.equals(tmap.get("isValid"))) {
+                deleteInvalidatedTreatment(tmap);
+                return;
+            }
+
             Treatments.pushTreatmentFromJson(toTreatmentJSON(tmap), true); // warning marked as from interactive - watch out for feedback loops
 
         } catch (Exception e) {
             Log.e(TAG, "Got exception processing treatment from NS client " + e.toString());
         }
+    }
+
+    // Deletes the local copy of a treatment which has been deleted at the other end.
+    // Matched on the remote id alone, which we store as the uuid when the treatment
+    // arrives: guessing by timestamp could remove a different treatment entered in the
+    // same moment, so an unmatched id is left alone rather than approximated.
+    private void deleteInvalidatedTreatment(final HashMap<String, Object> tmap) {
+        final Object id = tmap.get("_id");
+        if (id == null) {
+            UserError.Log.e(TAG, "Cannot delete invalidated treatment as it has no id: " + tmap);
+            return;
+        }
+        final String uuid = id.toString();
+        if (Treatments.byuuid(uuid) == null) {
+            UserError.Log.d(TAG, "No local treatment matching invalidated id: " + uuid);
+            return;
+        }
+        UserError.Log.uel(TAG, "Deleting treatment deleted remotely: " + uuid);
+        Treatments.delete_by_uuid(uuid, true); // interactive so followers are told as well
     }
 
     private void process_SGV_json(String sgv_json) {
@@ -278,7 +304,12 @@ public class NSClientReceiver extends BroadcastReceiver {
     private String toTreatmentJSON(HashMap<String, Object> trt_map) {
         JSONObject jsonObject = new JSONObject();
         try {
-            // jsonObject.put("uuid", UUID.fromString(trt_map.get("_id").toString()).toString());
+            // Carried through as the uuid, which is how a treatment received from
+            // elsewhere is identified, and the only way a later deletion of it can be
+            // matched. Taken verbatim: ids are not all in uuid format.
+            if (trt_map.get("_id") != null) {
+                jsonObject.put("_id", trt_map.get("_id").toString());
+            }
 
             Object ts =  trt_map.get("mills");
             if (ts == null) {
