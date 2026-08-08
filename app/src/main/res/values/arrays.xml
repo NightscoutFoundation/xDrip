@@ -503,12 +503,16 @@
     </string-array>
 
     <string-array name="ymin_entries">
+        <item>90 mg/dl (5.0 mmol/l)</item>
+        <item>80 mg/dl (4.4 mmol/l)</item>
         <item>70 mg/dl (3.9 mmol/l)</item>
         <item>60 mg/dl (3.3 mmol/l)</item>
         <item>50 mg/dl (2.8 mmol/l)</item>
         <item>40 mg/dl (2.2 mmol/l) ></item>
     </string-array>
     <string-array name="ymin_values">
+        <item>90</item>
+        <item>80</item>
         <item>70</item>
         <item>60</item>
         <item>50</item>
@@ -520,6 +524,9 @@
         <item>250 mg/dl (13.9 mmol/l) ></item>
         <item>230 mg/dl (12.8 mmol/l)</item>
         <item>210 mg/dl (11.7 mmol/l)</item>
+        <item>190 mg/dl (10.5 mmol/l)</item>
+        <item>170 mg/dl (9.4 mmol/l)</item>
+        <item>150 mg/dl (8.3 mmol/l)</item>
     </string-array>
     <string-array name="ymax_values">
         <item>400</item>
@@ -527,6 +534,9 @@
         <item>250</item>
         <item>230</item>
         <item>210</item>
+        <item>190</item>
+        <item>170</item>
+        <item>150</item>
     </string-array>
 
     <!--    Nightscout follow wake delay, with respect to the source timestamp as a percentage of the sample period
