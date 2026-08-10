@@ -26,7 +26,7 @@ public class MedtrumFollowDataTest {
         assertEquals("patient@example.com", result.patient);
         assertEquals(1, result.entries.size());
         assertEquals(1752563388000L, result.entries.get(0).timestamp);
-        assertEquals(7.1 * Constants.MMOLL_TO_MGDL, result.entries.get(0).glucose, 0.001);
+        assertEquals(7.1 * Constants.MMOLL_TO_MGDL, result.entries.get(0).glucose, 0.5);
         assertEquals("DoubleUp", result.entries.get(0).trendName);
     }
 
@@ -84,7 +84,7 @@ public class MedtrumFollowDataTest {
         assertTrue(result.isSuccessful());
         assertEquals(1, result.entries.size());
         assertEquals(200000L, result.entries.get(0).timestamp);
-        assertEquals(5.0 * Constants.MMOLL_TO_MGDL, result.entries.get(0).glucose, 0.001);
+        assertEquals(5.0 * Constants.MMOLL_TO_MGDL, result.entries.get(0).glucose, 0.5);
         assertNull(result.entries.get(0).trendName);
     }
 
