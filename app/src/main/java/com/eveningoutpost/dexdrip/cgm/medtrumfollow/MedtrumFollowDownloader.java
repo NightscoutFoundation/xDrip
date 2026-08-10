@@ -1,10 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.medtrumfollow;
 
-import static com.eveningoutpost.dexdrip.xdrip.gs;
-
 import android.os.Build;
 
-import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -68,11 +65,11 @@ final class MedtrumFollowDownloader {
 
     void download() {
         if (username.isEmpty() || password.isEmpty()) {
-            setStatus(gs(R.string.please_enter_easyview_username_and_password));
+            setStatus("Please enter EasyView username and password");
             return;
         }
         if (!inFlight.compareAndSet(false, true)) {
-            UserError.Log.d(TAG, gs(R.string.download_already_in_progress));
+            UserError.Log.d(TAG, "Download already in progress");
             return;
         }
         final BgReading last = BgReading.lastNoSenssor();
@@ -89,7 +86,7 @@ final class MedtrumFollowDownloader {
     }
 
     private void login(final long notBefore, final boolean alreadyRetried) {
-        setStatus(gs(R.string.logging_in_to_medtrum_easyview));
+        setStatus("Logging in to Medtrum EasyView");
         service.login(deviceInfo(), "M", username, password, "xdrip", "google", "Follow",
                         "google", APP_VERSION, Build.MODEL, BUNDLE_ID)
                 .enqueue(new Callback<JsonObject>() {
@@ -97,12 +94,12 @@ final class MedtrumFollowDownloader {
                     public void onResponse(final Call<JsonObject> call, final Response<JsonObject> response) {
                         final String error = responseError(response);
                         if (error != null) {
-                            finish(gs(R.string.easyview_login_failed) + error);
+                            finish("EasyView login failed: " + error);
                             return;
                         }
                         cookie = extractCookie(response);
                         if (cookie.isEmpty()) {
-                            finish(gs(R.string.easyview_login_did_not_return_a_session_cookie));
+                            finish("EasyView login did not return a session cookie");
                             return;
                         }
                         getMonitor(notBefore, alreadyRetried);
@@ -110,7 +107,7 @@ final class MedtrumFollowDownloader {
 
                     @Override
                     public void onFailure(final Call<JsonObject> call, final Throwable throwable) {
-                        finish(gs(R.string.easyview_login_connection_error) + throwable.getMessage());
+                        finish("EasyView login connection error: " + throwable.getMessage());
                     }
                 });
     }
@@ -144,7 +141,7 @@ final class MedtrumFollowDownloader {
 
             @Override
             public void onFailure(final Call<JsonObject> call, final Throwable throwable) {
-                finish(gs(R.string.easyview_download_connection_error) + throwable.getMessage());
+                finish("EasyView download connection error: " + throwable.getMessage());
             }
         });
     }
@@ -180,7 +177,7 @@ final class MedtrumFollowDownloader {
         if (!alreadyRetried) {
             login(notBefore, true);
         } else {
-            finish(gs(R.string.easyview_download_failed) + error);
+            finish("EasyView download failed: " + error);
         }
     }
 
