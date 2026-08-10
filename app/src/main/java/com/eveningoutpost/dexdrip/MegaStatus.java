@@ -136,7 +136,7 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
     private static final String BLUEJAY_STATUS = "BlueJay";
     private static final String INPEN_STATUS = "InPen";
     private static final String NIGHTSCOUT_FOLLOW = "Nightscout Follow";
-    private static final String MEDTRUM_FOLLOW = "Medtrum Follow";
+    private static final String MEDTRUM_FOLLOW = "Medtrum follow";
     private static final String SHARE_FOLLOW = "Dex Share Follow";
     private static final String WEB_FOLLOW = "Web Follower";
     private static final String CARELINK_FOLLOW = "CareLink Follow";
@@ -217,7 +217,7 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
                 addAsection(NIGHTSCOUT_FOLLOW, "Nightscout Follow Status");
             }
             if(dexCollectionType.equals(MedtrumFollow)) {
-                addAsection(MEDTRUM_FOLLOW, "Medtrum Follow Status");
+                addAsection(MEDTRUM_FOLLOW, "Medtrum follow Status");
             }
             if(dexCollectionType.equals(SHFollow)) {
                 addAsection(SHARE_FOLLOW, "Dex Share Follow Status");

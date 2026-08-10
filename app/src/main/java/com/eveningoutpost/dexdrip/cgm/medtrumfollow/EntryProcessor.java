@@ -42,7 +42,7 @@ final class EntryProcessor {
             }
             bg.sensor = sensor;
             bg.sensor_uuid = sensor.uuid;
-            bg.source_info = "Medtrum Follow";
+            bg.source_info = "Medtrum follow";
             bg.save();
             Inevitable.task("medtrum-follow-post-process", 500, () -> bg.postProcess(false));
         }
