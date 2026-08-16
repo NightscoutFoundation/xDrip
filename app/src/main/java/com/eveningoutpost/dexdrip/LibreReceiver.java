@@ -240,7 +240,7 @@ public class LibreReceiver extends BroadcastReceiver {
             weightSum += weight;
             libre_calc_doku += DateFormat.format("kk:mm:ss :", rawValue.timestamp) + " w:" + longformat.format(weight) + " raw: " + rawValue.glucose + "\n";
         }
-        return Math.round(sum / weightSum);
+        return sum / weightSum;
     }
 
     public static List<StatusItem> megaStatus() {
@@ -263,9 +263,9 @@ public class LibreReceiver extends BroadcastReceiver {
         }
         if (get_engineering_mode()) {
             l.add(new StatusItem("Last Calc.", libre_calc_doku));
-           if (!emptyString(bluetoothAddress)) {
-               l.add(new StatusItem("Bluetooth Mac", bluetoothAddress));
-           }
+            if (!emptyString(bluetoothAddress)) {
+                l.add(new StatusItem("Bluetooth Mac", bluetoothAddress));
+            }
         }
         if (Pref.getBooleanDefaultFalse("Libre2_showSensors")) {
             l.add(new StatusItem("Sensors", Libre2Sensors()));
