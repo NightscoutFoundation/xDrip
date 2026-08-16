@@ -240,7 +240,7 @@ public class LibreReceiver extends BroadcastReceiver {
             weightSum += weight;
             libre_calc_doku += DateFormat.format("kk:mm:ss :", rawValue.timestamp) + " w:" + longformat.format(weight) + " raw: " + rawValue.glucose + "\n";
         }
-        return Math.round(sum / weightSum);
+        return sum / weightSum;
     }
 
     public static List<StatusItem> megaStatus() {
