@@ -28,18 +28,34 @@ public class NightscoutTreatments {
     private static final HashSet<String> bad_uuids = new HashSet<>();
     private static final HashSet<String> bad_bloodtest_uuids = new HashSet<>();
 
+    // Nightscout marks a deleted record invalid and keeps it, so its created_at does not
+    // move. A routine download returns only the newest treatments, so a record deleted
+    // long after it was created falls outside that window and its deletion is never seen.
+    // Ask for a wider window now and then, rarely enough to not add meaningful traffic.
+    private static final long SWEEP_WINDOW_MS = 3 * Constants.DAY_IN_MS;
+    private static final int SWEEP_INTERVAL_SECONDS = 7200;
+    public static final int SWEEP_LIMIT = 1000;
+
+    // Oldest record to ask for, or null when a wider download is not due yet.
+    public static String sweepSince(final String key) {
+        return JoH.pratelimit(key, SWEEP_INTERVAL_SECONDS)
+                ? DateUtil.toISOString(JoH.tsl() - SWEEP_WINDOW_MS) : null;
+    }
+
     // Removes the local copy of a treatment which has been deleted at the other end.
     // Both identifier forms are tried as either may have been stored, and the deletion is
     // not sent back to where it came from.
     private static boolean deleteInvalidated(final String nightscout_id, final String uuid) {
+        boolean deleted = false;
         for (final String id : new String[]{nightscout_id, uuid}) {
             if (id != null && Treatments.byuuid(id) != null) {
                 UserError.Log.uel(TAG, "Deleting treatment deleted remotely: " + id);
                 Treatments.delete_by_uuid(id, true, false);
-                return true;
+                deleted = true;
+                break;
             }
         }
-        return false;
+        return deleted;
     }
 
     public static boolean processTreatmentResponse(final String response) throws Exception {
