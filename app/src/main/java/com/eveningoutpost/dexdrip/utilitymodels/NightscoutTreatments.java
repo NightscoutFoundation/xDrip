@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.DateUtil;
 import com.eveningoutpost.dexdrip.models.InsulinInjection;
@@ -58,6 +59,24 @@ public class NightscoutTreatments {
         return deleted;
     }
 
+    // A blood glucose check arrives as a treatment but is stored as a blood test, so the
+    // record actually created from it has to be removed separately. Marked invalid rather
+    // than dropped, which is how a blood test deleted in xDrip is handled: the row is what
+    // stops the next download recreating it, and the state travels over sync.
+    private static boolean invalidateBloodTest(final String nightscout_id, final String uuid) {
+        for (final String id : new String[]{nightscout_id, uuid}) {
+            final BloodTest bt = BloodTest.byUUID(id);
+            if (bt != null) {
+                if ((bt.state & BloodTest.STATE_VALID) == 0) return false; // already gone
+                UserError.Log.uel(TAG, "Deleting bloodtest deleted remotely: " + id);
+                bt.removeState(BloodTest.STATE_VALID);
+                GcmActivity.syncBloodTests(); // tell the followers it went
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean processTreatmentResponse(final String response) throws Exception {
         boolean new_data = false;
 
@@ -81,6 +100,7 @@ public class NightscoutTreatments {
             // so delete our copy instead and take nothing else from it.
             if (!tr.optBoolean("isValid", true)) {
                 if (deleteInvalidated(nightscout_id, uuid)) new_data = true;
+                if (invalidateBloodTest(nightscout_id, uuid)) new_data = true;
                 continue;
             }
 
