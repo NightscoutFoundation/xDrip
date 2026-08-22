@@ -1217,6 +1217,14 @@
                     android:key="status_line_time"
                     android:summary="@string/the_current_time"
                     android:title="@string/time" />
+
+                <!-- CHG5 (CHG15: texts as English literals pending the follow-up strings PR) -->
+                <CheckBoxPreference
+                    android:defaultValue="false"
+                    android:dependency="extra_status_line"
+                    android:key="status_line_snoozed_alert"
+                    android:summary="Like 'Alert [name] snoozed until HH:mm'"
+                    android:title="Inform on snoozed alert" />
                 <SwitchPreference
                     android:defaultValue="false"
                     android:dependency="extra_status_line"
