@@ -20,6 +20,7 @@ import com.eveningoutpost.dexdrip.utils.framework.ForegroundService;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.getpebble.android.kit.PebbleKit;
 import com.getpebble.android.kit.util.PebbleDictionary;
+import com.getpebble.android.kit.util.PebbleTuple;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -46,8 +47,10 @@ public class PebbleWatchSync extends ForegroundService {
     private final static boolean d = false;
 
     // these must match in watchface
-    private final static int HEARTRATE_LOG = 101;
-    private final static int MOVEMENT_LOG = 103;
+    private final static int HEARTRATE_LOG = 101;   // DataLogging tag
+    private final static int MOVEMENT_LOG = 103;    // DataLogging tag
+    private final static int PEBBLE_HR_KEY = 1010;      // watch->phone AppMessage: heart rate
+    private final static int PEBBLE_STEPS_KEY = 1011;   // watch->phone AppMessage: step count today
 
     public static int lastTransactionId;
 
@@ -165,6 +168,7 @@ public class PebbleWatchSync extends ForegroundService {
         PebbleKit.registerReceivedDataHandler(context, new PebbleKit.PebbleDataReceiver(currentWatchFaceUUID) {
             @Override
             public void receiveData(final Context context, final int transactionId, final PebbleDictionary data) {
+                if (handleHealthAppMessage(context, transactionId, data)) return;
                 getActivePebbleDisplay().receiveData(transactionId, data);
             }
         });
@@ -287,6 +291,39 @@ public class PebbleWatchSync extends ForegroundService {
         PebbleKit.sendAckToPebble(xdrip.getAppContext(), transactionId);
         BroadcastSnooze.send();
         JoH.static_toast_long("Alarm snoozed by pebble");
+    }
+
+    // The xDrip watchface sends live heart rate / step totals as watch->phone
+    // AppMessages (keys PEBBLE_HR_KEY / PEBBLE_STEPS_KEY). Unlike its DataLogging,
+    // these are delivered by every companion app (including the Core Devices app,
+    // which does not bridge DataLogging to legacy PebbleKit). Handle them here and
+    // don't pass the message on to the display - it carries no CGM sync request, so
+    // there is nothing for the display code to do with it.
+    private boolean handleHealthAppMessage(final Context context, final int transactionId, final PebbleDictionary data) {
+        final Long hr = pebbleInt(data, PEBBLE_HR_KEY);
+        final Long steps = pebbleInt(data, PEBBLE_STEPS_KEY);
+        if (hr == null && steps == null) return false;
+
+        if (Pref.getBoolean("use_pebble_health", true)) {
+            final long now = JoH.tsl();
+            if (hr != null && hr > 0 && hr < 300) {
+                Log.d(TAG, "Saving HeartRate from Pebble: " + hr);
+                HeartRate.create(now, (int) (long) hr, 0);
+            }
+            if (steps != null && steps >= 0 && steps < 200000) {
+                Log.d(TAG, "Saving StepCounter from Pebble: " + steps);
+                StepCounter.createEfficientRecord(now, (int) (long) steps);
+            }
+        }
+        PebbleKit.sendAckToPebble(context, transactionId);
+        return true;
+    }
+
+    private static Long pebbleInt(final PebbleDictionary data, final int key) {
+        for (final PebbleTuple t : data) {
+            if (t.key == key && t.value instanceof Long) return (Long) t.value;
+        }
+        return null;
     }
 
 
