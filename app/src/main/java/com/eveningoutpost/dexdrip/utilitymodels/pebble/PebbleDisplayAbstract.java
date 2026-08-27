@@ -48,6 +48,9 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected static final int NO_BLUETOOTH_KEY = 111;
     protected static final int COLLECT_HEALTH_KEY = 112;
 
+    protected static final int SHOW_HIGH_LINE_KEY = 323;
+    protected static final int SHOW_LOW_LINE_KEY = 324;
+
     protected static final int SYNC_KEY = 1000;
     protected static final int PLATFORM_KEY = 1001;
     protected static final int VERSION_KEY = 1002;

@@ -69,6 +69,8 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
 
     private static byte last_collect_health_key_byte = 0x1A;
     private static byte last_bluetooth_key_byte = 0x1A;
+    private static byte last_show_high_line_byte = 0x1A;
+    private static byte last_show_low_line_byte = 0x1A;
     private static boolean messageInTransit = false;
     private static boolean transactionFailed = false;
     private static boolean transactionOk = false;
@@ -281,6 +283,20 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
                 last_collect_health_key_byte = collect_health_key_byte;
             } else {
                 this.dictionary.remove(COLLECT_HEALTH_KEY);
+            }
+
+            // high/low threshold line visibility for the native trend renderer
+            byte show_high_line_byte = (byte) (getBooleanValue("pebble_high_line") ? 0x01 : 0x00);
+            byte show_low_line_byte = (byte) (getBooleanValue("pebble_low_line") ? 0x01 : 0x00);
+            if ((show_high_line_byte != last_show_high_line_byte) || (show_low_line_byte != last_show_low_line_byte)
+                    || JoH.ratelimit("pebble_show_line_bytes", 30)) {
+                this.dictionary.addInt8(SHOW_HIGH_LINE_KEY, show_high_line_byte);
+                this.dictionary.addInt8(SHOW_LOW_LINE_KEY, show_low_line_byte);
+                last_show_high_line_byte = show_high_line_byte;
+                last_show_low_line_byte = show_low_line_byte;
+            } else {
+                this.dictionary.remove(SHOW_HIGH_LINE_KEY);
+                this.dictionary.remove(SHOW_LOW_LINE_KEY);
             }
 
             // TODO I think special message is only appropriate with flat trend
