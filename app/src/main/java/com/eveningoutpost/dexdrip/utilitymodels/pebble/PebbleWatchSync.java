@@ -51,6 +51,7 @@ public class PebbleWatchSync extends ForegroundService {
     private final static int MOVEMENT_LOG = 103;    // DataLogging tag
     private final static int PEBBLE_HR_KEY = 1010;      // watch->phone AppMessage: heart rate
     private final static int PEBBLE_STEPS_KEY = 1011;   // watch->phone AppMessage: step count today
+    private final static int CGM_SYNC_KEY = 1000;       // watch->phone: data-request
 
     public static int lastTransactionId;
 
@@ -293,12 +294,14 @@ public class PebbleWatchSync extends ForegroundService {
         JoH.static_toast_long("Alarm snoozed by pebble");
     }
 
-    // The xDrip watchface sends live heart rate / step totals as watch->phone
-    // AppMessages (keys PEBBLE_HR_KEY / PEBBLE_STEPS_KEY). Unlike its DataLogging,
-    // these are delivered by every companion app (including the Core Devices app,
-    // which does not bridge DataLogging to legacy PebbleKit). Handle them here and
-    // don't pass the message on to the display - it carries no CGM sync request, so
-    // there is nothing for the display code to do with it.
+    // The xDrip watchface sends its current heart rate / step total as watch->phone
+    // AppMessage keys PEBBLE_HR_KEY / PEBBLE_STEPS_KEY - either standalone (a couple
+    // of seconds after we push CGM data, so we're awake to receive it) or
+    // piggybacked on its data-request. Unlike its DataLogging these are carried by
+    // every companion app, including the Core Devices app.
+    //
+    // Returns true (message consumed) only for a health-only message; if it also
+    // carries a data-request (CGM_SYNC_KEY) we still let the display respond.
     private boolean handleHealthAppMessage(final Context context, final int transactionId, final PebbleDictionary data) {
         final Long hr = pebbleInt(data, PEBBLE_HR_KEY);
         final Long steps = pebbleInt(data, PEBBLE_STEPS_KEY);
@@ -315,6 +318,8 @@ public class PebbleWatchSync extends ForegroundService {
                 StepCounter.createEfficientRecord(now, (int) (long) steps);
             }
         }
+
+        if (pebbleInt(data, CGM_SYNC_KEY) != null) return false; // let the display answer the request
         PebbleKit.sendAckToPebble(context, transactionId);
         return true;
     }
