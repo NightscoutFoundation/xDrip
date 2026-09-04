@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -55,7 +54,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.util.Date;
 import java.util.List;
 
-import static com.eveningoutpost.dexdrip.models.JoH.safeParseSoundUri;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.X;
 import static com.eveningoutpost.dexdrip.utilitymodels.ColorCache.getCol;
 
@@ -753,32 +751,6 @@ public class Notifications extends IntentService {
         player.start();
     }
 
-    // Private helper: returns true if the system may block sound for an alert
-    private static boolean isSoundBlockedBySystem(Context context) {
-        try {
-            AudioManager am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-            if (am != null) {
-                int ringerMode = am.getRingerMode();
-                if (ringerMode == AudioManager.RINGER_MODE_SILENT ||
-                        ringerMode == AudioManager.RINGER_MODE_VIBRATE) {
-                    return true;
-                }
-            }
-
-            NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            if (nm != null) {
-                int filter = nm.getCurrentInterruptionFilter();
-                if (filter == NotificationManager.INTERRUPTION_FILTER_NONE ||
-                        filter == NotificationManager.INTERRUPTION_FILTER_PRIORITY) {
-                    return true;
-                }
-            }
-        } catch (Exception e) {
-            // If state cannot be determined, assume sound is not blocked
-        }
-        return false;
-    }
-
     // TODO move to BgGraphBuilder?
     private void reportNoiseChanges()
     {
@@ -838,10 +810,10 @@ public class Notifications extends IntentService {
         mBuilder.setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE);
         mBuilder.setVibrate(vibratePattern);
         mBuilder.setLights(0xff00ff00, 300, 1000);
-        if(calibration_override_silent) {
-            mBuilder.setSound(Uri.parse(calibration_notification_sound), AudioAttributes.USAGE_ALARM);
-        } else {
-            mBuilder.setSound(Uri.parse(calibration_notification_sound));
+        mBuilder.setSound(null);
+        if (!JoH.emptyString(calibration_notification_sound)) {
+            AlertPlayer.getPlayer().playAlertSound(
+                    mContext, calibration_notification_sound, 1f, true, calibration_override_silent);
         }
 
 
@@ -1040,15 +1012,10 @@ public class Notifications extends IntentService {
             }
             mBuilder.setVibrate(vibratePattern);
             mBuilder.setLights(0xff00ff00, 300, 1000);
-            if (AlertPlayer.notSilencedDueToCall()) {
-                if (extraAlertsOverrideSilent) {
-                    mBuilder.setSound(safeParseSoundUri(otherAlertsSound), AudioAttributes.USAGE_ALARM);
-                } else {
-                    mBuilder.setSound(safeParseSoundUri(otherAlertsSound));
-                    if (isSoundBlockedBySystem(context)) {
-                        Log.ueh(TAG, "No " + type + " in silent mode");
-                    }
-                }
+            mBuilder.setSound(null);
+            if (!JoH.emptyString(otherAlertsSound)) {
+                AlertPlayer.getPlayer().playAlertSound(
+                        context, otherAlertsSound, 1f, true, extraAlertsOverrideSilent);
             }
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             //mNotifyMgr.cancel(notificatioId);

@@ -338,6 +338,9 @@ public class AlertPlayer {
         if (mediaPlayer != null) {
             Log.i(TAG, "ERROR, playFile sound already playing");
             stopAndReleasePlayer(mediaPlayer);
+            mediaPlayer = null;
+            revertCurrentVolume(streamType);
+            releaseAudioFocus();
         }
 
         mediaPlayer = new MediaPlayerCreaterHelper().createMediaPlayer(ctx);
@@ -508,6 +511,18 @@ public class AlertPlayer {
         return !(Pref.getBooleanDefaultFalse("no_alarms_during_calls") && (JoH.isOngoingCall()));
     }
 
+    public synchronized void playAlertSound(final Context context, final String sound,
+                                            final float volumeFrac, final boolean forceSpeaker,
+                                            final boolean overrideSilent) {
+        if (notSilencedDueToCall()) {
+            if (overrideSilent || isLoudPhone(context)) {
+                playFile(context, sound, volumeFrac, forceSpeaker, overrideSilent);
+            }
+        } else {
+            Log.i(TAG, "Silenced Alert Noise due to ongoing call");
+        }
+    }
+
     protected void VibrateNotifyMakeNoise(Context context, AlertType alert, String bgValue, int minsFromStartPlaying) {
         Log.d(TAG, "VibrateNotifyMakeNoise called minsFromStartedPlaying = " + minsFromStartPlaying);
         Log.d("ALARM", "setting vibrate alarm");
@@ -575,13 +590,7 @@ public class AlertPlayer {
                 builder.setFullScreenIntent(notificationIntent(context, new Intent(context, Home.class)), true);
             }
 
-            if (notSilencedDueToCall()) {
-                if (overrideSilent || isLoudPhone(context)) {
-                    playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
-                }
-            } else {
-                Log.i(TAG, "Silenced Alert Noise due to ongoing call");
-            }
+            playAlertSound(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent);
         }
         if (profile != ALERT_PROFILE_SILENT && alert.vibrate) {
             if (notSilencedDueToCall()) {
