@@ -31,6 +31,8 @@ import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.DoubleCalibrationActivity;
 import com.eveningoutpost.dexdrip.EditAlertActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.MegaStatus;
+import com.eveningoutpost.dexdrip.cgm.dex.SoakSchedule;
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.AlertType;
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -115,6 +117,7 @@ public class Notifications extends IntentService {
     public static final int parakeetMissingId = 014;
     public static final int persistentHighAlertNotificationId = 015;
     public static final int ob1SessionRestartNotificationId = 016;
+    public static final int soakTimerNotificationId = 020;
     private static boolean low_notifying = false;
 
     private static final int CALIBRATION_REQUEST_MAX_FREQUENCY = (60 * 60 * 6); // don't bug for extra calibrations more than every 6 hours
@@ -308,6 +311,16 @@ public class Notifications extends IntentService {
  * *****************************************************************************************************************
  */
 
+    private boolean checkSoakTimer(Context context) {
+        if (SoakSchedule.isDue(JoH.tsl())) {
+            if (JoH.pratelimit("soak-timer-notification", 3600)) {
+                soakTimerAlert(context);
+            }
+            return true;
+        }
+        return false;
+    }
+
     // returns weather unclear bg reading was detected
     private boolean notificationSetter(Context context) {
         ReadPerfs(context);
@@ -318,6 +331,7 @@ public class Notifications extends IntentService {
         if (bg_ongoing) {
             bgOngoingNotification(bgGraphBuilder);
         }
+        checkSoakTimer(context);
         if (prefs.getLong("alerts_disabled_until", 0) > new Date().getTime()) {
             Log.d("NOTIFICATIONS", "Notifications are currently disabled!!");
             return false;
@@ -954,6 +968,24 @@ public class Notifications extends IntentService {
         }
     }
 
+    public static void soakTimerAlert(Context context) {
+        final String type = "soak_timer_alert";
+        Intent intent = new Intent(context, MegaStatus.class);
+        intent.setAction(MegaStatus.G5_STATUS);
+        OtherAlert(context, type, context.getString(R.string.new_sensor_ready_title), context.getString(R.string.new_sensor_ready_msg), soakTimerNotificationId, NotificationChannels.BG_ALERT_CHANNEL, true, 3600, intent);
+    }
+
+    public static void cancelNotification(int notificationId) {
+        try {
+            final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE);
+            if (mNotifyMgr != null) {
+                mNotifyMgr.cancel(notificationId);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Failed to cancel notification: " + notificationId, e);
+        }
+    }
+
     public static void persistentHighAlert(Context context, boolean on, String msg) {
         final String type = "persistent_high_alert";
         if (on) {
@@ -998,6 +1030,10 @@ public class Notifications extends IntentService {
     }
 
     private static void OtherAlert(Context context, String type, String title, String message, int notificatioId, String channelId, boolean addDeleteIntent, long reraiseSec) {
+        OtherAlert(context, type, title, message, notificatioId, channelId, addDeleteIntent, reraiseSec, null);
+    }
+
+    private static void OtherAlert(Context context, String type, String title, String message, int notificatioId, String channelId, boolean addDeleteIntent, long reraiseSec, Intent contentIntent) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String otherAlertsSound = prefs.getString(type+"_sound",prefs.getString("other_alerts_sound", "content://settings/system/notification_sound"));
         boolean otherAlertsOverrideSilent = prefs.getBoolean("other_alerts_override_silent", false);
@@ -1022,7 +1058,7 @@ public class Notifications extends IntentService {
                 localOnly = (Home.get_forced_wear() && bg_notifications_watch && bg_persistent_high_alert_enabled_watch);
             }
             Log.d(TAG,"OtherAlert forced_wear localOnly=" + localOnly);
-            Intent intent = new Intent(context, Home.class);
+            Intent intent = (contentIntent != null) ? contentIntent : new Intent(context, Home.class);
             NotificationCompat.Builder mBuilder =
                     new NotificationCompat.Builder(context, channelId)
                             .setVisibility(Pref.getBooleanDefaultFalse("public_notifications") ? Notification.VISIBILITY_PUBLIC : Notification.VISIBILITY_PRIVATE)

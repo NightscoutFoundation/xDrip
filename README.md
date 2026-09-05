@@ -49,6 +49,9 @@ Your data is yours and can be exported in many different ways. xDrip also interc
 * Increasing automation and data backup and sync options
 * More Nightscout and APS integration
 
+## Documentation
+* [Scheduled Transmitter ID Switch (G7 Soak & Handoff)](Documentation/G7_Soak_and_Handoff.md) — queue the next sensor's pairing code and let xDrip perform the changeover at a scheduled time
+
 ## Collaboration
 We are very happy if people want to collaborate with this project. Please contact us at [Discussions](https://github.com/NightscoutFoundation/xDrip/discussions) if you want to get involved and study the [collaboration guidelines](CONTRIBUTING.md) before submitting any patches or pull requests.
 
