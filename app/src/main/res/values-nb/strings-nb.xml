@@ -224,7 +224,7 @@
     <string name="calibration_alerts">Kalibreringsvarsler</string>
     <string name="missed_reading_alert">Tapte avlesningsvarsel</string>
     <string name="other_alerts">Andre varsler</string>
-    <string name="extra_alerts_xdrip_plus">Ekstra varsler (xDrip+)</string>
+    <string name="extra_alerts_xdrip_plus">Ekstra varsler (xDrip)</string>
     <string name="persistent_high_alert">Vedvarende høy varsel</string>
     <string name="persistent_high_alert_enable">Aktiver</string>
     <string name="title_persistent_high_threshold">Terskel</string>
@@ -237,7 +237,7 @@
     <string name="extrapolate_data_to_try_to_predict_lows">Basert på nåværende verdi og trend, beregn hva de neste målingene vil bli dersom trenden fortsetter (ekstrapoler). Dette ignorerer insulin eller karbohydrater i kroppen.</string>
     <string name="alarm_at_forecasted_low_mins">Tidsgrense [min]</string>
     <string name="title_forecast_low_threshold">Terskel</string>
-    <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
+    <string name="other_xdrip_plus_alerts">Andre xDrip varsler</string>
     <string name="xdrip_plus_display_settings">Skjerminnstillinger</string>
     <string name="display_customisations">Skjermtilpasninger</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulin-, karbohydratforhold etc. for modeller</string>
@@ -1688,7 +1688,7 @@
     <string name="running_test_with_number_123">Kjører test med nummer: 123</string>
     <string name="unusual_internal_context_problem__please_report">Uvanlig intern kontekstproblem - vennligst rapporter</string>
     <string name="cannot_start__please_report_context_problem">Kan ikke starte - vennligst rapporter kontekstproblem</string>
-    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ vil ikke virke med Android-versjon 4.2 eller gamlere</string>
+    <string name="xdrip_will_not_work_below_android_version_42">xDrip vil ikke virke med Android-versjon 4.2 eller eldre</string>
     <string name="xdrip_oop2_not_installed">xDrip trenger OOP2 for å kunne håndtere Libre2/LibreUS sensorer.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Denne appen trenger hvitlisting for batterioptimalisering, ellers vil den ikke fungere bra. Tilbakestill appreferansene</string>
     <string name="setting_disabled_">Innstilling deaktivert :)</string>
