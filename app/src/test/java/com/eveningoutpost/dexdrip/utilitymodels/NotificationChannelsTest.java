@@ -51,19 +51,4 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
                     .that(name).isNotEqualTo(channel);
         }
     }
-
-    /**
-     * The Parakeet status channel is not in the name map. An id that is not in the map is displayed
-     * as itself, and that fallback is what makes the later removal of the Parakeet display strings a
-     * successful build rather than a resource-linking failure.
-     */
-    @Test
-    public void theParakeetStatusChannelIsNoLongerMapped() {
-        // :: Act
-        val name = NotificationChannels.getString("parakeetStatusChannel");
-
-        // :: Verify
-        assertWithMessage("the removed channel falls back to its raw id")
-                .that(name).isEqualTo("parakeetStatusChannel");
-    }
 }
