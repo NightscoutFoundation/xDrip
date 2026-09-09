@@ -237,7 +237,7 @@
     <string name="extrapolate_data_to_try_to_predict_lows">현재 수치와 추세를 기반으로, 추세가 지속될 경우의 향후 값을 계산(외삽)합니다. 이때 체내 잔존 인슐린이나 탄수화물은 무시됩니다.</string>
     <string name="alarm_at_forecasted_low_mins">예측 시간 임계값 [분]</string>
     <string name="title_forecast_low_threshold">역치</string>
-    <string name="other_xdrip_plus_alerts">다른 xDrip+ 알림</string>
+    <string name="other_xdrip_plus_alerts">기타 xDrip+ 알림</string>
     <string name="xdrip_plus_display_settings">xDrip+ 화면 설정</string>
     <string name="display_customisations">화면 사용자 지정</string>
     <string name="insulin_carb_ratios_etc_for_models">예측 모델용 인슐린 및 탄수화물 비 등</string>
