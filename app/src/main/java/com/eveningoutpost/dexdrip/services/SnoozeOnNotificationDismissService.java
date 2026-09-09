@@ -27,7 +27,7 @@ import com.eveningoutpost.dexdrip.xdrip;
  * helper methods.
  */
 public class SnoozeOnNotificationDismissService extends IntentService {
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = SnoozeOnNotificationDismissService.class.getSimpleName();
     private final static long MINIMUM_CANCEL_DELAY = 2 * Constants.SECOND_IN_MS;
 
     public SnoozeOnNotificationDismissService() {
@@ -43,31 +43,26 @@ public class SnoozeOnNotificationDismissService extends IntentService {
             UserError.Log.wtf(TAG, "Attempt to cancel alert (" + alertType + ") within minimum limit of: " + JoH.niceTimeScalar(MINIMUM_CANCEL_DELAY));
             Home.startHomeWithExtra(xdrip.getAppContext(),"confirmsnooze","simpleconfirm");
         }
-        Log.e(TAG, "SnoozeOnNotificationDismissService called source = " + alertType + " shown for: " + JoH.niceTimeScalar(time_showing));
+        Log.e(TAG, "Dismiss Snooze: " + alertType + " shown for: " + JoH.niceTimeScalar(time_showing));
         if (alertType.equals("bg_alerts") && (time_showing > MINIMUM_CANCEL_DELAY)) {
             snoozeBgAlert();
             return;
         }
+
+        AlertPlayer.getPlayer().stopAlert(getApplicationContext(), false, false, false); // Silence the media player
+
         if (alertType.equals("bg_unclear_readings_alert") ||
                 alertType.equals("bg_missed_alerts")) {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
             boolean enableAlertsReraise = prefs.getBoolean(alertType + "_enable_alerts_reraise", false);
             if (enableAlertsReraise && (time_showing > MINIMUM_CANCEL_DELAY)) {
-                // Only snooze these alert if it the reraise function is enabled. 
+                // Only snooze these alert if it the reraise function is enabled.
                 snoozeOtherAlert(alertType);
             }
             return;
         }
-
-        if (alertType.equals("bg_predict_alert") ||
-                alertType.equals("persistent_high_alert")) {
-            Log.wtf(TAG, "SnoozeOnNotificationDismissService called for unsupported type!!! source = " + alertType);
-
-        }
-
-        Log.e(TAG, "SnoozeOnNotificationDismissService called for unknown source = " + alertType);
     }
-    
+
     private void snoozeBgAlert() {
         AlertType activeBgAlert = ActiveBgAlert.alertTypegetOnly();
 
@@ -82,7 +77,7 @@ public class SnoozeOnNotificationDismissService extends IntentService {
 
         AlertPlayer.getPlayer().Snooze(getApplicationContext(), snooze);
     }
-    
+
     private void snoozeOtherAlert(String alertType) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         long snoozeMinutes = MissedReadingService.getOtherAlertSnoozeMinutes(prefs, alertType);

@@ -12,6 +12,7 @@ import android.graphics.drawable.Icon;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels;
@@ -30,19 +31,20 @@ import static com.eveningoutpost.dexdrip.ui.helpers.BitmapUtil.getScreenDpi;
 public class NumberGraphic {
 
     private static final String TAG = NumberGraphic.class.getSimpleName();
-    private static final long[] vibratePattern = {0, 300, 300, 300, 300, 300};
+    public static final long[] vibratePattern = {0, 300, 300, 300, 300, 300};
 
     public static void testNotification(String text) {
         {
-            final Notification.Builder mBuilder = new Notification.Builder(xdrip.getAppContext(), NotificationChannels.ICON_TEST_CHANNEL);
+            String tag = "general_notification"; // Let's give this the same priority as a general notification.
+            int priority = AlertPlayer.getPriority(tag);
+            final Notification.Builder mBuilder = new Notification.Builder(xdrip.getAppContext(), NotificationChannels.GENERAL_CHANNEL);
 
             mBuilder.setSmallIcon(Icon.createWithBitmap(getSmallIconBitmap(text)));
-
             mBuilder.setContentTitle("Test Number Graphic");
             mBuilder.setContentText("Check the number is visible");
             mBuilder.setTimeoutAfter(Constants.SECOND_IN_MS * 30);
             mBuilder.setOngoing(false);
-            mBuilder.setVibrate(vibratePattern);
+            JoH.vibrateInternal(vibratePattern, priority, tag);
 
             int mNotificationId = Constants.NUMBER_TEXT_TEST_ID;
             final NotificationManager mNotifyMgr = (NotificationManager) xdrip.getAppContext().getSystemService(NOTIFICATION_SERVICE);

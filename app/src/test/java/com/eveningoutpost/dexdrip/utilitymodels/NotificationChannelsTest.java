@@ -29,23 +29,17 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
     // ===== channel name map =============================================================================================
 
     /**
-     * Each of these channels resolves to a display name rather than falling back to its raw channel
-     * id.
+     * Each of the channels this branch still defines resolves to a display name rather than falling
+     * back to its raw channel id. The list is short because this branch collapses the channel set to
+     * four; on master the same test covers eleven.
      */
     @Test
     public void mappedChannelsResolveToDisplayNames() {
         // :: Setup
         val mappedChannels = new String[]{
-                NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL,
-                NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL,
-                NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL,
-                NotificationChannels.REMINDER_CHANNEL,
                 NotificationChannels.BG_ALERT_CHANNEL,
-                NotificationChannels.BG_MISSED_ALERT_CHANNEL,
-                NotificationChannels.BG_RISE_DROP_CHANNEL,
-                NotificationChannels.BG_PREDICTED_LOW_CHANNEL,
-                NotificationChannels.BG_PERSISTENT_HIGH_CHANNEL,
-                NotificationChannels.CALIBRATION_CHANNEL,
+                NotificationChannels.OTHER_ALERTS_CHANNEL,
+                NotificationChannels.GENERAL_CHANNEL,
                 NotificationChannels.ONGOING_CHANNEL,
         };
 
@@ -59,8 +53,8 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
     }
 
     /**
-     * The Parakeet status channel is no longer mapped. An id that is not in the map is displayed as
-     * itself, and that fallback is what makes the later removal of the Parakeet display strings a
+     * The Parakeet status channel is not in the name map. An id that is not in the map is displayed
+     * as itself, and that fallback is what makes the later removal of the Parakeet display strings a
      * successful build rather than a resource-linking failure.
      */
     @Test

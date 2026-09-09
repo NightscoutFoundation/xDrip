@@ -362,6 +362,9 @@
     <string name="all_alerts_disabled_until">"Tutti gli Allarmi disattivati ​​per "</string>
     <string name="low_alerts_disabled_until">"Allarmi per VALORE BASSO disattivati per "</string>
     <string name="high_alerts_disabled_until">"Allarmi per VALORE ALTO disattivati per "</string>
+    <string name="you_reenable">riabilita</string>
+    <string name="active_alert_rerise_at">L\'avviso attivo chiamato \"%1$s\" esiste. L\'avviso si riproporrà in %2$s (%3$s minuti rimanenti)</string>
+    <string name="active_alert_snoozed_until">L\'avviso attivo chiamato \"%1$s\" esiste L\'avviso è posticipato fino alle %2$s (%3$s minuti rimanenti)</string>
     <string name="default_snooze">Ritardo Allarme Predefinito</string>
     <string name="until_you_reenable">Fino alla riattivazione</string>
     <string name="set">Impostato</string>

@@ -351,15 +351,27 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         catch(NumberFormatException e) { return false; }
     }
 
-    private boolean isInvalidTime()
-    {
+    private boolean isInvalidTime() {
         String timeValue = getValue("time");
-        if (timeValue.length() == 0) return false;
-        if (!timeValue.contains("."))
-            return (timeValue.length() < 3);
+        if (timeValue.length() == 0) return false; // No time value has been entered.  Then, there is nothing to reject.
 
+        // Normalize HHmm to HH.mm for validation
+        if (!timeValue.contains(".") && timeValue.length() >= 3) {
+            timeValue = timeValue.substring(0, timeValue.length() - 2) + "." + timeValue.substring(timeValue.length() - 2);
+        }
+
+        // Ensure time follows the [H]H.mm format strictly.
         String[] parts = timeValue.split("\\.");
-        return (parts.length != 2) || (parts[0].length() == 0) || (parts[1].length() != 2);
+        if (parts.length != 2 || parts[0].isEmpty() || parts[1].length() != 2) return true;
+
+        try {
+            int hours = Integer.parseInt(parts[0]);
+            int minutes = Integer.parseInt(parts[1]);
+            // Validate ranges: 0-23 hours and 0-59 minutes
+            return (hours < 0 || hours > 23 || minutes < 0 || minutes > 59);
+        } catch (NumberFormatException e) {
+            return true;
+        }
     }
 
     private void submitAll() {

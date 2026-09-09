@@ -1,10 +1,14 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
+import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
 import android.content.SharedPreferences;
 
+import androidx.preference.PreferenceManager;
+
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.xdrip;
 
 
 import org.junit.After;
@@ -25,7 +29,9 @@ public class IdempotentMigrationsTest extends RobolectricTestWithConfig {
 
     @Before
     public void before() {
+        xdrip.setContextAlways(RuntimeEnvironment.application); // force re-bind to current Robolectric app
         preferencesBefore = new HashMap<>(Pref.getInstance().getAll());
+        PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().clear().commit();
         cleanup();
     }
 
@@ -99,7 +105,7 @@ public class IdempotentMigrationsTest extends RobolectricTestWithConfig {
 
     }
 
-    // ===== legacySettingsFix ============================================================================================
+    // ===== legacySettingsFix =====================================================================
 
     /**
      * The migration must keep forcing bridge battery alerts off. The preference is not
@@ -142,4 +148,43 @@ public class IdempotentMigrationsTest extends RobolectricTestWithConfig {
                 .that(Pref.isPreferenceSet("parakeet_charge_silent")).isFalse();
     }
 
+    // ===== Legacy REST URI migration =============================================================
+
+    /** A credential-prefixed legacy URL is folded into the URI authority and gains a trailing slash. */
+    @Test
+    public void legacyCredentialPrefixedUrlIsRewritten() {
+        // :: Setup
+        storeBaseUrl("user:pass@http://ns.example.com/api/v1");
+
+        // :: Act
+        new IdempotentMigrations(xdrip.getAppContext()).performAll();
+
+        // :: Verify
+        assertThat(storedBaseUrl()).isEqualTo("http://user:pass@ns.example.com/api/v1/");
+    }
+
+    /** An already-modern URL is left alone apart from the trailing slash the migration guarantees. */
+    @Test
+    public void modernUrlIsLeftAlone() {
+        // :: Setup
+        storeBaseUrl("http://user:pass@ns.example.com/api/v1/");
+
+        // :: Act
+        new IdempotentMigrations(xdrip.getAppContext()).performAll();
+
+        // :: Verify
+        assertThat(storedBaseUrl()).isEqualTo("http://user:pass@ns.example.com/api/v1/");
+    }
+
+    // ===== Helpers ===============================================================================
+
+    private void storeBaseUrl(String value) {
+        PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext())
+                .edit().putString("cloud_storage_api_base", value).commit();
+    }
+
+    private String storedBaseUrl() {
+        return PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext())
+                .getString("cloud_storage_api_base", "");
+    }
 }

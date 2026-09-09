@@ -362,6 +362,9 @@
     <string name="all_alerts_disabled_until">"Alla varningar har inaktiveras till "</string>
     <string name="low_alerts_disabled_until">"Låga varningar har inaktiveras till "</string>
     <string name="high_alerts_disabled_until">"Höga varningar har inaktiveras till "</string>
+    <string name="you_reenable">du återaktiverar</string>
+    <string name="active_alert_rerise_at">Aktiva varningar finns, \"%1$s\" varningen kommer att återupptas med %2$s (%3$s minuter kvar)</string>
+    <string name="active_alert_snoozed_until">Aktiva varningar finns, \"%1$s\" varningen pausad med %2$s (%3$s minuter kvar)</string>
     <string name="default_snooze">Standardsnooze</string>
     <string name="until_you_reenable">Tills dess du återaktiverar</string>
     <string name="set">Grupp</string>
@@ -1931,7 +1934,11 @@
     <string name="title_ymax">Justera y-axelns maximum</string>
     <string name="summary_ymin">Välj yMin lägsta visade värden.</string>
     <string name="summary_ymax">Välj yMax för högsta önskade värden.</string>
+    <string name="summary_auto_y_pan"><b>Aktivera:</b> Panorera grafen med ett fast Y-axel-intervall (minimum–maximum) för att visa avläsningar utanför intervallet.\n<b>Inaktivera:</b> Utöka Y-axelns räckvidd för att inkludera avläsningar utanför intervallet.</string>
+    <string name="title_auto_y_pan">Auto-panorera Y-axel</string>
     <string name="wait_to_connect">Verifiera inställningar och vänta på anslutning.</string>
+    <string name="summary_sens_expiry_notify">Höj aviseringar när sensorn närmar sig avslut.</string>
+    <string name="title_sens_expiry">Meddelanden för sensorns utgång</string>
     <string name="title_sens_expiry_notify">Sensorutgång</string>
     <string name="close">Stäng</string>
     <string name="title_advanced_settings_4_Lib2">Avancerade inställningar för Libre 2</string>
@@ -1957,7 +1964,13 @@
     <string name="carelink_refresh_token_failed">Åtkomstförnyelsen misslyckades! Kommer försöka igen!</string>
     <string name="carelink_download_start">Starta nedladdning</string>
     <string name="carelink_download_failed">Nedladdning av data misslyckades!</string>
+    <string name="carelink_credential_status_not_authenticated">Inte inloggad! Logga in!</string>
+    <string name="carelink_credential_status_access_expired">Åtkomst har gått ut! Kommer att uppdatera!</string>
+    <string name="carelink_credential_status_refresh_expired">Inloggningen har gått ut! Logga in igen!</string>
     <string name="data_source">Datakälla:</string>
+    <string name="disable_collection">Inaktivera insamling</string>
+    <string name="insulin_pens">Insulinpennor</string>
+    <string name="editing">Redigera</string>
     <string name="reraise_alerts_before_snooze_time">Slå larm igen innan snoozetiden</string>
     <string name="accept_glucose">Acceptera glukos</string>
     <string name="audio_focus">Ljudfokus</string>

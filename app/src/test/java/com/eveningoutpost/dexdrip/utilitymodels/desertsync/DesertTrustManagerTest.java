@@ -106,7 +106,15 @@ public class DesertTrustManagerTest extends RobolectricTestWithConfig {
      * The refusal is what is asserted, not its reason — see the next test for why the reason is
      * currently the unreadable chain rather than a mismatched hash. The okhttp behaviour this pins
      * is real either way: a verifier returning false must fail the call before any request is
-     * transmitted, and it must fail it with {@link SSLPeerUnverifiedException}.
+     * transmitted, and {@link SSLPeerUnverifiedException} must be what refused it.
+     * <p>
+     * That exception is looked for through the suppressed list rather than as the thrown type,
+     * because {@code localhost} resolves to both {@code 127.0.0.1} and {@code [::1]} and okhttp 5
+     * races them. Its fast-fallback finder keeps the first failure to complete, attaches every later
+     * one with {@code addSuppressed}, and throws the first. The verifier only refuses after a full
+     * handshake, while the route MockWebServer is not listening on is refused outright — so
+     * {@code ConnectException: Connection refused} normally wins and the real refusal ends up
+     * suppressed. Asserting the thrown type directly would be asserting which route won a race.
      */
     @Test
     public void xdripHostVerifier_rejectsUnpinnedPeer() throws Exception {
@@ -116,10 +124,32 @@ public class DesertTrustManagerTest extends RobolectricTestWithConfig {
         Request request = new Request.Builder().url(server.url("/joh")).build();
 
         // :: Act
-        assertThrows(SSLPeerUnverifiedException.class, () -> client.newCall(request).execute());
+        IOException refusal = assertThrows(IOException.class, () -> client.newCall(request).execute());
 
-        // :: Verify — the client refused to transmit
+        // :: Verify — the verifier refused it, and the client transmitted nothing
+        assertThat(unverifiedPeerWithin(refusal)).isNotNull();
         assertThat(server.getRequestCount()).isEqualTo(0);
+    }
+
+    /**
+     * The {@link SSLPeerUnverifiedException} anywhere in {@code failure}: itself, its causes, or
+     * anything suppressed onto it or onto those. Null when the call failed for some other reason,
+     * which is the case this test needs to stay able to fail on.
+     */
+    private static SSLPeerUnverifiedException unverifiedPeerWithin(Throwable failure) {
+        if (failure == null) {
+            return null;
+        }
+        if (failure instanceof SSLPeerUnverifiedException) {
+            return (SSLPeerUnverifiedException) failure;
+        }
+        for (Throwable suppressed : failure.getSuppressed()) {
+            SSLPeerUnverifiedException found = unverifiedPeerWithin(suppressed);
+            if (found != null) {
+                return found;
+            }
+        }
+        return failure.getCause() == failure ? null : unverifiedPeerWithin(failure.getCause());
     }
 
     /**

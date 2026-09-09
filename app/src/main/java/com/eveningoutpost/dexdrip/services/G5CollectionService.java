@@ -1639,7 +1639,7 @@ public class G5CollectionService extends G5BaseService {
                 if (JoH.pratelimit("g5-low-battery-warning", 40000)) {
                     final boolean loud = !PowerStateReceiver.is_power_connected();
                     JoH.showNotification("G5 Battery Low", "G5 Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
-                            null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, loud, loud, null, null, null);
+                            null, 770, NotificationChannels.GENERAL_CHANNEL, loud, loud, null, null, null);
                     UserError.Log.uel(TAG, "G5 Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea);
                 }
             }

@@ -9,10 +9,10 @@ import android.graphics.CornerPathEffect;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.preference.PreferenceManager;
 import android.util.DisplayMetrics;
 
 import androidx.core.content.ContextCompat;
+import androidx.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import android.view.View;

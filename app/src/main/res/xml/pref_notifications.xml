@@ -181,7 +181,7 @@
                     android:numeric="integer"
                     android:title="@string/persistent_repeat_max" />
                 <RingtonePreference
-                    android:defaultValue="content://settings/system/notification_sound"
+                    android:defaultValue="default"
                     android:dependency="persistent_high_alert_enabled"
                     android:key="persistent_high_alert_sound"
                     android:ringtoneType="all"
@@ -192,6 +192,10 @@
                     android:defaultValue="false"
                     android:key="persistent_high_alert_override_silent"
                     android:title="@string/override_silent_mode" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="persistent_high_alert_vibrate_on_alert"
+                    android:title="@string/vibrate_on_alert" />
             </PreferenceScreen>
             <PreferenceScreen
                 android:key="@string/forecasted_low_alert"
@@ -230,7 +234,7 @@
                     android:summary=""
                     android:title="@string/alarm_at_forecasted_low_mins" />
                 <RingtonePreference
-                    android:defaultValue="content://settings/system/notification_sound"
+                    android:defaultValue="default"
                     android:dependency="predict_lows"
                     android:key="bg_predict_alert_sound"
                     android:ringtoneType="all"
@@ -241,6 +245,10 @@
                     android:defaultValue="false"
                     android:key="bg_predict_alert_override_silent"
                     android:title="@string/override_silent_mode" />
+                <CheckBoxPreference
+                    android:defaultValue="true"
+                    android:key="bg_predict_alert_vibrate_on_alert"
+                    android:title="@string/vibrate_on_alert" />
             </PreferenceScreen>
             <PreferenceScreen
                 android:key="@string/title_sens_expiry"
@@ -273,7 +281,7 @@
                     android:summary="@string/calibrations_request_time_time_difference"
                     android:title="@string/hours_between_calibrations" />
                 <RingtonePreference
-                    android:defaultValue="content://settings/system/notification_sound"
+                    android:defaultValue="default"
                     android:key="calibration_notification_sound"
                     android:ringtoneType="all"
                     android:showSilent="true"
@@ -387,7 +395,7 @@
 
                 <PreferenceCategory android:title="@string/category_alert_prefs">
                     <RingtonePreference
-                        android:defaultValue="content://settings/system/alarm_alert"
+                        android:defaultValue="default"
                         android:key="other_alerts_sound"
                         android:ringtoneType="all"
                         android:showSilent="true"
@@ -397,6 +405,10 @@
                         android:defaultValue="false"
                         android:key="other_alerts_override_silent"
                         android:title="@string/override_silent_mode_these" />
+                    <CheckBoxPreference
+                        android:defaultValue="true"
+                        android:key="other_alerts_vibrate_on_alert"
+                        android:title="@string/vibrate_on_alert" />
                 </PreferenceCategory>
             </PreferenceScreen>
         </PreferenceCategory>

@@ -1851,7 +1851,7 @@ public class Ob1G5StateMachine {
                     }
                     if (!battery0VException) { // Skip warnings for a recently reset transmitter
                         JoH.showNotification("Battery Low", "Transmitter battery has dropped to: " + batteryInfoRxMessage.voltagea + " it may fail soon",
-                                null, 770, NotificationChannels.LOW_TRANSMITTER_BATTERY_CHANNEL, sound_vibrate, sound_vibrate, null, null, null);
+                                null, 770, NotificationChannels.GENERAL_CHANNEL, sound_vibrate, sound_vibrate, null, null, null);
                         UserError.Log.uel(TAG, "Dex battery has dropped to: " + batteryInfoRxMessage.voltagea);
                     }
                 }

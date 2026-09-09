@@ -271,11 +271,13 @@ dependencies {
     implementation "com.google.android.gms:play-services-oss-licenses:15.0.0"
     implementation "com.google.protobuf:protobuf-java:4.34.0"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
-    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
-    // Nocturne SDK: targets OkHttp 4.12, matching xDrip's pinned version. We exclude
-    // its gson transitive to keep xDrip's own pinned gson. Jackson is only a
-    // transitive of jackson-databind-nullable and unused at runtime on the gson path.
+    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
+    // Nocturne SDK: declares OkHttp 4.12, so it resolves up to the 5.x pinned above rather than
+    // matching it. Covered by NocturneApiClientTest / NocturneUploaderAuthTest, which drive the
+    // real (Context) constructor over MockWebServer. We exclude its gson transitive to keep
+    // xDrip's own pinned gson. Jackson is only a transitive of jackson-databind-nullable and
+    // unused at runtime on the gson path.
     implementation('org.nightscoutfoundation:nocturne-java:0.2.4') {
         exclude group: 'com.google.code.gson'
         exclude group: 'com.fasterxml.jackson.core'
@@ -343,8 +345,8 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
     testImplementation "org.robolectric:robolectric:4.16"
     testImplementation "com.google.truth:truth:1.4.5"
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
-    testImplementation 'com.squareup.okhttp3:okhttp-tls:4.12.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:5.3.2'
+    testImplementation 'com.squareup.okhttp3:okhttp-tls:5.3.2'
 
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation 'org.mockito:mockito-core:4.11.0'

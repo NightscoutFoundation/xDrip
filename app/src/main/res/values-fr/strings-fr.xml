@@ -657,6 +657,7 @@
     <string name="retrieve_blukon_history_title">Récupérer l\'historique du Freestyle Libre</string>
     <string name="summary_libre_one_minute_interval">Accepter les données à intervalles d\'une minute de Libre. Redémarrez votre téléphone pour que les modifications prennent effet.</string>
     <string name="title_libre_one_minute_interval">Libre 1 minute</string>
+    <string name="summary_nsfollow_sample_period">Par défaut : 5 min\nActuel : %s</string>
     <string name="retrieve_blukon_history_summary">Extraire l\'historique manqué du périphérique BluCon lors de la reconnexion au capteur.</string>
     <string name="interpret_share_raw">Si vous utilisez Share, xDrip affichera les valeurs quand elles sont normalement cachées sur le récepteur.</string>
     <string name="interpret_raw">Interpréter les valeurs brutes</string>

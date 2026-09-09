@@ -18,6 +18,7 @@ import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.alert.SensorExpiry;
 import com.eveningoutpost.dexdrip.g5model.DexSessionKeeper;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
@@ -790,6 +791,11 @@ public class Treatments extends Model {
     private static void evaluateNotesForNotification(final Treatments mytreatment) {
         if (!emptyString(mytreatment.notes) && mytreatment.notes.startsWith("-")) {
             BlueJayEntry.sendNotifyIfEnabled(mytreatment.notes);
+        }
+        try {
+            SensorExpiry.evaluateReceivedNote(mytreatment.notes, mytreatment.timestamp);
+        } catch (Exception e) {
+            UserError.Log.wtf(TAG, "Error evaluating received note: " + e + " " + mytreatment.notes);
         }
     }
 

@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.models;
 import static android.bluetooth.BluetoothDevice.PAIRING_VARIANT_PIN;
 import static android.content.Context.ALARM_SERVICE;
 import static com.eveningoutpost.dexdrip.stats.StatsActivity.SHOW_STATISTICS_PRINT_COLOR;
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SENSORY_EXPIRY_NOTIFICATION_ID;
 import static com.eveningoutpost.dexdrip.utilitymodels.NotificationChannels.GENERAL_CHANNEL;
 
 import android.annotation.SuppressLint;
@@ -33,7 +34,6 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -44,6 +44,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.SystemClock;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.provider.Settings;
 
 import androidx.appcompat.app.AlertDialog;
@@ -67,6 +69,8 @@ import com.activeandroid.ActiveAndroid;
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.Reminders;
+import com.eveningoutpost.dexdrip.utilitymodels.AlertPlayer;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -903,7 +907,7 @@ public class JoH {
         // If file doesn't exist, fallback to parsing
         if (!file.exists()) {
             UserError.Log.wtf(TAG, "File does not exist: " + file.getAbsolutePath()+ " using fallback sound");
-            return Uri.parse("content://settings/system/notification_sound");
+            return Uri.parse("default");
         }
         val context = xdrip.getAppContext();
         return FileProvider.getUriForFile(
@@ -1615,14 +1619,25 @@ public class JoH {
         if (channelId == null) {
             channelId = GENERAL_CHANNEL;
         }
+        String type = "general_notification";
+        switch (notificationId) {
+            case Reminders.NOTIFICATION_ID:
+                type = "reminder";
+                break;
+            case SENSORY_EXPIRY_NOTIFICATION_ID:
+                type = "sensor_expiry";
+                break;
+        }
         final NotificationCompat.Builder mBuilder = notificationBuilder(title, content, intent, channelId);
         final long[] vibratePattern = {0, 1000, 300, 1000, 300, 1000};
-        if (vibrate) mBuilder.setVibrate(vibratePattern);
         if (deleteIntent != null) mBuilder.setDeleteIntent(deleteIntent);
         mBuilder.setLights(0xff00ff00, 300, 1000);
-        if (sound) {
-            Uri soundUri = (sound_uri != null) ? sound_uri : RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            mBuilder.setSound(soundUri);
+        if (sound || vibrate) {
+            if (vibrate) {
+                mBuilder.setVibrate(vibratePattern); // Keeping builder line for watch support
+            }
+            final String uriString = (sound_uri != null) ? sound_uri.toString() : "default_notification";
+            AlertPlayer.getPlayer().triggerSoundAndVibration(xdrip.getAppContext(), sound, uriString, false, 0f, type, vibrate, vibratePattern);
         }
 
         if (bigmsg != null) {
@@ -1637,6 +1652,46 @@ public class JoH {
         // if (!onetime) mNotifyMgr.cancel(notificationId);
 
         mNotifyMgr.notify(notificationId, XdripNotificationCompat.build(mBuilder));
+    }
+
+    private static Vibrator getVibrator() {
+        return (Vibrator) xdrip.getAppContext().getSystemService(Context.VIBRATOR_SERVICE);
+    }
+
+    public static void vibrateInternal(long[] pattern, int priority, String tag) {
+        int currentPriority = AlertPlayer.getPriority(AlertPlayer.activeTag);
+
+        // Case 1: BLOCKING (New vibration is lower priority than the one currently active)
+        if (!AlertPlayer.activeTag.isEmpty() && currentPriority > priority) {
+            UserError.Log.e(TAG, tag + " vibration ignored. " + AlertPlayer.activeTag + " (P" + currentPriority + ") is active.");
+            return;
+        }
+
+        // Note: We do not set activeTag here to avoid "stuck" locks.
+        // playFile will handle setting and clearing the lock.
+        // When the day comes that we add custom vibration patterns, we will need to add intelligence here to address vibration collisions as well.
+
+        cancelVibrate(); // Stop existing vibration
+
+        try {
+            final Vibrator v = getVibrator();
+            if (v != null && v.hasVibrator()) {
+                v.vibrate(VibrationEffect.createWaveform(pattern, -1));
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Failed to vibrate: " + e);
+        }
+    }
+
+    public static void cancelVibrate() {
+        final Vibrator v = getVibrator();
+        if (v != null) {
+            try {
+                v.cancel();
+            } catch (Exception e) {
+                // ignore
+            }
+        }
     }
 
     private static NotificationCompat.Builder notificationBuilder(String title, String content, PendingIntent intent, String channelId) {

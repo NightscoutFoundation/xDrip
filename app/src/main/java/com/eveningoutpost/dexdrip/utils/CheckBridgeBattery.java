@@ -58,7 +58,7 @@ public class CheckBridgeBattery {
                     
                     final PendingIntent pendingIntent = android.app.PendingIntent.getActivity(xdrip.getAppContext(), 0, new Intent(xdrip.getAppContext(), Home.class), android.app.PendingIntent.FLAG_UPDATE_CURRENT);
                     showNotification("Low bridge battery", "Bridge battery dropped to: " + this_level + "%",
-                            pendingIntent, NOTIFICATION_ITEM, NotificationChannels.LOW_BRIDGE_BATTERY_CHANNEL, sound, vibrate, null, null, null);
+                            pendingIntent, NOTIFICATION_ITEM, NotificationChannels.GENERAL_CHANNEL, sound, vibrate, null, null, null);
                     UserError.Log.uel(TAG, "Bridge battery dropped to: " + this_level + "%");
                 }
             } else {

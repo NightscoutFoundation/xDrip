@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.sharemodels;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.models.UserError;
