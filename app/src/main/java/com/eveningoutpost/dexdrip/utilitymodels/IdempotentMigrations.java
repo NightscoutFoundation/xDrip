@@ -178,6 +178,14 @@ public class IdempotentMigrations {
         Pref.setBoolean("notification_channels_grouping", false);
         Pref.setBoolean("use_number_icon_large", false);
         Pref.setBoolean("number_icon_large_arrow", false);
+        Pref.setBoolean("calibration_notifications", false);
+        Pref.setString("calibration_reminder_hours", "24");
+        Pref.setString("calibration_notification_sound", "content://settings/system/notification_sound");
+        Pref.setBoolean("calibration_alerts_override_silent", true);
+        Pref.setBoolean("calibration_alerts_while_charging", true);
+        Pref.setBoolean("calibration_alerts_repeat", true);
+        Pref.setString("calibration_snooze", "20");
+        Pref.setBoolean("play_sound_for_initial_calibration", true);
         Pref.setString("bg_notification_sound", "default"); // We need this along with a detector in the playFile method to handle the default mp3 option with SDK 26.
 
     }
