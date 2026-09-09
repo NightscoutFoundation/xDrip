@@ -165,8 +165,10 @@ public class IdempotentMigrations {
         Pref.setBoolean("store_sensor_location", false);
         Pref.setBoolean("using_g6", true);
         Pref.setBoolean("tidepool_new_auth", true);
-        Pref.setBoolean("bridge_battery_alerts", false);
+        Pref.setBoolean("bridge_battery_alerts", false); // Disable Parakeet
         Pref.setString("bridge_battery_alert_level", "30");
+        Pref.setBoolean("parakeet_status_alerts", false);
+        Pref.setBoolean("parakeet_charge_silent", false);
         Pref.setBoolean("g5_bluetooth_watchdog", true);
         Pref.setBoolean("bluetooth_frequent_reset", false);
         Pref.setBoolean("use_transmiter_pl_bluetooth", false);

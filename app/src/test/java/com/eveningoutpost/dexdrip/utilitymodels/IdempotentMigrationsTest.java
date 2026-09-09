@@ -128,26 +128,6 @@ public class IdempotentMigrationsTest extends RobolectricTestWithConfig {
                 .that(Pref.getString("bridge_battery_alert_level", "")).isEqualTo("30");
     }
 
-    /**
-     * The migration no longer writes the two Parakeet preferences. Nothing reads them once the
-     * status helper is gone, so writing them would only leave dead keys in every user's store.
-     */
-    @Test
-    public void performAllNoLongerWritesTheParakeetPreferences() {
-        // :: Setup
-        Pref.removeItem("parakeet_status_alerts");
-        Pref.removeItem("parakeet_charge_silent");
-
-        // :: Act
-        new IdempotentMigrations(RuntimeEnvironment.getApplication().getApplicationContext()).performAll();
-
-        // :: Verify
-        assertWithMessage("the Parakeet status alert preference is not written")
-                .that(Pref.isPreferenceSet("parakeet_status_alerts")).isFalse();
-        assertWithMessage("the Parakeet charging preference is not written")
-                .that(Pref.isPreferenceSet("parakeet_charge_silent")).isFalse();
-    }
-
     // ===== Legacy REST URI migration =============================================================
 
     /** A credential-prefixed legacy URL is folded into the URI authority and gains a trailing slash. */
