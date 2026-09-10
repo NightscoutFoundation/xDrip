@@ -168,10 +168,10 @@
     <string name="added">추가됨</string>
     <string name="checking_for_update">업데이트 확인 중...</string>
     <string name="signal_missed">신호 끊김</string>
-    <string name="minutes_ago">{0, choice,0#{0, number, integer} 몇분 전에|1#{0, number, integer} 분 전|1&lt;{0, number, integer} 몇분 전에}</string>
+    <string name="minutes_ago">{0, choice,0#{0, number, integer}분 전|1#{0, number, integer}분 전|1&lt;{0, number, integer}분 전}</string>
     <string name="expires_days">{0, choice,0#센서 만료됨!|1#{0, number}일 후 만료|1&lt;{0, number}일 후 만료}</string>
     <string name="expires_at">만료: {0}</string>
-    <string name="space_minutes_ago">" 몇분 전에"</string>
+    <string name="space_minutes_ago">"분 전"</string>
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Libre 전체 홈 모드: 아직 수집된 데이터가 없습니다."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"Libre 전체 홈 모드: 마지막 측정 "</string>
     <string name="space_minute_ago">" 분 전"</string>
