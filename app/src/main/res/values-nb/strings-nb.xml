@@ -1570,6 +1570,10 @@
     <string name="title_ongoing_notification_channel">Bruk pågående notifikasjonskanal</string>
     <string name="summary_notification_channels_grouping">Om notifikasjoner skal grupperes sammen. Inkompatibel med alternativet \"Nummerikon i notifikasjonsfeltet\"</string>
     <string name="title_notification_channels_grouping">Grupper notifikasjoner sammen</string>
+    <string name="glucose_level_notifications">Glukosenivåvarsler</string>
+    <string name="ongoing_notification">Pågående varsel</string>
+    <string name="general_notifications">Generelt</string>
+    <string name="other_alert_notifications">Andre varsler</string>
     <string name="summary_delay_ascending_3min">For stigende volumprofil, utsett starten av varsellyden med 3 minutter. Vibrasjonen (hvis aktivert) starter så snart varselet utløses uavhengig av denne innstillingen.</string>
     <string name="title_ascending_volume">Stigende voluminnstillinger</string>
     <string name="title_delay_ascending_3min">Utsett stigende volum</string>
