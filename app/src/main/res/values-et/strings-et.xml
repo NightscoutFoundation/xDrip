@@ -1551,6 +1551,10 @@
     <string name="title_ongoing_notification_channel">Kasuta pidevat teavituskanalit</string>
     <string name="summary_notification_channels_grouping">Teatised tuleks rühmitada. Ei ühildu valikuga „Numbriikoon teavitusalal”.</string>
     <string name="title_notification_channels_grouping">Rühmita teavitused kokku</string>
+    <string name="glucose_level_notifications">Veresuhkru hoiatused</string>
+    <string name="ongoing_notification">Käimasolev teavitus</string>
+    <string name="general_notifications">Üldine</string>
+    <string name="other_alert_notifications">Muud alarmid</string>
     <string name="summary_delay_ascending_3min">Kasvava helitugevuse profiili jaoks lükka hoiatusheli algust 3 minutit edasi. Vibratsioon (kui lubatud) algab kohe, kui hoiatus käivitub, olenemata sellest sättest.</string>
     <string name="title_ascending_volume">Kasvava helitugevuse seaded</string>
     <string name="title_delay_ascending_3min">Helitugevuse kasvu viivitus</string>
