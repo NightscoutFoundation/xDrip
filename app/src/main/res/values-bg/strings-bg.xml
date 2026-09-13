@@ -1573,7 +1573,7 @@
     <string name="glucose_level_notifications">Аларми за ниво на глюкозата</string>
     <string name="ongoing_notification">Текущи известия</string>
     <string name="general_notifications">Основен</string>
-    <string name="other_alert_notifications">Други Известия</string>
+    <string name="other_alert_notifications">Други известия</string>
     <string name="summary_delay_ascending_3min">За възходящ профил на звука, отложете началото на предупредителния звук с 3 минути. Вибрацията (ако е активирана) започва веднага щом се задейства предупреждението, независимо от тази настройка.</string>
     <string name="title_ascending_volume">Настройки за Възходящ обем</string>
     <string name="title_delay_ascending_3min">Забавяне Възходящ обем</string>
