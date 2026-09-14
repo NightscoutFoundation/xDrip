@@ -1287,7 +1287,7 @@
     <string name="nocturne_connect_switch_positive">Bytt</string>
     <string name="nocturne_connect_unknown_instance">(ukjent)</string>
     <string name="nocturne_connect_confirm_title">Koble til Nocturne?</string>
-    <string name="nocturne_connect_confirm_message">Koble xDrip+ til:\n\n%1$s</string>
+    <string name="nocturne_connect_confirm_message">Koble xDrip til:\n\n%1$s</string>
     <string name="nocturne_connect_confirm_positive">Koble til</string>
     <!-- NocturneConnectHelper (device flow UI) -->
     <string name="nocturne_already_connected_disconnect">Allerede koblet til Nocturne. Koble fra først?</string>
@@ -1298,7 +1298,7 @@
     <string name="nocturne_start_auth_failed">Kunne ikke starte godkjenningen. Kontroller URL-en til Nocturne.</string>
     <string name="nocturne_device_code_body_auto">Skriv inn denne koden på Nocturne-instansen din:\n\n%1$s\n\nKoden utløper om %2$d minutter.\n\nTrykk på «Åpne nettleser» for å gå til godkjenningssiden.</string>
     <string name="nocturne_device_code_body_manual">Skriv inn denne koden på Nocturne-instansen din:\n\n%1$s\n\nKoden utløper om %2$d minutter.\n\nÅpne Nocturne-instansen din i nettleseren for å skrive inn koden.</string>
-    <string name="nocturne_authorize_title">Godkjenn xDrip+</string>
+    <string name="nocturne_authorize_title">Godkjenn xDrip</string>
     <string name="nocturne_open_browser">Åpne nettleser</string>
     <string name="nocturne_connected">Koblet til Nocturne!</string>
     <string name="nocturne_auth_expired">Godkjenningen er utløpt. Prøv igjen.</string>
