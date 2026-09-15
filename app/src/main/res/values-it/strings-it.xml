@@ -1569,6 +1569,10 @@
     <string name="title_ongoing_notification_channel">Usa il canale di notifiche attuale</string>
     <string name="summary_notification_channels_grouping">Se le notifiche devono essere raggruppate insieme. Incompatibili con l\'opzione \'Numero nell\'area di Notifica\'</string>
     <string name="title_notification_channels_grouping">Raggruppa le notifiche</string>
+    <string name="glucose_level_notifications">Allarmi Livello Glicemia</string>
+    <string name="ongoing_notification">Notifica persistente</string>
+    <string name="general_notifications">Generale</string>
+    <string name="other_alert_notifications">Altri allarmi</string>
     <string name="summary_delay_ascending_3min">Per il profilo di volume crescente, ritarda di 3 minuti l\'inizio del suono di allarme. La vibrazione (se abilitata) inizia non appena l\'avviso si attiva, indipendentemente da questa impostazione.</string>
     <string name="title_ascending_volume">Impostazioni Volume Crescente</string>
     <string name="title_delay_ascending_3min">Ritardo Volume Crescente</string>
