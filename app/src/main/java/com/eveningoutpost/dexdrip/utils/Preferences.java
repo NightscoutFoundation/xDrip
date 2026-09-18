@@ -61,7 +61,6 @@ import com.eveningoutpost.dexdrip.BasePreferenceActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.NFCReaderX;
-import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.alert.Registry;
@@ -1321,17 +1320,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             profile_carb_absorption_default.setTitle(format_carb_absorption_rate(profile_carb_absorption_default.getTitle().toString(), this.prefs.getString("profile_carb_absorption_default", "")));
 
 
-            refresh_extra_items();
-            findPreference("plus_extra_features").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Home.invalidateMenu = true; // force redraw
-                    refresh_extra_items();
-
-                    return true;
-                }
-            });
-
             final Preference crash_reports = findPreference("enable_crashlytics");
             crash_reports.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
@@ -2266,7 +2254,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     preference.setSummary(newValue.toString());
-                    ParakeetHelper.notifyOnNextCheckin(true);
                     return true;
                 }
             });
@@ -3040,20 +3027,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return true;
                 }
             });
-        }
-
-        private void refresh_extra_items() {
-            try {
-                if (this.prefs == null) return;
-                if (!this.prefs.getBoolean("plus_extra_features", false)) {
-                    // getPreferenceScreen().removePreference(findPreference("plus_follow_master"));
-
-                } else {
-                    // getPreferenceScreen().addPreference(findPreference("plus_follow_master"));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Got exception in refresh extra: " + e.toString());
-            }
         }
 
         public void jumpToScreen(final String screenKey) {

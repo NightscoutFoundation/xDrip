@@ -82,9 +82,9 @@ public class WifiCollectionService extends Service {
             l.addAll(WixelReader.megaStatus());
         }
         
-        final int bridgeBattery = Pref.getInt("parakeet_battery", 0);
-        if (bridgeBattery > 0) {
-            l.add(new StatusItem("Parakeet Battery", bridgeBattery + "%", bridgeBattery < 50 ? bridgeBattery < 40 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NOTICE : StatusItem.Highlight.GOOD));
+        final int uploaderBattery = Pref.getInt("parakeet_battery", 0);
+        if (uploaderBattery > 0) {
+            l.add(new StatusItem("Uploader Battery", uploaderBattery + "%", uploaderBattery < 50 ? uploaderBattery < 40 ? StatusItem.Highlight.BAD : StatusItem.Highlight.NOTICE : StatusItem.Highlight.GOOD));
         }
         l.addAll(Mdns.megaStatus(context));
         return l;

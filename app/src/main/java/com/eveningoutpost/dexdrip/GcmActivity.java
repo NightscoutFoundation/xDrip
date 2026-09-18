@@ -89,7 +89,7 @@ public class GcmActivity extends FauxActivity {
     private static final long MAX_ACK_OUTSTANDING_MS = 3600000;
     private static int recursion_depth = 0;
     private static int last_bridge_battery = -1;
-    private static int last_parakeet_battery = -1;
+    private static int last_uploader_battery = -1;
     private static final int MAX_RECURSION = 30;
     private static final int MAX_QUEUE_SIZE = 300;
     private static final int RELIABLE_MAX_PAYLOAD = 1800;
@@ -407,11 +407,11 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    public static void sendParakeetBattery(final int battery) {
-        if (battery != last_parakeet_battery) {
+    public static void sendUploaderBattery(final int battery) {
+        if (battery != last_uploader_battery) {
             if (JoH.pratelimit("gcm-pbu", 1800)) {
                 GcmActivity.sendMessage("pbu", Integer.toString(battery));
-                last_parakeet_battery = battery;
+                last_uploader_battery = battery;
             }
         }
     }
