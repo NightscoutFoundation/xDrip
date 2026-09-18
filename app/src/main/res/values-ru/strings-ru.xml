@@ -235,7 +235,7 @@
     <string name="extrapolate_data_to_try_to_predict_lows">Экстраполировать данные, чтобы попытаться предсказать низкий</string>
     <string name="alarm_at_forecasted_low_mins">Тревога при предсказанном низком за x минут</string>
     <string name="title_forecast_low_threshold">Порог</string>
-    <string name="other_xdrip_plus_alerts">Другие оповещения xDrip+</string>
+    <string name="other_xdrip_plus_alerts">Другие тревоги xDrip+</string>
     <string name="xdrip_plus_display_settings">Настройки отображения xDrip+</string>
     <string name="display_customisations">Настройки отображения</string>
     <string name="insulin_carb_ratios_etc_for_models">Настройки инсулина, углеводов и т.д. для моделей</string>
@@ -1590,7 +1590,7 @@
     <string name="running_test_with_number_123">Тест запущен с номером: 123</string>
     <string name="unusual_internal_context_problem__please_report">Необычная внутренняя проблема контекста - пожалуйста, сообщите</string>
     <string name="cannot_start__please_report_context_problem">Невозможно запустить - пожалуйста, сообщите о проблеме контекста</string>
-    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ не совместим с версиями Android ниже 4.2</string>
+    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ не будет работать на Android ниже 4.2</string>
     <string name="xdrip_oop2_not_installed">xDrip+ необходим OOP2 для работы с US Libre2/Libre сенсором.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Для корректной работы приложение необходимо исключить из списка оптимизации энергопотребления. Пожалуйста выполните необходимые настройки</string>
     <string name="setting_disabled_">Настройка отключена :)</string>

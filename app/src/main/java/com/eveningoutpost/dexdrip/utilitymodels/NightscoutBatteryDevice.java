@@ -57,15 +57,15 @@ public enum NightscoutBatteryDevice {
         }
     },
 
-    PARAKEET {
+    WIFI_UPLOADER {
         @Override
         int getBatteryLevel(Context mContext) {
-            return Pref.getInt("parakeet_battery", -1);
+            return Pref.getInt("parakeet_battery", -1); // legacy preference key, kept so stored values survive
         }
 
         @Override
         String getDeviceName() {
-            return "Parakeet";
+            return "Wifi Uploader";
         }
     },
 

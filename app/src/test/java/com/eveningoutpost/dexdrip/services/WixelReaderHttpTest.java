@@ -125,4 +125,55 @@ public class WixelReaderHttpTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(result).isEmpty();
     }
+
+    // ===== the usb-wixel sentinel geolocation ===========================================================================
+
+    /**
+     * A record carrying a real geolocation is ordinary parakeet data, and the read stops as soon as
+     * the caller has the number of records it asked for.
+     */
+    @Test
+    public void readHttpJson_stopsAtTheRequestedCount_forRealGeolocation() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setBody(threeRecordsWithGeoLocation("59.91,10.75")));
+        Method readHttpJson = WixelReader.class.getDeclaredMethod("readHttpJson", String.class, int.class);
+        readHttpJson.setAccessible(true);
+
+        // :: Act
+        @SuppressWarnings("unchecked")
+        List<?> result = (List<?>) readHttpJson.invoke(null, server.url("/json.get").toString(), 2);
+
+        // :: Verify
+        assertThat(result).hasSize(2);
+    }
+
+    /**
+     * The python usb script submits a bogus mid-ocean geolocation so that its records can be told
+     * apart from real parakeet ones. Seeing it makes the read look further, because both kinds can
+     * arrive from the same host. This is live logic, not part of the parakeet map.
+     */
+    @Test
+    public void readHttpJson_readsFurther_whenTheSentinelGeolocationIsSeen() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setBody(threeRecordsWithGeoLocation("-15,-15")));
+        Method readHttpJson = WixelReader.class.getDeclaredMethod("readHttpJson", String.class, int.class);
+        readHttpJson.setAccessible(true);
+
+        // :: Act
+        @SuppressWarnings("unchecked")
+        List<?> result = (List<?>) readHttpJson.invoke(null, server.url("/json.get").toString(), 2);
+
+        // :: Verify
+        assertThat(result).hasSize(3);
+    }
+
+    private static String threeRecordsWithGeoLocation(final String geoLocation) {
+        final StringBuilder body = new StringBuilder();
+        for (int i = 1; i <= 3; i++) {
+            body.append("{\"TransmitterId\":\"ABCDE\",\"RawValue\":100000,\"FilteredValue\":100000,")
+                    .append("\"RelativeTime\":").append(i * 300000L).append(",")
+                    .append("\"GeoLocation\":\"").append(geoLocation).append("\"}\n");
+        }
+        return body.toString();
+    }
 }

@@ -1568,9 +1568,13 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="summary_use_notification_channels">Použít funkci notifikačního kanálu pro Android 8+</string>
     <string name="title_use_notification_channels">Notifikační kanály</string>
     <string name="summary_ongoing_notification_channel">Na některých zařízeních může aktivovat zobrazení oznámení při vypnutém displeji (ambient display). Nutno nejdříve otestovat!</string>
-    <string name="title_ongoing_notification_channel">Použít aktuální notifikační kanál</string>
+    <string name="title_ongoing_notification_channel">Použít notifikační kanál pro trvalá oznámení</string>
     <string name="summary_notification_channels_grouping">Seskupit všechna oznámení v notifikační liště do jednoho oznámení. Není možné použít spolu s možností Hodnota glykémie jako číselná ikona v notifikační liště</string>
     <string name="title_notification_channels_grouping">Seskupit oznámení do jednoho</string>
+    <string name="glucose_level_notifications">Výstrahy glykémie</string>
+    <string name="ongoing_notification">Trvalá oznámení</string>
+    <string name="general_notifications">Obecné</string>
+    <string name="other_alert_notifications">Ostatní výstrahy</string>
     <string name="summary_delay_ascending_3min">Posunout začátek zvukové výstrahy o 3 minuty pro zvukový profil vzestupné hlasitosti. Vibrace (pokud jsou povoleny) začnou ihned po spuštění výstrahy bez ohledu na toto nastavení.</string>
     <string name="title_ascending_volume">Nastavení vzestupné hlasitosti</string>
     <string name="title_delay_ascending_3min">Zpozdit vzestupnou hlasitost</string>

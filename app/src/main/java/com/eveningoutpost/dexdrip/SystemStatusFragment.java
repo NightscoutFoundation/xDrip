@@ -370,12 +370,12 @@ public class SystemStatusFragment extends Fragment {
         }
     }
 
+    /**
+     * A wifi uploader is reached over the network, so the bluetooth connection state below says
+     * nothing about it. Report no data rather than claiming the phone is not connected.
+     */
     private void setConnectionStatusWifiWixel() {
-        if (ParakeetHelper.isParakeetCheckingIn()) {
-            connection_status.setText(ParakeetHelper.parakeetStatusString());
-        } else {
-            connection_status.setText(safeGetContext().getString(R.string.no_data));
-        }
+        connection_status.setText(safeGetContext().getString(R.string.no_data));
     }
 
     public void setConnectionStatus(String msg) {

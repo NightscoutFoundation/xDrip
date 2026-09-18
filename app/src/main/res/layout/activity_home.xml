@@ -447,7 +447,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/parakeetbattery"
+                    android:id="@+id/uploaderbattery"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/extraStatusLine"
@@ -466,7 +466,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/extraStatusLine"
                     android:layout_marginLeft="10dp"
-                    android:layout_toEndOf="@+id/parakeetbattery"
+                    android:layout_toEndOf="@+id/uploaderbattery"
                     android:background="@android:color/transparent"
                     android:inputType="none"
                     android:text="Sensor Age"
