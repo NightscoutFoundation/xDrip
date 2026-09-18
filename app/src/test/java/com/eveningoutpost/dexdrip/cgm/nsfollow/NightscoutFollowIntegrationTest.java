@@ -150,7 +150,7 @@ public class NightscoutFollowIntegrationTest extends RobolectricTestWithConfig {
                 .addHeader("Content-Type", "application/json"));
 
         // :: Act
-        Response<ResponseBody> response = api.getTreatments("treatment-secret").execute();
+        Response<ResponseBody> response = api.getTreatments("treatment-secret", null, null).execute();
 
         // :: Verify
         assertThat(response.isSuccessful()).isTrue();
@@ -160,5 +160,26 @@ public class NightscoutFollowIntegrationTest extends RobolectricTestWithConfig {
         assertThat(request.getPath()).isEqualTo("/api/v1/treatments");
         assertThat(request.getHeader("api-secret")).isEqualTo("treatment-secret");
         assertThat(response.body().string()).contains("Temp Basal");
+    }
+
+    @Test
+    public void getTreatments_widerWindowAddsRangeAndCount() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse()
+                .setBody(TREATMENTS_JSON)
+                .addHeader("Content-Type", "application/json"));
+        final String since = "2024-01-01T00:00:00Z";
+
+        // :: Act
+        Response<ResponseBody> response = api.getTreatments("treatment-secret", since, 1000).execute();
+
+        // :: Verify
+        assertThat(response.isSuccessful()).isTrue();
+
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getPath()).startsWith("/api/v1/treatments?");
+        assertThat(request.getPath()).contains("created_at");
+        assertThat(request.getPath()).contains(since);
+        assertThat(request.getPath()).contains("count=1000");
     }
 }
