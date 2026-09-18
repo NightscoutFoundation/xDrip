@@ -178,6 +178,7 @@ public class IdempotentMigrations {
         Pref.setBoolean("notification_channels_grouping", false);
         Pref.setBoolean("use_number_icon_large", false);
         Pref.setBoolean("number_icon_large_arrow", false);
+        Pref.setBoolean("ongoing_notification_channel", true);
         Pref.setString("bg_notification_sound", "default"); // We need this along with a detector in the playFile method to handle the default mp3 option with SDK 26.
 
     }
