@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.models.JoH.delayedMediaPlayerRelease;
+import static com.eveningoutpost.dexdrip.models.JoH.pratelimit;
 import static com.eveningoutpost.dexdrip.models.JoH.setMediaDataSource;
 import static com.eveningoutpost.dexdrip.models.JoH.stopAndReleasePlayer;
 import static com.eveningoutpost.dexdrip.receiver.InfoContentProvider.ping;
@@ -56,7 +57,7 @@ import lombok.Getter;
 // This is needed in order for the callbackst to work.
 class MediaPlayerCreaterHelper {
 
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = MediaPlayerCreaterHelper.class.getSimpleName();
     private final Object creationThreadLock = new Object();
     private volatile boolean mplayerCreated_ = false;
     private volatile MediaPlayer mediaPlayer_ = null;
@@ -633,12 +634,15 @@ public class AlertPlayer {
                 builder.setFullScreenIntent(notificationIntent(context, new Intent(context, Home.class)), true);
             }
 
+            Log.ueh(TAG, contentLog); // Glucose level alert log
             if (notSilencedDueToCall()) {
                 if (overrideSilent || isLoudPhone(context)) {
                     playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent, priority, tag);
+                } else if (pratelimit("silent-alert-log", 1200)) {
+                    UserError.Log.uel(TAG, "No " + tag + " in silent mode");
                 }
             } else {
-                Log.i(TAG, "Silenced Alert Noise due to ongoing call");
+                Log.i(TAG, "No sound due to ongoing call");
             }
         }
         if (profile != ALERT_PROFILE_SILENT && alert.vibrate) {
@@ -647,12 +651,14 @@ public class AlertPlayer {
                     JoH.vibrateInternal(Notifications.vibratePattern, priority, tag);
                 }
             } else {
-                Log.i(TAG, "Vibration silenced due to ongoing call");
+                Log.i(TAG, "No vibration due to ongoing call");
             }
+        }
+        if (profile == ALERT_PROFILE_SILENT && pratelimit("silent-alert-log", 1200)) {
+            UserError.Log.uel(TAG, "No " + tag + " with silent volume profile");
         }
         // Let's keep this dummy pattern so the notification still mirrors to watches
         builder.setVibrate(new long[]{1, 0});
-        Log.ueh(TAG, contentLog);
         final NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, XdripNotificationCompat.build(builder));
@@ -738,6 +744,9 @@ public class AlertPlayer {
         int profile = getAlertProfile(context);
         if (profile == ALERT_PROFILE_SILENT) {
             activeTag = "";
+            if (priority > 70) {
+                UserError.Log.uel(TAG, "No " + type + " with silent volume profile");
+            }
             return;
         }
 
@@ -767,6 +776,9 @@ public class AlertPlayer {
         } else {
             // No sound will play, so reset priority now so the gate doesn't stay locked.
             activeTag = "";
+            if (priority > 70) {
+                UserError.Log.uel(TAG, "No " + type + " in silent mode");
+            }
         }
     }
 
@@ -785,11 +797,14 @@ public class AlertPlayer {
         if (t.contains("persistent_high_alert")) return 87;
         if (t.contains("high_glucose_level")) return 85;
         if (t.contains("bg_predict_alert")) return 80;
-        if (t.contains("bluereader alarm")) return 75;
-        if (t.contains("bg_fall_alert") || t.contains("bg_rise_alert")) return 70;
-        if (t.contains("bg_unclear_readings_alert")) return 60;
-        if (t.contains("reminder")) return 50;
-        if (t.contains("sensor_expiry")) return 40;
+        // The default sound for the items above this line is our default alarm sound.
+        // The default sound for the items below this line is our default notification sound.
+        if (t.contains("bg_fall_alert") || t.contains("bg_rise_alert")) return 75;
+        // If the phone is in DND and override silent mode is not enabled for an item above this line, we create a trigger log.
+        if (t.contains("sensor_expiry")) return 60;
+        if (t.contains("bluereader alarm")) return 50;
+        if (t.contains("bg_unclear_readings_alert")) return 40;
+        if (t.contains("reminder")) return 30;
         if (t.contains("ob1_session_restart")) return 20;
         if (t.contains("general_notification")) return 10;
         return 5;
