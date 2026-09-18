@@ -389,7 +389,6 @@ public class LibreWifiReader extends AsyncTask<String, Void, Void> {
 
             for (LibreWifiData libre_wifi_data : libre_Wifi_header.libre_wifi_data) {
                 libre_wifi_data.CaptureDateTime = System.currentTimeMillis() - libre_wifi_data.RelativeTime;
-                //MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
 
                 if (newest_timestamp < libre_wifi_data.CaptureDateTime) {
                     statusLog(hostName + ":" + port, JoH.hourMinuteString() + " OK data from:", libre_wifi_data.CaptureDateTime);
