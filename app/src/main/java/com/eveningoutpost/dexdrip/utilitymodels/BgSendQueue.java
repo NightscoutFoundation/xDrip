@@ -175,10 +175,4 @@ public class BgSendQueue extends Model {
         // This is just a stub - only used on Android Wear
     }
 
-   /* @Deprecated
-    public void markMongoSuccess() {
-        this.mongo_success = true;
-        save();
-    }*/
-
 }

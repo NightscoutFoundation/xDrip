@@ -27,6 +27,10 @@ public class SyncService extends IntentService {
     }
 
     private void attemptSend() {
+        // Don't sync on phone if wear only mode is activated
+        if (Pref.getBooleanDefaultFalse("only_ever_use_wear_collector")) {
+            return;
+        }
         if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
                 || Pref.getBooleanDefaultFalse("wear_sync")
                 || Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable")

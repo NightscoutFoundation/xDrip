@@ -10,8 +10,8 @@ import java.nio.ByteOrder;
 /**
  * Created by joeginley on 3/16/16.
  */
-public class KeepAliveTxMessage extends TransmitterMessage {
-    public static final int opcode = 0x6;
+public class KeepAliveTxMessage extends BaseMessage {
+    public static final int opcode = 0x06;
     private int time;
 
     private final static String TAG = G5CollectionService.TAG; // meh

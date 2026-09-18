@@ -12,6 +12,7 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Select;
 import android.database.sqlite.SQLiteDatabase;//KS
 import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.SensorSendQueue;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -188,6 +189,22 @@ public class Sensor extends Model {
             Log.d("wearSENSOR", "TableExists CATCH error table:" + table);
             return false;
         }
+    }
+
+    public static Sensor lastStopped() {
+        Sensor sensor = new Select()
+                .from(Sensor.class)
+                .where("started_at != 0")
+                .where("stopped_at != 0")
+                .orderBy("_ID desc")
+                .limit(1)
+                .executeSingle();
+        return sensor;
+    }
+
+    public static boolean stoppedRecently() {
+        final Sensor last = lastStopped();
+        return last != null && last.stopped_at < JoH.tsl() && (JoH.msSince(last.stopped_at) < (Constants.HOUR_IN_MS * 2));
     }
 
     public static Sensor currentSensor() {

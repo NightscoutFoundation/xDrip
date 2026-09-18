@@ -18,12 +18,14 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.ListenerService;
+import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.HeartRate;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.PebbleMovement;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.services.SyncService;
 import com.eveningoutpost.dexdrip.services.CustomComplicationProviderService;
 import com.eveningoutpost.dexdrip.stats.StatsResult;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -119,136 +121,25 @@ public class BgSendQueue extends Model {
 
     public static void handleNewBgReading(BgReading bgReading, String operation_type, final Context context, boolean is_follower, boolean quick) {
         PowerManager powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                "sendQueue");
+        PowerManager.WakeLock wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "sendQueue");
         wakeLock.acquire(120000);
         try {
 
             Notifications.start();
             CustomComplicationProviderService.refresh();
 
-            if (!is_follower) addToQueue(bgReading, operation_type);
+            if (!is_follower) {
+                addToQueue(bgReading, operation_type);
+                UploaderQueue.newEntry(operation_type, bgReading);
+            }
 
             final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-            // all this other UI stuff probably shouldn't be here but in lieu of a better method we keep with it..
-
-            //KS Following is not needed on watch
-            /*
-            if (!quick) {
-                if (Home.activityVisible) {
-                    Intent updateIntent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE_NO_DATA);
-                    context.sendBroadcast(updateIntent);
-                }
-
-                Context appContext = xdrip.getAppContext();//KS
-                if (AppWidgetManager.getInstance(context).getAppWidgetIds(new ComponentName(appContext, xDripWidget.class)).length > 0) {//KS context
-                    context.startService(new Intent(context, WidgetUpdateService.class));
-                }
+            // process the uploader queue in 'only-wear' mode
+            Log.d("BgSendQueue", "start SyncService on wear device");
+            if (JoH.ratelimit("start-sync-service", 60)) {
+                JoH.startService(SyncService.class);
             }
-
-            if (prefs.getBoolean("broadcast_data_through_intents", false)) {
-                Log.i("SENSOR QUEUE:", "Broadcast data");
-                final Bundle bundle = new Bundle();
-                bundle.putDouble(Intents.EXTRA_BG_ESTIMATE, bgReading.calculated_value);
-
-                //TODO: change back to bgReading.calculated_value_slope if it will also get calculated for Share data
-                // bundle.putDouble(Intents.EXTRA_BG_SLOPE, bgReading.calculated_value_slope);
-                bundle.putDouble(Intents.EXTRA_BG_SLOPE, BgReading.currentSlope());
-                if (bgReading.hide_slope) {
-                    bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, "9");
-                } else {
-                    bundle.putString(Intents.EXTRA_BG_SLOPE_NAME, bgReading.slopeName());
-                }
-                bundle.putInt(Intents.EXTRA_SENSOR_BATTERY, getBatteryLevel(context));
-                bundle.putLong(Intents.EXTRA_TIMESTAMP, bgReading.timestamp);
-
-                //raw value
-                double slope = 0, intercept = 0, scale = 0, filtered = 0, unfiltered = 0, raw = 0;
-                Calibration cal = Calibration.last();
-                if (cal != null) {
-                    // slope/intercept/scale like uploaded to NightScout (NightScoutUploader.java)
-                    if (cal.check_in) {
-                        slope = cal.first_slope;
-                        intercept = cal.first_intercept;
-                        scale = cal.first_scale;
-                    } else {
-                        slope = 1000 / cal.slope;
-                        intercept = (cal.intercept * -1000) / (cal.slope);
-                        scale = 1;
-                    }
-                    unfiltered = bgReading.usedRaw() * 1000;
-                    filtered = bgReading.ageAdjustedFiltered() * 1000;
-                }
-                //raw logic from https://github.com/nightscout/cgm-remote-monitor/blob/master/lib/plugins/rawbg.js#L59
-                if (slope != 0 && intercept != 0 && scale != 0) {
-                    if (filtered == 0 || bgReading.calculated_value < 40) {
-                        raw = scale * (unfiltered - intercept) / slope;
-                    } else {
-                        double ratio = scale * (filtered - intercept) / slope / bgReading.calculated_value;
-                        raw = scale * (unfiltered - intercept) / slope / ratio;
-                    }
-                }
-                bundle.putDouble(Intents.EXTRA_RAW, raw);
-                Intent intent = new Intent(Intents.ACTION_NEW_BG_ESTIMATE);
-                intent.putExtras(bundle);
-                intent.addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
-
-
-                if (prefs.getBoolean("broadcast_data_through_intents_without_permission", false)) {
-                    context.sendBroadcast(intent);
-                } else {
-                    context.sendBroadcast(intent, Intents.RECEIVER_PERMISSION);
-                }
-
-                //just keep it alive for 3 more seconds to allow the watch to be updated
-                // TODO: change NightWatch to not allow the system to sleep.
-                if ((!quick) && (prefs.getBoolean("excessive_wakelocks", false))) {
-                    powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                            "broadcstNightWatch").acquire(3000);
-                }
-            }
-
-            // send to wear
-            if ((!quick) && (prefs.getBoolean("wear_sync", false))) {
-                context.startService(new Intent(context, WatchUpdaterService.class));
-                if (prefs.getBoolean("excessive_wakelocks", false)) {
-                    powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
-                            "wear-quickFix3").acquire(15000);
-
-                }
-            }
-
-            // send to pebble
-            if ((!quick) && (prefs.getBoolean("broadcast_to_pebble", false) )
-                    && (PebbleUtil.getCurrentPebbleSyncType(prefs) != 1)) {
-                context.startService(new Intent(context, PebbleWatchSync.class));
-            }
-
-            if ((!is_follower) && (prefs.getBoolean("plus_follow_master", false))) {
-                GcmActivity.syncBGReading(bgReading);
-            }
-
-            if ((!is_follower) && (!quick) && (prefs.getBoolean("share_upload", false))) {
-                if (JoH.ratelimit("sending-to-share-upload",10)) {
-                    Log.d("ShareRest", "About to call ShareRest!!");
-                    String receiverSn = prefs.getString("share_key", "SM00000000").toUpperCase();
-                    BgUploader bgUploader = new BgUploader(context);
-                    bgUploader.upload(new ShareUploadPayload(receiverSn, bgReading));
-                }
-            }
-
-            if (JoH.ratelimit("start-sync-service",30)) {
-                context.startService(new Intent(context, SyncService.class));
-            }
-
-            //Text to speech
-            //Log.d("BgToSpeech", "gonna call speak");
-            if ((!quick) && (prefs.getBoolean("bg_to_speech", false)))
-            {
-                BgToSpeech.speak(bgReading.calculated_value, bgReading.timestamp);
-            }
-            */
 
             // if executing on watch; send to watchface
             Inevitable.task("bg-send-queue", 1000, new Runnable() {
@@ -256,16 +147,16 @@ public class BgSendQueue extends Model {
                 public void run() {
                     if (prefs.getBoolean("enable_wearG5", false)) {//KS
                         Log.d("BgSendQueue", "handleNewBgReading Broadcast BG data to watch");
-                        resendData(context);
-                        if (prefs.getBoolean("force_wearG5", false)) {
+                        // Update data on watchface via local broadcast
+                        updateWatchfaceData(context);
+                        // Only send data to mobile if only_ever_use_wear is not enabled
+                        if (prefs.getBoolean("force_wearG5", false) && !prefs.getBoolean("only_ever_use_wear_collector", false)) {
                             //ListenerService.requestData(context);//Gets called by watchface in missedReadingAlert so not needed here
                             ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);//Do not need to request data from phone using requestData which performs a resend
                         }
                     }
                 }
             });
-
-
 
         } finally {
             wakeLock.release();
@@ -275,20 +166,20 @@ public class BgSendQueue extends Model {
     public static void sendToPhone(Context context) {//KS
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
-        if (prefs.getBoolean("enable_wearG5", false) && prefs.getBoolean("force_wearG5", false)) {
+        if (prefs.getBoolean("enable_wearG5", false) && prefs.getBoolean("force_wearG5", false) && !prefs.getBoolean("only_ever_use_wear_collector", false)) {
             //ListenerService.requestData(context);
             ListenerService.SendData(context, ListenerService.SYNC_ALL_DATA, null);
         }
     }
 
-    public static void resendData(Context context) {
+    public static void updateWatchfaceData(Context context) {
         final int battery = BgSendQueue.getBatteryLevel(context.getApplicationContext());
-        resendData(context, battery);
+        updateWatchfaceData(context, battery);
     }
 
     //KS start from WatchUpdaterService - updates watchface data
-    public static void resendData(Context context, int battery) {//KS
-        Log.d("BgSendQueue", "resendData enter battery=" + battery);
+    public static void updateWatchfaceData(Context context, int battery) {//KS
+        Log.d("BgSendQueue", "updateWatchfaceData enter battery=" + battery);
         long startTime = new Date().getTime() - (60000 * 60 * 24);
         Intent messageIntent = new Intent();
         messageIntent.setAction(Intent.ACTION_SEND);
@@ -296,13 +187,13 @@ public class BgSendQueue extends Model {
 
         BgReading last_bg = BgReading.last();
         if (last_bg != null) {
-            Log.d("BgSendQueue", "resendData last_bg.timestamp:" +  JoH.dateTimeText(last_bg.timestamp));
+            Log.d("BgSendQueue", "updateWatchfaceData last_bg.timestamp:" +  JoH.dateTimeText(last_bg.timestamp));
         }
 
         List<BgReading> graph_bgs = BgReading.latestForGraph(60, startTime);
         BgGraphBuilder bgGraphBuilder = new BgGraphBuilder(context.getApplicationContext());
         if (!graph_bgs.isEmpty()) {
-            Log.d("BgSendQueue", "resendData graph_bgs size=" + graph_bgs.size());
+            Log.d("BgSendQueue", "updateWatchfaceData graph_bgs size=" + graph_bgs.size());
             final ArrayList<DataMap> dataMaps = new ArrayList<>(graph_bgs.size());
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context.getApplicationContext());
             DataMap entries = dataMap(last_bg, sharedPrefs, bgGraphBuilder, context, battery);
@@ -314,7 +205,7 @@ public class BgSendQueue extends Model {
                 //messageIntent.putExtra("extra_status_line", extraStatusLine(sharedPrefs));
                 entries.putString("extra_status_line", extraStatusLine(sharedPrefs));
             }
-            Log.d("BgSendQueue", "resendData entries=" + entries);
+            Log.d("BgSendQueue", "updateWatchfaceData entries=" + entries);
             messageIntent.putExtra("data", entries.toBundle());
 
             DataMap stepsDataMap = getSensorSteps(sharedPrefs);
