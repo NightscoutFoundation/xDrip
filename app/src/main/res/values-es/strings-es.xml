@@ -224,7 +224,7 @@
     <string name="calibration_alerts">Alertas de calibración</string>
     <string name="missed_reading_alert">Alerta de lecturas perdidas</string>
     <string name="other_alerts">Otras alertas</string>
-    <string name="extra_alerts_xdrip_plus">Alertas adicionales (xDrip+)</string>
+    <string name="extra_alerts_xdrip_plus">Alertas Extras (xDrip+)</string>
     <string name="persistent_high_alert">Alerta alta persistente</string>
     <string name="persistent_high_alert_enable">Activar</string>
     <string name="title_persistent_high_threshold">Límite</string>
