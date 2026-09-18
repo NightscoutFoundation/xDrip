@@ -51,4 +51,22 @@ public class NotificationChannelsTest extends RobolectricTestWithConfig {
                     .that(name).isNotEqualTo(channel);
         }
     }
+
+    /**
+     * The Parakeet status channel is gone, and its display name is one of the strings this change
+     * removes. An id that is not in the map falls back to the raw id, so nothing looks up a string
+     * resource that no longer exists.
+     */
+    @Test
+    public void theParakeetStatusChannelIsNoLongerMapped() {
+        // :: Setup
+        val removedChannel = "parakeetStatusChannel";
+
+        // :: Act
+        val name = NotificationChannels.getString(removedChannel);
+
+        // :: Verify
+        assertWithMessage("removed channel falls back to its raw id")
+                .that(name).isEqualTo(removedChannel);
+    }
 }
