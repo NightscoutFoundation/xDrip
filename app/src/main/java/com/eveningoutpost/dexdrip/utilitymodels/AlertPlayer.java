@@ -357,6 +357,7 @@ public class AlertPlayer {
         mediaPlayer = new MediaPlayerCreaterHelper().createMediaPlayer(ctx);
         if (mediaPlayer == null) {
             Log.wtf(TAG, "MediaPlayerCreaterHelper().createMediaPlayer failed !!");
+            activeTag = ""; // Clear the lock
             return;
         }
 
@@ -401,6 +402,11 @@ public class AlertPlayer {
         }
         if (!setDataSourceSucceeded) {
             Log.wtf(TAG, "FATAL: Default_alert failed to load!");
+            activeTag = ""; // Clear the lock
+            if (mediaPlayer != null) {
+                stopAndReleasePlayer(mediaPlayer);
+                mediaPlayer = null;
+            }
             return;
         }
 
@@ -418,8 +424,20 @@ public class AlertPlayer {
             mediaPlayer.prepareAsync();
         } catch (NullPointerException e) {
             Log.wtf(TAG, "Playfile: Concurrency related null pointer exception: " + e.toString());
+            handlePlaybackFailure();
         } catch (IllegalStateException e) {
             Log.wtf(TAG, "Playfile: Concurrency related illegal state exception: " + e.toString());
+            handlePlaybackFailure();
+        }
+    }
+
+    // Handle fatal synchronization failure exits
+    private void handlePlaybackFailure() {
+        activeTag = "";
+        releaseAudioFocus();
+        if (mediaPlayer != null) {
+            stopAndReleasePlayer(mediaPlayer);
+            mediaPlayer = null;
         }
     }
 

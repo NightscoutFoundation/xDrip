@@ -595,9 +595,6 @@
     <string name="label_show_insulin">Е:%1$sе</string>
     <string name="label_show_carbs">Въглехидрати:%1$sg</string>
     <string name="label_show_royceratio">Вх/И:%1$s</string>
-    <string name="label_show_steps">Отброяване на стъпките. Нулират се в полунощ</string>
-    <string name="label_show_steps_km">показване на изминатото разстояние в км</string>
-    <string name="label_show_steps_mi">изминато разстояние в мили</string>
     <string name="pref_summary_influxdb_enabled">Ако използвате частна база данни InfluxDB, това трябва да е активирано</string>
     <string name="pref_message_influxdb_uri">Замени примерните стойности в {} с твоите реални стойности</string>
     <string name="pref_dialog_influxdb_uri">Въведете InfluxDB URI</string>
@@ -1570,6 +1567,10 @@
     <string name="title_ongoing_notification_channel">Използвайте текущ канал за уведомяване</string>
     <string name="summary_notification_channels_grouping">Дали известията трябва да се групират заедно. Несъвместим с опцията \'Номер на елемент в областта за уведомяване\'</string>
     <string name="title_notification_channels_grouping">Групирайте известията заедно</string>
+    <string name="glucose_level_notifications">Аларми за ниво на глюкозата</string>
+    <string name="ongoing_notification">Текущи известия</string>
+    <string name="general_notifications">Основен</string>
+    <string name="other_alert_notifications">Други известия</string>
     <string name="summary_delay_ascending_3min">За възходящ профил на звука, отложете началото на предупредителния звук с 3 минути. Вибрацията (ако е активирана) започва веднага щом се задейства предупреждението, независимо от тази настройка.</string>
     <string name="title_ascending_volume">Настройки за Възходящ обем</string>
     <string name="title_delay_ascending_3min">Забавяне Възходящ обем</string>

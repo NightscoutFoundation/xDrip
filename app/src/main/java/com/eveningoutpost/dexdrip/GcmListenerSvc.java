@@ -350,11 +350,6 @@ public class GcmListenerSvc extends JamListenerSvc {
                     GcmActivity.send_ping_reply();
                 } else if (action.equals("q")) {
                     Home.toaststatic("Received ping reply");
-                } else if (action.equals("plu")) {
-                    // process map update
-                    if (Home.get_follower()) {
-                        MapsActivity.newMapLocation(payload, (long) JoH.ts());
-                    }
                 } else if (action.equals("sbu")) {
                     if (Home.get_follower()) {
                         Log.i(TAG, "Received sensor battery level update");
@@ -369,7 +364,7 @@ public class GcmListenerSvc extends JamListenerSvc {
                     }
                 } else if (action.equals("pbu")) {
                     if (Home.get_follower()) {
-                        Log.i(TAG, "Received parakeet battery level update");
+                        Log.i(TAG, "Received wifi uploader battery level update");
                         Pref.setInt("parakeet_battery", Integer.parseInt(payload));
                     }
                 } else if (action.equals("psu")) {

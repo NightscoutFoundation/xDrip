@@ -224,7 +224,7 @@
     <string name="calibration_alerts">Kalibreringsvarsler</string>
     <string name="missed_reading_alert">Tapte avlesningsvarsel</string>
     <string name="other_alerts">Andre varsler</string>
-    <string name="extra_alerts_xdrip_plus">Ekstra varsler (xDrip+)</string>
+    <string name="extra_alerts_xdrip_plus">Ekstra varsler (xDrip)</string>
     <string name="persistent_high_alert">Vedvarende høy varsel</string>
     <string name="persistent_high_alert_enable">Aktiver</string>
     <string name="title_persistent_high_threshold">Terskel</string>
@@ -237,7 +237,7 @@
     <string name="extrapolate_data_to_try_to_predict_lows">Basert på nåværende verdi og trend, beregn hva de neste målingene vil bli dersom trenden fortsetter (ekstrapoler). Dette ignorerer insulin eller karbohydrater i kroppen.</string>
     <string name="alarm_at_forecasted_low_mins">Tidsgrense [min]</string>
     <string name="title_forecast_low_threshold">Terskel</string>
-    <string name="other_xdrip_plus_alerts">Andre xDrip+ varsler</string>
+    <string name="other_xdrip_plus_alerts">Andre xDrip varsler</string>
     <string name="xdrip_plus_display_settings">Skjerminnstillinger</string>
     <string name="display_customisations">Skjermtilpasninger</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulin-, karbohydratforhold etc. for modeller</string>
@@ -1287,7 +1287,7 @@
     <string name="nocturne_connect_switch_positive">Bytt</string>
     <string name="nocturne_connect_unknown_instance">(ukjent)</string>
     <string name="nocturne_connect_confirm_title">Koble til Nocturne?</string>
-    <string name="nocturne_connect_confirm_message">Koble xDrip+ til:\n\n%1$s</string>
+    <string name="nocturne_connect_confirm_message">Koble xDrip til:\n\n%1$s</string>
     <string name="nocturne_connect_confirm_positive">Koble til</string>
     <!-- NocturneConnectHelper (device flow UI) -->
     <string name="nocturne_already_connected_disconnect">Allerede koblet til Nocturne. Koble fra først?</string>
@@ -1298,7 +1298,7 @@
     <string name="nocturne_start_auth_failed">Kunne ikke starte godkjenningen. Kontroller URL-en til Nocturne.</string>
     <string name="nocturne_device_code_body_auto">Skriv inn denne koden på Nocturne-instansen din:\n\n%1$s\n\nKoden utløper om %2$d minutter.\n\nTrykk på «Åpne nettleser» for å gå til godkjenningssiden.</string>
     <string name="nocturne_device_code_body_manual">Skriv inn denne koden på Nocturne-instansen din:\n\n%1$s\n\nKoden utløper om %2$d minutter.\n\nÅpne Nocturne-instansen din i nettleseren for å skrive inn koden.</string>
-    <string name="nocturne_authorize_title">Godkjenn xDrip+</string>
+    <string name="nocturne_authorize_title">Godkjenn xDrip</string>
     <string name="nocturne_open_browser">Åpne nettleser</string>
     <string name="nocturne_connected">Koblet til Nocturne!</string>
     <string name="nocturne_auth_expired">Godkjenningen er utløpt. Prøv igjen.</string>
@@ -1570,6 +1570,10 @@
     <string name="title_ongoing_notification_channel">Bruk pågående notifikasjonskanal</string>
     <string name="summary_notification_channels_grouping">Om notifikasjoner skal grupperes sammen. Inkompatibel med alternativet \"Nummerikon i notifikasjonsfeltet\"</string>
     <string name="title_notification_channels_grouping">Grupper notifikasjoner sammen</string>
+    <string name="glucose_level_notifications">Glukosenivåvarsler</string>
+    <string name="ongoing_notification">Pågående varsel</string>
+    <string name="general_notifications">Generelt</string>
+    <string name="other_alert_notifications">Andre varsler</string>
     <string name="summary_delay_ascending_3min">For stigende volumprofil, utsett starten av varsellyden med 3 minutter. Vibrasjonen (hvis aktivert) starter så snart varselet utløses uavhengig av denne innstillingen.</string>
     <string name="title_ascending_volume">Stigende voluminnstillinger</string>
     <string name="title_delay_ascending_3min">Utsett stigende volum</string>
@@ -1688,7 +1692,7 @@
     <string name="running_test_with_number_123">Kjører test med nummer: 123</string>
     <string name="unusual_internal_context_problem__please_report">Uvanlig intern kontekstproblem - vennligst rapporter</string>
     <string name="cannot_start__please_report_context_problem">Kan ikke starte - vennligst rapporter kontekstproblem</string>
-    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ vil ikke virke med Android-versjon 4.2 eller gamlere</string>
+    <string name="xdrip_will_not_work_below_android_version_42">xDrip vil ikke virke med Android-versjon 4.2 eller eldre</string>
     <string name="xdrip_oop2_not_installed">xDrip trenger OOP2 for å kunne håndtere Libre2/LibreUS sensorer.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Denne appen trenger hvitlisting for batterioptimalisering, ellers vil den ikke fungere bra. Tilbakestill appreferansene</string>
     <string name="setting_disabled_">Innstilling deaktivert :)</string>

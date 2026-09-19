@@ -1570,6 +1570,10 @@
     <string name="title_ongoing_notification_channel">使用常駐通知頻道</string>
     <string name="summary_notification_channels_grouping">是否將通知分組。與「通知列中的數字項目」選項不相容</string>
     <string name="title_notification_channels_grouping">將通知分組</string>
+    <string name="glucose_level_notifications">血糖值警示</string>
+    <string name="ongoing_notification">持續通知</string>
+    <string name="general_notifications">一般</string>
+    <string name="other_alert_notifications">其他警示</string>
     <string name="summary_delay_ascending_3min">對於遞增音量設定檔，將警示聲的開始延遲 3 分鐘。無論此設定為何，震動（若已啟用）會在警示觸發時立即開始。</string>
     <string name="title_ascending_volume">遞增音量設定</string>
     <string name="title_delay_ascending_3min">延遲遞增音量</string>
