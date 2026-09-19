@@ -6,10 +6,12 @@ import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.g5model.SensorDays;
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
+import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.BgSparklineBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -284,8 +286,21 @@ public class PebbleDisplayTrend extends PebbleDisplayAbstract {
             }
 
             // TODO I think special message is only appropriate with flat trend
+            // Note:  Message can only be 12 characters
+            long timeLeft = SensorDays.get().getRemainingSensorPeriodInMs();
             if (bgReadingS.equalsIgnoreCase(msg)) {
                 this.dictionary.addString(MESSAGE_KEY, PreferenceManager.getDefaultSharedPreferences(this.context).getString("pebble_special_text", "BAZINGA!"));
+            } else if(timeLeft < (24*3600000)) {
+                int hoursLeft = Math.toIntExact(timeLeft / 3600000);
+                int minutesLeft = Math.toIntExact((timeLeft - (hoursLeft * 3600000)) / 60000);
+                Log.d(TAG,"timeLeft="+timeLeft+", hoursLeft="+hoursLeft+ ", minutesLeft="+minutesLeft);
+                if(hoursLeft > 0) {
+                    this.dictionary.addString(MESSAGE_KEY, "End: " + hoursLeft + ":" + String.format("%02d", minutesLeft) + "h");
+                } else {
+                    this.dictionary.addString(MESSAGE_KEY, "End: " + minutesLeft + " min");
+                }
+            } else if(SensorDays.get().isValid() && (Ob1G5CollectionService.isG5WarmingUp() || (Ob1G5CollectionService.isPendingStart()))) {
+                this.dictionary.addString(MESSAGE_KEY, "Wait " + Math.toIntExact(SensorDays.get().getWarmupMs()/60000) + " min" );
             } else {
                 this.dictionary.addString(MESSAGE_KEY, "");
             }
