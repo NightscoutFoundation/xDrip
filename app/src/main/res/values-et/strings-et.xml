@@ -288,6 +288,7 @@
     <string name="pref_summary_show_treatments">Kuva ravipunktid graafikul</string>
     <string name="pref_use_wear_health">Kasuta kella poolt kogutud terviseandmeid</string>
     <string name="pref_summary_use_wear_health">Loe ja näita kõnnitud samme kui on saadaval</string>
+    <string name="title_enable_wear_auto_update">Automaatne Wear uuendus</string>
     <string name="pebble_integration">Integreerimine Pebble\'ga</string>
     <string name="send_data_to_pebble_watchface">Saada andmed Pebble kella avakuvale.</string>
     <string name="pebble_watch_integration">Pebble kellaga integreerimine</string>
@@ -360,6 +361,8 @@
     <string name="all_alerts_disabled_until">"Kõik alarmid välja lülitatud kuni "</string>
     <string name="low_alerts_disabled_until">"Madala veresuhkru alarmid keelatud kuni "</string>
     <string name="high_alerts_disabled_until">"Kõrge veresuhkru alarmid keelatud kuni "</string>
+    <string name="active_alert_rerise_at">Aktiivne alarm nimega \"%1$s\", kordub %2$s (%3$s minuti pärast)</string>
+    <string name="active_alert_snoozed_until">Aktiivne alarm nimega \"%1$s\", vaigistatud kuni %2$s (%3$s minuti pärast)</string>
     <string name="default_snooze">Vaikimisi vaigistus</string>
     <string name="until_you_reenable">Kuni selle uuesti lubamiseni</string>
     <string name="set">Seadista</string>
@@ -907,6 +910,7 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Peata sensor ainult siis, kui plaanid seda eemaldada, vastasel juhul jäta tööle!</string>
     <string name="restart_collector">Taaskäivitage vastuvõtja</string>
     <string name="forget_device">Unusta seade</string>
+    <string name="tx_reread_confirmation_title">Värskenda saatja andmed</string>
     <string name="other_notes">Muud märkused:</string>
     <string name="delete_future_data">Tulevikuandmete kustutamine</string>
     <string name="show_only_untranslated">Kuva ainult tõlkimata</string>
@@ -1239,6 +1243,54 @@
     <string name="summary_tidepool_upload_no_treatment">Laadi üles ainult CGM-i andmed, et vältida konflikte käsitsi üleslaaditud pumba andmetega</string>
     <string name="title_tidepool_upload_no_treatment">Ära laadi raviandmeid üles</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="nocturne">Nocturne</string>
+    <string name="nocturne_connect_activity_label">Ühenda Nocturne\'ga</string>
+    <string name="nocturne_settings_summary">Laadi üles Nocturne V4 API kaudu</string>
+    <string name="title_nocturne_instance_url">Nocturne\'i instantsi URL</string>
+    <string name="nocturne_instance_url_dialog_message">Sisesta oma Nocturne\'i instantsi URL (nt. https://mynocturne.example.com)</string>
+    <string name="nocturne_connect_pref_summary">Autoriseeri xDrip+ oma Nocturne\'i instantsiga</string>
+    <string name="summary_nocturne_upload_sgv">Laadi üles CGM sensori veresuhkru näidud</string>
+    <string name="title_nocturne_upload_treatments">Laadi üles raviandmed</string>
+    <string name="summary_nocturne_upload_treatments">Laadi üles boolused, süsivesikud, märkmed ja seadmed sündmused</string>
+    <string name="title_nocturne_upload_calibrations">Laadi üles kalibreerimised</string>
+    <string name="summary_nocturne_upload_calibrations">Laadi üles sensori kalibreerimised</string>
+    <string name="title_nocturne_upload_bloodtests">Laadi üles vereproovid</string>
+    <string name="summary_nocturne_upload_bloodtests">Laadi üles sõrmest mõõdetud näidud</string>
+    <string name="title_nocturne_upload_heartrate">Laadi üles pulsinäidud</string>
+    <string name="summary_nocturne_upload_heartrate">Laadi üles pulsiandmed</string>
+    <string name="title_nocturne_upload_stepcount">Laadi üles sammud</string>
+    <string name="summary_nocturne_upload_stepcount">Laadi üles sammude andmed</string>
+    <string name="title_nocturne_upload_devicestatus">Laadi üles seadme seisund</string>
+    <string name="summary_nocturne_upload_devicestatus">Laadi üles telefoni akutase ja laadimisseisund</string>
+    <string name="title_nocturne_use_mobile">Kasuta mobiilside andmeid</string>
+    <string name="summary_nocturne_use_mobile">Luba üleslaadimine mobiilse andmeside kaudu</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <string name="nocturne_connect_err_missing_url">Nocturne\'i instantsi URL on puudu</string>
+    <string name="nocturne_connect_err_invalid_url">Vigane URL</string>
+    <string name="nocturne_connect_warn_http">Kasutusel on ebaturvaline ühendus (HTTP)</string>
+    <string name="nocturne_connect_err_bad_scheme">URL-i alguses peab olema http:// või https://</string>
+    <string name="nocturne_connect_switch_title">Vaheta Nocturne\'i instantsi?</string>
+    <string name="nocturne_connect_switch_positive">Vaheta</string>
+    <string name="nocturne_connect_unknown_instance">(tundmatu)</string>
+    <string name="nocturne_connect_confirm_title">Ühenda Nocturne\'ga?</string>
+    <string name="nocturne_connect_confirm_message">Ühenda xDrip+\n\n%1$s</string>
+    <string name="nocturne_connect_confirm_positive">Ühenda</string>
+    <!-- NocturneConnectHelper (device flow UI) -->
+    <string name="nocturne_already_connected_disconnect">Juba Nocturne\'ga ühendatud. Ühenda kõigepealt lahti?</string>
+    <string name="nocturne_disconnect">Ühenda lahti</string>
+    <string name="nocturne_disconnected">Nocturne\'st lahti ühendatud</string>
+    <string name="nocturne_set_url_first">Palun seadista kõigepealt oma Nocturne\'i instantsi URL</string>
+    <string name="nocturne_connecting">Nocturne\'ga ühendumine...</string>
+    <string name="nocturne_start_auth_failed">Autoriseerimise alustamine ebaõnnestus. Kontrolli oma Nocturne\'i URL-i.</string>
+    <string name="nocturne_device_code_body_auto">Sisesta see kood oma Nocturne\'i instantsis:\n\n%1$s\n\nKood aegub %2$d minuti pärast.\n\nKinnituslehele minekuks puuduta \'Ava brauser\'.</string>
+    <string name="nocturne_device_code_body_manual">Sisesta see kood oma Nocturne\'i instantsis:\n\n%1$s\n\nKood aegub %2$d minuti pärast.\n\nKoodi sisestamiseks ava oma Nocturne\'i instants.</string>
+    <string name="nocturne_authorize_title">Autoriseeri xDrip+</string>
+    <string name="nocturne_open_browser">Ava brauser</string>
+    <string name="nocturne_connected">Ühendatud Nocturne\'ga!</string>
+    <string name="nocturne_auth_expired">Autoriseerimine on aegunud. Palun proovi uuesti.</string>
+    <string name="nocturne_auth_denied">Autoriseerimine tagasi lükatud.</string>
+    <string name="nocturne_auth_timed_out">Autoriseerimine aeg möödus. Palun proovi uuesti.</string>
     <string name="show_help">Näita juhendit</string>
     <string name="load_save_settings_on_sdcard">Lae/salvesta seaded</string>
     <string name="delete_all_bg_readings">Kustuta kõik VS näidud</string>
@@ -1467,6 +1519,7 @@
     <string name="summary_desert_use_https">Lisa jagatud võrkude (nt. avalik WiFi) jaoks veel üks krüpteerimiskiht</string>
     <string name="title_desert_use_https">Kasuta HTTPSi</string>
     <string name="title_xdrip_plus_experimental">Eksperimentaalne osa</string>
+    <string name="title_novopen_insulin_pen">NovoPen insuliinisüstal</string>
     <string name="title_inpen_open_nov_support">OpenNov tugi</string>
     <string name="summary_inpen_screen">Annuste allalaadimine</string>
     <string name="title_inpen_screen">InPen insuliini-pen</string>

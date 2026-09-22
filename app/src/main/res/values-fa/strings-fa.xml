@@ -94,6 +94,9 @@
     <!-- trend arrow for speak -->
     <string name="enable">فعال سازی</string>
     <string name="glucose_units_mmol_or_mgdl">واحد قند mmol/L یا mg/dL</string>
+    <!-- Nocturne connect flow -->
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>

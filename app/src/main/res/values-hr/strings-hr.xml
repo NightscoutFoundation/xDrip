@@ -1009,6 +1009,9 @@
     <string name="daily_backup_even_mobile">Svakodnevno sigurnosno kopiranje čak i na mobilnim podacima</string>
     <string name="summary_bluetooth_meter_for_calibrations_auto">Baždari bez traženja potvrde korsiteći nova očitanja glukoze u krvi ukoliko se uvjeti za to čine odgovarajućima (eksperimentalno)</string>
     <string name="title_bluetooth_meter_for_calibrations_auto">Automatsko baždarenje</string>
+    <!-- Nocturne connect flow -->
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="title_broadcast_service_api">API usluge emitiranja</string>
     <string name="summary_broadcast_service_api">Omogućuje xDrip komunikaciju s aplikacijama trećih strana pomoću novog API-ja</string>
     <!-- Maybe we can use them later?

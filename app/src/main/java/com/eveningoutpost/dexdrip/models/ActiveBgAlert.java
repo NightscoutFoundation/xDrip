@@ -20,7 +20,7 @@ import java.util.Date;
 @Table(name = "ActiveBgAlert", id = BaseColumns._ID)
 public class ActiveBgAlert extends Model {
 
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = ActiveBgAlert.class.getSimpleName();
     private static boolean patched = false;
 
     @Column(name = "alert_uuid")
@@ -66,7 +66,7 @@ public class ActiveBgAlert extends Model {
     public void snooze(int minutes) {
         next_alert_at = new Date().getTime() + minutes * 60000;
         is_snoozed = true;
-        Log.ueh("Snoozed Alert","Snoozed until: "+JoH.dateTimeText(next_alert_at));
+        Log.ueh(TAG,"Snoozed until: "+JoH.dateTimeText(next_alert_at));
         save();
     }
 

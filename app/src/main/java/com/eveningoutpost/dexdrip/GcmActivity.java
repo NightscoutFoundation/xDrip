@@ -392,12 +392,6 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    static void sendLocation(final String location) {
-        if (JoH.pratelimit("gcm-plu", 180)) {
-            GcmActivity.sendMessage("plu", location);
-        }
-    }
-
     public static void sendSensorBattery(final int battery) {
         if (JoH.pratelimit("gcm-sbu", 3600)) {
             GcmActivity.sendMessage("sbu", Integer.toString(battery));

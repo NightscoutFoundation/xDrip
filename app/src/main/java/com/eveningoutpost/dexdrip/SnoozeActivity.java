@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip;
 
-import java.text.MessageFormat;
+import java.text.DateFormat;
 import java.util.Date;
 
 import android.app.Dialog;
@@ -118,9 +118,9 @@ public class SnoozeActivity extends ActivityWithMenu {
 
     static String getNameFromTime(int time) {
         if (time < 120) {
-            return time + " minutes";
+            return time + " " + gs(R.string.unit_minutes);
         }
-        return (time / 60.0) + " hours";
+        return (time / 60.0) + " " + gs(R.string.unit_hours);
     }
 
     static int getTimeFromSnoozeValue(int pickedNumber) {
@@ -374,8 +374,10 @@ public class SnoozeActivity extends ActivityWithMenu {
         } else {
             sendRemoteSnooze.setVisibility(View.GONE);
             if(!aba.ready_to_alarm()) {
-                status = MessageFormat.format("Active alert exists named \"{0}\" {1,choice,0#Alert will rerise at|1#Alert snoozed until} {2,time} ({3} minutes left)",
-                        activeBgAlert.name, aba.is_snoozed ? 1 : 0 , new Date(aba.next_alert_at),(aba.next_alert_at - now) / 60000);
+                status = getString(aba.is_snoozed ? R.string.active_alert_snoozed_until : R.string.active_alert_rerise_at,
+                        activeBgAlert.name,
+                        DateFormat.getTimeInstance().format(new Date(aba.next_alert_at)),
+                        String.valueOf((aba.next_alert_at - now) / 60000));
             } else {
                 status = getString(R.string.active_alert_exists_named)+" \"" + activeBgAlert.name + "\" "+getString(R.string.bracket_not_snoozed);
             }
@@ -384,24 +386,29 @@ public class SnoozeActivity extends ActivityWithMenu {
 
         //check if there are disabled alerts and if yes add warning
         if (prefs.getLong(SnoozeType.ALL_ALERTS.getPrefKey(), 0) > now) {
-            String textToAdd = MessageFormat.format("{0,choice,0#{1,time}|1#you re-enable}",
-                    (prefs.getLong(SnoozeType.ALL_ALERTS.getPrefKey(), 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000) ? 1 : 0 , new Date(prefs.getLong(SnoozeType.ALL_ALERTS.getPrefKey(), 0)));
-            status = getString(R.string.all_alerts_disabled_until) + textToAdd;
+            status = getString(R.string.all_alerts_disabled_until) + disabledUntilText(prefs.getLong(SnoozeType.ALL_ALERTS.getPrefKey(), 0), now);
         } else {
             if (prefs.getLong(SnoozeType.LOW_ALERTS.getPrefKey(), 0) > now) {
-                String textToAdd = MessageFormat.format("{0,choice,0#{1,time}|1#you re-enable}",
-                        (prefs.getLong(SnoozeType.LOW_ALERTS.getPrefKey(), 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000) ? 1 : 0 , new Date(prefs.getLong(SnoozeType.LOW_ALERTS.getPrefKey(), 0)));
-                status += "\n\n"+getString(R.string.low_alerts_disabled_until) + textToAdd;
+                status += "\n\n"+getString(R.string.low_alerts_disabled_until) + disabledUntilText(prefs.getLong(SnoozeType.LOW_ALERTS.getPrefKey(), 0), now);
             }
             if (prefs.getLong(SnoozeType.HIGH_ALERTS.getPrefKey(), 0) > now) {
-                String textToAdd = MessageFormat.format("{0,choice,0#{1,time}|1#you re-enable}",
-                        (prefs.getLong(SnoozeType.HIGH_ALERTS.getPrefKey(), 0) > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000) ? 1 : 0 , new Date(prefs.getLong(SnoozeType.HIGH_ALERTS.getPrefKey(), 0)));
-                status += "\n\n"+getString(R.string.high_alerts_disabled_until) + textToAdd;
+                status += "\n\n"+getString(R.string.high_alerts_disabled_until) + disabledUntilText(prefs.getLong(SnoozeType.HIGH_ALERTS.getPrefKey(), 0), now);
             }
         }
 
         alertStatus.setText(status);
 
+    }
+
+    /**
+     * Returns the text shown after "... disabled until ": either the localized
+     * "you re-enable" when alerts are disabled forever, or the time they get re-enabled.
+     */
+    private String disabledUntilText(long disabledUntil, long now) {
+        //if alerts were disabled "until you re-enable", and this test is done less than 365 * 24 * 60 minutes later, then this test will give true
+        return (disabledUntil > now + (infiniteSnoozeValueInMinutes - 365 * 24 * 60) * 60 * 1000)
+                ? getString(R.string.you_reenable)
+                : DateFormat.getTimeInstance().format(new Date(disabledUntil));
     }
 
     public void setSendRemoteSnoozeOnClick(View v) {

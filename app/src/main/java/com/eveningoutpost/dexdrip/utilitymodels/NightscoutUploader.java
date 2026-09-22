@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -28,7 +28,6 @@ import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.eveningoutpost.dexdrip.utils.framework.GzipDecider;
 import com.eveningoutpost.dexdrip.utils.framework.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.xdrip;
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
@@ -48,6 +47,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -404,7 +404,7 @@ public class NightscoutUploader {
                 }
 
                 if (apiVersion == 1) {
-                    final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                    final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(StandardCharsets.UTF_8)).toString();
                     final Response<ResponseBody> r;
                     if (hashedSecret != null) {
                         doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
@@ -505,7 +505,7 @@ public class NightscoutUploader {
                 final NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
 
                 if (apiVersion == 1) {
-                    String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                    String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(StandardCharsets.UTF_8)).toString();
                     doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
                     doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords, tups, THIS_QUEUE);
                 } else {
@@ -633,7 +633,7 @@ public class NightscoutUploader {
                         JoH.showNotification("Nightscout Failure", "REST-API upload to Nightscout has failed " + last_exception_count
                                         + " times. With message: " + last_exception + " " + ((last_success_time > 0) ? "Last succeeded: " + JoH.dateTimeText(last_success_time) : ""),
 
-                                MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.NIGHTSCOUT_UPLOADER_CHANNEL, false, false, null, null, msg);
+                                MegaStatus.getStatusPendingIntent("Uploaders"), Constants.NIGHTSCOUT_ERROR_NOTIFICATION_ID, NotificationChannels.GENERAL_CHANNEL, false, false, null, null, msg);
                         UserError.Log.uel(TAG, "REST-API upload to Nightscout has failed");
                     } else {
                         Log.e(TAG, "Cannot alert for nightscout failures as preference setting is disabled");

@@ -1200,6 +1200,11 @@
     <string name="summary_tidepool_dev_servers">Etkinleştirilirse, yüklemeler normal https://app.tidepool.org/ yerine https://int-app.tidepool.org adresine gider</string>
     <string name="title_tidepool_dev_servers">Entegrasyon (test) sunucularını kullanın</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Tedavileri yükle</string>
+    <string name="title_nocturne_use_mobile">Mobil veri kullan</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Yardımı Göster</string>
     <string name="load_save_settings_on_sdcard">SD karttan Yükleme / Kaydetme</string>
     <string name="delete_all_bg_readings">Tüm KŞ okumalarını sil</string>

@@ -371,7 +371,6 @@ public class GcmListenerSvc extends JamListenerSvc {
                     if (Home.get_follower()) {
                         Log.i(TAG, "Received parakeet battery level update");
                         Pref.setInt("parakeet_battery", Integer.parseInt(payload));
-                        CheckBridgeBattery.checkParakeetBattery();
                     }
                 } else if (action.equals("psu")) {
                     if (Home.get_follower()) {

@@ -24,7 +24,7 @@ public class XdripNotification {
             // This calls the simplified getChan in NotificationChannels.java
             id = NotificationChannels.getChan(builder).getId();
         } catch (Exception e) {
-            id = NotificationChannels.ONGOING_CHANNEL;
+            id = NotificationChannels.GENERAL_CHANNEL;
         }
         builder.setChannelId(id);
 

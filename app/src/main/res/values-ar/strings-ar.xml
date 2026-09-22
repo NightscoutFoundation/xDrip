@@ -291,6 +291,10 @@
     <string name="summary_cloud_storage_api_download_enable">قم بتحميل بيانات المعالجة من NS</string>
     <string name="title_cloud_storage_api_download_enable">تنزيل بيانات العلاج</string>
     <string name="title_send_treatments_to_nightscout">رفع بيانات العلاج</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">رفع بيانات العلاج</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="sync_treatments">مزامنة العلاج</string>
     <string name="title_miband_graph_treatment_enable">اظهر الجرعة</string>
     <string name="summary_nsfollow_download_treatments">قم بتحميل بيانات المعالجة من NS كمتابع</string>

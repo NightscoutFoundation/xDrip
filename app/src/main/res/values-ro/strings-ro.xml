@@ -1247,6 +1247,11 @@
     <string name="summary_tidepool_upload_no_treatment">Încărcați doar date CGM pentru a evita duplicatele cu încărcarea manuală a pompei</string>
     <string name="title_tidepool_upload_no_treatment">Nu încărca tratamente</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Încarcă tratamentele</string>
+    <string name="title_nocturne_use_mobile">Utilizează datele mobile</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Arată fereastra de Ajutor</string>
     <string name="load_save_settings_on_sdcard">Încarcă / Salvează Setări pe SDcard</string>
     <string name="delete_all_bg_readings">Șterge TOATE citirile de glicemie</string>

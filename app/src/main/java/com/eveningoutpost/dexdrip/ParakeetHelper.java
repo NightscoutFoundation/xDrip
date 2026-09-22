@@ -166,7 +166,7 @@ public class ParakeetHelper {
                     PendingIntent.FLAG_ONE_SHOT);
 
             Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-            NotificationCompat.Builder notificationBuilder =  new NotificationCompat.Builder(xdrip.getAppContext(), NotificationChannels.PARAKEET_STATUS_CHANNEL)
+            NotificationCompat.Builder notificationBuilder =  new NotificationCompat.Builder(xdrip.getAppContext(), NotificationChannels.GENERAL_CHANNEL)
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setLargeIcon(BitmapFactory.decodeResource(xdrip.getAppContext().getResources(), R.drawable.jamorham_parakeet_marker))
                     .setContentTitle(title)

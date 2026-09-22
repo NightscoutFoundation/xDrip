@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip;
 
 import android.util.Log;
 
+import okhttp3.OkHttp;
+
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -28,6 +30,11 @@ public abstract class RobolectricTestWithConfig {
     public void setUp() {
         // The next line can be used to output all logs from test-run to System.out
         // ShadowLog.stream = System.out;
+
+        // okhttp 5 reads its public suffix list from the AAR's assets through the Context that
+        // PlatformInitializer supplies at process start. androidx.startup does not run under
+        // Robolectric, so supply it here — before anything reads the list, since the failure is cached.
+        OkHttp.INSTANCE.initialize(RuntimeEnvironment.getApplication());
 
         xdrip.checkAppContext(RuntimeEnvironment.application);
     }

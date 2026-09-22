@@ -425,6 +425,9 @@
     <string name="title_tidepool_password">Κωδικός Πρόσβασης</string>
     <string name="title_tidepool_test_login">Δοκιμή Σύνδεσης με το σύστημα της Tidepool</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Εμφάνιση Βοήθειας</string>
     <string name="load_save_settings_on_sdcard">Αποθήκευση ρυθμίσεων στην sdcard</string>
     <string name="return_to_home_screen">Επιστροφή στην αρχική οθόνη</string>

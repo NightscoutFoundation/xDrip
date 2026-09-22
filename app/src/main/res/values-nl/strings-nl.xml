@@ -1196,6 +1196,11 @@
     <string name="summary_tidepool_dev_servers">Indien ingeschakeld, gaan uploads naar https://int-app.tidepool.org in plaats van de reguliere https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Gebruik integratie (test) servers</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Upload behandelingen</string>
+    <string name="title_nocturne_use_mobile">Gebruik mobiele data</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Hulp laten zien</string>
     <string name="load_save_settings_on_sdcard">Instellingen laden/opslaan</string>
     <string name="delete_all_bg_readings">Wis alle BG-metingen</string>

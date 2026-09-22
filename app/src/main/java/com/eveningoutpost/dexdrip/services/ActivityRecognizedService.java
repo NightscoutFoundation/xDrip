@@ -90,7 +90,14 @@ public class ActivityRecognizedService extends IntentService implements GoogleAp
         if (d) Log.d(TAG, "Start Activity called");
         final Intent intent = new Intent(context, ActivityRecognizedService.class);
         intent.putExtra(ActivityRecognizedService.START_ACTIVITY_ACTION, ActivityRecognizedService.START_ACTIVITY_ACTION);
-        context.startService(intent);
+        try {
+            context.startService(intent);
+        } catch (Exception e) {
+            // from target sdk 26 this throws if we are in the background, eg started only for a broadcast
+            if (JoH.ratelimit("service-start-refused", 3600)) {
+                UserError.Log.e(TAG, "Could not start activity recogniser: " + e);
+            }
+        }
     }
 
     public static void reStartActivityRecogniser(Context context) {

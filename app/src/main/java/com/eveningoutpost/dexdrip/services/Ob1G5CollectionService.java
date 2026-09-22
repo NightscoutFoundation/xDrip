@@ -365,9 +365,10 @@ public class Ob1G5CollectionService extends G5BaseService {
                         break;
                     case CONNECT_NOW:
                         if (specialPairingWorkaround()) {
+                            tryLoadingSavedMAC(); // transmitterMAC is cleared on every service start and an unknown MAC would read as not bonded
                             val locallyBonded = isDeviceLocallyBonded();
                             UserError.Log.d(TAG, "wasbonded = " + wasBonded + " local: " + locallyBonded);
-                            if (wasBonded.equals(getTransmitterID()) && !locallyBonded && skippedConnects < 10) {
+                            if (wasBonded.equals(getTransmitterID()) && transmitterMAC != null && !locallyBonded && skippedConnects < 10) {
                                 skippedConnects++;
                                 UserError.Log.wtf(TAG, "Appears to have lost bonding, skipping this connect! @ " + skippedConnects);
                                 changeState(CLOSE);

@@ -757,6 +757,10 @@
     <string name="summary_tidepool_dev_servers">有効なら、アップロード先は https://app.tidepool.org ではなく https://int-app.tidepool.org になります</string>
     <string name="title_tidepool_dev_servers">統合 (テスト) サーバーを使用</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_use_mobile">モバイルデータを使用</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">ヘルプを表示</string>
     <string name="load_save_settings_on_sdcard">設定の読込/保存</string>
     <string name="debugging_test_feature">テスト機能のデバッグ</string>

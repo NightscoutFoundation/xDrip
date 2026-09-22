@@ -1194,6 +1194,11 @@
     <string name="summary_tidepool_dev_servers">Se ativado, envios irão para https://int-app.tidepool.org em vez do habitual https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Usar servidores de integração (teste)</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Enviar tratamentos</string>
+    <string name="title_nocturne_use_mobile">Usar dados móveis</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Mostrar Ajuda</string>
     <string name="load_save_settings_on_sdcard">Carregar / Salvar configurações</string>
     <string name="delete_all_bg_readings">Apagar todas as leituras de glicose</string>

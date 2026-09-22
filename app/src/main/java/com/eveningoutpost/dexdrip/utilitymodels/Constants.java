@@ -85,4 +85,8 @@ public class Constants {
     public static final int LIBREPRO_HEADER3_SIZE = 104;
     public static final int MAX_READINGS_PER_HOUR = 60; // Upper bound on readings per hour xDrip may receive
 
+    // Sound
+    public static final float MIN_ALERT_VOLUME = 0.4f; // The lowest volume xDrip can use for an alert.
+    public static final float MIN_ALARM_VOLUME = 0.6f; // The lowest volume xDrip can use for a critical (persistent high or missed reading) alarm.
+
 }

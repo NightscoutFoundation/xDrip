@@ -159,7 +159,7 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
         assertThat(body).contains("\"username\":\"testuser\"");
         assertThat(body).contains("\"role\":\"patient\"");
         assertThat(body).contains("\"patientId\":\"patient123\"");
-        assertThat(body).contains("\"appVersion\":\"3.6.0\"");
+        assertThat(body).contains("\"appVersion\":\"3.8.0\"");
         assertThat(request.getPath()).contains(CareLinkClient.API_PATH_DISPLAY_MESSAGE);
         assertThat(result).isNotNull();
     }

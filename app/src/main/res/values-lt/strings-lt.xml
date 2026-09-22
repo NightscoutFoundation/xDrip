@@ -1195,6 +1195,11 @@
     <string name="summary_tidepool_dev_servers">Įjungus duomenys bus perduodami į https://int-app.tidepool.org, vietoje įprasto https://app.tidepool.org/</string>
     <string name="title_tidepool_dev_servers">Naudoti integracijos (test) serverius</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Įkelti terapiją</string>
+    <string name="title_nocturne_use_mobile">Naudoti mobilius duomenis</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Rodyti pagalbą</string>
     <string name="load_save_settings_on_sdcard">Įkelti / Išsaugoti nustatymus</string>
     <string name="delete_all_bg_readings">Ištrinti visas glikemijos reikšmes</string>

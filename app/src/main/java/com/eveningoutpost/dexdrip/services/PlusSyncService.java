@@ -7,12 +7,14 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.GoogleDriveInterface;
 import com.eveningoutpost.dexdrip.cloud.jamcm.Pusher;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.UpdateActivity;
 import com.eveningoutpost.dexdrip.xdrip;
 
@@ -54,7 +56,15 @@ public class PlusSyncService extends Service {
         }
         if ((GcmActivity.token != null) && (xdrip.getAppContext() != null)) return;
         Log.d(TAG, "Starting jamorham xDrip-Plus sync service: " + source);
-        context.startService(new Intent(context, PlusSyncService.class));
+        final Intent intent = new Intent(context, PlusSyncService.class);
+        try {
+            context.startService(intent);
+        } catch (Exception e) {
+            // from target sdk 26 this throws if we are in the background, eg started only for a broadcast
+            if (JoH.ratelimit("service-start-refused", 3600)) {
+                UserError.Log.e(TAG, "Could not start sync service: " + e);
+            }
+        }
     }
 
     public static void backoff() {

@@ -1,6 +1,10 @@
 package com.eveningoutpost.dexdrip.sharemodels;
 
+import androidx.preference.PreferenceManager;
+
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.sharemodels.models.ExistingFollower;
+import com.eveningoutpost.dexdrip.xdrip;
 
 import org.junit.After;
 import org.junit.Before;
@@ -9,28 +13,43 @@ import org.robolectric.RuntimeEnvironment;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
 
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
+import okhttp3.Protocol;
 import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
 import okhttp3.mockwebserver.RecordedRequest;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * Verifies ShareRest network interceptor adds required headers (User-Agent, Content-Type, Accept).
+ * Verifies ShareRest network interceptor adds required headers (User-Agent, Content-Type, Accept),
+ * and that the account-region preference selects which Dexcom Share host every call is addressed to.
  *
  * @author Asbjørn Aarrestad
  */
 public class ShareRestTest extends RobolectricTestWithConfig {
 
     private MockWebServer server;
+    private final BlockingQueue<String> requestedHosts = new ArrayBlockingQueue<>(4);
 
     @Before
     public void setUpServer() throws Exception {
         server = new MockWebServer();
         server.start();
+        xdrip.setContextAlways(RuntimeEnvironment.application); // force re-bind to current Robolectric app
+        PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().clear().commit();
+        storeSessionId("a-session-that-already-exists"); // skips getSessionId's AsyncTask entirely
     }
 
     @After
@@ -97,5 +116,83 @@ public class ShareRestTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(client).isInstanceOf(OkHttpClient.class);
+    }
+
+    // ===== Account region selects the Share host =================================================
+
+    /**
+     * A US account addresses share2.dexcom.com. Note that US is also the production default, so
+     * this half alone would still pass with the read deleted —
+     * {@link #nonUsAccountUsesOutsideUsShareHost()} is the one that pins it.
+     */
+    @Test
+    public void usAccountUsesUsShareHost() throws Exception {
+        // :: Setup
+        storeUsAccount(true);
+
+        // :: Act
+        new ShareRest(xdrip.getAppContext(), recordingClient()).getContacts(ignoringCallback());
+
+        // :: Verify
+        assertThat(firstRequestedHost()).isEqualTo("share2.dexcom.com");
+    }
+
+    /**
+     * A non-US account addresses shareous1.dexcom.com. This is the assertion that pins the
+     * preference read: the non-US host is the only one the default does not already produce.
+     */
+    @Test
+    public void nonUsAccountUsesOutsideUsShareHost() throws Exception {
+        // :: Setup
+        storeUsAccount(false);
+
+        // :: Act
+        new ShareRest(xdrip.getAppContext(), recordingClient()).getContacts(ignoringCallback());
+
+        // :: Verify
+        assertThat(firstRequestedHost()).isEqualTo("shareous1.dexcom.com");
+    }
+
+    // ===== Helpers ===============================================================================
+
+    private OkHttpClient recordingClient() {
+        return new OkHttpClient.Builder().addInterceptor(chain -> {
+            requestedHosts.offer(chain.request().url().host());
+            return new Response.Builder()
+                    .request(chain.request())
+                    .protocol(Protocol.HTTP_1_1)
+                    .code(200)
+                    .message("OK")
+                    .body(ResponseBody.create(MediaType.parse("application/json"), "[]"))
+                    .build();
+        }).build();
+    }
+
+    private String firstRequestedHost() throws InterruptedException {
+        String host = requestedHosts.poll(10, TimeUnit.SECONDS);
+        assertThat(host).isNotNull(); // no request was ever dispatched
+        return host;
+    }
+
+    private Callback<List<ExistingFollower>> ignoringCallback() {
+        return new Callback<List<ExistingFollower>>() {
+            @Override
+            public void onResponse(Call<List<ExistingFollower>> call, retrofit2.Response<List<ExistingFollower>> response) {
+            }
+
+            @Override
+            public void onFailure(Call<List<ExistingFollower>> call, Throwable t) {
+            }
+        };
+    }
+
+    private void storeUsAccount(boolean us) {
+        PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext())
+                .edit().putBoolean("dex_share_us_acct", us).commit();
+    }
+
+    private void storeSessionId(String sessionId) {
+        PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext())
+                .edit().putString("dexcom_share_session_id", sessionId).commit();
     }
 }

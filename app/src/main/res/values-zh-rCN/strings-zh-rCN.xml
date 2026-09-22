@@ -1247,6 +1247,11 @@
     <string name="summary_tidepool_upload_no_treatment">仅上传 CGM 数据，避免与手动泵上传的数据重复。</string>
     <string name="title_tidepool_upload_no_treatment">不上传治疗记录</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">上传治疗数据</string>
+    <string name="title_nocturne_use_mobile">使用移动数据</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">显示帮助</string>
     <string name="load_save_settings_on_sdcard">在SD卡中加载/保存设置</string>
     <string name="delete_all_bg_readings">删除所有血糖读数</string>

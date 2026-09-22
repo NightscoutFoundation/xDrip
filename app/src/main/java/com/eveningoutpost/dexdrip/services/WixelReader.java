@@ -18,7 +18,6 @@ import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.MockDataSource;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.StatusItem;
-import com.eveningoutpost.dexdrip.utils.CheckBridgeBattery;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Mdns;
 import com.google.gson.Gson;
@@ -595,7 +594,6 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
 
                 if (LastReading.UploaderBatteryLife > 0) {
                     Pref.setInt("parakeet_battery", LastReading.UploaderBatteryLife);
-                    CheckBridgeBattery.checkParakeetBattery();
                     if (Home.get_master()) {
                         GcmActivity.sendParakeetBattery(LastReading.UploaderBatteryLife);
                     }

@@ -1235,6 +1235,11 @@
     <string name="summary_tidepool_upload_no_treatment">Nur CGM Daten hochladen, um Duplikate mit manuellem Pump-Upload zu vermeiden</string>
     <string name="title_tidepool_upload_no_treatment">Keine Behandlungen hochladen</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Behandlungen hochladen</string>
+    <string name="title_nocturne_use_mobile">Mobile Daten verwenden</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Hilfe anzeigen</string>
     <string name="load_save_settings_on_sdcard">Einstellungen von/auf SD-Karte laden/speichern</string>
     <string name="delete_all_bg_readings">Alle BG-Werte löschen</string>

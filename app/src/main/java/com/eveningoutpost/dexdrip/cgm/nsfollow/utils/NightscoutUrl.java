@@ -1,10 +1,10 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow.utils;
 
-import com.google.common.base.Charsets;
 import com.google.common.hash.Hashing;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 
 import lombok.RequiredArgsConstructor;
 
@@ -80,7 +80,7 @@ public class NightscoutUrl {
     public String getHashedSecret() {
         if (hashedSecret == null) {
             final String secret = getSecret();
-            hashedSecret = secret != null ? Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString() : null;
+            hashedSecret = secret != null ? Hashing.sha1().hashBytes(secret.getBytes(StandardCharsets.UTF_8)).toString() : null;
         }
         return hashedSecret;
     }

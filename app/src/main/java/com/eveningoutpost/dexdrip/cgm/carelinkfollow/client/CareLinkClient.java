@@ -661,7 +661,7 @@ public class CareLinkClient {
         if(!JoH.emptyString(patientUsername))
             userJson.addProperty("patientId", patientUsername);
         if(useNewEndpoint){
-            userJson.addProperty("appVersion", "3.6.0");
+            userJson.addProperty("appVersion", "3.8.0");
         }
 
         gson = new GsonBuilder().create();

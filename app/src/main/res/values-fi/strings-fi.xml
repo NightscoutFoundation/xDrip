@@ -1243,6 +1243,11 @@
     <string name="summary_tidepool_upload_no_treatment">Lähetä vain CGM-tiedot välttääksesi päällekkäisyydet pumpusta manuaalisesti ladattujen tietojen kanssa</string>
     <string name="title_tidepool_upload_no_treatment">Älä lataa hoitotietoja</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Lähetä hoidot</string>
+    <string name="title_nocturne_use_mobile">Käytä mobiilidataa</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Näytä ohje</string>
     <string name="load_save_settings_on_sdcard">Lataa / tallenna asetukset SD-kortille</string>
     <string name="delete_all_bg_readings">Poista kaikki VS-lukemat</string>

@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip;
 
 import static com.eveningoutpost.dexdrip.Home.startHomeWithExtra;
 
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -350,15 +351,27 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         catch(NumberFormatException e) { return false; }
     }
 
-    private boolean isInvalidTime()
-    {
+    private boolean isInvalidTime() {
         String timeValue = getValue("time");
-        if (timeValue.length() == 0) return false;
-        if (!timeValue.contains("."))
-            return (timeValue.length() < 3);
+        if (timeValue.length() == 0) return false; // No time value has been entered.  Then, there is nothing to reject.
 
+        // Normalize HHmm to HH.mm for validation
+        if (!timeValue.contains(".") && timeValue.length() >= 3) {
+            timeValue = timeValue.substring(0, timeValue.length() - 2) + "." + timeValue.substring(timeValue.length() - 2);
+        }
+
+        // Ensure time follows the [H]H.mm format strictly.
         String[] parts = timeValue.split("\\.");
-        return (parts.length != 2) || (parts[0].length() == 0) || (parts[1].length() != 2);
+        if (parts.length != 2 || parts[0].isEmpty() || parts[1].length() != 2) return true;
+
+        try {
+            int hours = Integer.parseInt(parts[0]);
+            int minutes = Integer.parseInt(parts[1]);
+            // Validate ranges: 0-23 hours and 0-59 minutes
+            return (hours < 0 || hours > 23 || minutes < 0 || minutes > 59);
+        } catch (NumberFormatException e) {
+            return true;
+        }
     }
 
     private void submitAll() {
@@ -377,7 +390,11 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         }
 
         if (isInvalidTime()) {
-            Log.d(TAG, "Time value is invalid - not processing button click");
+            new AlertDialog.Builder(this)
+                    .setTitle("Invalid time")
+                    .setMessage("Please enter a valid time or clear the time tab.")
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show();
             return;
         }
 
@@ -518,18 +535,15 @@ public class PhoneKeypadInputActivity extends BaseActivity {
         }
         String value = getValue(currenttab);
         mDialTextView.setText(value + append);
-        // show green tick
-        boolean showSubmitButton;
+        // show green tick if any treatment tab has data
+        boolean showSubmitButton = isNonzeroValueInTab("bloodtest")
+                || isNonzeroValueInTab("carbs")
+                || isNonzeroValueInTab("insulin-1")
+                || isNonzeroValueInTab("insulin-2")
+                || isNonzeroValueInTab("insulin-3");
 
-        if (isInvalidTime())
-            showSubmitButton = false;
-
-        else if (currenttab.equals("time"))
-            showSubmitButton = value.length() > 0 && ( isNonzeroValueInTab("bloodtest") || isNonzeroValueInTab("carbs") || isNonzeroValueInTab("insulin-1") || isNonzeroValueInTab("insulin-2") || isNonzeroValueInTab("insulin-3"));
-        else
-            showSubmitButton = isNonzeroValueInTab(currenttab);
-
-        mDialTextView.getBackground().setAlpha(showSubmitButton ? 255 : 0);    }
+        mDialTextView.getBackground().setAlpha(showSubmitButton ? 255 : 0);
+    }
 
 
     @Override

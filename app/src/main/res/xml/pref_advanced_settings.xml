@@ -1613,11 +1613,10 @@
 
                 <CheckBoxPreference
                     android:defaultValue="false"
-                    android:dependency="engineering_mode"
                     android:enabled="true"
                     android:key="Eversense_one_minute"
-                    android:summary="Accept data at one-minute intervals from 640G/Eversense. WARNING: This feature is still under development and may break different things. Please report anything you notice not working. Reboot your phone for changes to take effect. Requires engineering mode"
-                    android:title="640G/Eversense 1-minute" />
+                    android:summary="Accept data at one-minute intervals from Inter-app broadcast.  Reboot your phone for changes to take effect."
+                    android:title="1-min Inter-app broadcast" />
 
                 <CheckBoxPreference
                     android:defaultValue="false"

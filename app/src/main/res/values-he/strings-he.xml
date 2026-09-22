@@ -729,7 +729,8 @@
     <string name="options_for_upload">אפשרויות להעלאת נתונים לנייטסקאוט, MongoDB או דקסקום Share</string>
     <string name="cloud_upload">העלאה לענן</string>
     <string name="enable_mongo_sync">אפשר סינכרון נייטסקאוט עם MongoDB</string>
-    <string name="mongo_db_uri">MongoDB URI</string>
+    <string name="mongo_db_uri">MongoDB URI
+</string>
     <string name="skip_local_lan">בשרתים מקומיים שכתובתם 192.168.x.x, מדלג על העלאה כשאין חיבור רשת מקומי.</string>
     <string name="skip_lan_uploads">דלג על העלאות ברשת מקומית</string>
     <string name="mongo_load_transmitter_data_title">העלה את נתוני הליברה</string>
@@ -1225,6 +1226,11 @@
     <string name="summary_tidepool_upload_no_treatment">העלה רק מידע מ CGM כדי להימנע מיצירת כפילות עם מידע שהועלה ידנית מהמשאבה</string>
     <string name="title_tidepool_upload_no_treatment">אל תעלה נתוני טיפול</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">העלה טיפולים</string>
+    <string name="title_nocturne_use_mobile">השתמש בחבילת גלישה</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">הצג עזרה</string>
     <string name="load_save_settings_on_sdcard">שמור \\ טען הגדרות לכרטיס זכרון (SDcard)</string>
     <string name="delete_all_bg_readings">מחק את כל קריאות הסוכר</string>

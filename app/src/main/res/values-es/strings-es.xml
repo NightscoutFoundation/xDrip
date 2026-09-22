@@ -362,6 +362,8 @@
     <string name="all_alerts_disabled_until">"Todas las alertas desactivadas hasta "</string>
     <string name="low_alerts_disabled_until">"Alertas de hipo desactivadas hasta "</string>
     <string name="high_alerts_disabled_until">"Alertas de hiper desactivadas hasta "</string>
+    <string name="active_alert_rerise_at">Existe una alerta activa llamada \"%1$s\" se reactivará en %2$s (%3$s minutos restantes)</string>
+    <string name="active_alert_snoozed_until">Existe una alerta activa llamada \"%1$s\" silenciada hasta %2$s (%3$s minutos restantes)</string>
     <string name="default_snooze">Repetir por defecto</string>
     <string name="until_you_reenable">Hasta que vuelva a activar</string>
     <string name="set">Establecer</string>
@@ -1247,6 +1249,12 @@
     <string name="summary_tidepool_upload_no_treatment">Subir sólo datos CGM para evitar duplicados con la subida manual de la bomba</string>
     <string name="title_tidepool_upload_no_treatment">No subir tratamientos</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Subir tratamientos</string>
+    <string name="summary_nocturne_upload_treatments">Subir bolos, carbohidratos, notas y eventos del dispositivo</string>
+    <string name="title_nocturne_use_mobile">Usar datos móviles</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Mostrar Ayuda</string>
     <string name="load_save_settings_on_sdcard">Cargar / Guardar Ajustes</string>
     <string name="delete_all_bg_readings">Borrar TODAS las lecturas de glucosa</string>

@@ -1,8 +1,26 @@
 package com.eveningoutpost.dexdrip;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 public class HexTestTools {
 
     private final static char[] hexArray = "0123456789ABCDEF" .toCharArray();
+
+    /**
+     * Computes the lowercase SHA-1 hex of a UTF-8 string using the JDK, independently
+     * of the production hashing code. Lowercase matches Guava's {@code HashCode.toString()}.
+     */
+    public static String sha1Hex(final String input) {
+        try {
+            final byte[] digest = MessageDigest.getInstance("SHA-1")
+                    .digest(input.getBytes(StandardCharsets.UTF_8));
+            return bytesToHex(digest).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            throw new AssertionError("SHA-1 must be available on the JVM", e);
+        }
+    }
 
     public static String bytesToHex(byte[] bytes) {
         if (bytes == null) return "<empty>";

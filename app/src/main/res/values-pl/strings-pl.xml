@@ -1235,6 +1235,11 @@
     <string name="summary_tidepool_upload_no_treatment">Przesyłaj tylko dane z CGM, aby uniknąć duplikatów przesłanych z pompy</string>
     <string name="title_tidepool_upload_no_treatment">Nie wysyłaj zabiegów</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Prześlij zabiegi</string>
+    <string name="title_nocturne_use_mobile">Użyj transmisji danych</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Pokaż pomoc</string>
     <string name="load_save_settings_on_sdcard">Załaduj / Zapisz ustawienia na karcie Sd</string>
     <string name="delete_all_bg_readings">Usuń WSZYSTKIE odczyty glikemii</string>

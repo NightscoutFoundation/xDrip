@@ -1247,6 +1247,11 @@
     <string name="summary_tidepool_upload_no_treatment">수동 펌프 업로드와의 중복을 피하기 위해 CGM 데이터만 업로드합니다</string>
     <string name="title_tidepool_upload_no_treatment">처치 데이터 업로드 안 함</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">처치 데이터 업로드</string>
+    <string name="title_nocturne_use_mobile">모바일 데이터 사용</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">도움말 보기</string>
     <string name="load_save_settings_on_sdcard">설정 불러오기 / 저장</string>
     <string name="delete_all_bg_readings">모든 혈당 측정값 삭제</string>

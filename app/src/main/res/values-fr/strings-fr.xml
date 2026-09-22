@@ -362,6 +362,9 @@
     <string name="all_alerts_disabled_until">"Toutes les alertes désactivées jusqu'à "</string>
     <string name="low_alerts_disabled_until">"Alertes Basses désactivées jusqu'à  "</string>
     <string name="high_alerts_disabled_until">"Alertes Hautes désactivées jusqu'à "</string>
+    <string name="you_reenable">vous réactivez</string>
+    <string name="active_alert_rerise_at">L\'alerte active nommée \"%1$s\" existe. Alerte se reproduira à %2$s (%3$s minutes restantes)</string>
+    <string name="active_alert_snoozed_until">L\'alerte active nommée \"%1$s\" existe. Alerte se reproduira à %2$s (%3$s minutes restantes)</string>
     <string name="default_snooze">Mise en veille par défaut</string>
     <string name="until_you_reenable">Jusqu\'à ce que vous réactivez</string>
     <string name="set">Accepter</string>
@@ -654,6 +657,7 @@
     <string name="retrieve_blukon_history_title">Récupérer l\'historique du Freestyle Libre</string>
     <string name="summary_libre_one_minute_interval">Accepter les données à intervalles d\'une minute de Libre. Redémarrez votre téléphone pour que les modifications prennent effet.</string>
     <string name="title_libre_one_minute_interval">Libre 1 minute</string>
+    <string name="summary_nsfollow_sample_period">Par défaut : 5 min\nActuel : %s</string>
     <string name="retrieve_blukon_history_summary">Extraire l\'historique manqué du périphérique BluCon lors de la reconnexion au capteur.</string>
     <string name="interpret_share_raw">Si vous utilisez Share, xDrip affichera les valeurs quand elles sont normalement cachées sur le récepteur.</string>
     <string name="interpret_raw">Interpréter les valeurs brutes</string>
@@ -1245,6 +1249,29 @@
     <string name="summary_tidepool_upload_no_treatment">Télécharger uniquement les données MGC pour éviter les doublons avec l\'envoi manuel de la pompe</string>
     <string name="title_tidepool_upload_no_treatment">Ne pas télécharger les traitements</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="nocturne">Nocturne</string>
+    <string name="nocturne_connect_activity_label">Se connecter à Nocturne</string>
+    <string name="nocturne_settings_summary">Télécharger vers Nocturne API V4</string>
+    <string name="title_nocturne_upload_enable">Activer l\'envoi vers Nocturne</string>
+    <string name="title_nocturne_instance_url">URL de l\'instance Nocturne</string>
+    <string name="nocturne_instance_url_dialog_message">Entrez l\'URL de votre instance Nocturne (par exemple https://mynocturne.example.com)</string>
+    <string name="nocturne_connect_pref_summary">Autorisez xDrip+ avec votre instance Nocturne</string>
+    <string name="title_nocturne_upload_treatments">Charger les traitements</string>
+    <string name="summary_nocturne_upload_treatments">Télécharger des bolus, des glucides, des notes et des événements de l\'appareil</string>
+    <string name="title_nocturne_upload_calibrations">Télécharger les calibrations</string>
+    <string name="summary_nocturne_upload_calibrations">Télécharger les étalonnages du capteur</string>
+    <string name="title_nocturne_upload_bloodtests">Télécharger les tests sanguins</string>
+    <string name="summary_nocturne_upload_bloodtests">Télécharger les résultats du lecteur de glycémie</string>
+    <string name="title_nocturne_upload_heartrate">Télécharger la fréquence cardiaque</string>
+    <string name="summary_nocturne_upload_heartrate">Télécharger les données de fréquence cardiaque</string>
+    <string name="title_nocturne_upload_stepcount">Télécharger le nombre de pas</string>
+    <string name="summary_nocturne_upload_stepcount">Télécharger les données du nombre de pas</string>
+    <string name="title_nocturne_upload_devicestatus">Télécharger le statut de l\'appareil</string>
+    <string name="summary_nocturne_upload_devicestatus">Télécharger le niveau de batterie du téléphone et le statut de charge</string>
+    <string name="title_nocturne_use_mobile">Utiliser les données mobiles</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Afficher l\'aide</string>
     <string name="load_save_settings_on_sdcard">Charger / Enregistrer les paramètres</string>
     <string name="delete_all_bg_readings">Supprimer toutes les lectures BG</string>

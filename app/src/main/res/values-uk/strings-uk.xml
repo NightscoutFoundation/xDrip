@@ -1235,6 +1235,11 @@
     <string name="summary_tidepool_upload_no_treatment">Вивантажити дані лише через CGM, аби уникнути дублікатів при завантаженні вручну</string>
     <string name="title_tidepool_upload_no_treatment">Не завантажувати дози</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Завантажувати користувальницькі значення</string>
+    <string name="title_nocturne_use_mobile">Використовувати мобільні дані</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Показати довідку</string>
     <string name="load_save_settings_on_sdcard">Завантаження/Збереження Налаштувань</string>
     <string name="delete_all_bg_readings">Видалити всі дані глюкози</string>
