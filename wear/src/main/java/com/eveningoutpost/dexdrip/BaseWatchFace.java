@@ -184,7 +184,7 @@ public  abstract class BaseWatchFace extends WatchFace implements SharedPreferen
                 Context context = xdrip.getAppContext();
                 if (Home.get_forced_wear()) {
                     if (d) Log.d(TAG, "performViewSetup FORCE WEAR init BGs for graph");
-                    BgSendQueue.resendData(context);
+                    BgSendQueue.updateWatchfaceData(context);
                 }
                 if ((chart != null) && sharedPrefs.getBoolean("show_wear_treatments", false)) {
                     if (d) Log.d(TAG, "performViewSetup init Treatments for graph");

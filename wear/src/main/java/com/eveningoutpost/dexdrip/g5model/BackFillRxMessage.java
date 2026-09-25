@@ -12,7 +12,7 @@ public class BackFillRxMessage extends BaseMessage {
 
     private boolean valid = false;
 
-    BackFillRxMessage(byte[] packet) {
+    public BackFillRxMessage(byte[] packet) {
 
         if (packet.length == length) {
             data = ByteBuffer.wrap(packet).order(ByteOrder.LITTLE_ENDIAN);

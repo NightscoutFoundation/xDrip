@@ -35,15 +35,18 @@ public abstract class G5BaseService extends Service {
 
     protected static final int G5_LOW_BATTERY_WARNING_DEFAULT = 300;
     protected static final int G6_LOW_BATTERY_WARNING_DEFAULT = 290;
-    protected static int LOW_BATTERY_WARNING_LEVEL = G5_LOW_BATTERY_WARNING_DEFAULT; // updated by updateBatteryWarningLevel()
+    public static final int ALT_LOW_BATTERY_WARNING_DEFAULT = 280;
+    // updated by updateBatteryWarningLevel(), accessed by Ob1DexTransmitterBattery
+    public static int LOW_BATTERY_WARNING_LEVEL = G5_LOW_BATTERY_WARNING_DEFAULT;
 
     public static volatile boolean getBatteryStatusNow = false;
     protected static volatile boolean hardResetTransmitterNow = false;
+    public static volatile boolean unBondAndStop = false;
 
-    protected static String lastState = "Not running";
-    protected static String lastStateWatch = "Not running";
-    protected static long static_last_timestamp = 0;
-    protected static long static_last_timestamp_watch = 0;
+    protected static volatile String lastState = "Not running";
+    protected static volatile String lastStateWatch = "Not running";
+    protected static volatile long static_last_timestamp = 0;
+    protected static volatile long static_last_timestamp_watch = 0;
 
     protected ForegroundServiceStarter foregroundServiceStarter;
     protected Service service;
@@ -109,7 +112,7 @@ public abstract class G5BaseService extends Service {
         PersistentStore.commit();
     }
 
-    protected static void updateBatteryWarningLevel() {
+    public static void updateBatteryWarningLevel() {
         LOW_BATTERY_WARNING_LEVEL = Pref.getStringToInt("g5-battery-warning-level", G5_LOW_BATTERY_WARNING_DEFAULT);
     }
 

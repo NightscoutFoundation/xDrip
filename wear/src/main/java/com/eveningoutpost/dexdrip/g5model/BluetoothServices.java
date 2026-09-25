@@ -25,6 +25,7 @@ public class BluetoothServices {
     public static final UUID Control = UUID.fromString("F8083534-849E-531C-C594-30F1F86A4EA5");
     public static final UUID Authentication = UUID.fromString("F8083535-849E-531C-C594-30F1F86A4EA5");
     public static final UUID ProbablyBackfill = UUID.fromString("F8083536-849E-531C-C594-30F1F86A4EA5");
+    public static final UUID ExtraData = UUID.fromString("F8083538-849E-531C-C594-30F1F86A4EA5");
 
     //ServiceBCharacteristicUUID
     public static final UUID CharacteristicE = UUID.fromString("F8084533-849E-531C-C594-30F1F86A4EA5");
@@ -32,6 +33,8 @@ public class BluetoothServices {
 
     //CharacteristicDescriptorUUID
     public static final UUID CharacteristicUpdateNotification = UUID.fromString("00002902-0000-1000-8000-00805F9B34FB");
+
+    public static final UUID Mask16 = UUID.fromString("0000FFFF-0000-0000-0000-000000000000");
 
     private static final HashMap<UUID, String> mapToName = new HashMap<>();
     private static final SparseArray<String> statusToName = new SparseArray<>();
@@ -45,6 +48,7 @@ public class BluetoothServices {
         mapToName.put(Communication, "Communication");
         mapToName.put(Control, "Control");
         mapToName.put(Authentication, "Authentication");
+        mapToName.put(ExtraData, "Extra Data");
         mapToName.put(ProbablyBackfill, "ProbablyBackfill");
         mapToName.put(CharacteristicE, "CharacteristicE");
         mapToName.put(CharacteristicF, "CharacteristicF");
