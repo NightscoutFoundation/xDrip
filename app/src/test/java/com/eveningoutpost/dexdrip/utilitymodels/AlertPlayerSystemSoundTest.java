@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Tests for how {@code AlertPlayer.playFile} treats a system-default sound URI.
+ * Tests for default sounds and unavailable custom sound URIs in {@code AlertPlayer.playFile}.
  * <p>
  * A ringtone picker hands back {@code content://settings/system/...} when the user picks "Default",
  * and the notification preferences persisted the same URIs as their defaults until #4680. The player
@@ -53,6 +53,7 @@ public class AlertPlayerSystemSoundTest extends RobolectricTestWithConfig {
         final Map<DataSource, String> names = new HashMap<>();
         names.put(rawResourceSource(R.raw.default_notification), "default_notification");
         names.put(rawResourceSource(R.raw.default_alert), "default_alert");
+        names.put(rawResourceSource(R.raw.reminder_default_notification), "reminder_default_notification");
         names.put(DataSource.toDataSource(context(), Uri.parse(SYSTEM_NOTIFICATION_SOUND)), SYSTEM_NOTIFICATION_SOUND);
         ShadowMediaPlayer.setMediaInfoProvider(dataSource -> {
             requestedSounds.add(names.getOrDefault(dataSource, "unknown source"));
@@ -117,16 +118,58 @@ public class AlertPlayerSystemSoundTest extends RobolectricTestWithConfig {
                 .containsExactly("default_notification");
     }
 
-    /** A missing sound name at low priority still falls back to the bundled alarm, as it always has. */
+    /** A reminder with no sound supplied uses its own bundled default. */
     @Test
-    public void lowPriorityAlertWithoutASoundNameKeepsTheBundledAlarm() {
+    public void reminderWithoutASoundNameUsesTheReminderDefault() {
         // :: Act
         triggerSound(null, REMINDER);
 
         // :: Verify
         assertWithMessage("sounds requested for a reminder without a sound name")
                 .that(requestedSounds)
-                .containsExactly("default_alert");
+                .containsExactly("reminder_default_notification");
+    }
+
+    @Test
+    public void unavailableReminderSoundUsesTheReminderDefault() {
+        triggerUnavailableSound(REMINDER);
+        assertWithMessage("fallback for an unavailable reminder sound")
+                .that(requestedSounds).containsExactly("reminder_default_notification");
+    }
+
+    @Test
+    public void unavailableNotificationSoundUsesTheSoftDefault() {
+        triggerUnavailableSound("general_notification");
+        assertWithMessage("fallback for an unavailable notification sound")
+                .that(requestedSounds).containsExactly("default_notification");
+    }
+
+    @Test
+    public void unavailableGlucoseSoundKeepsTheAlarmAtThePriorityBoundary() {
+        triggerUnavailableSound(PREDICTED_GLUCOSE);
+        assertWithMessage("fallback for an unavailable glucose alarm sound")
+                .that(requestedSounds).containsExactly("default_alert");
+    }
+
+    @Test
+    public void unavailableHighGlucoseSoundKeepsTheAlarm() {
+        triggerUnavailableSound(HIGH_GLUCOSE);
+        assertWithMessage("fallback for an unavailable high glucose alarm sound")
+                .that(requestedSounds).containsExactly("default_alert");
+    }
+
+    @Test
+    public void availableCustomReminderSoundIsPreserved() {
+        triggerSound("content://media/internal/audio/media/189", REMINDER);
+        assertWithMessage("a working custom sound must not be replaced")
+                .that(requestedSounds).containsExactly("unknown source");
+    }
+
+    private void triggerUnavailableSound(String type) {
+        final String missingSound = "content://media/internal/audio/media/188";
+        ShadowMediaPlayer.addException(DataSource.toDataSource(context(), Uri.parse(missingSound)),
+                new IOException("No item at " + missingSound));
+        triggerSound(missingSound, type);
     }
 
     /**

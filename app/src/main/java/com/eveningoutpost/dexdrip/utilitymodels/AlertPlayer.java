@@ -389,19 +389,21 @@ public class AlertPlayer {
             }
         }
         if (!setDataSourceSucceeded) {
-            // This means "default", "default_notification", or "content://settings/system/" is the value we have received.
+            // A default was requested, no sound was supplied, or the custom URI could not be opened.
             // If it's a low-priority event (P < 80) or explicitly requested, use the soft default notification sound.
             if ("default_notification".equals(fileName) || (priority < 80 && ("default".equals(fileName) || (fileName != null && fileName.startsWith("content://settings/system/"))))) {
                 setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_notification);
             }
 
             if (!setDataSourceSucceeded) {
-                // Otherwise, we use the default alarm from the repository.
-                setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_alert);
+                // Failed custom sounds must fall back according to the event, not always to a glucose alarm.
+                final int fallbackSound = "reminder".equals(tag) ? R.raw.reminder_default_notification
+                        : priority < 80 ? R.raw.default_notification : R.raw.default_alert;
+                setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, fallbackSound);
             }
         }
         if (!setDataSourceSucceeded) {
-            Log.wtf(TAG, "FATAL: Default_alert failed to load!");
+            Log.wtf(TAG, "FATAL: Fallback sound failed to load!");
             activeTag = ""; // Clear the lock
             if (mediaPlayer != null) {
                 stopAndReleasePlayer(mediaPlayer);
