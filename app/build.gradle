@@ -398,6 +398,12 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
 }
 
 tasks.withType(Test) {
+    // TranslationPlaceholderTest reads the string resources straight from the source tree, which
+    // Gradle does not otherwise know about: a changed translation would leave the test UP-TO-DATE.
+    inputs.files(fileTree("src/main/res") { include "values*/*.xml" })
+            .withPropertyName("stringResources")
+            .withPathSensitivity(PathSensitivity.RELATIVE)
+
     testLogging {
         exceptionFormat "full"
         events "started", "skipped", "passed", "failed"

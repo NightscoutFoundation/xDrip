@@ -536,7 +536,6 @@
     <string name="battery">Accu</string>
     <string name="xbridge_battery">xBridge Batterij</string>
     <string name="limitter_battery">Libre accu</string>
-    <string name="parakeet_battery">Parkiet Battery</string>
     <string name="after_calibration_rewrite_history">Na de kalibratie aan te passen recente ruwe grafiek te glad om de nieuwe kalibratie</string>
     <string name="rewrite_history">Rewrite Geschiedenis</string>
     <string name="grid_time_lines_visible">Grid tijdslijnen zichtbaar</string>

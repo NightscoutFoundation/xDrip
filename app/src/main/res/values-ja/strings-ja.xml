@@ -485,7 +485,6 @@
     <string name="battery">充電池</string>
     <string name="xbridge_battery">xBridge 電池</string>
     <string name="limitter_battery">リブレ充電池</string>
-    <string name="parakeet_battery">Parakeet充電池</string>
     <string name="display_eight_hour_average_line">8 時間の平均線を表示</string>
     <string name="display_twenty_four_hour_average_line">24 時間の平均線を表示</string>
     <string name="upload_logs">ログのアップロード</string>

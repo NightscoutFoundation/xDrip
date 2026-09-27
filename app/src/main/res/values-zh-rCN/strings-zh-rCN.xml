@@ -564,7 +564,6 @@
     <string name="battery">电池</string>
     <string name="xbridge_battery">xBridge 电池</string>
     <string name="limitter_battery">LimiTTer 电池</string>
-    <string name="parakeet_battery">Parakeet 电池</string>
     <string name="after_calibration_rewrite_history">校准后，调整最近的原始图平滑到新的校准</string>
     <string name="rewrite_history">重写历史</string>
     <string name="grid_time_lines_visible">网格时间线可见</string>

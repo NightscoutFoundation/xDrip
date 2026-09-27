@@ -560,7 +560,6 @@
     <string name="battery">Batterie</string>
     <string name="xbridge_battery">xBridge Batterie</string>
     <string name="limitter_battery">Libre Akku</string>
-    <string name="parakeet_battery">Parakeet Batterie</string>
     <string name="after_calibration_rewrite_history">Nach Kalibrierung: Rohwerte an neuen Wert anpassen</string>
     <string name="rewrite_history">Übersicht neu anlegen</string>
     <string name="grid_time_lines_visible">Zeitrasterlinien sichtbar</string>

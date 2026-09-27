@@ -536,7 +536,6 @@
     <string name="battery">Batéria</string>
     <string name="xbridge_battery">Batéria xBridge</string>
     <string name="limitter_battery">Batéria Libre</string>
-    <string name="parakeet_battery">Batéria Parakeetu</string>
     <string name="after_calibration_rewrite_history">Vyhladiť graf neupravených dát podľa novo zadanej kalibrácie</string>
     <string name="rewrite_history">Prepísať históriu</string>
     <string name="grid_time_lines_visible">Zobraz čiary časovej mriežky</string>

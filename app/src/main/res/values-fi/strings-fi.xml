@@ -563,7 +563,6 @@
     <string name="battery">Akku</string>
     <string name="xbridge_battery">xBridgen akku</string>
     <string name="limitter_battery">Libren akku</string>
-    <string name="parakeet_battery">Parakeetin akku</string>
     <string name="after_calibration_rewrite_history">Säädä kuvaajan loppuosaa kalibroinnin jälkeen. Tasoittaa kuvaajaa kalibroinnin kohdalla</string>
     <string name="rewrite_history">Uudelleenkirjoita Historia</string>
     <string name="grid_time_lines_visible">Ruudukon aikaviivat näkyvissä</string>

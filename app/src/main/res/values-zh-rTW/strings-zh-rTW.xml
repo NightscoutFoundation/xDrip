@@ -567,7 +567,7 @@
     <string name="battery">電池</string>
     <string name="xbridge_battery">xBridge 電池</string>
     <string name="limitter_battery">Libre 電池</string>
-    <string name="parakeet_battery">Parakeet 電池</string>
+    <string name="uploader_battery">上傳裝置電量</string>
     <string name="after_calibration_rewrite_history">校正後，調整近期原始圖表，使其平滑至新的校正值</string>
     <string name="rewrite_history">重寫歷史紀錄</string>
     <string name="grid_time_lines_visible">顯示時間格線</string>

@@ -567,7 +567,7 @@
     <string name="battery">Batteri</string>
     <string name="xbridge_battery">xBridge-batteri</string>
     <string name="limitter_battery">Libre-batteri</string>
-    <string name="parakeet_battery">Parakeet-batteri</string>
+    <string name="uploader_battery">Opplaster-batteri</string>
     <string name="after_calibration_rewrite_history">Etter kalibrering, juster nylig rå-graf for å tilpasse den nye kalibreringen</string>
     <string name="rewrite_history">Omskriv historikken</string>
     <string name="grid_time_lines_visible">Tidslinjer i rutenettet synlige</string>

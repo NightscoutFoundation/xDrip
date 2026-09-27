@@ -559,7 +559,6 @@
     <string name="battery">Akku</string>
     <string name="xbridge_battery">xBridge akku</string>
     <string name="limitter_battery">Libre akku</string>
-    <string name="parakeet_battery">Parakeet akku</string>
     <string name="after_calibration_rewrite_history">Kalibrálás után a raw grafikon simítása a kalibrációhoz</string>
     <string name="rewrite_history">Grafikon frissítése</string>
     <string name="grid_time_lines_visible">Idő segédvonalak mutatása</string>

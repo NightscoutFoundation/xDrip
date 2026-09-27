@@ -391,7 +391,7 @@ public class AlertPlayer {
         if (!setDataSourceSucceeded) {
             // This means "default", "default_notification", or "content://settings/system/" is the value we have received.
             // If it's a low-priority event (P < 80) or explicitly requested, use the soft default notification sound.
-            if ("default_notification".equals(fileName) || (priority < 80 && "default".equals(fileName))) {
+            if ("default_notification".equals(fileName) || (priority < 80 && ("default".equals(fileName) || (fileName != null && fileName.startsWith("content://settings/system/"))))) {
                 setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_notification);
             }
 

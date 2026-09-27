@@ -564,7 +564,6 @@
     <string name="battery">Baterie</string>
     <string name="xbridge_battery">Baterie xBridge</string>
     <string name="limitter_battery">Baterie Libre</string>
-    <string name="parakeet_battery">Baterie Parakeet</string>
     <string name="after_calibration_rewrite_history">După calibrare, ajustează graficul recent de date brute pentru a pregăti noua calibrare</string>
     <string name="rewrite_history">Rescrie Istoric</string>
     <string name="grid_time_lines_visible">Linii de timp în grilă vizibile</string>

@@ -565,7 +565,6 @@
     <string name="battery">Aku</string>
     <string name="xbridge_battery">xBridge aku</string>
     <string name="limitter_battery">Libre aku</string>
-    <string name="parakeet_battery">Parakeet aku</string>
     <string name="after_calibration_rewrite_history">Ühtlusta peale kalibreerimist andmete graafikut vastavalt uuele kalibreerimisele</string>
     <string name="rewrite_history">Ajaloo ümberkirjutamine</string>
     <string name="grid_time_lines_visible">Graafiku ajajooned nähtavaks</string>

@@ -537,7 +537,6 @@
     <string name="battery">Pil</string>
     <string name="xbridge_battery">xBridge pili</string>
     <string name="limitter_battery">Libre pil</string>
-    <string name="parakeet_battery">Parakeet pil</string>
     <string name="after_calibration_rewrite_history">Kalibrasyondan sonra, yeni kalibrasyonu düzeltmek için son ham grafiği ayarla</string>
     <string name="rewrite_history">Geçmişi Yenile</string>
     <string name="grid_time_lines_visible">Zaman ızgara çizgilerini görünür yap</string>

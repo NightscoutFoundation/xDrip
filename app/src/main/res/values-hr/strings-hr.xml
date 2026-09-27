@@ -536,7 +536,6 @@
     <string name="battery">Baterija</string>
     <string name="xbridge_battery">xBridge baterija</string>
     <string name="limitter_battery">Libre baterija</string>
-    <string name="parakeet_battery">Parakeet baterija</string>
     <string name="after_calibration_rewrite_history">Nakon baždarenja, prilagodi nedavne sirove vrijednosti na grafikonu kako bi se uskladilo sa novim baždarenjem</string>
     <string name="rewrite_history">Ponovno napišite povijest</string>
     <string name="grid_time_lines_visible">Vidljiva mreža linija za vrijeme</string>

@@ -558,7 +558,6 @@
     <string name="battery">Bateria</string>
     <string name="xbridge_battery">Bateria XBridge</string>
     <string name="limitter_battery">Bateria Libre</string>
-    <string name="parakeet_battery">Bateria Parakeet</string>
     <string name="after_calibration_rewrite_history">Po kalibracji, dostosuj poprzedni wykres uwzględniając nową kalibracje</string>
     <string name="rewrite_history">Przepisz Historia</string>
     <string name="grid_time_lines_visible">Linie czasu Siatka widoczna</string>

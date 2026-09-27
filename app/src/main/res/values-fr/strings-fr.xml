@@ -567,7 +567,6 @@
     <string name="battery">Batterie</string>
     <string name="xbridge_battery">Batterie xBridge</string>
     <string name="limitter_battery">Batterie Libre</string>
-    <string name="parakeet_battery">Batterie Parakeet</string>
     <string name="after_calibration_rewrite_history">Après le calibrage, ajustez le graphique brut récent pour lisser à la nouvelle calibration</string>
     <string name="rewrite_history">Réécriture de l\'historique</string>
     <string name="grid_time_lines_visible">Grille de lignes de temps visible</string>

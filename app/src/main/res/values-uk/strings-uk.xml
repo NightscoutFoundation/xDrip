@@ -560,7 +560,6 @@
     <string name="battery">Батарея</string>
     <string name="xbridge_battery">Батарея xBridge</string>
     <string name="limitter_battery">Батарея Limitter</string>
-    <string name="parakeet_battery">Батарея Parakeet</string>
     <string name="after_calibration_rewrite_history">Після калібрування змінити попередні дані на графіку, щоб згладити його під нове каліброване значення</string>
     <string name="rewrite_history">Скорегувати історичні дані</string>
     <string name="grid_time_lines_visible">Зробити видимими лінії шкали часу на графіку</string>

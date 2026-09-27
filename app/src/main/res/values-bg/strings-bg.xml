@@ -567,7 +567,6 @@
     <string name="battery">Батерия</string>
     <string name="xbridge_battery">xBridge Батерия</string>
     <string name="limitter_battery">Libre Батерия</string>
-    <string name="parakeet_battery">Parakeet Батерия</string>
     <string name="after_calibration_rewrite_history">След калибриране коригирайте скорошната необработена графика, за да я изгладите спрямо новото калибриране</string>
     <string name="rewrite_history">Пренаписване на историята</string>
     <string name="grid_time_lines_visible">Видими времеви линии на мрежата</string>
