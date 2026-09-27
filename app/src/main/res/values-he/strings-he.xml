@@ -946,7 +946,7 @@
     <string name="offical_msg">האפליקציה הרשמית</string>
     <string name="aggressive_power_manager">למכשיר שלך יש ניהול סוללה אגרסיבי, שכנראה מוגדר בהגדרות. אנא וודא ש-xDrip אינו חלק מרשימת האפליקציות שאינה יכולה לפעול ברקע.</string>
     <string name="use_conflict_msg">האפליקציה תנסה לגשת למשדר במקביל ומצב זה יכול לגרום לקונפליקט בנתונים</string>
-    <string name="use_confict_msg_glimp">ניתן לבצע התאמה להגדרות Glimp: אפשרויות &gt; מכשירים &gt; בטל בחירה באופציית Bluetooth</string>
+    <string name="use_confict_msg_glimp">ניתן לבצע התאמה להגדרות Glimp: אפשרויות > מכשירים > בטל בחירה באופציית Bluetooth</string>
     <string name="eng_mode_is_on">מצב המהנדסים פועל. נא לבטלו אלא אם אתם בטוחים שאתם זקוקים לו כי הוא עלול לגרום להתנהגות בלתי צפויה.</string>
     <string name="yes">כן</string>
     <string name="enable">אפשר</string>
@@ -1751,6 +1751,7 @@
     <string name="libre_filter_length_15">15 דקות</string>
     <string name="libre_filter_length_25">25 דקות &gt;</string>
     <string name="libre_filter_length_summary">מספר הדקות שיש להביא בחשבון בעת שימוש בנתוני librex</string>
+    <string name="libre_filter_length_title">נתונים של ליברה 3 בעת שימוש בשיטת xxx</string>
     <string name="enable_streaming_dialog_yes">התחבר לחיישן Libre2 זה</string>
     <string name="enable_streaming_dialog_no">אל תתחבר לחיישן Libre2 זה </string>
     <string name="enable_streaming_dialog_dont_ask_again">אל תשאל אותי שוב</string>
