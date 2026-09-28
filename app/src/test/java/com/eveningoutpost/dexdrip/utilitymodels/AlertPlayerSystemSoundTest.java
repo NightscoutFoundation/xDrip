@@ -126,7 +126,7 @@ public class AlertPlayerSystemSoundTest extends RobolectricTestWithConfig {
         // :: Verify
         assertWithMessage("sounds requested for a low-priority alert without a sound name")
                 .that(requestedSounds)
-                .containsExactly("default_alert");
+                .containsExactly("default_notification");
     }
 
     /**
