@@ -1052,7 +1052,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (!"Silent".equals(value) && !"vibrate only".equals(value)) {
                 return sBindPreferenceSummaryToValueListener.onPreferenceChange(pref, newValue);
             }
-            GenericConfirmDialog.show(activity, xdrip.gs(R.string.alert_volume_profile), xdrip.gs(R.string.volume_profile_will_be_muted), () -> {
+            GenericConfirmDialog.show(activity, xdrip.gs(R.string.alert_volume_profile), xdrip.gs(R.string.volume_profile_will_be_muted,
+                    xdrip.gs(R.string.volume_profile_silent),
+                    xdrip.gs(R.string.volume_profile_vibrate_only),
+                    xdrip.gs(R.string.override_silent_mode)), () -> {
                 ((ListPreference) pref).setValue(value);
                 sBindPreferenceSummaryToValueListener.onPreferenceChange(pref, value);
             });
