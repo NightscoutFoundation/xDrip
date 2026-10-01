@@ -1232,7 +1232,10 @@
     <string name="title_nocturne_upload_treatments">Prześlij zabiegi</string>
     <string name="title_nocturne_use_mobile">Użyj transmisji danych</string>
     <!-- NocturneConnectActivity (deep link receiver) -->
+    <string name="nocturne_connect_err_invalid_url">Nieprawidłowy adres URL</string>
+    <string name="nocturne_connect_err_bad_scheme">Adres URL musi zaczynać się od http:// lub https://</string>
     <!-- NocturneConnectHelper (device flow UI) -->
+    <string name="nocturne_disconnect">Odłącz</string>
     <string name="nocturne_disconnected">Rozłączono z Nocturne</string>
     <string name="nocturne_open_browser">Otwórz przeglądarkę</string>
     <string name="nocturne_connected">Połączono z Nocturne!</string>
