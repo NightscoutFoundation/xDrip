@@ -45,7 +45,10 @@ public class MissedReadingService extends IntentService {
     //int otherAlertSnooze;
     private final static String TAG = MissedReadingService.class.getSimpleName();
     private static volatile PendingIntent serviceIntent = null;
-    private static int aggressive_backoff_timer = 120;
+
+    private static final int DEFAULT_BACKOFF_TIME_IN_SECONDS = 120;
+    
+    private static int aggressive_backoff_timer = DEFAULT_BACKOFF_TIME_IN_SECONDS;
 
     public MissedReadingService() {
         super("MissedReadingService");
@@ -68,7 +71,8 @@ public class MissedReadingService extends IntentService {
 
             // send to pebble
             if (Pref.getBoolean("broadcast_to_pebble", false) && (PebbleUtil.getCurrentPebbleSyncType() != 1) && !BgReading.last_within_millis(stale_millis)) {
-                if (JoH.ratelimit("peb-miss", 120)) {
+                if (JoH.ratelimit("peb-miss", 120))
+                {
                     // TODO replace ratelimit with Inevitable.task?
                     JoH.startService(PebbleWatchSync.class);
                 }
@@ -84,14 +88,30 @@ public class MissedReadingService extends IntentService {
             }
 
 
-            if ((Pref.getBoolean("aggressive_service_restart", false) || DexCollectionType.isFlakey())) {//!Home.get_enable_wear() &&
-                if (!BgReading.last_within_millis(stale_millis) && sensorActive && (!getLocalServiceCollectingState())) {
-                    if (JoH.ratelimit("aggressive-restart", aggressive_backoff_timer)) {
+            if( Pref.getBoolean("aggressive_service_restart", false)
+                // Because of the "pseudo" DexCollectionType.DexcomG6 (is internally set to
+                // DexcomG5), the aggressive service restart is done for G6 and G7, even if
+                // aggressive_service_restart is disabled...
+                /*  || DexCollectionType.isFlakey() */ )
+            {
+                if( !BgReading.last_within_millis(stale_millis)
+                        && sensorActive
+                        && !getLocalServiceCollectingState() )
+                {
+                    if( JoH.ratelimit("aggressive-restart", aggressive_backoff_timer) )
+                    {
                         Log.e(TAG, "Aggressively restarting collector service due to lack of reception: backoff: " + aggressive_backoff_timer);
-                        if (aggressive_backoff_timer < 1200) aggressive_backoff_timer += 60;
+
+                        if( aggressive_backoff_timer < (DEFAULT_BACKOFF_TIME_IN_SECONDS * 10) )
+                        {
+                            aggressive_backoff_timer += 60;
+                        }
+
                         CollectionServiceStarter.restartCollectionServiceBackground();
-                    } else {
-                        aggressive_backoff_timer = 120; // reset
+                    }
+                    else
+                    {
+                        aggressive_backoff_timer = DEFAULT_BACKOFF_TIME_IN_SECONDS; // reset
                     }
                 }
             }
