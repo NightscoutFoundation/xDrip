@@ -382,26 +382,52 @@ public class AlertPlayer {
         });
 
         boolean setDataSourceSucceeded = false;
-        if (fileName != null && fileName.length() > 0 && !fileName.equals("default") && !fileName.equals("default_notification") && !fileName.startsWith("content://settings/system/")) {
+        boolean hasCustomFile = (fileName != null && fileName.length() > 0
+                && !fileName.equals("default")
+                && !fileName.equals("default_notification")
+                && !fileName.startsWith("content://settings/system/"));
+
+        if (hasCustomFile) { // We have a path to the sound file.
             setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, Uri.parse(fileName));
             if (!setDataSourceSucceeded) {
-                UserError.Log.uel(TAG, "Custom URI failed. Path: " + fileName);
+                UserError.Log.uel(TAG, "Sound URI failed. Path: " + fileName);
             }
         }
-        if (!setDataSourceSucceeded) {
-            // This means "default", "default_notification", or "content://settings/system/" is the value we have received.
-            // If it's a low-priority event (P < 80) or explicitly requested, use the soft default notification sound.
-            if ("default_notification".equals(fileName) || (priority < 80 && ("default".equals(fileName) || (fileName != null && fileName.startsWith("content://settings/system/"))))) {
+
+        if (!setDataSourceSucceeded) { // The user may have chosen an item-specific default sound.
+            // If the item has a dedicated default sound file, it will be identified here.
+            // For now, the only item that may qualify is the reminder.  But, we may have more items here in the future for example sensor expiry.
+            if ("reminder".equals(tag)) {
+                setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.reminder_default_notification);
+                if (!setDataSourceSucceeded) {
+                    UserError.Log.ueh(TAG, "Reminder default notification failed to load!");
+                }
+            }
+        }
+
+        if (!setDataSourceSucceeded) { // We still need to play the default sound.
+            // The user may have chosen a general default sound file.
+            if ("default_notification".equals(fileName)) {
                 setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_notification);
             }
-
-            if (!setDataSourceSucceeded) {
-                // Otherwise, we use the default alarm from the repository.
-                setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_alert);
+            else if ("default".equals(fileName) || (fileName != null && fileName.startsWith("content://settings/system/")) || "".equals(fileName) || fileName == null) {
+                setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, priority < 80 ? R.raw.default_notification : R.raw.default_alert);
             }
         }
-        if (!setDataSourceSucceeded) {
-            Log.wtf(TAG, "FATAL: Default_alert failed to load!");
+
+        if (!setDataSourceSucceeded) { // We still need to play the default sound.
+            // We will now play the default sound solely based on priority.
+            UserError.Log.uel(TAG, "Attempting sound fallback.");
+            setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, priority < 80 ? R.raw.default_notification : R.raw.default_alert);
+        }
+
+        if (!setDataSourceSucceeded) { // We have failed to play a sound based on priority.  This should not happen.
+            UserError.Log.ueh(TAG, "Attempting default_alert safety net.");
+            setDataSourceSucceeded = setMediaDataSource(ctx, mediaPlayer, R.raw.default_alert);
+        }
+
+        if (!setDataSourceSucceeded) { // This is a disaster!  We have failed to make a sound.
+            Log.wtf(TAG, "FATAL: Default_alert sound failed to load!");
             activeTag = ""; // Clear the lock
             if (mediaPlayer != null) {
                 stopAndReleasePlayer(mediaPlayer);
