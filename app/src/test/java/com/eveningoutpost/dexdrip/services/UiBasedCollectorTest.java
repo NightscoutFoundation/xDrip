@@ -239,6 +239,58 @@ public class UiBasedCollectorTest extends RobolectricTestWithConfig {
                 .that(ui.handleNewValue(start + Constants.MINUTE_IN_MS * 10, 100)).isTrue();
     }
 
+    @Test
+    public void sourcePackageUsesMgDlTest() {
+        val i = new UiBasedCollector();
+
+        // No package set - falls back to xDrip preference
+        i.lastPackage = null;
+        // Default xDrip unit in test is mg/dL
+        assertWithMessage("null package uses default").that(i.sourcePackageUsesMgDl()).isTrue();
+
+        // CamAPS mmol variants
+        i.lastPackage = "com.camdiab.fx_alert.mmoll";
+        assertWithMessage("camaps mmoll").that(i.sourcePackageUsesMgDl()).isFalse();
+        i.lastPackage = "com.camdiab.fx_alert.hx.mmoll";
+        assertWithMessage("camaps hx mmoll").that(i.sourcePackageUsesMgDl()).isFalse();
+        i.lastPackage = "com.camdiab.fx_alert.mmoll.ca";
+        assertWithMessage("camaps mmoll ca").that(i.sourcePackageUsesMgDl()).isFalse();
+
+        // CamAPS mgdl variants
+        i.lastPackage = "com.camdiab.fx_alert.mgdl";
+        assertWithMessage("camaps mgdl").that(i.sourcePackageUsesMgDl()).isTrue();
+        i.lastPackage = "com.camdiab.fx_alert.hx.mgdl";
+        assertWithMessage("camaps hx mgdl").that(i.sourcePackageUsesMgDl()).isTrue();
+
+        // Dexcom mmol variants
+        i.lastPackage = "com.dexcom.g6.region1.mmol";
+        assertWithMessage("dexcom mmol").that(i.sourcePackageUsesMgDl()).isFalse();
+        i.lastPackage = "com.dexcom.g6.region4.mmol";
+        assertWithMessage("dexcom region4 mmol").that(i.sourcePackageUsesMgDl()).isFalse();
+
+        // Dexcom mgdl variants
+        i.lastPackage = "com.dexcom.g6.region2.mgdl";
+        assertWithMessage("dexcom mgdl").that(i.sourcePackageUsesMgDl()).isTrue();
+
+        // Packages without unit in name fall back to default
+        i.lastPackage = "com.dexcom.g7";
+        assertWithMessage("g7 no unit suffix").that(i.sourcePackageUsesMgDl()).isTrue();
+        i.lastPackage = "com.medtronic.diabetes.guardian";
+        assertWithMessage("medtronic no unit suffix").that(i.sourcePackageUsesMgDl()).isTrue();
+    }
+
+    @Test
+    public void tryExtractStringMmolPackageTest() {
+        val i = new UiBasedCollector();
+
+        // Simulate CamAPS mmol sending "7.1" when xDrip is set to mg/dL
+        i.lastPackage = "com.camdiab.fx_alert.mmoll";
+        val result = i.tryExtractString("7.1");
+        // 7.1 mmol/L = ~128 mg/dL
+        assertWithMessage("mmol package parses 7.1 as mmol").that(result).isAtLeast(127);
+        assertWithMessage("mmol package parses 7.1 as mmol").that(result).isAtMost(129);
+    }
+
     /**
      * Characterization: jam detection rejects after Medtronic threshold (9 repeats).
      * Readings spaced at 10-min intervals to pass dedup but increment jam counter.
