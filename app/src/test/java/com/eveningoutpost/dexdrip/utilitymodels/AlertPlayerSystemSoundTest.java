@@ -38,7 +38,7 @@ import java.util.Map;
 public class AlertPlayerSystemSoundTest extends RobolectricTestWithConfig {
 
     private static final String SYSTEM_NOTIFICATION_SOUND = "content://settings/system/notification_sound";
-    private static final String REMINDER = "reminder";               // priority 50
+    private static final String FALL_ALERT = "bg_fall_alert";               // priority 70
     private static final String PREDICTED_GLUCOSE = "bg_predict_alert"; // priority 80
     private static final String HIGH_GLUCOSE = "high_glucose_level";  // priority 85
 
@@ -73,7 +73,7 @@ public class AlertPlayerSystemSoundTest extends RobolectricTestWithConfig {
     @Test
     public void lowPriorityAlertWithASystemDefaultSoundPlaysTheSoftSound() {
         // :: Act
-        triggerSound(SYSTEM_NOTIFICATION_SOUND, REMINDER);
+        triggerSound(SYSTEM_NOTIFICATION_SOUND, FALL_ALERT);
 
         // :: Verify
         assertWithMessage("sounds requested for a reminder with the system default sound")
@@ -109,7 +109,7 @@ public class AlertPlayerSystemSoundTest extends RobolectricTestWithConfig {
     @Test
     public void lowPriorityAlertWithThePlainDefaultMarkerPlaysTheSoftSound() {
         // :: Act
-        triggerSound("default", REMINDER);
+        triggerSound("default", FALL_ALERT);
 
         // :: Verify
         assertWithMessage("sounds requested for a reminder with the plain default marker")
@@ -117,16 +117,16 @@ public class AlertPlayerSystemSoundTest extends RobolectricTestWithConfig {
                 .containsExactly("default_notification");
     }
 
-    /** A missing sound name at low priority still falls back to the bundled alarm, as it always has. */
+    /** A missing sound name at low priority plays the soft sound, like the other defaults. */
     @Test
-    public void lowPriorityAlertWithoutASoundNameKeepsTheBundledAlarm() {
+    public void lowPriorityAlertWithoutASoundNamePlaysTheSoftSound() {
         // :: Act
-        triggerSound(null, REMINDER);
+        triggerSound(null, FALL_ALERT);
 
         // :: Verify
-        assertWithMessage("sounds requested for a reminder without a sound name")
+        assertWithMessage("sounds requested for a low-priority alert without a sound name")
                 .that(requestedSounds)
-                .containsExactly("default_alert");
+                .containsExactly("default_notification");
     }
 
     /**

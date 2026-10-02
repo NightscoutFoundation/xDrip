@@ -40,7 +40,7 @@ repositories {
 }
 
 android {
-    compileSdk 34 // TODO centralize
+    compileSdk 36 // TODO centralize
 
 
     configurations.all {
@@ -271,8 +271,8 @@ dependencies {
     implementation "com.google.android.gms:play-services-oss-licenses:15.0.0"
     implementation "com.google.protobuf:protobuf-java:4.34.0"
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
-    implementation 'com.squareup.okhttp3:okhttp:5.3.2'
-    implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
+    implementation 'com.squareup.okhttp3:okhttp:5.4.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.4.0'
     // Nocturne SDK: declares OkHttp 4.12, so it resolves up to the 5.x pinned above rather than
     // matching it. Covered by NocturneApiClientTest / NocturneUploaderAuthTest, which drive the
     // real (Context) constructor over MockWebServer. We exclude its gson transitive to keep
@@ -345,8 +345,8 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
     testImplementation "org.robolectric:robolectric:4.16"
     testImplementation "com.google.truth:truth:1.4.5"
-    testImplementation 'com.squareup.okhttp3:mockwebserver:5.3.2'
-    testImplementation 'com.squareup.okhttp3:okhttp-tls:5.3.2'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:5.4.0'
+    testImplementation 'com.squareup.okhttp3:okhttp-tls:5.4.0'
 
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation 'org.mockito:mockito-core:4.11.0'

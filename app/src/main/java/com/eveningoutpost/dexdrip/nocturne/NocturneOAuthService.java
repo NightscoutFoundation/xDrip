@@ -306,6 +306,13 @@ public class NocturneOAuthService {
 
             final OAuthTokenResponse response = api.oAuthToken(
                     "refresh_token", null, null, clientId, null, refreshToken, null, null);
+            // The SDK treats access_token as optional, and storing a missing or empty one would wipe
+            // the token already held. Keep that one instead and report the refresh as failed.
+            final String newAccessToken = response.getAccessToken();
+            if (newAccessToken == null || newAccessToken.isEmpty()) {
+                UserError.Log.e(TAG, "refreshAccessToken: response has no access_token");
+                return false;
+            }
             storeTokens(response);
             UserError.Log.d(TAG, "refreshAccessToken: success");
             return true;
@@ -394,6 +401,28 @@ public class NocturneOAuthService {
     public static boolean isConnected() {
         return !PersistentStore.getString(KEY_ACCESS_TOKEN).isEmpty()
                 && !PersistentStore.getString(KEY_REFRESH_TOKEN).isEmpty();
+    }
+
+    /**
+     * Forgets the stored expiry, so that the next {@link #getValidAccessToken()} attempts a refresh
+     * rather than handing back a token the server has already rejected.
+     * <p>
+     * Does nothing when no refresh token or no client id is stored. With either missing a refresh
+     * cannot succeed, and forcing one early would stop uploads, or clear the credentials, sooner
+     * than the stored expiry would have.
+     * <p>
+     * What the attempt does is {@link #refreshAccessToken()}'s existing behaviour. A refresh that
+     * fails without clearing the credentials leaves the expiry at zero, so each run tries again.
+     *
+     * @return whether a refresh was armed
+     */
+    public static boolean expireAccessToken() {
+        if (PersistentStore.getString(KEY_REFRESH_TOKEN).isEmpty()
+                || PersistentStore.getString(KEY_CLIENT_ID).isEmpty()) {
+            return false;
+        }
+        PersistentStore.setLong(KEY_TOKEN_EXPIRY, 0);
+        return true;
     }
 
     // --- Private helpers ---
