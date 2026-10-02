@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">Udostępnij ustawienia poprzez kod QR</string>
     <string name="title_activity_send_feed_back">Wyślij odpowiedź do Jamorham</string>
     <string name="title_activity_save_logs"></string>
-    <string name="title_activity_maps">Mapa Parakeet</string>
     <string name="title_activity_display_preferences">Pokaż Preferencje</string>
     <string name="export_submenu">Funkcje importu / eksportu</string>
     <string name="action_resend_to_watch">Wyślij ponownie poziom glukozy do zegarka</string>
@@ -158,9 +157,6 @@
     <string name="till">do</string>
     <string name="low_predicted">Niski poziom cukru przewidziany</string>
     <string name="in">za</string>
-    <string name="yes_enter_setup_mode">Tak, wejdź w tryb konfiguracji</string>
-    <string name="nokeep_parakeet_as_it_is">Nie zmieniaj stanu Parakeet</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Czy na pewno chcesz, aby przełączyć do trybu serwisowego?\n\nNormalnie ta opcja służy do konfiguracji nadajnika poprzez wysyłanie kolejnych wiadomości tekstowych do Parakeet itp.</string>
     <string name="split_delete_or_do_nothing">Split, usunąć lub zrobić nic</string>
     <string name="split_this_block_in_two">Podzielona ten blok na dwie części</string>
     <string name="delete_this_time_block">Usuń ten blok czasowy</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"W trybie Libre dla całego domu: nie zebrano jeszcze żadnych pomiarów."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"W trybie Libre dla całego domu: Ostatni pomiar "</string>
     <string name="space_minute_ago">" Minuta temu"</string>
-    <string name="show_parakeet_map">Pokaż położenie Parakeet</string>
-    <string name="switch_parakeet_to_setup_mode">Przełączyć Parakeet w tryb serwisowy</string>
     <string name="view_events_log">Zobacz Event Log</string>
     <string name="show_libre_trend">Pokaż trend z Libre</string>
     <string name="libre_15_minutes_graph">Wykres ostatnich 15 minut z libre</string>
@@ -357,6 +351,8 @@
     <string name="all_alerts_disabled_until">"Wszystkie alarmy wyłączone do czasu "</string>
     <string name="low_alerts_disabled_until">"Niskie alarmy wyłączone do czasu "</string>
     <string name="high_alerts_disabled_until">"Wysokie alarmy wyłączone do czasu "</string>
+    <string name="active_alert_rerise_at">Istnieje aktywny alarm o nazwie \"%1$s\" Alarm włączy się o %2$s (pozostało %3$s minut)</string>
+    <string name="active_alert_snoozed_until">Istnieje aktywny alarm o nazwie \"%1$s\" Alarm uśpiony do %2$s (pozostało %3$s minut)</string>
     <string name="default_snooze">Domyślnie uśpij</string>
     <string name="until_you_reenable">Do momentu ponownego włączenia</string>
     <string name="set">Ustaw</string>
@@ -405,8 +401,6 @@
     <string name="web_feedback_form_for_sending_messages">Formularz Web feedback do wysyłania wiadomości i oceny xDrip+ do programistów</string>
     <string name="be_master_for_followers">Bądź podstawowym źródłem danych dla pozostałych</string>
     <string name="this_device_will_send_data_to_followers">To urządzenie przesyła dane do pozostałych odbiorców</string>
-    <string name="send_parakeet_map_location_to_followers">Wyślij lokalizacjie Parakeet, do pozostałych odbiorców</string>
-    <string name="sync_parakeet_geolocation">Synchronizacja geolokalizacji Parakeet</string>
     <string name="disable_all_sync_features">Wyłącz wszystkie funkcje synchronizacji</string>
     <string name="temporary_work_around_disable_all_sync_detail">Tymczasowe rozwiązanie problemu, całkowicie zatrzymuje wszystkie synchronizacje. Może wymagać ponownego uruchomienia po ponownym włączeniu. Używaj z rozwagą!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Aktualizacje automatyczne, raporty o awariach i opinia dla programisty</string>
@@ -439,9 +433,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Powiadom, jeżeli przewidziano hipoglikemie za mniej minut niż próg</string>
     <string name="predicted_low_sound">Dźwiek dla Przewidywanej Niskiej wartości</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Wybierz dźwięk alarmu używany do przewidywanego niskiego poziomu.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Powiadom, jeśli urządzenie Parakeet przestanie nadawać</string>
-    <string name="parakeet_related_alerts">Alerty związane z Parakeet</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Podczas ładowania wycisz powiadomienie parakeet</string>
     <string name="silent_alert_when_charging">Ciche ostrzeżenie podczas ładowania</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Przy starcie alarm jest uspiony przez pewien czas, po którym następuje uruchomienie.</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmy wyciszone w czasie rozmów telefonicznych</string>
@@ -524,7 +515,6 @@
     <string name="show_graph_total_average">Pokaż wykres Całkowita średnia</string>
     <string name="show_momentum_working_curve">Pokaż Momentum krzywą roboczą</string>
     <string name="show_noise_workings">Pokaż funkcjonowanie szumu</string>
-    <string name="parakeet_and_extra_features">Parakeet i dodatkowe funkcje testowe</string>
     <string name="insulin_duration_hours">Czas działania Insuliny (w godzinach)</string>
     <string name="default_liver_sensitivity_ratio">Domyślnie wspołczynnik dla czułości wątroby</string>
     <string name="key_is_used_instead_of_google_account">Używaj klucza zamiast konta Google</string>
@@ -820,6 +810,7 @@
     <string name="use_flair_colors">Ustaw kolor systemu podczas używania aplikacji</string>
     <string name="upper_title_bar_flair">Kolor paska powiadomień</string>
     <string name="lower_button_bar_falir">Kolor paska nawigacji</string>
+    <string name="title_language">Język</string>
     <string name="force_english_text">Wymuś interfejs w j. angielskim</string>
     <string name="using_local_language">Obecnie używasz lokalnego języka urządzenia</string>
     <string name="forcing_alternate_language">Obecnie wymusza użycie alternatywnego języka</string>
@@ -832,7 +823,6 @@
     <string name="display_calculations">Wyświetl obliczenia Insuliny/Węglowodanów</string>
     <string name="display_calculations_everytime">Cały czas wyświetlaj obliczenia Insuliny/Węglowodanów</string>
     <string name="always_show_bolus_wizard_preview">Zawsze pokazuj podgląd kreatora bolusa</string>
-    <string name="show_test_features">Pokaż dodatkowe i zaawansowane funkcje testowe</string>
     <string name="show_reminder_features">Pokaż menu i funkcje przypomnień</string>
     <string name="enable_reminder_features">Włącz funkcje przypomnień</string>
     <string name="display_mathamatical_simulations">Wyświetlaj symulacje matematyczne na podstawie danych profilu i logów węglowodanów/insuliny</string>
@@ -953,7 +943,6 @@
     <string name="are_you_sure">Jesteś pewien?</string>
     <string name="g4_share_receiver">Odbiornik G4</string>
     <string name="bluetooth_wixel">Wixel Bluetooth</string>
-    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">Inne</string>
     <string name="which_software_is_the_wixel_running">Na jakim oprogramowaniu pracuje Wixel?</string>
     <string name="start_source_setup_wizard">Uruchom kreator konfiguracji źródła danych</string>
@@ -969,7 +958,6 @@
     <string name="use_librealarm">Używać aplikacji LibreAlarm jako źródła danych?</string>
     <string name="noise_blocking">Blokowanie szumu</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Poziom, na którym niedokładne dane nie powinny być transmitowane, ponieważ mogą być mylące dla odbierających aplikacji</string>
-    <string name="low_parakeet_battery">Niski poziom baterii Parakeet</string>
     <string name="glucose_units_mmol_or_mgdl">Jednostki glukozy mmol/l lub mg/dL</string>
     <string name="is_your_typical_glucose_value">Czy typowa wartość glukozy we krwi to: 5,5 (mmol/L) lub 100 (mg/dl)? Proszę wybrać poniżej</string>
     <string name="settings_updated_to_mmol">Ustawienia zaktualizowane do mmol/l</string>
@@ -1235,10 +1223,22 @@
     <string name="title_tidepool_upload_no_treatment">Nie wysyłaj zabiegów</string>
     <string name="title_tidepool">Tidepool</string>
     <!-- Nocturne connect flow -->
+    <string name="nocturne">Nocturne</string>
+    <string name="nocturne_connect_activity_label">Połącz z Nocturne</string>
+    <string name="nocturne_settings_summary">Prześlij do Nocturne V4 API</string>
+    <string name="title_nocturne_upload_enable">Włącz wysyłanie do Nocturne</string>
+    <string name="title_nocturne_instance_url">Adres URL Nocturne</string>
+    <string name="nocturne_instance_url_dialog_message">Wprowadź adres URL twojej instancji Nocturne (np. https://mynocturne.example.com)</string>
     <string name="title_nocturne_upload_treatments">Prześlij zabiegi</string>
     <string name="title_nocturne_use_mobile">Użyj transmisji danych</string>
     <!-- NocturneConnectActivity (deep link receiver) -->
+    <string name="nocturne_connect_err_invalid_url">Nieprawidłowy adres URL</string>
+    <string name="nocturne_connect_err_bad_scheme">Adres URL musi zaczynać się od http:// lub https://</string>
     <!-- NocturneConnectHelper (device flow UI) -->
+    <string name="nocturne_disconnect">Odłącz</string>
+    <string name="nocturne_disconnected">Rozłączono z Nocturne</string>
+    <string name="nocturne_open_browser">Otwórz przeglądarkę</string>
+    <string name="nocturne_connected">Połączono z Nocturne!</string>
     <string name="show_help">Pokaż pomoc</string>
     <string name="load_save_settings_on_sdcard">Załaduj / Zapisz ustawienia na karcie Sd</string>
     <string name="delete_all_bg_readings">Usuń WSZYSTKIE odczyty glikemii</string>

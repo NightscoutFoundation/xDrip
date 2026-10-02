@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">Сподели настройки чрез QR код</string>
     <string name="title_activity_send_feed_back">Изпрати обратна връзка на Jamorham</string>
     <string name="title_activity_save_logs">Запазване на логовете</string>
-    <string name="title_activity_maps">Parakeet Map/Карта</string>
     <string name="title_activity_display_preferences">Предпочитания за показване</string>
     <string name="export_submenu">Импортирай / Експортирай характеристика</string>
     <string name="action_resend_to_watch">Изпрати глюкоза на часовника</string>
@@ -158,9 +157,6 @@
     <string name="till">до</string>
     <string name="low_predicted">Предвижда се ниска КЗ</string>
     <string name="in">след</string>
-    <string name="yes_enter_setup_mode">Да, влез в режим за настройка</string>
-    <string name="nokeep_parakeet_as_it_is">Не, запази Parakeet както си е</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Сигурни ли сте, че искате да промените Parakeet в режим на настройка?\n\nОбикновенно това се използва само, когато изпраща допълнително съобщения към Parakeet при реконфигурация на трансмитер който слуша и т. н.</string>
     <string name="split_delete_or_do_nothing">Раздели, изтрии или не прави нищо</string>
     <string name="split_this_block_in_two">Раздели този блок на две</string>
     <string name="delete_this_time_block">Изтрии този времеви блок</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"В Либре режим цяла къща: не са намерени отчитания."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"В либре режим цяла къща: Последно отчитане "</string>
     <string name="space_minute_ago">" Преди минута"</string>
-    <string name="show_parakeet_map">Покажи Parakeet карта</string>
-    <string name="switch_parakeet_to_setup_mode">Преминаване на Parakeet към Режим за настройване</string>
     <string name="view_events_log">Покажи лог събития</string>
     <string name="show_libre_trend">Покажи Libre тенденция</string>
     <string name="libre_15_minutes_graph">Libre 15 минутна графа</string>
@@ -413,8 +407,6 @@
     <string name="web_feedback_form_for_sending_messages">Уеб форма за обратна връзка за изпращане на съобщения и оценки на разработчиците на xDrip+</string>
     <string name="be_master_for_followers">Бъдете управител за последователите</string>
     <string name="this_device_will_send_data_to_followers">Това устройство ще изпраща данни на последователи</string>
-    <string name="send_parakeet_map_location_to_followers">Изпратете местоположението на картата на Parakeet на последователите</string>
-    <string name="sync_parakeet_geolocation">Синхронизиране на геолокацията на Parakeet</string>
     <string name="disable_all_sync_features">Деактивирайте всички функции за синхронизиране</string>
     <string name="temporary_work_around_disable_all_sync_detail">Временна заобиколна опция, която напълно спира всякаква синхронизация. Може да е необходим рестарт след повторно пускане. Използвайте отговорно!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Автоматични актуализации, отчети за сривове и обратна връзка с програмиста</string>
@@ -448,9 +440,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Предупреди, когато предвиждаш малко време за достигане на граница</string>
     <string name="predicted_low_sound">Звук при предвиждане на ниска КЗ</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Използване на звукова аларма при предвиждане на ниска КЗ.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Извести когато Parakeet устройството спре да отчита</string>
-    <string name="parakeet_related_alerts">Parakeet свързани известия</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Повишете леко Parakeet известията, когато се зарежда</string>
     <string name="silent_alert_when_charging">Безшумно известие при зареждане</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Известията започват отложени и трябва да продължат известно време, за да се задействат</string>
     <string name="alarms_silenced_during_telephone_calls">Алармите са заглушени по време на телефонни разговори</string>
@@ -533,7 +522,6 @@
     <string name="show_graph_total_average">Показване на обща средна стойност на графиката</string>
     <string name="show_momentum_working_curve">Показване на работната крива на импулса</string>
     <string name="show_noise_workings">Показване на записките на шума</string>
-    <string name="parakeet_and_extra_features">Parakeet и допълнителни тестови функции</string>
     <string name="insulin_duration_hours">Продължителност на действието на инсулина в часове</string>
     <string name="default_liver_sensitivity_ratio">Коефициент по подразбиране на чернодробна чувствителност</string>
     <string name="key_is_used_instead_of_google_account">Ключът се използва вместо акаунт в Google</string>
@@ -841,7 +829,6 @@
     <string name="display_calculations">Покажи Инсулин/Въгл. изчисления</string>
     <string name="display_calculations_everytime">Покажи Инсулин/Въгл. изчисления за цялото време</string>
     <string name="always_show_bolus_wizard_preview">Винаги показвай съветник за преглед за бързодействащ инсулин</string>
-    <string name="show_test_features">Показване на допълнителни и алфа тестови функции</string>
     <string name="show_reminder_features">Показване на менюта и функции за напомняне</string>
     <string name="enable_reminder_features">Активирайте функциите за напомняне</string>
     <string name="display_mathamatical_simulations">Показване на математически симулации, базирани на данни от профила и въглехидрати/инсулин записи</string>
@@ -965,7 +952,6 @@
     <string name="are_you_sure">Сигурени ли сте?</string>
     <string name="g4_share_receiver">G4 Споделяне на приемник</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">Други</string>
     <string name="which_software_is_the_wixel_running">С кой софтуер работи Wixel?</string>
     <string name="start_source_setup_wizard">Стартирай съветника за настройка на източника</string>
@@ -981,7 +967,6 @@
     <string name="use_librealarm">Използвай LibreAlarm приложението за източник на данни?</string>
     <string name="noise_blocking">Блокиране на шум в измерванията</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Ниво, при което шумните данни не трябва да се предават, тъй като това може да обърка приемащите приложения</string>
-    <string name="low_parakeet_battery">Ниска батерия на устройството Parakeet</string>
     <string name="glucose_units_mmol_or_mgdl">КЗ единици mmol/L или mg/dL</string>
     <string name="is_your_typical_glucose_value">Коя е Вашата типична стойност на КЗ: 5,5 (mmol/L) или 100 (mg/dL)? Изберете по-долу</string>
     <string name="settings_updated_to_mmol">Настройките са актуализирани до mmol/L</string>

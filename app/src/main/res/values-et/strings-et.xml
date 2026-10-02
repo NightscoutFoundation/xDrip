@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">Jaga seadeid QR koodiga</string>
     <string name="title_activity_send_feed_back">Saada tagasisidet</string>
     <string name="title_activity_save_logs">Salvesta logid</string>
-    <string name="title_activity_maps">Parakeet kaart</string>
     <string name="title_activity_display_preferences">Ekraani seaded</string>
     <string name="export_submenu">Impordi / ekspordi valikud</string>
     <string name="action_resend_to_watch">Saatke uuesti veresuhkru andmed kella</string>
@@ -158,9 +157,6 @@
     <string name="till">kuni</string>
     <string name="low_predicted">Eeldatav madal veresuhkur</string>
     <string name="in">saabub</string>
-    <string name="yes_enter_setup_mode">Jah, mine seadistamise režiimi</string>
-    <string name="nokeep_parakeet_as_it_is">Ei, hoia Parakeet nii nagu see on</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Oled kindel, et tahad kasutada Parakeeti seadistus režiimis\n\nTavaliselt kasutatakse seda saatmaks edasisi sõnumeid Parakeeti, et ümberseadistada saatja.</string>
     <string name="split_delete_or_do_nothing">Poolita, kustuta või ära tee midagi</string>
     <string name="split_this_block_in_two">Poolita see andmekogu kaheks</string>
     <string name="delete_this_time_block">Kustuta see ajaplokk</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Libre kogumaja režiim: ühtegi tulemust pole veel kogutud."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"Libre kogumaja režiimis: Viimane tulemus loetud "</string>
     <string name="space_minute_ago">" Minutit tagasi"</string>
-    <string name="show_parakeet_map">Näita Parakeet kaarti</string>
-    <string name="switch_parakeet_to_setup_mode">Lülita Parakeet seadistusrežiimi</string>
     <string name="view_events_log">Vaata sündmuste logi</string>
     <string name="show_libre_trend">Näita Libre trendijoont</string>
     <string name="libre_15_minutes_graph">Libre 15 minuti graafik</string>
@@ -411,8 +405,6 @@
     <string name="web_feedback_form_for_sending_messages">xDrip+ teemal tagasiside blankett sõnumite ja hinnangute saatmiseks arendajatele</string>
     <string name="be_master_for_followers">Ole põhiseade jälgijatele</string>
     <string name="this_device_will_send_data_to_followers">See seade saadab andmeid jälgijatele</string>
-    <string name="send_parakeet_map_location_to_followers">Saada jälgijatele \"Parakeet\'i\" kaardi asukoht</string>
-    <string name="sync_parakeet_geolocation">Sünkrooni \"Parakeet\" geolokatsioon</string>
     <string name="disable_all_sync_features">Tühista kõik sünkroonimisfunktsioonid</string>
     <string name="temporary_work_around_disable_all_sync_detail">Ajutine lahendus, peatab täielikult kogu sünkroniseerimise. Ilmselt on vaja peale lubamist taaskäivitada. Kasuta ettevaatlikult!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automaatsed värskendused, veaaruanded ja tagasiside arendajale</string>
@@ -446,9 +438,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Teavita kui ennustatud madala VS aeg jõuab piirmäärani</string>
     <string name="predicted_low_sound">Ennustatud madala helin</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Valige püsivalt madala alarmi helin.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Teavita kui Parakeet seade lõpetab ühenduse loomise</string>
-    <string name="parakeet_related_alerts">Parakeetiga seotud alarmid</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Tõsta \"Parakeet\" märguande taset aeglaselt kui laeb</string>
     <string name="silent_alert_when_charging">Laadimise ajaks alarmi vaigistus</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Hoiatused algavad edasi lükatult ja peavad tegelikuks käivitamiseks mõnda aega püsima</string>
     <string name="alarms_silenced_during_telephone_calls">Hoiatused vaigistuvad telefonikõne ajal</string>
@@ -531,7 +520,6 @@
     <string name="show_graph_total_average">Näita graafikul kõige keskmist</string>
     <string name="show_momentum_working_curve">Näita trendi töökõverat</string>
     <string name="show_noise_workings">Näita vigaste andmete (müra) olekut</string>
-    <string name="parakeet_and_extra_features">Parakeet ja lisa testifunktsioonid</string>
     <string name="insulin_duration_hours">Insuliini toimeaeg tundides</string>
     <string name="default_liver_sensitivity_ratio">Vaikimisi maksa tundlikkuse suhe</string>
     <string name="key_is_used_instead_of_google_account">Võtit kasutatakse Google konto asemel</string>
@@ -839,7 +827,6 @@
     <string name="display_calculations">Kuva insuliini/süsivesikute arvutused</string>
     <string name="display_calculations_everytime">Kuva insuliini/süsivesikute arvutusi kogu aeg</string>
     <string name="always_show_bolus_wizard_preview">Kuva alati booluse abivahendi eelvaade</string>
-    <string name="show_test_features">Näita lisa- ja alfatesti funktsioone</string>
     <string name="show_reminder_features">Kuva meeldetuletuse menüüd ja funktsioonid</string>
     <string name="enable_reminder_features">Luba meeldetuletuse funktsioonid</string>
     <string name="display_mathamatical_simulations">Kuva profiiliandmetel ja süsivesikute/insuliini logidel põhinevad matemaatilised simulatsioonid</string>
@@ -961,7 +948,6 @@
     <string name="are_you_sure">Oled kindel?</string>
     <string name="g4_share_receiver">G4 jagamise vastuvõtja</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">Muud</string>
     <string name="which_software_is_the_wixel_running">Millist tarkvara Wixel kasutab?</string>
     <string name="start_source_setup_wizard">Alusta andmete allika häälestusviisardiga</string>
@@ -977,7 +963,6 @@
     <string name="use_librealarm">Kasutada andmeallikana rakendust LibreAlarm?</string>
     <string name="noise_blocking">Müra/ valeandmete blokeerimine</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Tase, mil mürarikkaid andmeid ei edastata, kuna ajavad vastuvõtvad äpid segadusse</string>
-    <string name="low_parakeet_battery">\"Parakeet\" aku on tühi</string>
     <string name="glucose_units_mmol_or_mgdl">Veresuhkru ühik mmol/L või mg/dL</string>
     <string name="is_your_typical_glucose_value">Kas sinu tavaline veresuhkru väärtus on:  5.5 (mmol/L) või 100 (mg/dL)  Tee järgnev valik</string>
     <string name="settings_updated_to_mmol">Ühik uuendatud: mmol/L</string>
