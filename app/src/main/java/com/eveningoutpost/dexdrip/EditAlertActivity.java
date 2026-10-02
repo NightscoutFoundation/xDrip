@@ -111,7 +111,7 @@ public class EditAlertActivity extends ActivityWithMenu {
     private final int MIN_ALERT = 40;
     private final int MAX_ALERT = 400;
 
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = EditAlertActivity.class.getSimpleName();
 
     String getExtra(Bundle savedInstanceState, String paramName, String defaultVal) {
         String newString;

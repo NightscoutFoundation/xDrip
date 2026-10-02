@@ -57,7 +57,7 @@ public class UserNotification extends PlusModel {
             "bg_alert", "calibration_alert", "double_calibration_alert",
             "extra_calibration_alert", "bg_unclear_readings_alert",
             "bg_missed_alerts", "bg_rise_alert", "bg_fall_alert");
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = UserNotification.class.getSimpleName();
 
     private static boolean patched = false;
 
