@@ -188,6 +188,37 @@
             android:title="@string/title_medtrum_a_hex" />
         <EditTextPreference
             android:defaultValue=""
+            android:inputType="textNoSuggestions|textEmailAddress"
+            android:key="medtrum_follow_user"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_medtrum_follow_user"
+            android:title="@string/title_medtrum_follow_user" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textPassword"
+            android:key="medtrum_follow_password"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_medtrum_follow_password"
+            android:title="@string/title_medtrum_follow_password" />
+        <ListPreference
+            android:defaultValue="eu"
+            android:entries="@array/medtrum_follow_server_entries"
+            android:entryValues="@array/medtrum_follow_server_values"
+            android:key="medtrum_follow_server"
+            android:summary="@string/summary_medtrum_follow_server"
+            android:title="@string/title_medtrum_follow_server" />
+        <EditTextPreference
+            android:defaultValue=""
+            android:inputType="textNoSuggestions|textEmailAddress"
+            android:key="medtrum_follow_patient"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:summary="@string/summary_medtrum_follow_patient"
+            android:title="@string/title_medtrum_follow_patient" />
+        <EditTextPreference
+            android:defaultValue=""
             android:inputType="textNoSuggestions|textVisiblePassword"
             android:key="nsfollow_url"
             android:maxLines="1"
