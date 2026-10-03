@@ -340,6 +340,14 @@ dependencies {
 
     testImplementation 'joda-time:joda-time:2.10.7'
 
+    // ns-sdk's NSDeviceStatus is a kotlinx.serialization @Serializable Kotlin class. Its generated
+    // synthetic constructor takes a SerializationConstructorMarker parameter, which the JVM resolves
+    // eagerly for every constructor when gson's reflective adapter asks for the no-arg one — even
+    // though gson never calls kotlinx.serialization itself. Not pulled in anywhere on :app's runtime
+    // classpath today (checked with `./gradlew :app:dependencies`), so AAPSStatusHandlerTest needs it
+    // test-scoped to even load the class under Robolectric.
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3'
+
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.objenesis:objenesis:2.5.1'
     testImplementation 'org.hamcrest:hamcrest-library:1.3'

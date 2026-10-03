@@ -210,4 +210,25 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
         assertThat(request.getHeader("Accept")).contains("application/json");
     }
 
+    // ===== Marker dates ==============================================================================================
+
+    /** A marker's ISO date-time from CareLink is parsed to the same instant through gson's default Date handling. */
+    @Test
+    public void getLast24Hours_parsesMarkerDateTime() throws Exception {
+        // :: Setup
+        TestableCareLinkClient client = createClient();
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .setBody("{\"markers\":[{\"type\":\"CALIBRATION\",\"dateTime\":\"2026-10-02T10:30:00.000Z\","
+                        + "\"value\":110.0}]}"));
+
+        // :: Act
+        RecentData result = client.getLast24Hours();
+
+        // :: Verify
+        assertThat(result.markers).hasSize(1);
+        assertThat(result.markers.get(0).dateTime.getTime()).isEqualTo(1_790_937_000_000L);
+    }
+
 }
