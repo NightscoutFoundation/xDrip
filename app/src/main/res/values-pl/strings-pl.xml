@@ -548,6 +548,7 @@
     <string name="battery">Bateria</string>
     <string name="xbridge_battery">Bateria XBridge</string>
     <string name="limitter_battery">Bateria Libre</string>
+    <string name="uploader_battery">Bateria przesyłającego</string>
     <string name="after_calibration_rewrite_history">Po kalibracji, dostosuj poprzedni wykres uwzględniając nową kalibracje</string>
     <string name="rewrite_history">Przepisz Historia</string>
     <string name="grid_time_lines_visible">Linie czasu Siatka widoczna</string>
@@ -1480,6 +1481,10 @@
     <string name="title_use_notification_channels">Kanały powiadomień</string>
     <string name="title_ongoing_notification_channel">Użyj bieżącego kanału powiadomień</string>
     <string name="title_notification_channels_grouping">Grupuj powiadomienia</string>
+    <string name="glucose_level_notifications">Alarmy poziomu glukozy</string>
+    <string name="ongoing_notification">Bieżące powiadomienie</string>
+    <string name="general_notifications">Ogólne</string>
+    <string name="other_alert_notifications">Inne alarmy</string>
     <string name="summary_delay_ascending_3min">W przypadku rosnącego profilu głośności, opóźnij rozpoczęcie dźwięku alertu o 3 minuty. Wibracja (jeśli jest włączona) rozpoczyna się natychmiast po wyzwoleniu alertu, niezależnie od tego ustawienia.</string>
     <string name="title_ascending_volume">Ustawienia rosnącej głośności</string>
     <string name="title_delay_ascending_3min">Opóźnij rosnącą głośność</string>
