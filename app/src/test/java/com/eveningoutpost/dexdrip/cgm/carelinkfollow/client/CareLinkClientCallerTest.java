@@ -231,4 +231,21 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
         assertThat(result.markers.get(0).dateTime.getTime()).isEqualTo(1_790_937_000_000L);
     }
 
+    /** A user's ISO login date-time from CareLink is parsed to the same instant via gson's default Date handling. */
+    @Test
+    public void getMyUser_parsesLoginDateUTC() throws Exception {
+        // :: Setup
+        TestableCareLinkClient client = createClient();
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .setBody("{\"loginDateUTC\":\"2026-10-02T10:30:00.000Z\",\"role\":\"patient\"}"));
+
+        // :: Act
+        User result = client.getMyUser();
+
+        // :: Verify
+        assertThat(result.loginDateUTC.getTime()).isEqualTo(1_790_937_000_000L);
+    }
+
 }

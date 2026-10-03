@@ -14,8 +14,8 @@ import static com.google.common.truth.Truth.assertThat;
 /**
  * Pins the JSON that xDrip's models write and read with gson, byte for byte.
  * <p>
- * {@code toS()} output goes to watches and followers that may run an older xDrip, and {@code saved_alerts} is
- * read back after an app upgrade. A gson upgrade must not change a character of either.
+ * {@code toS()} output goes to the watch (via {@code WatchUpdaterService}) and to {@code UndoRedo}, and
+ * {@code saved_alerts} is read back after an app upgrade. A gson upgrade must not change a character of either.
  *
  * @author Asbjørn Aarrestad - 2026.10
  */
@@ -23,7 +23,7 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
     // ===== BgReading =================================================================================================
 
-    /** A plain reading serialises to the exact string a follower parses today. */
+    /** A plain reading serialises to the exact string the watch parses today. */
     @Test
     public void bgReading_toS_writesExposedFields() {
         // :: Setup
@@ -34,15 +34,13 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(json).isEqualTo(
-                "{\"timestamp\":1700000000000,\"time_since_sensor_started\":0.0,\"raw_d"
-                        + "ata\":150.0,\"filtered_data\":148.0,\"age_adjusted_raw_value\":149.0,"
-                        + "\"calibration_flag\":false,\"calculated_value\":123.4,\"filtered_calcu"
-                        + "lated_value\":0.0,\"calculated_value_slope\":0.5,\"a\":0.0,\"b\":0.0,"
-                        + "\"c\":0.0,\"ra\":0.0,\"rb\":0.0,\"rc\":0.0,\"uuid\":\"bg-uuid\",\"cali"
-                        + "bration_uuid\":\"cal-uuid\",\"sensor_uuid\":\"sensor-uuid\",\"ignoreFo"
-                        + "rStats\":false,\"raw_calculated\":0.0,\"hide_slope\":false,\"noise\":"
-                        + "\"1\",\"dg_mgdl\":0.0,\"dg_slope\":0.0,\"dg_delta_name\":\"Flat\",\"so"
-                        + "urce_info\":\"test\"}");
+                "{\"timestamp\":1700000000000,\"time_since_sensor_started\":0.0,\"raw_data\":150.0,"
+                        + "\"filtered_data\":148.0,\"age_adjusted_raw_value\":149.0,\"calibration_flag\":false,"
+                        + "\"calculated_value\":123.4,\"filtered_calculated_value\":0.0,\"calculated_value_slope\":0.5,"
+                        + "\"a\":0.0,\"b\":0.0,\"c\":0.0,\"ra\":0.0,\"rb\":0.0,\"rc\":0.0,\"uuid\":\"bg-uuid\","
+                        + "\"calibration_uuid\":\"cal-uuid\",\"sensor_uuid\":\"sensor-uuid\",\"ignoreForStats\":false,"
+                        + "\"raw_calculated\":0.0,\"hide_slope\":false,\"noise\":\"1\",\"dg_mgdl\":0.0,"
+                        + "\"dg_slope\":0.0,\"dg_delta_name\":\"Flat\",\"source_info\":\"test\"}");
     }
 
     /** A NaN slope is written as the bare literal {@code NaN}, which older readers accept. */
@@ -57,15 +55,13 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(json).isEqualTo(
-                "{\"timestamp\":1700000000000,\"time_since_sensor_started\":0.0,\"raw_d"
-                        + "ata\":150.0,\"filtered_data\":148.0,\"age_adjusted_raw_value\":149.0,"
-                        + "\"calibration_flag\":false,\"calculated_value\":123.4,\"filtered_calcu"
-                        + "lated_value\":0.0,\"calculated_value_slope\":NaN,\"a\":0.0,\"b\":0.0,"
-                        + "\"c\":0.0,\"ra\":0.0,\"rb\":0.0,\"rc\":0.0,\"uuid\":\"bg-uuid\",\"cali"
-                        + "bration_uuid\":\"cal-uuid\",\"sensor_uuid\":\"sensor-uuid\",\"ignoreFo"
-                        + "rStats\":false,\"raw_calculated\":0.0,\"hide_slope\":false,\"noise\":"
-                        + "\"1\",\"dg_mgdl\":0.0,\"dg_slope\":0.0,\"dg_delta_name\":\"Flat\",\"so"
-                        + "urce_info\":\"test\"}");
+                "{\"timestamp\":1700000000000,\"time_since_sensor_started\":0.0,\"raw_data\":150.0,"
+                        + "\"filtered_data\":148.0,\"age_adjusted_raw_value\":149.0,\"calibration_flag\":false,"
+                        + "\"calculated_value\":123.4,\"filtered_calculated_value\":0.0,\"calculated_value_slope\":NaN,"
+                        + "\"a\":0.0,\"b\":0.0,\"c\":0.0,\"ra\":0.0,\"rb\":0.0,\"rc\":0.0,\"uuid\":\"bg-uuid\","
+                        + "\"calibration_uuid\":\"cal-uuid\",\"sensor_uuid\":\"sensor-uuid\",\"ignoreForStats\":false,"
+                        + "\"raw_calculated\":0.0,\"hide_slope\":false,\"noise\":\"1\",\"dg_mgdl\":0.0,"
+                        + "\"dg_slope\":0.0,\"dg_delta_name\":\"Flat\",\"source_info\":\"test\"}");
     }
 
     /** What {@code toS()} writes, {@code fromJSON} reads back to the same reading. */
@@ -101,7 +97,7 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
     // ===== Calibration, Sensor, Treatments ===========================================================================
 
-    /** A calibration serialises to the exact string sent to followers. */
+    /** A calibration serialises to the exact string sent to the watch. */
     @Test
     public void calibration_toS_writesExposedFields() {
         // :: Setup
@@ -119,18 +115,17 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(json).isEqualTo(
-                "{\"timestamp\":1700000000000,\"sensor_age_at_time_of_estimation\":0.0,"
-                        + "\"bg\":110.0,\"raw_value\":0.0,\"adjusted_raw_value\":0.0,\"sensor_con"
-                        + "fidence\":0.0,\"slope_confidence\":0.0,\"raw_timestamp\":0,\"slope\":1"
-                        + ".05,\"intercept\":-12.5,\"distance_from_estimate\":0.0,\"estimate_raw_"
-                        + "at_time_of_calibration\":0.0,\"estimate_bg_at_time_of_calibration\":0."
-                        + "0,\"uuid\":\"cal-uuid\",\"sensor_uuid\":\"sensor-uuid\",\"possible_bad"
-                        + "\":true,\"check_in\":false,\"first_decay\":0.0,\"second_decay\":0.0,\""
-                        + "first_slope\":0.0,\"second_slope\":0.0,\"first_intercept\":0.0,\"secon"
-                        + "d_intercept\":0.0,\"first_scale\":0.0,\"second_scale\":0.0}");
+                "{\"timestamp\":1700000000000,\"sensor_age_at_time_of_estimation\":0.0,\"bg\":110.0,\"raw_value\":0.0,"
+                        + "\"adjusted_raw_value\":0.0,\"sensor_confidence\":0.0,\"slope_confidence\":0.0,"
+                        + "\"raw_timestamp\":0,\"slope\":1.05,\"intercept\":-12.5,\"distance_from_estimate\":0.0,"
+                        + "\"estimate_raw_at_time_of_calibration\":0.0,\"estimate_bg_at_time_of_calibration\":0.0,"
+                        + "\"uuid\":\"cal-uuid\",\"sensor_uuid\":\"sensor-uuid\",\"possible_bad\":true,"
+                        + "\"check_in\":false,\"first_decay\":0.0,\"second_decay\":0.0,\"first_slope\":0.0,"
+                        + "\"second_slope\":0.0,\"first_intercept\":0.0,\"second_intercept\":0.0,\"first_scale\":0.0,"
+                        + "\"second_scale\":0.0}");
     }
 
-    /** A sensor serialises to the exact string sent to followers. */
+    /** A sensor serialises to the exact string sent to the watch. */
     @Test
     public void sensor_toS_writesExposedFields() {
         // :: Setup
@@ -144,8 +139,8 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(json).isEqualTo(
-                "{\"started_at\":1700000000000,\"stopped_at\":0,\"latest_battery_level"
-                        + "\":0,\"uuid\":\"sensor-uuid\",\"sensor_location\":\"arm\"}");
+                "{\"started_at\":1700000000000,\"stopped_at\":0,\"latest_battery_level\":0,\"uuid\":\"sensor-uuid\","
+                        + "\"sensor_location\":\"arm\"}");
     }
 
     /** A treatment serialises to the exact string used for treatment sync, including the escaped {@code <none>}. */
@@ -167,15 +162,14 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(json).isEqualTo(
-                "{\"timestamp\":1700000000000,\"eventType\":\"\\u003cnone\\u003e\",\"en"
-                        + "teredBy\":\"xdrip\",\"notes\":\"lunch\",\"uuid\":\"treatment-uuid\",\""
-                        + "carbs\":20.0,\"insulin\":2.5,\"insulinJSON\":\"[]\",\"created_at\":\"2"
-                        + "023-11-14T22:13:20Z\"}");
+                "{\"timestamp\":1700000000000,\"eventType\":\"\\u003cnone\\u003e\",\"enteredBy\":\"xdrip\","
+                        + "\"notes\":\"lunch\",\"uuid\":\"treatment-uuid\",\"carbs\":20.0,\"insulin\":2.5,"
+                        + "\"insulinJSON\":\"[]\",\"created_at\":\"2023-11-14T22:13:20Z\"}");
     }
 
     // ===== AlertType =================================================================================================
 
-    /** An alert serialises to the exact string written into exported settings. */
+    /** An alert serialises to the exact string sent to the watch. */
     @Test
     public void alertType_toS_writesExposedFields() {
         // :: Setup
@@ -186,13 +180,11 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(json).isEqualTo(
-                "{\"name\":\"High\",\"active\":false,\"volume\":0,\"vibrate\":false,\"l"
-                        + "ight\":false,\"override_silent_mode\":false,\"force_speaker\":false,\""
-                        + "predictive\":false,\"time_until_threshold_crossed\":0.0,\"above\":true"
-                        + ",\"threshold\":180.0,\"all_day\":false,\"start_time_minutes\":0,\"end_"
-                        + "time_minutes\":0,\"minutes_between\":0,\"default_snooze\":0,\"text\":"
-                        + "\"High BG\",\"mp3_file\":\"content://alarm.mp3\",\"uuid\":\"alert-uuid"
-                        + "\"}");
+                "{\"name\":\"High\",\"active\":false,\"volume\":0,\"vibrate\":false,\"light\":false,"
+                        + "\"override_silent_mode\":false,\"force_speaker\":false,\"predictive\":false,"
+                        + "\"time_until_threshold_crossed\":0.0,\"above\":true,\"threshold\":180.0,\"all_day\":false,"
+                        + "\"start_time_minutes\":0,\"end_time_minutes\":0,\"minutes_between\":0,\"default_snooze\":0,"
+                        + "\"text\":\"High BG\",\"mp3_file\":\"content://alarm.mp3\",\"uuid\":\"alert-uuid\"}");
     }
 
     /** Saving alerts writes the exact {@code saved_alerts} string the next app version reads back. */
@@ -206,13 +198,11 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(prefs().getString("saved_alerts", null)).isEqualTo(
-                "[{\"name\":\"High\",\"active\":false,\"volume\":0,\"vibrate\":false,\""
-                        + "light\":false,\"override_silent_mode\":false,\"force_speaker\":false,"
-                        + "\"predictive\":false,\"time_until_threshold_crossed\":0.0,\"above\":tr"
-                        + "ue,\"threshold\":180.0,\"all_day\":false,\"start_time_minutes\":0,\"en"
-                        + "d_time_minutes\":0,\"minutes_between\":0,\"default_snooze\":0,\"text\""
-                        + ":\"High BG\",\"mp3_file\":\"content://alarm.mp3\",\"uuid\":\"alert-uui"
-                        + "d\"}]");
+                "[{\"name\":\"High\",\"active\":false,\"volume\":0,\"vibrate\":false,\"light\":false,"
+                        + "\"override_silent_mode\":false,\"force_speaker\":false,\"predictive\":false,"
+                        + "\"time_until_threshold_crossed\":0.0,\"above\":true,\"threshold\":180.0,\"all_day\":false,"
+                        + "\"start_time_minutes\":0,\"end_time_minutes\":0,\"minutes_between\":0,\"default_snooze\":0,"
+                        + "\"text\":\"High BG\",\"mp3_file\":\"content://alarm.mp3\",\"uuid\":\"alert-uuid\"}]");
     }
 
     /** A {@code saved_alerts} string written by the old version restores the same alert. */
@@ -220,13 +210,12 @@ public class GsonWireFormatTest extends RobolectricTestWithConfig {
     public void fromSettings_readsAlertsWrittenByOldVersion() {
         // :: Setup
         prefs().edit().putString("saved_alerts",
-                "[{\"name\":\"High\",\"active\":false,\"volume\":0,\"vibrate\":false,\""
-                        + "light\":false,\"override_silent_mode\":false,\"force_speaker\":false,"
-                        + "\"predictive\":false,\"time_until_threshold_crossed\":0.0,\"above\":tr"
-                        + "ue,\"threshold\":180.0,\"all_day\":false,\"start_time_minutes\":0,\"en"
-                        + "d_time_minutes\":0,\"minutes_between\":0,\"default_snooze\":0,\"text\""
-                        + ":\"High BG\",\"mp3_file\":\"content://alarm.mp3\",\"uuid\":\"alert-uui"
-                        + "d\"}]").commit();
+                "[{\"name\":\"High\",\"active\":false,\"volume\":0,\"vibrate\":false,\"light\":false,"
+                        + "\"override_silent_mode\":false,\"force_speaker\":false,\"predictive\":false,"
+                        + "\"time_until_threshold_crossed\":0.0,\"above\":true,\"threshold\":180.0,\"all_day\":false,"
+                        + "\"start_time_minutes\":0,\"end_time_minutes\":0,\"minutes_between\":0,\"default_snooze\":0,"
+                        + "\"text\":\"High BG\",\"mp3_file\":\"content://alarm.mp3\","
+                        + "\"uuid\":\"alert-uuid\"}]").commit();
 
         // :: Act
         AlertType.fromSettings(xdrip.getAppContext());
