@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">QR 코드로 설정 공유</string>
     <string name="title_activity_send_feed_back">Jamorham에게 피드백 보내기</string>
     <string name="title_activity_save_logs">로그 저장</string>
-    <string name="title_activity_maps">Parakeet map</string>
     <string name="title_activity_display_preferences">Display 환경 설정</string>
     <string name="export_submenu">가져오기/내보내기 기능</string>
     <string name="action_resend_to_watch">확인을 위해 혈당을 다시 보내세요.</string>
@@ -158,9 +157,6 @@
     <string name="till">까지</string>
     <string name="low_predicted">저혈당으로 예측됨</string>
     <string name="in">...에서</string>
-    <string name="yes_enter_setup_mode">네, 설정 모드로 진입합니다</string>
-    <string name="nokeep_parakeet_as_it_is">아니요, Parakeet을 그대로 둡니다</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeet을 설정 모드로 전환하시겠습니까?\n\n일반적으로 송신기를 재구성하기 위해 Parakeet에 문자 메시지를 보낼 때 사용됩니다.</string>
     <string name="split_delete_or_do_nothing">분리, 삭제하거나 아무것도 하지 마세요.</string>
     <string name="split_this_block_in_two">이 블록을 두개로 나누세요.</string>
     <string name="delete_this_time_block">이 시간 블록을 지우세요.</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Libre 전체 홈 모드: 아직 수집된 데이터가 없습니다."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"Libre 전체 홈 모드: 마지막 측정 "</string>
     <string name="space_minute_ago">" 분 전"</string>
-    <string name="show_parakeet_map">Parakeet map을 보여 주세요.</string>
-    <string name="switch_parakeet_to_setup_mode">셋업 모드에서 Parakeet으로 전환 하세요.</string>
     <string name="view_events_log">이벤트 로그 보기</string>
     <string name="show_libre_trend">Libre 추세 보기</string>
     <string name="libre_15_minutes_graph">Libre 15분 그래프</string>
@@ -410,8 +404,6 @@
     <string name="web_feedback_form_for_sending_messages">개발자에게 메시지와 평점을 보내기 위한 웹 피드백 양식</string>
     <string name="be_master_for_followers">팔로워를 위한 마스터 되기</string>
     <string name="this_device_will_send_data_to_followers">이 장치는 팔로워에게 데이터를 보낼 것입니다.</string>
-    <string name="send_parakeet_map_location_to_followers">Parakeet map 위치를 팔로웨에게 보내세요.</string>
-    <string name="sync_parakeet_geolocation">Parakeet 위치 동기화</string>
     <string name="disable_all_sync_features">모든 동기화 기능을 해제 하세요.</string>
     <string name="temporary_work_around_disable_all_sync_detail">임시 해결 방법 옵션은 완전히 모든 동기화를 중지합니다. 다시 활성화 된 후 재부팅이 필요합니다. 주의해서 사용하세요!</string>
     <string name="automatic_updates_crash_reports_and_feedback">자동 업데이트, 오류 보고서, 개발자에게 피드백</string>
@@ -445,9 +437,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">예측된 저혈당 도달 시간이 설정값 이내일 때 알림</string>
     <string name="predicted_low_sound">알림 소리</string>
     <string name="choose_sound_used_for_predicted_low_alarm">알람 소리 선택.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Parakeet 장치 연결 중단 시 알림</string>
-    <string name="parakeet_related_alerts">Parakeet 관련 알림</string>
-    <string name="raise_parakeet_notification_silently_when_charging">충전 중에는 Parakeet 알림을 무음으로 표시</string>
     <string name="silent_alert_when_charging">충전 중일때 무음 알림</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">스누즈 알림이 시작되면 실제로 트리거 동안 지속해야만 합니다.</string>
     <string name="alarms_silenced_during_telephone_calls">통화 중 무음 알람</string>
@@ -530,7 +519,6 @@
     <string name="show_graph_total_average">그래프 전체 평균 보기</string>
     <string name="show_momentum_working_curve">모멘텀 동작 곡선 보기</string>
     <string name="show_noise_workings">Noise 동작 보기</string>
-    <string name="parakeet_and_extra_features">Parakeet과 추가 테스트 기능</string>
     <string name="insulin_duration_hours">인슐린 유지 기간</string>
     <string name="default_liver_sensitivity_ratio">기본 간 감도 비율</string>
     <string name="key_is_used_instead_of_google_account">키는 Google 계정 대신 사용됩니다.</string>
@@ -841,7 +829,6 @@
     <string name="display_calculations">인슐린/탄수화물 계산 표시</string>
     <string name="display_calculations_everytime">항상 인슐린/탄수화물 계산 표시</string>
     <string name="always_show_bolus_wizard_preview">항상 볼루스 위저드 미리보기 표시</string>
-    <string name="show_test_features">추가 기능 및 알파 테스트 기능 표시</string>
     <string name="show_reminder_features">리마인더 메뉴 및 기능 표시</string>
     <string name="enable_reminder_features">리마인더 기능 활성화</string>
     <string name="display_mathamatical_simulations">프로필 데이터와 탄수화물/인슐린 로그를 기반으로 한 수학적 시뮬레이션 표시</string>
@@ -965,7 +952,6 @@
     <string name="are_you_sure">확실합니까?</string>
     <string name="g4_share_receiver">G4 Share 수신기</string>
     <string name="bluetooth_wixel">블루투스 Wixel</string>
-    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">기타</string>
     <string name="which_software_is_the_wixel_running">Wixel에서 어떤 소프트웨어가 실행 중입니까?</string>
     <string name="start_source_setup_wizard">소스 설정 마법사 시작</string>
@@ -981,7 +967,6 @@
     <string name="use_librealarm">LibreAlarm 앱을 데이터 소스로 사용하시겠습니까?</string>
     <string name="noise_blocking">노이즈 차단</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">수신 앱에 혼란을 줄 수 있는 노이즈 데이터의 브로드캐스트 차단 레벨</string>
-    <string name="low_parakeet_battery">Parakeet 배터리 부족</string>
     <string name="glucose_units_mmol_or_mgdl">혈당 단위 mmol/L 또는 mg/dL</string>
     <string name="is_your_typical_glucose_value">평소 혈당 수치 범위를 선택하세요: 5.5 (mmol/L) 또는 100 (mg/dL)</string>
     <string name="settings_updated_to_mmol">설정이 mmol/L로 업데이트되었습니다</string>

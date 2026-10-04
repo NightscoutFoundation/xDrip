@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">Partajează setări printr-un cod QR</string>
     <string name="title_activity_send_feed_back">Trimite feedback la Jamorham</string>
     <string name="title_activity_save_logs">Salvează jurnalele</string>
-    <string name="title_activity_maps">Hartă Parakeet</string>
     <string name="title_activity_display_preferences">Preferințe de afișare</string>
     <string name="export_submenu">Funcții de Import/Export</string>
     <string name="action_resend_to_watch">Trimite din nou valorile glicemiei către ceas</string>
@@ -158,9 +157,6 @@
     <string name="till">până</string>
     <string name="low_predicted">Hipoglicemie probabilă</string>
     <string name="in">în</string>
-    <string name="yes_enter_setup_mode">Da, intră în modul de configurare</string>
-    <string name="nokeep_parakeet_as_it_is">Nu, Parakeet rămâne așa cum este</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Ești sigur că vrei să comuți Parakeet în modul de configurare?\n\nÎn mod obișnuit, această funcție este folosită doar pentru a trimite mesaje text suplimentare la Parakeet pentru a reconfigura transmițătorul de la care primește date etc.</string>
     <string name="split_delete_or_do_nothing">Împarte, elimină sau nu face nimic</string>
     <string name="split_this_block_in_two">Împarte acest bloc în două</string>
     <string name="delete_this_time_block">Elimină acest bloc de timp</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"În modul libre în toată casa: nici o citire nu a fost colectată încă."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"În modul libre în toată casa: Ultima citire "</string>
     <string name="space_minute_ago">" Minut în urmă"</string>
-    <string name="show_parakeet_map">Arată harta Parakeet</string>
-    <string name="switch_parakeet_to_setup_mode">Comută Parakeet în modul de configurare</string>
     <string name="view_events_log">Vizualizează Jurnalul de evenimente</string>
     <string name="show_libre_trend">Afișare trend libre</string>
     <string name="libre_15_minutes_graph">Graficul Libre pe 15 minute</string>
@@ -410,8 +404,6 @@
     <string name="web_feedback_form_for_sending_messages">Formularul web de feedback-ul pentru a trimite dezvoltatorilor mesaje și evaluări ale xDrip+</string>
     <string name="be_master_for_followers">Fii maestru pentru abonați</string>
     <string name="this_device_will_send_data_to_followers">Acest dispozitiv va trimite date către abonați</string>
-    <string name="send_parakeet_map_location_to_followers">Trimite abonațlor locația de pe harta Parakeet</string>
-    <string name="sync_parakeet_geolocation">Sincronizează geolocația Parakeet</string>
     <string name="disable_all_sync_features">Dezactivează toate funcțiile de sincronizare</string>
     <string name="temporary_work_around_disable_all_sync_detail">Soluție temporară, care oprește complet sincronizările. Poate fi necesară repornirea dispozitivului după re-activare. Utilizează cu atenție!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Actualizări automate, rapoarte de avarie și feedback pentru dezvoltatori</string>
@@ -445,9 +437,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Arată notificare când începe perioada prezisă cu valori scăzute</string>
     <string name="predicted_low_sound">Sunet pentru alarmele de valori scăzute prezise</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Alege un sunet pentru alarmele de valori scăzute prezise.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Arată notificare atunci când dispozitivul Parakeet nu se mai autentifică</string>
-    <string name="parakeet_related_alerts">Alerte Parakeet</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Arată notificările Parakeet în mod silențios în timpul încărcării la priză</string>
     <string name="silent_alert_when_charging">Alertă silențioasă în timpul încărcării la priză</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alertele se declanșează silențios, și pornesc volumul abia după o vreme</string>
     <string name="alarms_silenced_during_telephone_calls">Alarme fără sunet în timpul apelurilor telefonice</string>
@@ -530,7 +519,6 @@
     <string name="show_graph_total_average">Afișează în grafic valoarea medie totală</string>
     <string name="show_momentum_working_curve">Arată curba de lucru pentru impuls</string>
     <string name="show_noise_workings">Afișează prelucrările citirilor neclare</string>
-    <string name="parakeet_and_extra_features">Parakeet și funcții de testare suplimentare</string>
     <string name="insulin_duration_hours">Durata de acțiune a insulinei în ore</string>
     <string name="default_liver_sensitivity_ratio">Valoare implicită de sensibilitate privind ficatul</string>
     <string name="key_is_used_instead_of_google_account">Cheia este folosită în locul unui cont Google</string>
@@ -841,7 +829,6 @@
     <string name="display_calculations">Afișează calculele Insulină/Carbohidrați</string>
     <string name="display_calculations_everytime">Afișează in orice moment calculele Insulină/Carbohidrați</string>
     <string name="always_show_bolus_wizard_preview">Arată în orice moment Sugestie de Bolusare - BWP</string>
-    <string name="show_test_features">Arată caracteristicile suplimentare și cele de testare alfa</string>
     <string name="show_reminder_features">Afișare meniuri și caracteristici pentru Memento</string>
     <string name="enable_reminder_features">Activează caracteristici pentru Memento</string>
     <string name="display_mathamatical_simulations">Afișați simulările matematice pe baza datelor de profil și a jurnalelor de carbohidrați/insulină</string>
@@ -965,7 +952,6 @@
     <string name="are_you_sure">Ești sigur?</string>
     <string name="g4_share_receiver">Receptor G4</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">Altele</string>
     <string name="which_software_is_the_wixel_running">Care software rulează pe Wixel?</string>
     <string name="start_source_setup_wizard">Porneste Asistentul de Setare a Sursei</string>
@@ -981,7 +967,6 @@
     <string name="use_librealarm">Utilizați aplicația LibreAlarm ca sursă de date?</string>
     <string name="noise_blocking">Blocarea zgomotului</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Nivelul la care datele zgomotoase nu ar trebui să fie transmise deoarece ar putea crea confuzii în aplicațiile receptoare</string>
-    <string name="low_parakeet_battery">Baterie scăzuta la aparatul Parakeet</string>
     <string name="glucose_units_mmol_or_mgdl">Unitate de măsură pentru glicemie mmol/L sau mg/dl</string>
     <string name="is_your_typical_glucose_value">Valoarea normală a glicemiei dumneavoastră este: 5,5 (mmol/l) sau 100 (mg/dl) Vă rugăm să selectaţi mai jos</string>
     <string name="settings_updated_to_mmol">Setări actualizate la mmol/L</string>

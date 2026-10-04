@@ -119,7 +119,6 @@
     <string name="title_activity_update">διαθέσιμη ενημέρωση xDrip+</string>
     <string name="title_activity_display_qrcode">Κοινοποίηση ρυθμίσεων μέσω QR code</string>
     <string name="title_activity_send_feed_back">Αποστολή σχολίων στον Jamorham</string>
-    <string name="title_activity_maps">Χάρτης Parakeet</string>
     <string name="title_activity_display_preferences">Επιλογές εμφάνισης</string>
     <string name="export_submenu">Εισαγωγή / εξαγωγή χαρακτηριστικών</string>
     <string name="action_resend_to_watch">Επαναποστολή γλυκόζης στο ρολόι</string>
@@ -156,9 +155,6 @@
     <string name="till">μέχρι</string>
     <string name="low_predicted">Προβλέπονται χαμηλές τιμές σακχάρου</string>
     <string name="in">σε</string>
-    <string name="yes_enter_setup_mode">Ναι, έισοδος σε λειτουργία setup</string>
-    <string name="nokeep_parakeet_as_it_is">Όχι, κρατήστε το Parakeet όπως είναι</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Είστε βέβαιοι ότι θέλετε να αλλάξετε το Parakeet σε λειτουργία διαμόρφωσης;\n\nΚανονικά, αυτή η λειτουργία χρησιμοποιείται μόνο για την αποστολή περαιτέρω μηνυμάτων κειμένου στο Parakeet, με την οποία μπορείτε, για παράδειγμα, να ρυθμίσετε εκ νέου τον πομπό από τον οποίο το Parakeet λαμβάνει δεδομένα, κλπ.</string>
     <string name="split_delete_or_do_nothing">Διαχωρισμός, διαγραφή ή καμία ενέργεια</string>
     <string name="cancel_do_nothing">Ακύρωση - καμία δράση</string>
     <string name="added">Προστέθηκε</string>
@@ -171,8 +167,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Σε λειτουργία Libre all house: δεν έχει συλλεχθεί καμία ανάγνωση ακόμα."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"Σε λειτουργία Libre all house: Τελευταία ανάγνωση "</string>
     <string name="space_minute_ago">" Λεπτό πριν"</string>
-    <string name="show_parakeet_map">Εμφάνιση χάρτη Parakeet</string>
-    <string name="switch_parakeet_to_setup_mode">Εναλλαγή του Parakeet σε λειτουργία εγκατάστασης</string>
     <string name="view_events_log">Προβολή καταγεγραμένων συμβάντων (event logs)</string>
     <string name="show_libre_trend">Εμφάνιση τάσης Libre</string>
     <string name="libre_15_minutes_graph">Γράφημα Libre 15 λεπτών</string>
@@ -318,8 +312,6 @@
     <string name="choose_stable_beta_or_alpha_releases">Επιλέξτε τύπο κυκλοφορίας: Σταθερό, Beta ή Alpha</string>
     <string name="web_feedback_form_for_sending_messages">Διαδικτυακή φόρμα ανατροφοδότησης για την αποστολή μηνυμάτων και αξιολογήσεων του xDrip+ στους προγραμματιστές</string>
     <string name="this_device_will_send_data_to_followers">Αυτή η συσκευή θα στείλει δεδομένα στους οπαδούς</string>
-    <string name="send_parakeet_map_location_to_followers">Αποστολή της τοποθεσίας του χάρτη Parakeet στους οπαδούς</string>
-    <string name="sync_parakeet_geolocation">Συγχρονισμός τοποθεσίας Parakeet</string>
     <string name="disable_all_sync_features">Απενεργοποίηση όλων των δυνατοτήτων συγχρονισμού</string>
     <string name="temporary_work_around_disable_all_sync_detail">Προσωρινή λύση, σταματά πλήρως το συγχρονισμό. Μπορεί να χρειαστεί επανεκκίνηση μετά την επανενεργοποίηση. Χρησιμοποιήστε το με προσοχή!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Αυτόματες ενημερώσεις, αναφορές σφαλμάτων και σχόλια στον προγραμματιστή</string>

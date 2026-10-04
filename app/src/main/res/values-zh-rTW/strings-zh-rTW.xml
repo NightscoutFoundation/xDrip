@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">透過 QR Code 分享設定</string>
     <string name="title_activity_send_feed_back">傳送意見回饋給 Jamorham</string>
     <string name="title_activity_save_logs">儲存日誌</string>
-    <string name="title_activity_maps">Parakeet 地圖</string>
     <string name="title_activity_display_preferences">顯示偏好設定</string>
     <string name="export_submenu">匯入 / 匯出功能</string>
     <string name="action_resend_to_watch">重新傳送血糖到手錶</string>
@@ -158,9 +157,6 @@
     <string name="till">直到</string>
     <string name="low_predicted">預測血低糖</string>
     <string name="in">在</string>
-    <string name="yes_enter_setup_mode">是，進入設定模式</string>
-    <string name="nokeep_parakeet_as_it_is">否，維持 Parakeet 目前狀態</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">你確定要將 Parakeet 切換為設定模式嗎？\n\n一般來說，這只用於傳送更多文字訊息到 Parakeet，以重新設定它所接收的發射器等。</string>
     <string name="split_delete_or_do_nothing">分割、刪除，或不進行任何操作</string>
     <string name="split_this_block_in_two">將此時段分割為兩段</string>
     <string name="delete_this_time_block">刪除此時段</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"在 Libre all house 模式：尚未收集讀取值。"</string>
     <string name="in_libre_all_house_mode_last_data_collected">"在 Libre all house 模式：上次讀取值"</string>
     <string name="space_minute_ago">"分鐘前"</string>
-    <string name="show_parakeet_map">顯示 Parakeet 地圖</string>
-    <string name="switch_parakeet_to_setup_mode">切換 Parakeet 至設定模式</string>
     <string name="view_events_log">檢視事件記錄</string>
     <string name="show_libre_trend">顯示 Libre 趨勢</string>
     <string name="libre_15_minutes_graph">Libre 15 分鐘圖表</string>
@@ -413,8 +407,6 @@
     <string name="web_feedback_form_for_sending_messages">用來將關於 xDrip+ 的訊息與評分傳送給開發者的網頁回饋表單</string>
     <string name="be_master_for_followers">成為追蹤者的主裝置</string>
     <string name="this_device_will_send_data_to_followers">此裝置會傳送資料給追蹤者</string>
-    <string name="send_parakeet_map_location_to_followers">將 Parakeet 地圖位置傳送給追蹤者</string>
-    <string name="sync_parakeet_geolocation">同步 Parakeet 地理定位</string>
     <string name="disable_all_sync_features">停用所有同步功能</string>
     <string name="temporary_work_around_disable_all_sync_detail">臨時因應選項，將完全停止所有同步。重新啟用後可能需要重新啟動。請謹慎使用！</string>
     <string name="automatic_updates_crash_reports_and_feedback">自動更新、當機回報與回饋給開發者</string>
@@ -448,9 +440,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">當預測的低值時間達到時間門檻時通知</string>
     <string name="predicted_low_sound">警報音效</string>
     <string name="choose_sound_used_for_predicted_low_alarm">選擇警報使用的音效。</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">當 Parakeet 裝置停止回報時通知</string>
-    <string name="parakeet_related_alerts">Parakeet 相關警報</string>
-    <string name="raise_parakeet_notification_silently_when_charging">充電時以靜音方式顯示 Parakeet 通知</string>
     <string name="silent_alert_when_charging">充電時靜音警報</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">警報初始為延遲狀態，需持續一段時間後才會真正觸發</string>
     <string name="alarms_silenced_during_telephone_calls">通話期間將警報靜音</string>
@@ -533,7 +522,6 @@
     <string name="show_graph_total_average">顯示圖表總平均</string>
     <string name="show_momentum_working_curve">顯示動量運算曲線</string>
     <string name="show_noise_workings">顯示雜訊運算過程</string>
-    <string name="parakeet_and_extra_features">Parakeet 與額外測試功能</string>
     <string name="insulin_duration_hours">胰島素作用時間（小時）</string>
     <string name="default_liver_sensitivity_ratio">預設肝臟敏感度比率</string>
     <string name="key_is_used_instead_of_google_account">將使用金鑰代替 Google 帳號</string>
@@ -845,7 +833,6 @@
     <string name="display_calculations">顯示胰島素/碳水計算</string>
     <string name="display_calculations_everytime">一律顯示胰島素/碳水計算</string>
     <string name="always_show_bolus_wizard_preview">一律顯示注射嚮導預覽</string>
-    <string name="show_test_features">顯示額外以及 Alpha 測試功能</string>
     <string name="show_reminder_features">顯示提醒選單與功能</string>
     <string name="enable_reminder_features">啟用提醒功能</string>
     <string name="display_mathamatical_simulations">顯示基於設定檔資料與碳水/胰島素記錄的數學模擬</string>
@@ -969,7 +956,6 @@
     <string name="are_you_sure">您確定嗎？</string>
     <string name="g4_share_receiver">G4 Share 接收器</string>
     <string name="bluetooth_wixel">藍牙 Wixel</string>
-    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">其他</string>
     <string name="which_software_is_the_wixel_running">Wixel 正在執行哪個軟體？</string>
     <string name="start_source_setup_wizard">啟動來源設定嚮導</string>
@@ -985,7 +971,6 @@
     <string name="use_librealarm">使用 LibreAlarm App 作為資料來源？</string>
     <string name="noise_blocking">雜訊阻擋</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">當雜訊達到此等級時，將不會廣播資料，以免讓接收的 App 混淆</string>
-    <string name="low_parakeet_battery">Parakeet 電池電量過低</string>
     <string name="glucose_units_mmol_or_mgdl">血糖單位 mmol/L 或 mg/dL</string>
     <string name="is_your_typical_glucose_value">您的典型血糖值是 5.5 (mmol/L) 還是 100 (mg/dL)？請在下方選擇</string>
     <string name="settings_updated_to_mmol">設定已更新為 mmol/L</string>

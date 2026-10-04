@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">שיתוף הגדרות באמצעות קוד QR</string>
     <string name="title_activity_send_feed_back">שלח פידבק ל-Jamorham</string>
     <string name="title_activity_save_logs">שמור קובץ לוג</string>
-    <string name="title_activity_maps">מפת Parakeet</string>
     <string name="title_activity_display_preferences">הגדרות תצוגה</string>
     <string name="export_submenu">ייבוא ויצוא של הגדרות ונתונים</string>
     <string name="action_resend_to_watch">שליחה חוזרת של ערכי סוכר לשעון</string>
@@ -158,9 +157,6 @@
     <string name="till">עד</string>
     <string name="low_predicted">סוכר נמוך צפוי</string>
     <string name="in">ב-</string>
-    <string name="yes_enter_setup_mode">היכנס למצב הגדרה</string>
-    <string name="nokeep_parakeet_as_it_is">השאר את Parakeet כמו שהוא</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">אתם בטוחים שברצונכם להעביר את Parakeet למצב התקנה?\n\nבדר\"כ זה נעשה רק בכדי לשלוח הודעות טקסט ל-Parakeet על מנת להגדיר מחדש את המשדר אליו הוא מקשיב וכו\'.</string>
     <string name="split_delete_or_do_nothing">פצל, מחק או על תעשה כלום</string>
     <string name="split_this_block_in_two">פצל את הבלוק הזה לשניים</string>
     <string name="delete_this_time_block">מחק את בלוק הזמן הזה</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"במצב ליברה כלל ביתית: טרם נקלטו קריאות."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"במצב ליברה כלל ביתית: קריאה אחרונה "</string>
     <string name="space_minute_ago">" דקה"</string>
-    <string name="show_parakeet_map">הראה מפה של ה-Parakeet</string>
-    <string name="switch_parakeet_to_setup_mode">העבר את הParakeet למצב הגדרות</string>
     <string name="view_events_log">הצג יומן אירועים</string>
     <string name="show_libre_trend">הצג את מגמת הליברה</string>
     <string name="libre_15_minutes_graph">גרף 15 דקות של הליברה</string>
@@ -413,8 +407,6 @@
     <string name="web_feedback_form_for_sending_messages">טופס משוב מקוון לשליחת הודעות ורייטינג של +xDrip למפתחים</string>
     <string name="be_master_for_followers">היה מאסטר עבור העוקבים</string>
     <string name="this_device_will_send_data_to_followers">התקן זה ישלח מידע לעוקבים</string>
-    <string name="send_parakeet_map_location_to_followers">שלח את מיקום ה-Parakeet לעוקבים</string>
-    <string name="sync_parakeet_geolocation">סנכרן מיקום גאוגרפי של Parakeet</string>
     <string name="disable_all_sync_features">השבת את כל אפשרויות הסינכרון</string>
     <string name="temporary_work_around_disable_all_sync_detail">אפשרות מעקף זמנית, היא עוצרת לחלוטין כל סינכרון. עלולה לדרוש אתחול טלפון מלא לאחר הפעלתה מחדש. השתמשו בזהירות!</string>
     <string name="automatic_updates_crash_reports_and_feedback">עדכונים אוטומטיים, דיווחי קריסה ומשובים למפתח</string>
@@ -449,9 +441,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">הודע כשזמן חזוי לסוכר נמוך מגיע לסף</string>
     <string name="predicted_low_sound">צליל של נמוך צפוי</string>
     <string name="choose_sound_used_for_predicted_low_alarm">בחרו צליל עבור אזעקת נמוך צפוי.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">הודע כאשר Parakeet מפסיק להיקלט</string>
-    <string name="parakeet_related_alerts">התראות בנוגע ל-Parakeet</string>
-    <string name="raise_parakeet_notification_silently_when_charging">התרע על Parakeet בשקט בזמן טעינה</string>
     <string name="silent_alert_when_charging">השתק אזעקה בזמן הטענה</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">ההתראה מתחילה מושתקת וצריכה להמשך זמן מה בשביל להתחיל לפעול</string>
     <string name="alarms_silenced_during_telephone_calls">התראות מושקטות בזמן שיחות טלפון</string>
@@ -534,7 +523,6 @@
     <string name="show_graph_total_average">הצג ממוצע כולל</string>
     <string name="show_momentum_working_curve">הצג עקום התנופה</string>
     <string name="show_noise_workings">הצג פעילות הרעש</string>
-    <string name="parakeet_and_extra_features">Parakeet ואפשרויות ניסוי נוספות</string>
     <string name="insulin_duration_hours">משך פעילות אינסולין (שעות)</string>
     <string name="default_liver_sensitivity_ratio">יחס ברירת המחדל לרגישות הכבד</string>
     <string name="key_is_used_instead_of_google_account">משתמש בסיסמה אישית במקום בחשבון גוגל</string>
@@ -848,7 +836,6 @@
     <string name="display_calculations">הצג חישובי אינסולין\\פחמימות</string>
     <string name="display_calculations_everytime">הצג חישובי אינסולין\\פחמימות כל הזמן</string>
     <string name="always_show_bolus_wizard_preview">תמיד הצג תצוגה מקדימה לאשף הבולוסים</string>
-    <string name="show_test_features">הצג תכונות נוספות ונסיוניות</string>
     <string name="show_reminder_features">הצג תכונות ותפריטים עבור תזכורות</string>
     <string name="enable_reminder_features">אפשר תכונות של תזכורות</string>
     <string name="display_mathamatical_simulations">הצג סימולציות מתמטיות בהתבסס על נתוני הפרופיל ורשומות הפחמימות\\אינסולין</string>
@@ -959,7 +946,7 @@
     <string name="offical_msg">האפליקציה הרשמית</string>
     <string name="aggressive_power_manager">למכשיר שלך יש ניהול סוללה אגרסיבי, שכנראה מוגדר בהגדרות. אנא וודא ש-xDrip אינו חלק מרשימת האפליקציות שאינה יכולה לפעול ברקע.</string>
     <string name="use_conflict_msg">האפליקציה תנסה לגשת למשדר במקביל ומצב זה יכול לגרום לקונפליקט בנתונים</string>
-    <string name="use_confict_msg_glimp">ניתן לבצע התאמה להגדרות Glimp: אפשרויות &gt; מכשירים &gt; בטל בחירה באופציית Bluetooth</string>
+    <string name="use_confict_msg_glimp">ניתן לבצע התאמה להגדרות Glimp: אפשרויות > מכשירים > בטל בחירה באופציית Bluetooth</string>
     <string name="eng_mode_is_on">מצב המהנדסים פועל. נא לבטלו אלא אם אתם בטוחים שאתם זקוקים לו כי הוא עלול לגרום להתנהגות בלתי צפויה.</string>
     <string name="yes">כן</string>
     <string name="enable">אפשר</string>
@@ -972,7 +959,6 @@
     <string name="are_you_sure">אתם בטוחים?</string>
     <string name="g4_share_receiver">מקלט G4 Share</string>
     <string name="bluetooth_wixel">Wixel - בלוטות\'</string>
-    <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">אחר</string>
     <string name="which_software_is_the_wixel_running">את איזו תוכנה מפעיל ה-Wixel? </string>
     <string name="start_source_setup_wizard">התחל אשף בחירת סנסור</string>
@@ -988,7 +974,6 @@
     <string name="use_librealarm">להשתמש בLibreAlarm בתור מקור הנתונים?</string>
     <string name="noise_blocking">חסימת רעשים</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">רמה שבה לא ישודרו נתונים רועשים כדי לא לבלבל אפלקציות הקולטות</string>
-    <string name="low_parakeet_battery">סוללת ה-Parakeet חלשה</string>
     <string name="glucose_units_mmol_or_mgdl">יחידות הגלוקוז mmol/L או mg/dL</string>
     <string name="is_your_typical_glucose_value">האם ערך אופייני של הסוכר שלך הוא 100(mg/dl) או 5.5 (mmol/L)? 
 נא לבחור מטה</string>
@@ -1766,6 +1751,7 @@
     <string name="libre_filter_length_15">15 דקות</string>
     <string name="libre_filter_length_25">25 דקות &gt;</string>
     <string name="libre_filter_length_summary">מספר הדקות שיש להביא בחשבון בעת שימוש בנתוני librex</string>
+    <string name="libre_filter_length_title">נתונים של ליברה 3 בעת שימוש בשיטת xxx</string>
     <string name="enable_streaming_dialog_yes">התחבר לחיישן Libre2 זה</string>
     <string name="enable_streaming_dialog_no">אל תתחבר לחיישן Libre2 זה </string>
     <string name="enable_streaming_dialog_dont_ask_again">אל תשאל אותי שוב</string>

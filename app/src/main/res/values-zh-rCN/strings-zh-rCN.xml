@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">通过二维码设置共享</string>
     <string name="title_activity_send_feed_back">发送反馈给 Jamorham</string>
     <string name="title_activity_save_logs">存储日志</string>
-    <string name="title_activity_maps">Parakeet 地图</string>
     <string name="title_activity_display_preferences">显示属性</string>
     <string name="export_submenu">导入/导出功能</string>
     <string name="action_resend_to_watch">重新发送血糖值给手表</string>
@@ -158,9 +157,6 @@
     <string name="till">直到</string>
     <string name="low_predicted">低血糖预测</string>
     <string name="in">in</string>
-    <string name="yes_enter_setup_mode">是的，进入设置模式</string>
-    <string name="nokeep_parakeet_as_it_is">不，保持在学习模式下</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">你确定要从学习模式切换到设置模式吗?\n\n 通常这仅用于向学习模式发送信息，以重新配置其侦听的发射器等</string>
     <string name="split_delete_or_do_nothing">分来, 删除或者无操作</string>
     <string name="split_this_block_in_two">把这个时间段一分为二</string>
     <string name="delete_this_time_block">删除这个时间段</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"瞬感室内全覆盖模式：尚未收集任何读数。"</string>
     <string name="in_libre_all_house_mode_last_data_collected">"瞬感室内全覆盖模式：最近读数 "</string>
     <string name="space_minute_ago">" 分钟以前"</string>
-    <string name="show_parakeet_map">显示学习地图</string>
-    <string name="switch_parakeet_to_setup_mode">从学习模式切换到设置模式</string>
     <string name="view_events_log">查看事件日志</string>
     <string name="show_libre_trend">显示瞬感趋势</string>
     <string name="libre_15_minutes_graph">瞬感15分钟图</string>
@@ -410,8 +404,6 @@
     <string name="web_feedback_form_for_sending_messages">Web反馈表，用于向开发人员发送xDrip +的消息和评级</string>
     <string name="be_master_for_followers">是设备主人还是远程接收者</string>
     <string name="this_device_will_send_data_to_followers">这个设备将会发送数据到远程的接收者</string>
-    <string name="send_parakeet_map_location_to_followers">发送学习模式地图位置给远程接收者</string>
-    <string name="sync_parakeet_geolocation">同步 Parakeet GeoLocation</string>
     <string name="disable_all_sync_features">禁用所有的同步功能</string>
     <string name="temporary_work_around_disable_all_sync_detail">临时解决方案选项，完全停止所有同步.重新启用后可能需要重启。小心使用！</string>
     <string name="automatic_updates_crash_reports_and_feedback">自动更新，崩溃报告和反馈给开发人员</string>
@@ -445,9 +437,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">如果预测低血糖的次数超过阈值就发出通知</string>
     <string name="predicted_low_sound">低血糖预测声音</string>
     <string name="choose_sound_used_for_predicted_low_alarm">选择用于预测低血糖的警报声音.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">当学习模式的设备停止检查时发出通知</string>
-    <string name="parakeet_related_alerts">学习模式下的警报</string>
-    <string name="raise_parakeet_notification_silently_when_charging">充电时将学习模式的通知设为静音</string>
     <string name="silent_alert_when_charging">充电时静音警报</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">警报开始被延后，必须持续一段时间才能实际触发</string>
     <string name="alarms_silenced_during_telephone_calls">手机通话时警报静音</string>
@@ -530,7 +519,6 @@
     <string name="show_graph_total_average">显示总平均值图表</string>
     <string name="show_momentum_working_curve">显示动量曲线</string>
     <string name="show_noise_workings">显示嘈杂工作</string>
-    <string name="parakeet_and_extra_features">学习模式(Parakeet)和额外的测试功能</string>
     <string name="insulin_duration_hours">胰岛素持续时间(小时)</string>
     <string name="default_liver_sensitivity_ratio">Default Liver Sensitivity Ratio</string>
     <string name="key_is_used_instead_of_google_account">使用安全密钥而不使用谷歌的账号</string>
@@ -841,7 +829,6 @@
     <string name="display_calculations">显示胰岛素/碳水化合物计算器</string>
     <string name="display_calculations_everytime">一直显示胰岛素/碳水化合物计算器</string>
     <string name="always_show_bolus_wizard_preview">总是显示大剂量向导预览 </string>
-    <string name="show_test_features">显示额外的和 alpha 测试功能</string>
     <string name="show_reminder_features">显示提醒菜单和功能</string>
     <string name="enable_reminder_features">启用提醒功能</string>
     <string name="display_mathamatical_simulations">基于配置文件数据和碳水化合物/胰岛素日志显示数学模拟</string>
@@ -965,7 +952,6 @@
     <string name="are_you_sure">你是否确定？</string>
     <string name="g4_share_receiver">G4 Share接收器</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">其他</string>
     <string name="which_software_is_the_wixel_running">Wixel 运行的是哪个软件？</string>
     <string name="start_source_setup_wizard">开始数据源设置向导</string>
@@ -981,7 +967,6 @@
     <string name="use_librealarm">使用 LibreAlarm app作为数据源？</string>
     <string name="noise_blocking">噪音数据阻断</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">噪音数据不应被广播的级别, 因为它可能会使其他接收数据app的感到数据混乱</string>
-    <string name="low_parakeet_battery">Parakeet 电池电量低</string>
     <string name="glucose_units_mmol_or_mgdl">血糖值单位 mmol/L or mg/dL</string>
     <string name="is_your_typical_glucose_value">您的常用血糖值格式是:  5.5 (mmol/L) 还是 100 (mg/dL)  请选择下面</string>
     <string name="settings_updated_to_mmol">设置更新为mmol/L</string>

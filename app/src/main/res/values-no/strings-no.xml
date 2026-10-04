@@ -104,7 +104,6 @@
     <string name="title_activity_update">xDrip+ Oppdatering Tilgjengelig</string>
     <string name="title_activity_display_qrcode">Del Innstillinger Med QR-kode</string>
     <string name="title_activity_send_feed_back">Send Tilbakemelding Til Jamorham</string>
-    <string name="title_activity_maps">Parakeet Kart</string>
     <string name="title_activity_display_preferences">Vis Innstillinger</string>
     <string name="export_submenu">Import / Eksport funksjoner</string>
     <string name="action_resend_to_watch">Sende glukose til klokke</string>
@@ -141,9 +140,6 @@
     <string name="till">inntil</string>
     <string name="low_predicted">Lav beregnet</string>
     <string name="in">om</string>
-    <string name="yes_enter_setup_mode">Ja, gå inn setup-modus</string>
-    <string name="nokeep_parakeet_as_it_is">Nei, beholde Parakeet som den er</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Er du sikker på at du vil endre Parakeet til oppsettsmodus?\n\nNormalt brukes dette kun for å sende flere tekstmeldinger til Parakeet for å rekonfigurere senderen den lytter etter osv.</string>
     <string name="split_delete_or_do_nothing">Dele, slette eller gjøre ingenting</string>
     <string name="split_this_block_in_two">Del denne blokken i to</string>
     <string name="delete_this_time_block">Slett denne tidsblokken</string>
@@ -155,8 +151,6 @@
     <string name="expires_at">Slutter {0}</string>
     <string name="space_minutes_ago">" Minutter siden"</string>
     <string name="space_minute_ago">" Minutt siden"</string>
-    <string name="show_parakeet_map">Vis Parakeet kart</string>
-    <string name="switch_parakeet_to_setup_mode">Bytt Parakeet til oppsettsmodus</string>
     <string name="view_events_log">Se Aktivitetslogg</string>
     <string name="show_libre_trend">Vis libre trend</string>
     <string name="libre_15_minutes_graph">Libre 15 minutters graf</string>
@@ -368,8 +362,6 @@
     <string name="web_feedback_form_for_sending_messages">Web tilbakemeldingsskjema for å sende meldinger og vurderinger av xDrip+ til utviklerne</string>
     <string name="be_master_for_followers">Vær leder for følgere</string>
     <string name="this_device_will_send_data_to_followers">Denne enheten vil sende data til følgere</string>
-    <string name="send_parakeet_map_location_to_followers">Send Parakeet kartplassering til følgere</string>
-    <string name="sync_parakeet_geolocation">Synkroniser Parakeet sin Geolokasjon</string>
     <string name="disable_all_sync_features">Deaktiver alle synkroniseringsfunksjoner</string>
     <string name="temporary_work_around_disable_all_sync_detail">Midlertidig løsnings-alternativ, stopper helt all synkronisering. Kan trenge omstart etter å ha blitt reaktivert. Brukes med forsiktighet!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatiske oppdateringer, feilrapporter og tilbakemeldinger til utviklere</string>
@@ -401,9 +393,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Gi beskjed når beregnet lav tid når grensen</string>
     <string name="predicted_low_sound">Lyd ved beregnet Lav</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Velg alarmlyd for beregnet lav.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Gi beskjed når parakeet enheten slutter å sjekker inn</string>
-    <string name="parakeet_related_alerts">Parakeet relaterte varsler</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Aktiver parakeet varsel stille under lading</string>
     <string name="silent_alert_when_charging">Vibrasjon ved lading</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Varsler starte Utsatt og må vedvare en stund å faktisk aktivere</string>
     <string name="alarms_silenced_during_telephone_calls">Alarmer dempet under telefonsamtaler</string>
@@ -484,7 +473,6 @@
     <string name="show_graph_total_average">Vis graf Total gjennomsnittlig</string>
     <string name="show_momentum_working_curve">Vis Momentkurven</string>
     <string name="show_noise_workings">Vis Støyarbeid</string>
-    <string name="parakeet_and_extra_features">Parakeet og Ekstra testfunksjoner</string>
     <string name="insulin_duration_hours">Insulin varighet i timer</string>
     <string name="default_liver_sensitivity_ratio">Standard Lever Følsomhetsforhold</string>
     <string name="key_is_used_instead_of_google_account">Nøkkel brukes i stedet for Google-konto</string>
@@ -770,7 +758,6 @@
     <string name="display_calculations">Vis insulin/karbohydrat beregninger</string>
     <string name="display_calculations_everytime">Vis alltid insulin/karbohydrat beregninger</string>
     <string name="always_show_bolus_wizard_preview">Alltid forhåndsvis bolusveileder </string>
-    <string name="show_test_features">Vis ekstra og alpha test funksjoner</string>
     <string name="show_reminder_features">Vis påminnelsesmeny og funksjoner</string>
     <string name="enable_reminder_features">Aktiver påminnelsesfunksjon</string>
     <string name="display_mathamatical_simulations">Vis matematisk simulering basert på profildata og karbohydrat/insulin log</string>

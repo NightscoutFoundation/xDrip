@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">Einstellungen per QR-Code teilen</string>
     <string name="title_activity_send_feed_back">Feedback an Jamorham senden</string>
     <string name="title_activity_save_logs">Logs speichern</string>
-    <string name="title_activity_maps">Parakeet Karte</string>
     <string name="title_activity_display_preferences">Anzeigeeinstellungen</string>
     <string name="export_submenu">Import-/Export-Einstellungen</string>
     <string name="action_resend_to_watch">Werte erneut an Smartwatch senden</string>
@@ -158,9 +157,6 @@
     <string name="till">bis</string>
     <string name="low_predicted">Niedrig erwartet</string>
     <string name="in">in</string>
-    <string name="yes_enter_setup_mode">Ja, Setup-Modus starten</string>
-    <string name="nokeep_parakeet_as_it_is">Parakeet unverändert lassen</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Parakeet Setup-Modus starten?\n\nGewöhnlich ist dies nur erforderlich, um den Parakeet neu zu konfigurieren (Transmitter-ID, etc.).</string>
     <string name="split_delete_or_do_nothing">Split, löschen oder nichts tun</string>
     <string name="split_this_block_in_two">Block in zwei teilen</string>
     <string name="delete_this_time_block">Zeitblock entfernen</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"Im Libre-Whole-House-Modus: noch keine Messungen gesammelt."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"In Libre-Whole-House-Modus: Letzter Werteempfang "</string>
     <string name="space_minute_ago">" Minute her"</string>
-    <string name="show_parakeet_map">Parakeet Map anzeigen</string>
-    <string name="switch_parakeet_to_setup_mode">Parakeet in Setup-Modus starten</string>
     <string name="view_events_log">Log anzeigen</string>
     <string name="show_libre_trend">Libre-Trend anzeigen</string>
     <string name="libre_15_minutes_graph">Libre 15 Minuten Kurve</string>
@@ -406,8 +400,6 @@
     <string name="web_feedback_form_for_sending_messages">Web Feedback-Formular für Nachrichten und Bewertungen an die Entwickler</string>
     <string name="be_master_for_followers">Master für Follower</string>
     <string name="this_device_will_send_data_to_followers">Dieses Gerät sendet Daten an Follower</string>
-    <string name="send_parakeet_map_location_to_followers">Parakeet Map an Follower senden</string>
-    <string name="sync_parakeet_geolocation">Parakeet GeoLocation synchronisieren</string>
     <string name="disable_all_sync_features">Alle Sync-Funktionen deaktivieren</string>
     <string name="temporary_work_around_disable_all_sync_detail">Temporärer Work-around, stoppt alle Synchronisationen. Nach Aktivieren kann ein Neustart notwendig sein. Mit Vorsicht nutzen!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatische Updates, Fehlerberichte und Feedback an Entwickler senden</string>
@@ -441,9 +433,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Benachrichtigen, wenn die vorhergesagte Zeitschwelle erreicht wird</string>
     <string name="predicted_low_sound">Sound: Vorhersage niedrig</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Sound für vorhergesagten Niedrig-Alarm verwenden.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Benachrichtigen, wenn Parakeet keine Checkins sendet</string>
-    <string name="parakeet_related_alerts">Parakeet Warnungen</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Beim Laden lautlose Parakeet Warnungen</string>
     <string name="silent_alert_when_charging">Alarme lautlos beim Laden</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Warnungen starten lautlos und werden nach einer Zeitspanne aktiviert</string>
     <string name="alarms_silenced_during_telephone_calls">Alarme bei Telefonaten lautlos</string>
@@ -526,7 +515,6 @@
     <string name="show_graph_total_average">Absolute Durchschnittswerte im Diagramm anzeigen</string>
     <string name="show_momentum_working_curve">Momentum Korrekturkurve anzeigen</string>
     <string name="show_noise_workings">Rauschreduktion anzeigen</string>
-    <string name="parakeet_and_extra_features">Parakeet und weitere Testfunktionen</string>
     <string name="insulin_duration_hours">Insulin Dauer in Stunden</string>
     <string name="default_liver_sensitivity_ratio">Leber-Empfindlichkeit (Liver Sensitivity Ratio)</string>
     <string name="key_is_used_instead_of_google_account">Key wird anstelle des Google-Kontos verwendet</string>
@@ -832,7 +820,6 @@
     <string name="display_calculations">Insulin-/Kohenhydratberechnungen anzeigen</string>
     <string name="display_calculations_everytime">Insulin-/Kohenhydratberechnungen immer anzeigen.</string>
     <string name="always_show_bolus_wizard_preview">Zeige immer die Bolus-Assistent-Vorschau an.</string>
-    <string name="show_test_features">Zeige Extra- und Alpha-Testfunktionen</string>
     <string name="show_reminder_features">Zeige Erinnerungsmenüs und -funktionen.</string>
     <string name="enable_reminder_features">Reminder-Funktionen aktivieren</string>
     <string name="display_mathamatical_simulations">Mathematische Simulationen basierend auf den Profildaten und Kohlenhydrat-/Insulinlogs anzeigen</string>
@@ -953,7 +940,6 @@
     <string name="are_you_sure">Bist Du sicher?</string>
     <string name="g4_share_receiver">G4 Share Receiver</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / Wifi</string>
     <string name="other">Sonstiges</string>
     <string name="which_software_is_the_wixel_running">Mit welcher Software läuft Wixel?</string>
     <string name="start_source_setup_wizard">Starte Quellen-Setup-Assistenten</string>
@@ -969,7 +955,6 @@
     <string name="use_librealarm">Verwende LibreAlarm-App als Datenquelle?</string>
     <string name="noise_blocking">Verrauschungsunterdrückung</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Level ab welchem verrauschte Daten nicht übertragen werden weil sie empfangende Apps verwirren können</string>
-    <string name="low_parakeet_battery">Niedrige Parakeet Batterie</string>
     <string name="glucose_units_mmol_or_mgdl">Glukose-Einheiten mmol/L oder mg/dL</string>
     <string name="is_your_typical_glucose_value">Ist Dein typischer Blutzuckerwert 5.5 (mmol/L) oder 100 (mg/dL)? Wähle bitte folgend</string>
     <string name="settings_updated_to_mmol">Einstellungen aktualisiert auf mmol/L</string>
