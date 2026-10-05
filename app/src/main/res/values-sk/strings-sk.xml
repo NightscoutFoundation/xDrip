@@ -1042,6 +1042,7 @@
     <string name="title_Accept_Calibrations">Potvrdiť kalibrácie</string>
     <string name="summary_Operate_a_local_web_server_for_interacting_with_Fitbit_Ionic_etc">Spustí lokálny webový server na komunikáciu s Fitbit Ionic a podobnými zariadeniami</string>
     <string name="title_xDrip_Web_Service">Webová služba aplikácie xDrip</string>
+    <string name="summary_Accept_connections_from_any_network_instead_of_just_internally">Umožní pripojenia z akejkoľvek siete namiesto pripojení iba v rámci tohto zariadenia. Povolenie tejto možnosti môže mať bezpečnostné dôsledky. Ak je nastavené zdieľané heslo, bude sa vyžadovať.</string>
     <string name="summary_Shared_Secret_for_open_web_service">Zdieľané heslo pre otvorenú web službu (má byť zhodné s Nightscout API heslom)</string>
     <string name="summary_Display_status_from_other_apps_like_AndroidAPS">Zobraziť stav z iných aplikácií ako AndroidAPS</string>
     <string name="title_External_Status">Externý stav</string>
