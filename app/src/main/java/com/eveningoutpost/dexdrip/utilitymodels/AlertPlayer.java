@@ -592,6 +592,9 @@ public class AlertPlayer {
             );
         }
         boolean overrideSilent = alert.override_silent_mode;
+        // We are going to create a log now corresponding to a notification that will be created.  It may be silent due to the volume profile or DND.
+        // Regardless, the log needs to be created.
+        Log.ueh(TAG, contentLog); // Glucose level alert log
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
             float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
             // While minsFromStartPlaying <= MAX_VIBRATING_MINUTES, we only vibrate ...
@@ -616,11 +619,11 @@ public class AlertPlayer {
                 builder.setFullScreenIntent(notificationIntent(context, new Intent(context, Home.class)), true);
             }
 
-            Log.ueh(TAG, contentLog); // Glucose level alert log
             if (notSilencedDueToCall()) {
                 if (overrideSilent || isLoudPhone(context)) {
                     playFile(context, alert.mp3_file, volumeFrac, forceSpeaker, overrideSilent, priority, tag);
                 } else if (pratelimit("silent-alert-log", 1200)) {
+                    // Log why the notification is silent
                     UserError.Log.uel(TAG, "No " + tag + " in silent mode");
                 }
             } else {
@@ -637,6 +640,7 @@ public class AlertPlayer {
             }
         }
         if (profile == ALERT_PROFILE_SILENT && pratelimit("silent-alert-log", 1200)) {
+            // Log why the notification is silent
             UserError.Log.uel(TAG, "No " + tag + " with silent volume profile");
         }
         // Let's keep this dummy pattern so the notification still mirrors to watches
