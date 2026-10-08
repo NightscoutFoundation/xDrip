@@ -1200,6 +1200,11 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static BgReading bgReadingInsertFromWebFollow(double calculated_value, long timestamp) {
+        return bgReadingInsertFromG5(calculated_value, timestamp, "WebFollow");
+    }
+
+
     public static synchronized BgReading bgReadingInsertFromGluPro(double calculated_value, final long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
