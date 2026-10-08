@@ -127,7 +127,6 @@ public class MContext implements Exposed {
                 log("Inserting new value: " + lvalue + " " + JoH.dateTimeText(ltime));
                 BgReading.bgReadingInsertFromWebFollow(lvalue, ltime);
             }
-
         } else {
             if (lvalue != null) {
                 loge("Value outside of range: " + lvalue + " @ " + JoH.dateTimeText(ltime));

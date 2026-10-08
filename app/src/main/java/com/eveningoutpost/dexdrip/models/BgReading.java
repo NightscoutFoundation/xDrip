@@ -1201,9 +1201,8 @@ public class BgReading extends Model implements ShareUploadableBg {
     }
 
     public static void bgReadingInsertFromWebFollow(double calculated_value, long timestamp) {
-        bgReadingInsertFromInt((int) calculated_value, timestamp, 0, true);
-        final BgReading bgr = last();
-        if (bgr != null && bgr.timestamp == timestamp) {
+        final BgReading bgr = bgReadingInsertFromG5(calculated_value, timestamp, null);
+        if (bgr != null) {
             bgr.source_info = "Web Follow";
             bgr.save();
         }
