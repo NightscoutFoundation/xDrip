@@ -24,7 +24,6 @@ import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
 import lombok.val;
 
@@ -378,7 +377,6 @@ public class AlertType extends Model {
     public String toS() {
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
         return gson.toJson(this);
@@ -637,7 +635,6 @@ public class AlertType extends Model {
 
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
         String output =  gson.toJson(alerts);

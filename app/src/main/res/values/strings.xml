@@ -136,7 +136,6 @@
     <string name="title_activity_display_qrcode">Share Settings via QR code</string>
     <string name="title_activity_send_feed_back">Send Feedback to Jamorham</string>
     <string name="title_activity_save_logs">Save Logs</string>
-    <string name="title_activity_maps">Parakeet Map</string>
     <string name="title_activity_display_preferences">Display Preferences</string>
 
     <string name="export_submenu">Import / Export features</string>
@@ -158,7 +157,7 @@
     <string name="share">Share</string>
     <string name="title_activity_profile_editor">Treatment Profile Editor</string>
     <string name="first_use_menu_to_scan">First use the menu to scan for your BT device or change the Data Source in Settings!</string>
-    <string name="first_configure_ip_address">First configure your WiFi Wixel reader IP addresses or Parakeet URL</string>
+    <string name="first_configure_ip_address">First configure your WiFi Wixel reader IP addresses</string>
     <string name="now_start_your_sensor">Now start your sensor or check Settings</string>
     <string name="please_wait_while_sensor_warms_up">Please wait while sensor warms up! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
@@ -176,9 +175,6 @@
     <string name="till">till</string>
     <string name="low_predicted">Low predicted</string>
     <string name="in">in</string>
-    <string name="yes_enter_setup_mode">Yes, enter setup mode</string>
-    <string name="nokeep_parakeet_as_it_is">No, keep Parakeet as it is</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Are you sure you want to switch the Parakeet to setup mode?\n\nNormally, this is only used to send further text messages to the Parakeet to reconfigure the transmitter it listens for etc.</string>
     <string name="split_delete_or_do_nothing">Split, delete or do nothing</string>
     <string name="split_this_block_in_two">Split this block in two</string>
     <string name="delete_this_time_block">Delete this time block</string>
@@ -193,8 +189,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"In Libre all house mode: no readings collected yet."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"In Libre all house mode: Last reading "</string>
     <string name="space_minute_ago">" Minute ago"</string>
-    <string name="show_parakeet_map">Show Parakeet map</string>
-    <string name="switch_parakeet_to_setup_mode">Switch Parakeet to Setup mode</string>
     <string name="view_events_log">View Events Log</string>
     <string name="show_libre_trend">Show Libre trend</string>
     <string name="libre_15_minutes_graph">Libre 15 minutes graph</string>
@@ -433,8 +427,6 @@
     <string name="web_feedback_form_for_sending_messages">Web feedback form for sending messages and ratings of xDrip to the developers</string>
     <string name="be_master_for_followers">Be master for followers</string>
     <string name="this_device_will_send_data_to_followers">This device will send data to followers</string>
-    <string name="send_parakeet_map_location_to_followers">Send Parakeet map location to followers</string>
-    <string name="sync_parakeet_geolocation">Sync Parakeet Geolocation</string>
     <string name="disable_all_sync_features">Disable all sync features</string>
     <string name="temporary_work_around_disable_all_sync_detail">Temporary work-around option, completely stops all synchronization. May need reboot after being re-enabled. Use with care!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatic Updates, crash reports and Feedback to Developer</string>
@@ -468,9 +460,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Notify when forecasted low time reaches time threshold</string>
     <string name="predicted_low_sound">Alert Sound</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Choose the sound used for the alarm.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Notify when Parakeet device stops checking in</string>
-    <string name="parakeet_related_alerts">Parakeet related alerts</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Raise Parakeet notification silently when charging</string>
     <string name="silent_alert_when_charging">Silent alert when charging</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerts start out snoozed and must persist for a while to actually trigger</string>
     <string name="alarms_silenced_during_telephone_calls">Alarms silenced during telephone calls</string>
@@ -553,7 +542,6 @@
     <string name="show_graph_total_average">Show Graph total average</string>
     <string name="show_momentum_working_curve">Show Momentum working curve</string>
     <string name="show_noise_workings">Show Noise workings</string>
-    <string name="parakeet_and_extra_features">Parakeet and Extra test features</string>
     <string name="insulin_duration_hours">Insulin duration in hours</string>
     <string name="default_liver_sensitivity_ratio">Default Liver Sensitivity Ratio</string>
     <string name="key_is_used_instead_of_google_account">Key is used instead of Google account</string>
@@ -875,7 +863,6 @@
     <string name="display_calculations">Display Insulin/Carb calculations</string>
     <string name="display_calculations_everytime">Display Insulin/Carb calculations at all times</string>
     <string name="always_show_bolus_wizard_preview">Always show Bolus Wizard Preview</string>
-    <string name="show_test_features">Show extra and alpha test features</string>
     <string name="show_reminder_features">Show Reminder menus and features</string>
     <string name="enable_reminder_features">Enable Reminder features</string>
     <string name="display_mathamatical_simulations">Display mathematical simulations based on profile data and carbs/insulin logs</string>
@@ -1003,7 +990,6 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="g4_share_receiver">G4 Share Receiver</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">Other</string>
     <string name="which_software_is_the_wixel_running">Which software is the Wixel running?</string>
     <string name="start_source_setup_wizard">Start Source Setup Wizard</string>
@@ -1019,7 +1005,6 @@
     <string name="use_librealarm">Use LibreAlarm app as data source?</string>
     <string name="noise_blocking">Noise Blocking</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Level at which noisy data should not be broadcast as it could confuse receiving apps</string>
-    <string name="low_parakeet_battery">Low Parakeet battery</string>
     <string name="glucose_units_mmol_or_mgdl">Glucose units mmol/L or mg/dL</string>
     <string name="is_your_typical_glucose_value">Is your typical blood glucose value:  5.5 (mmol/L) or 100 (mg/dL)  Please select below</string>
     <string name="settings_updated_to_mmol">Settings updated to mmol/L</string>
