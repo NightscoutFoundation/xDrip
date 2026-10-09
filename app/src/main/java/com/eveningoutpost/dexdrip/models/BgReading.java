@@ -1199,6 +1199,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static void bgReadingInsertFromWebFollow(double calculated_value, long timestamp) {
+        final BgReading bgr = bgReadingInsertFromG5(calculated_value, timestamp, null);
+        if (bgr != null) {
+            bgr.source_info = "Web Follow";
+            bgr.save();
+        }
+    }
+
     public static synchronized BgReading bgReadingInsertFromGluPro(double calculated_value, final long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
