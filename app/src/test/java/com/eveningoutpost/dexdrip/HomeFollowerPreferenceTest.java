@@ -32,9 +32,9 @@ public class HomeFollowerPreferenceTest extends RobolectricTestWithConfig {
     }
 
     /**
-     * Clears the store, then caches "not a follower" from it. Later tests in the shared JVM then see
-     * the cached answer they would have seen without this class, instead of re-reading a store that
-     * other tests may have left a collection method in.
+     * Clears the store, then caches "not a follower" from it. Later tests in the shared JVM then read
+     * false until they reset the cache themselves, the same answer they get when the first test to
+     * read the flag has no collection method stored.
      */
     @After
     public void tearDown() {
