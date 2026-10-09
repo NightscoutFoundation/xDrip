@@ -201,6 +201,22 @@ android {
 
 }
 
+// Replaces wearApp (removed in AGP 9): copies the matching watch APK into the phone APK's
+// assets, where GetWearApk finds it and sends it to the watch on request. As with wearApp,
+// release embeds the watch release APK, dev the watch debug APK, and debug none.
+def wearBuildTypeFor = [release: 'release', dev: 'debug']
+android.productFlavors.names.each { flavor ->
+    wearBuildTypeFor.each { buildType, wearBuildType ->
+        def name = "embeddedWearApk${flavor.capitalize()}${buildType.capitalize()}"
+        configurations.create(name) {
+            canBeConsumed = false
+            canBeResolved = true
+        }
+        dependencies.add(name, dependencies.project(path: ':wear',
+                configuration: "wearApk${flavor.capitalize()}${wearBuildType.capitalize()}"))
+    }
+}
+
 // The defaultConfig values above are fixed, so your incremental builds don't
 // need to rebuild the manifest (and therefore the whole APK, slowing build times).
 // But for release builds, it's okay. So the following script iterates through
@@ -211,6 +227,35 @@ androidComponents {
         variant.outputs.each { output ->
             output.versionName.set(generateVersionName())
         }
+    }
+    onVariants(selector().all()) { variant ->
+        if (!wearBuildTypeFor.containsKey(variant.buildType)) {
+            return
+        }
+        def embed = tasks.register("embedWearApk${variant.name.capitalize()}", EmbedWearApkTask) {
+            wearApkDir.from(configurations.named("embeddedWearApk${variant.name.capitalize()}"))
+        }
+        variant.sources.assets.addGeneratedSourceDirectory(embed, { it.outputDir })
+    }
+}
+
+abstract class EmbedWearApkTask extends DefaultTask {
+    @InputFiles
+    abstract ConfigurableFileCollection getWearApkDir()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @TaskAction
+    void embed() {
+        def apks = wearApkDir.asFileTree.matching { include '*.apk' }.files
+        if (apks.size() != 1) {
+            throw new GradleException("Expected exactly one wear APK, found: " + apks)
+        }
+        def out = outputDir.get().asFile
+        out.deleteDir()
+        out.mkdirs()
+        java.nio.file.Files.copy(apks.first().toPath(), new File(out, "wear.apk").toPath())
     }
 }
 

@@ -91,6 +91,17 @@ android {
     }
 }
 
+// The phone app embeds a watch APK so it can push watch updates (GetWearApk).
+// AGP 9 removed wearApp, so each variant's APK is exposed for :app to pick up.
+android.productFlavors.names.each { flavor ->
+    android.buildTypes.names.each { buildType ->
+        configurations.create("wearApk${flavor.capitalize()}${buildType.capitalize()}") {
+            canBeConsumed = true
+            canBeResolved = false
+        }
+    }
+}
+
 // The defaultConfig values above are fixed, so your incremental builds don't
 // need to rebuild the manifest (and therefore the whole APK, slowing build times).
 // But for release builds, it's okay. So the following script iterates through
@@ -101,6 +112,10 @@ androidComponents {
         variant.outputs.each { output ->
             output.versionName.set(generateVersionName())
         }
+    }
+    onVariants(selector().all()) { variant ->
+        project.artifacts.add("wearApk${variant.name.capitalize()}",
+                variant.artifacts.get(com.android.build.api.artifact.SingleArtifact.APK.INSTANCE))
     }
 }
 
