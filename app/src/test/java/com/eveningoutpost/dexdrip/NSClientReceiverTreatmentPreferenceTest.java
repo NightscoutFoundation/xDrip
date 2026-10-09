@@ -41,12 +41,14 @@ public class NSClientReceiverTreatmentPreferenceTest extends RobolectricTestWith
         xdrip.setContextAlways(RuntimeEnvironment.application); // force re-bind to current Robolectric app
         PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().clear().commit();
         NSClientReceiver.resetPrefsCacheForTests();
+        Home.resetFollowerCacheForTests();
+        Home.get_follower(); // caches "not a follower", so the sync job below never pushes to a master
         Treatments.delete_all();
     }
 
     /**
      * A saved treatment queues a sync job one second later on the app-wide background queue. Runs it
-     * now, so it can't fire inside a later test, then removes everything this class left behind.
+     * now, so it can't fire inside a later test, then removes the rows and preferences this class wrote.
      */
     @After
     public void tearDown() {
