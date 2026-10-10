@@ -56,7 +56,8 @@ public class NightscoutFollow {
         Call<List<Entry>> getEntriesSince(@Header("api-secret") String secret, @Query("count") int count, @Query(value = "find[date][$gt]", encoded = true) long sinceMs, @Query("rr") String rr);
 
         @GET("/api/v1/treatments")
-        Call<ResponseBody> getTreatments(@Header("api-secret") String secret);
+        Call<ResponseBody> getTreatments(@Header("api-secret") String secret,
+                                         @Query(value = "find[created_at][$gte]", encoded = true) String since, @Query("count") Integer count);
 
         @GET("/api/v1/devicestatus.json?count=1")
         Call<List<DeviceStatus>> getDeviceStatus(@Header("api-secret") String secret);
@@ -123,7 +124,10 @@ public class NightscoutFollow {
             if (treatmentDownloadEnabled()) {
                 if (JoH.ratelimit("nsfollow-treatment-download", 60)) {
                     try {
-                        getService().getTreatments(session.url.getHashedSecret()).enqueue(session.treatmentsCallback);
+                        // periodically reaches back further than the newest treatments, see sweepSince()
+                        final String since = NightscoutTreatments.sweepSince("nsfollow-treatment-sweep");
+                        getService().getTreatments(session.url.getHashedSecret(), since,
+                                since != null ? NightscoutTreatments.SWEEP_LIMIT : null).enqueue(session.treatmentsCallback);
                     } catch (Exception e) {
                         UserError.Log.e(TAG, "Exception in treatments work() " + e);
                         msg("Nightscout follow treatments error: " + e);
