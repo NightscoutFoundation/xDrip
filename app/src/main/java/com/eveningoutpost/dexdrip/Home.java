@@ -166,7 +166,6 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 
 import java.io.ByteArrayOutputStream;
@@ -1689,7 +1688,6 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 }
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
             WatchUpdaterService.sendTreatment(
@@ -2747,8 +2745,9 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 notificationText.setText(R.string.sensor_is_still_warming_up_please_wait);
                 showUncalibratedSlope();
             } else {
-                final int calculatedBgReadingsCount = BgReading.latest(3).size();
-                if ((calculatedBgReadingsCount > 2) || (Ob1G5CollectionService.onlyUsingNativeMode() && BgReading.latest(1).size() > 0)) {
+                final List<BgReading> latestReadings = BgReading.latest(3);
+                final int calculatedBgReadingsCount = (latestReadings == null) ? 0 : latestReadings.size();
+                if ((calculatedBgReadingsCount > 2) || (Ob1G5CollectionService.onlyUsingNativeMode() && calculatedBgReadingsCount > 0)) {
                     // TODO potential to calibrate off stale data here
                     final List<Calibration> calibrations = Calibration.latestValid(2);
                     if (((calibrations != null) && (calibrations.size() > 1)) || Ob1G5CollectionService.onlyUsingNativeMode()) {

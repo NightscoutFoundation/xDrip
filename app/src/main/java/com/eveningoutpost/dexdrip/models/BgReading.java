@@ -48,7 +48,6 @@ import com.eveningoutpost.dexdrip.xdrip;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.google.gson.internal.bind.DateTypeAdapter;
 import com.squareup.wire.Wire;
 
 import org.json.JSONException;
@@ -1200,6 +1199,14 @@ public class BgReading extends Model implements ShareUploadableBg {
         }
     }
 
+    public static void bgReadingInsertFromWebFollow(double calculated_value, long timestamp) {
+        final BgReading bgr = bgReadingInsertFromG5(calculated_value, timestamp, null);
+        if (bgr != null) {
+            bgr.source_info = "Web Follow";
+            bgr.save();
+        }
+    }
+
     public static synchronized BgReading bgReadingInsertFromGluPro(double calculated_value, final long timestamp, String sourceInfoAppend) {
 
         final Sensor sensor = Sensor.currentSensor();
@@ -1876,7 +1883,6 @@ public class BgReading extends Model implements ShareUploadableBg {
     public String toS() {
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
         return gson.toJson(this);

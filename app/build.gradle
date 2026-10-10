@@ -286,9 +286,9 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
-    implementation 'com.squareup.moshi:moshi:1.9.2'
+    implementation 'com.squareup.moshi:moshi:1.15.2'
     //implementation 'org.influxdb:influxdb-java:2.6'
-    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'com.getpebble:pebblekit:4.0.1'
     //implementation ('io.rebble.pebblekit2:client-java:1.2.0')
     implementation ("androidx.health.connect:connect-client:1.1.0-alpha06") {
@@ -339,6 +339,14 @@ dependencies {
     implementation "no.nordicsemi.android:ble:2.6.1"
 
     testImplementation 'joda-time:joda-time:2.10.7'
+
+    // ns-sdk's NSDeviceStatus is a kotlinx.serialization @Serializable Kotlin class. Its generated
+    // synthetic constructor takes a SerializationConstructorMarker parameter, which the JVM resolves
+    // eagerly for every constructor when gson's reflective adapter asks for the no-arg one — even
+    // though gson never calls kotlinx.serialization itself. Not pulled in anywhere on :app's runtime
+    // classpath today (checked with `./gradlew :app:dependencies`), so AAPSStatusHandlerTest needs it
+    // test-scoped to even load the class under Robolectric.
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.objenesis:objenesis:2.5.1'
