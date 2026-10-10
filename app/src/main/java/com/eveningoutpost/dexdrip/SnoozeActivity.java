@@ -152,7 +152,7 @@ public class SnoozeActivity extends ActivityWithMenu {
     }
 
 
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = SnoozeActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
