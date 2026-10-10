@@ -279,9 +279,9 @@ dependencies {
         exclude group: 'com.google.code.gson'
         exclude group: 'com.fasterxml.jackson.core'
     }
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-moshi:2.9.0'
+    implementation 'com.squareup.retrofit2:retrofit:3.0.0'
+    implementation 'com.squareup.retrofit2:converter-gson:3.0.0'
+    implementation 'com.squareup.retrofit2:converter-moshi:3.0.0'
     implementation 'com.squareup.moshi:moshi:1.15.2'
     implementation 'com.google.code.gson:gson:2.13.2'
     implementation 'com.getpebble:pebblekit:4.0.1'
