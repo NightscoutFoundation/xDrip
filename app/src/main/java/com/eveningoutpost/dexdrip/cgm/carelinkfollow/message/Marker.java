@@ -76,7 +76,12 @@ public class Marker {
         else
             return null;
     }
-
+    public String getInsulinType() {
+        if (data != null && data.dataValues != null)
+            return data.dataValues.insulinType;
+        else
+            return null;
+    }
     public Double getCarbAmount(){
         if(amount != null)
             return amount;
