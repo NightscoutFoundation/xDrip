@@ -1,6 +1,7 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 import com.eveningoutpost.dexdrip.Home;
+import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.models.BloodTest;
 import com.eveningoutpost.dexdrip.models.DateUtil;
 import com.eveningoutpost.dexdrip.models.InsulinInjection;
@@ -28,6 +29,54 @@ public class NightscoutTreatments {
     private static final HashSet<String> bad_uuids = new HashSet<>();
     private static final HashSet<String> bad_bloodtest_uuids = new HashSet<>();
 
+    // Nightscout marks a deleted record invalid and keeps it, so its created_at does not
+    // move. A routine download returns only the newest treatments, so a record deleted
+    // long after it was created falls outside that window and its deletion is never seen.
+    // Ask for a wider window now and then, rarely enough to not add meaningful traffic.
+    private static final long SWEEP_WINDOW_MS = 3 * Constants.DAY_IN_MS;
+    private static final int SWEEP_INTERVAL_SECONDS = 7200;
+    public static final int SWEEP_LIMIT = 1000;
+
+    // Oldest record to ask for, or null when a wider download is not due yet.
+    public static String sweepSince(final String key) {
+        return JoH.pratelimit(key, SWEEP_INTERVAL_SECONDS)
+                ? DateUtil.toISOString(JoH.tsl() - SWEEP_WINDOW_MS) : null;
+    }
+
+    // Removes the local copy of a treatment which has been deleted at the other end.
+    // Both identifier forms are tried as either may have been stored, and the deletion is
+    // not sent back to where it came from.
+    private static boolean deleteInvalidated(final String nightscout_id, final String uuid) {
+        boolean deleted = false;
+        for (final String id : new String[]{nightscout_id, uuid}) {
+            if (id != null && Treatments.byuuid(id) != null) {
+                UserError.Log.uel(TAG, "Deleting treatment deleted remotely: " + id);
+                Treatments.delete_by_uuid(id, true, false);
+                deleted = true;
+                break;
+            }
+        }
+        return deleted;
+    }
+
+    // A blood glucose check arrives as a treatment but is stored as a blood test, so the
+    // record actually created from it has to be removed separately. Marked invalid rather
+    // than dropped, which is how a blood test deleted in xDrip is handled: the row is what
+    // stops the next download recreating it, and the state travels over sync.
+    private static boolean invalidateBloodTest(final String nightscout_id, final String uuid) {
+        for (final String id : new String[]{nightscout_id, uuid}) {
+            final BloodTest bt = BloodTest.byUUID(id);
+            if (bt != null) {
+                if ((bt.state & BloodTest.STATE_VALID) == 0) return false; // already gone
+                UserError.Log.uel(TAG, "Deleting bloodtest deleted remotely: " + id);
+                bt.removeState(BloodTest.STATE_VALID);
+                GcmActivity.syncBloodTests(); // tell the followers it went
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean processTreatmentResponse(final String response) throws Exception {
         boolean new_data = false;
 
@@ -45,6 +94,15 @@ public class NightscoutTreatments {
             }
             if (d)
                 UserError.Log.d(TAG, "event: " + etype + "_id: " + nightscout_id + " uuid:" + uuid);
+
+            // A record deleted elsewhere is not removed, it is kept and marked invalid.
+            // Creating anything from it would restore what was deleted on every download,
+            // so delete our copy instead and take nothing else from it.
+            if (!tr.optBoolean("isValid", true)) {
+                if (deleteInvalidated(nightscout_id, uuid)) new_data = true;
+                if (invalidateBloodTest(nightscout_id, uuid)) new_data = true;
+                continue;
+            }
 
             boolean from_xdrip = false;
             try {
