@@ -66,6 +66,12 @@ public class UiBasedCollector extends NotificationListenerService {
     private static final HashSet<String> coOptedPackagesAll = new HashSet<>();
     private static final HashSet<String> companionAppIoBPackages = new HashSet<>();
     private static final HashSet<Pattern> companionAppIoBRegexes = new HashSet<>();
+    private static final Pattern GLUCOSE_MMOL_PATTERN = Pattern.compile(
+            "(?i)([0-9]{1,2}[\\.,][0-9]+)\\s*mmol\\s*/\\s*l"
+    );
+    private static final Pattern GLUCOSE_MGDL_PATTERN = Pattern.compile(
+            "(?i)([0-9]{2,3})\\s*mg\\s*/\\s*dl"
+    );
     private static boolean debug = false;
 
     @VisibleForTesting
@@ -266,24 +272,118 @@ public class UiBasedCollector extends NotificationListenerService {
             UserError.Log.e(TAG, "Null notification");
             return;
         }
+
         JoH.dumpBundle(notification.extras, TAG);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val cid = notification.getChannelId();
+            UserError.Log.d(TAG, "Channel ID: " + cid);
+        }
+
+        boolean handled = false;
+
         if (notification.contentView != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                val cid = notification.getChannelId();
-                UserError.Log.d(TAG, "Channel ID: " + cid);
-            }
-            processRemote(notification.contentView);
-        } else {
-            int mgdl;
-            String t;
-            if (notification.extras != null
-                    && (isValidString(t = notification.extras.getString(Notification.EXTRA_TITLE)))
-                    && (mgdl = tryExtractString(t)) > 0) {
-                handleNewValue(mgdl);
-            } else {
-                UserError.Log.e(TAG, "Content is empty");
+            handled = processRemote(notification.contentView);
+        }
+
+        // Some companion apps expose the glucose value only in the expanded layout.
+        if (!handled
+                && notification.bigContentView != null
+                && notification.bigContentView != notification.contentView) {
+            UserError.Log.d(TAG, "Trying bigContentView");
+            handled = processRemote(notification.bigContentView);
+        }
+
+        // Modern/custom notifications may not expose useful TextViews, while still
+        // publishing the glucose value through standard notification extras.
+        if (!handled) {
+            handled = processNotificationExtras(notification);
+        }
+
+        if (!handled) {
+            UserError.Log.e(TAG, "Content is empty or no glucose value was found");
+        }
+    }
+
+    private boolean processNotificationExtras(final Notification notification) {
+        if (notification.extras == null) return false;
+
+        final String[] keys = new String[] {
+                Notification.EXTRA_TITLE,
+                Notification.EXTRA_TEXT,
+                Notification.EXTRA_BIG_TEXT,
+                Notification.EXTRA_SUB_TEXT,
+                Notification.EXTRA_INFO_TEXT
+        };
+
+        for (final String key : keys) {
+            try {
+                final CharSequence value = notification.extras.getCharSequence(key);
+                if (value == null) continue;
+
+                final String text = value.toString();
+                UserError.Log.d(TAG, "Examining notification extra " + key + ": >" + text + "<");
+
+                final int mgdl = tryExtractNotificationString(text);
+                if (mgdl > 0) {
+                    handleNewValue(mgdl);
+                    return true;
+                }
+            } catch (Exception e) {
+                UserError.Log.d(TAG, "Exception examining notification extra " + key + ": " + e);
             }
         }
+
+        try {
+            final CharSequence[] lines =
+                    notification.extras.getCharSequenceArray(Notification.EXTRA_TEXT_LINES);
+
+            if (lines != null) {
+                for (final CharSequence line : lines) {
+                    if (line == null) continue;
+
+                    final int mgdl = tryExtractNotificationString(line.toString());
+                    if (mgdl > 0) {
+                        handleNewValue(mgdl);
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "Exception examining notification text lines: " + e);
+        }
+
+        return false;
+    }
+
+    int tryExtractNotificationString(final String text) {
+        if (!isValidString(text)) return -1;
+
+        final int directlyParsed = tryExtractString(text);
+        if (directlyParsed > 0) return directlyParsed;
+
+        try {
+            final String normalized = arrowFilterString(text)
+                    .replace("\u00a0", " ")
+                    .replace("\u2060", "");
+
+            final Matcher mmol = GLUCOSE_MMOL_PATTERN.matcher(normalized);
+            if (mmol.find()) {
+                final double value = JoH.tolerantParseDouble(mmol.group(1), -1);
+                if (value > 0) {
+                    return (int) Math.round(Unitized.mgdlConvert(value));
+                }
+            }
+
+            final Matcher mgdl = GLUCOSE_MGDL_PATTERN.matcher(normalized);
+            if (mgdl.find()) {
+                return Integer.parseInt(mgdl.group(1));
+            }
+        } catch (Exception e) {
+            UserError.Log.d(TAG, "Got exception in tryExtractNotificationString: " + e);
+        }
+
+        return -1;
     }
 
     private boolean isValidString(String str) {
