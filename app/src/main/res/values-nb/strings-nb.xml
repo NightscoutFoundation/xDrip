@@ -139,7 +139,7 @@
     <string name="share">Del</string>
     <string name="title_activity_profile_editor">Rediger behandlingprofil</string>
     <string name="first_use_menu_to_scan">Bruk først menyen til å søke etter din BT-enhet eller endre datakilde i innstillinger!</string>
-    <string name="first_configure_ip_address">Konfigurer først WiFi Wixel-leserens IP-adresser eller Parakeet URL</string>
+    <string name="first_configure_ip_address">Konfigurer først WiFi Wixel-leserens IP-adresser</string>
     <string name="now_start_your_sensor">Starte sensoren nå, eller sjekk innstillinger</string>
     <string name="please_wait_while_sensor_warms_up">Vennligst vent mens sensoren varmer opp! (</string>
     <string name="minutes_with_bracket">" minutter)"</string>
