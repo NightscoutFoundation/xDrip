@@ -2066,6 +2066,7 @@
     <string name="alert_warning">Warning !</string>
     <string name="no_active_low_alert_warning">No low alert is active. You won\'t be notified of low glucose—please add or enable one.</string>
     <string name="volume_profile_set_to_silent">Volume Profile is set to silent!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' and \'%2$s\' ignore \'%3$s\' and make no sound. Are you sure?</string>
     <string name="volume_profile_set_to_ascending_with_delay">Ascending Volume Profile + delayed ascending means it will start silent</string>
     <string name="start_snoozed_enabled">Start Snoozed setting means alert would normally start silent</string>
     <string name="pre_snooze">pre-Snooze</string>
