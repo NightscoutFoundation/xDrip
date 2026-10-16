@@ -4,10 +4,8 @@ package com.eveningoutpost.dexdrip;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.models.SensorSanity;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
@@ -49,7 +47,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static final String TAG = "jamorham librereceiver";
     private static final boolean debug = false;
     private static final boolean d = true;
-    private static SharedPreferences prefs;
     private static long oldest = -1;
     private static long newest = -1;
     private static long oldest_cmp = -1;
@@ -137,9 +134,6 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
                         Log.d(TAG, "LibreReceiver onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
-                        // check source
-                        if (prefs == null)
-                            prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
                         final Bundle bundle = intent.getExtras();
                         //  BundleScrubber.scrub(bundle);

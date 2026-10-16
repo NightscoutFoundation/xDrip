@@ -18,7 +18,6 @@ import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -274,7 +273,6 @@ public class TransmitterData extends Model {
     public String toS() {//KS
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
 
