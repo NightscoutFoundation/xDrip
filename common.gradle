@@ -25,21 +25,19 @@ ext.generateRandomUUID = { ->
     return stringBuilder.toString()
 }
 
+// Gradle 9 removed Project.exec {}; providers.exec is its replacement and fails on a non-zero exit the same way.
+def gitOutput = { String... args ->
+    providers.exec {
+        commandLine(['git'] + args.toList())
+    }.standardOutput.asText.get().trim()
+}
+
 ext.generateVersionName = { ->
     StringBuilder stringBuilder = new StringBuilder()
     try {
-        def stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'describe', '--always'
-            standardOutput = stdout
-        }
-        String commitObject = stdout.toString().trim()
+        String commitObject = gitOutput('describe', '--always')
         try {
-            stdout = new ByteArrayOutputStream()
-            exec {
-                commandLine 'git', 'describe', '--tags'
-                standardOutput = stdout
-            }
+            gitOutput('describe', '--tags')
             //stringBuilder.append(stdout.toString().trim())
             //stringBuilder.append("-")
         } catch (ignored) {
@@ -47,21 +45,11 @@ ext.generateVersionName = { ->
         }
 
         stringBuilder.append(commitObject)
-        stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'rev-parse', '--show-toplevel'
-            standardOutput = stdout
-        }
-        if (stdout.toString().trim().contains("xDrip-Experimental")) {
+        if (gitOutput('rev-parse', '--show-toplevel').contains("xDrip-Experimental")) {
             stringBuilder.append("-experimental")
         }
 
-        stdout = new ByteArrayOutputStream()
-        exec {
-            commandLine 'git', 'rev-parse', '--abbrev-ref', 'HEAD'
-            standardOutput = stdout
-        }
-        String branch = stdout.toString().trim()
+        String branch = gitOutput('rev-parse', '--abbrev-ref', 'HEAD')
         if (!branch.equals("master")) {
             stringBuilder.append('-')
             stringBuilder.append(branch)
