@@ -23,6 +23,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.view.ContextThemeWrapper;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.content.ActivityNotFoundException;
@@ -676,6 +677,58 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             }
         }
         return true;
+    }
+
+    // The snooze-over-other-apps option is enabled by default; while it is on and the system
+    // permission "Display over other apps" is missing, prompt the user every time the home
+    // screen comes to the foreground, so the missing permission cannot go unnoticed. The
+    // dialog offers to turn the option off instead, which is the way to stop the prompt.
+    private AlertDialog overlayPermissionDialog;
+
+    private void checkOverlayPermission() {
+        try {
+            if (overlayPermissionDialog != null && overlayPermissionDialog.isShowing()) return;
+            if (Pref.getBoolean(SnoozeOverlayActivity.PREF_SNOOZE_OVER_OTHER_APPS, true)
+                    && !Settings.canDrawOverlays(this)
+                    && !xdrip.isRunningTest()) {
+                overlayPermissionDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme))
+                        .setTitle(gs(R.string.please_allow_permission))
+                        // literal pending the follow-up strings PR
+                        .setMessage("The snooze screen over other apps and the lock screen is enabled, but the Android permission 'Display over other apps' is not granted. Tap Allow to grant it on the next screen, or Keep off to disable the snooze screen over other apps (you can turn it on again under Alarms and Alerts).")
+                        .setNegativeButton("Keep off", (dialog, which) -> {
+                            Pref.setBoolean(SnoozeOverlayActivity.PREF_SNOOZE_OVER_OTHER_APPS, false);
+                            JoH.static_toast_long("Snooze screen over other apps turned off");
+                        })
+                        .setPositiveButton("Allow", (dialog, which) -> {
+                            try {
+                                startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                        Uri.parse("package:" + getPackageName())));
+                            } catch (Exception e) {
+                                try {
+                                    startActivity(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION));
+                                } catch (Exception e2) {
+                                    JoH.static_toast_long("Unable to open system settings");
+                                }
+                            }
+                        })
+                        .create();
+                overlayPermissionDialog.show();
+            }
+        } catch (Exception e) {
+            UserError.Log.e(TAG, "Could not check overlay permission: " + e);
+        }
+    }
+
+    // the prompt is re-evaluated on every resume, so drop it when leaving the screen
+    private void dismissOverlayPermissionDialog() {
+        try {
+            if (overlayPermissionDialog != null) {
+                overlayPermissionDialog.dismiss();
+            }
+        } catch (Exception e) {
+            //
+        }
+        overlayPermissionDialog = null;
     }
 
     ////
@@ -1918,6 +1971,10 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         updateCurrentBgInfo("generic on resume");
         updateHealthInfo("generic on resume");
 
+        if (checkedeula) {
+            checkOverlayPermission();
+        }
+
         NFControl.initNFC(this, false);
 
         if (get_follower() || get_master()) {
@@ -2150,6 +2207,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     @Override
     public void onPause() {
         activityVisible = false;
+        dismissOverlayPermissionDialog();
         super.onPause();
         NFControl.initNFC(this, true); // disables
         nanoStatus.setRunning(false);
@@ -3614,28 +3672,19 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        switch (event.getKeyCode()) {
-            case KeyEvent.KEYCODE_VOLUME_DOWN:
-            case KeyEvent.KEYCODE_VOLUME_UP:
-            case KeyEvent.KEYCODE_VOLUME_MUTE:
-                if (JoH.quietratelimit("button-press", 5)) {
-                    if (Pref.getBooleanDefaultFalse("buttons_silence_alert")) {
-                        final ActiveBgAlert activeBgAlert = ActiveBgAlert.getOnly();
-                        if (activeBgAlert != null) {
-                            AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
-                            JoH.static_toast_long(getString(R.string.snoozing_due_button_press));
-                            UserError.Log.ueh(TAG, "Snoozing alert due to volume button press");
-                        } else {
-                            if (d) UserError.Log.d(TAG, "no active alert to snooze");
-                        }
-                    } else {
-                        if (d) UserError.Log.d(TAG, "No action as preference is disabled");
-                    }
-                }
-                break;
-        }
+        // decide before the snooze handler flips the alerting state
+        final boolean consume = SnoozeActivity.volumeKeyConsumed(event.getKeyCode());
+        SnoozeActivity.volumeKeySnooze(event); // shared with the snooze screens
         if (d) Log.d(TAG, "Keydown event: " + keyCode + " event: " + event.toString());
+        if (consume) return true; // no volume change while an alert is alerting
         return super.onKeyDown(keyCode, event);
+    }
+
+    // also consume the volume-key UP events while blocking is active
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if (SnoozeActivity.volumeKeyConsumed(event.getKeyCode())) return true;
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
