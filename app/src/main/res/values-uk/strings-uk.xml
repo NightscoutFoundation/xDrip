@@ -2009,5 +2009,9 @@
     <string name="glupro_reconnect_attempt">Спроба повторного підключення</string>
     <string name="glupro_reading_frequency">Частота зчитування</string>
     <string name="need_bluetooth_permission">Потрібен дозвіл Bluetooth</string>
+    <string name="invalid_transmitter_id">Неправильний код передавача</string>
+    <string name="you_entered">Ви ввели:</string>
+    <string name="click">Клацніть</string>
+    <string name="to_use_this_instead">Використати це натомість?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">Введено хибний код передавача або з\'єднання.\n\nПеревірте, будь ласка, та спробуйте вдруге.</string>
 </resources>
