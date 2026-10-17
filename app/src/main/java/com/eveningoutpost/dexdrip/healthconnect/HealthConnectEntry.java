@@ -22,11 +22,9 @@ public class HealthConnectEntry {
     }
 
     public static void ping() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (receiveEnabled()) {
-                if (JoH.ratelimit("health-connect-read", 290)) {
-                    HealthGamut.ping();
-                }
+        if (receiveEnabled()) {
+            if (JoH.ratelimit("health-connect-read", 290)) {
+                HealthGamut.ping();
             }
         }
     }
