@@ -67,7 +67,7 @@
     <string name="pref_default_api_url">https://{пароль}@{сайт}.azurewebsites.net/API/v1/</string>
     <!-- wifi Settings -->
     <string name="wifi_recievers_dialog_message">Розділений комами список IP: порт (наприклад, 37.142.132.220:50005,37.142.132.220:50010,mongodb://user:pass@ds053958.mongolab.com:53958/db/collection)</string>
-    <string name="wifi_recievers_dialog_title">Введіть IP-адреси і порти ресиверів (включаючи MongoDB адресу, при необхідності)</string>
+    <string name="wifi_recievers_dialog_title">Введіть IP-адреси і порти ресиверів (включаючи адресу MongoDB, при необхідності)</string>
     <!-- Location Settings -->
     <string name="location_not_found_title">Місцезнаходження вимкнено</string>
     <string name="location_not_found_message">Для коректної роботи пошуку Bluetooth-пристроїв на нових смартфонах, відстеження місця розташування повинно бути ввімнено. xDrip+ не відслідковує Ваше поточне місце розташування, за винятком випадків, коли активована функція екстрених повідомлень</string>
@@ -178,6 +178,8 @@
     <string name="share_config_via_qr_code">Поділитися налаштуваннями через QR-код</string>
     <string name="check_for_updated_version">Перевірити оновлення</string>
     <string name="current_version_is_up_to_date">У вибраному каналі оновлень немає</string>
+    <string name="title_dialog_check_for_update">У каналі %1$s немає оновлення</string>
+    <string name="message_dialog_check_for_update">У інших каналах може існувати нова версія.</string>
     <string name="send_feedback_to_developer">Надіслати відгук розробнику</string>
     <string name="home_screen">Домашній екран</string>
     <string name="event_logs">Журнал подій</string>
@@ -808,6 +810,7 @@
     <string name="use_flair_colors">Змінювати колір шторки/кнопок</string>
     <string name="upper_title_bar_flair">Колір верхньої шторки</string>
     <string name="lower_button_bar_falir">Колір системних кнопок знизу</string>
+    <string name="title_language">Мова</string>
     <string name="force_english_text">Примусова англійська мова додатку</string>
     <string name="using_local_language">На даний момент використовується системна мова</string>
     <string name="forcing_alternate_language">На даний момент мова додатки примусово змінена на англійську</string>
@@ -889,6 +892,7 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Зупиняйте сенсор тільки коли планується його заміна, в інших випадках він повинен продовжувати працювати!</string>
     <string name="restart_collector">Перезапустити службу збору даних</string>
     <string name="forget_device">Забути пристрій</string>
+    <string name="tx_reread_confirmation_title">Оновити дані передавача</string>
     <string name="other_notes">Інші нотатки: </string>
     <string name="delete_future_data">Видалити майбутні дані</string>
     <string name="show_only_untranslated">Показати тільки неперекладені</string>
