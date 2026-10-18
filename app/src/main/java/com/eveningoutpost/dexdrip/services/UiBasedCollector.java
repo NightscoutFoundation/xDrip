@@ -11,7 +11,6 @@ import android.app.Notification;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
 import android.service.notification.NotificationListenerService;
@@ -275,10 +274,8 @@ public class UiBasedCollector extends NotificationListenerService {
 
         JoH.dumpBundle(notification.extras, TAG);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val cid = notification.getChannelId();
-            UserError.Log.d(TAG, "Channel ID: " + cid);
-        }
+        val cid = notification.getChannelId();
+        UserError.Log.d(TAG, "Channel ID: " + cid);
 
         boolean handled = false;
 
