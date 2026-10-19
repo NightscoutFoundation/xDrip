@@ -252,7 +252,7 @@
     <string name="run_collector_in_foreground">Пріоритет служби збору даних</string>
     <string name="shows_a_persistent_notification">Постійно присутнє повідомлення, також присутнє на екрані блокування, яке дозволяє уникнути закриття служби Android.</string>
     <string name="title_collector_in_foreground">Активний збірник</string>
-    <string name="summary_compact_ongoing_notification">Enable to hide the graph in the notification and display only the current glucose value.</string>
+    <string name="summary_compact_ongoing_notification">Увімкніть, щоб приховати графік в сповіщеннях і відобразити лише поточне значення глюкози.</string>
     <string name="title_compact_ongoing_notification">Compact Persistent Notification</string>
     <string name="list_of_receivers">Список ресиверів</string>
     <string name="extra_tags_for_logging">Додаткові теги для журналювання</string>
@@ -428,13 +428,13 @@
     <string name="speak_your_note_text">Вимовте вголос текст нотатки</string>
     <string name="alarm_if_above_high_value">Сповіщати, якщо вище встановленого рівня</string>
     <string name="for_longer_than_minutes">Більш як (хвилин)</string>
-    <string name="choose_sound_used_for_persistent_high_alarm">Вибрати звук сповіщення про тривалу гіперглікемію</string>
+    <string name="choose_sound_used_for_persistent_high_alarm">Вибрати звук сповіщення про тривалу гіперглікемію.</string>
     <string name="persistent_high_sound">Звук тривалої гіперглікемії</string>
     <string name="forecast_lows">Прогнозувати гіпоглікемію</string>
     <string name="raise_alarm_on_forecast_low">Сповіщати заздалегідь про можливу гіпоглікемію</string>
     <string name="notify_when_predicted_low_time_reaches_threshold">Сповіщати, якщо досягнуто граничне значення прогнозованого часу до гіпоглікемії</string>
     <string name="predicted_low_sound">Звук прогнозованої гіпоглікемії</string>
-    <string name="choose_sound_used_for_predicted_low_alarm">Вибрати звук сповіщення про прогнозовану гіпоглікемію</string>
+    <string name="choose_sound_used_for_predicted_low_alarm">Вибрати звук сповіщення про прогнозовану гіпоглікемію.</string>
     <string name="silent_alert_when_charging">Беззвучні сповіщення під час зарядки</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Показувати сповіщення із затримкою за часом, яка задана користувачем</string>
     <string name="alarms_silenced_during_telephone_calls">Беззвучні сповіщення під час розмови</string>
@@ -462,7 +462,7 @@
     <string name="special_glucose_value_to_display_message">Спеціальне значення глюкози, при якому виводиться повідомлення нижче</string>
     <string name="bluetooth_wakelocks">Блокування сну Bluetooth</string>
     <string name="compatible_broadcast">Спільна трансляція</string>
-    <string name="show_datatables">Відображати таблиці даних</string>
+    <string name="show_datatables">Показувати таблиці даних</string>
     <string name="display_bridge_battery">Відображати стан батареї Bridge</string>
     <string name="close_gatt_on_ble_disconnect">Закрити GATT при відключені BLE</string>
     <string name="disable_battery_warning">Вимкнути попередження про низький рівень заряду батареї</string>
