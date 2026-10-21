@@ -601,7 +601,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             // BLUKON
             final BluetoothGattService blukonService = mBluetoothGatt.getService(blukonDataService);
             if (blukonService != null) {
-                Log.i(TAG, "Found " + getString(R.string.blukon) + " device");
+                Log.i(TAG, "Found BluCon device");
                 mCharacteristic = blukonService.getCharacteristic(UUID.fromString(HM10Attributes.BLUKON_UART_RX));
                 if (mCharacteristic == null) {
                     Log.w(TAG, "onServicesDiscovered: blukon characteristic " + mCharacteristic + " not found");

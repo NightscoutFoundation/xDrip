@@ -2,8 +2,6 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.R;
-import com.eveningoutpost.dexdrip.xdrip;
 
 import static com.eveningoutpost.dexdrip.models.JoH.dateTimeText;
 
@@ -48,12 +46,12 @@ public class VersionTracker {
             savePhoneVersions();
             if (numeric) {
                 try {
-                    UserError.Log.ueh(TAG, xdrip.getAppContext().getString(R.string.xdrip_software_changed_format, dateTimeText(Long.parseLong(old)), dateTimeText(Long.parseLong(nu))));
+                    UserError.Log.ueh(TAG, "Software version changed from: " + dateTimeText(Long.parseLong(old)) + " to " + dateTimeText(Long.parseLong(nu)));
                 } catch (Exception e) {
-                    UserError.Log.ueh(TAG, xdrip.getAppContext().getString(R.string.xdrip_software_changed_format, old, nu + " (parse failure)"));
+                    UserError.Log.ueh(TAG, "Software version changed from: " + old + " to " + nu + " (parse failure)");
                 }
             } else {
-                UserError.Log.ueh(TAG, xdrip.getAppContext().getString(R.string.xdrip_software_changed_format, old, nu));
+                UserError.Log.ueh(TAG, "Software version changed from: " + old + " to " + nu);
             }
             return true;
         }

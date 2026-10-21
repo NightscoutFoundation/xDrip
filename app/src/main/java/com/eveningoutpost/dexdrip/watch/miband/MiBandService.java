@@ -1109,7 +1109,7 @@ public class MiBandService extends JamBaseBluetoothSequencer {
             else
                 finishText = xdrip.getAppContext().getResources().getString(R.string.miband_watchface_istall_success);
         }
-        UserError.Log.d(TAG, "resetFirmwareState result:" + result + ":" + finishText);
+        UserError.Log.d(TAG, "resetFirmwareState result:" + result + (customText != null ? ":" + customText : ""));
 
         if (isNeedToRestoreNightMode) {
             JoH.threadSleep(RESTORE_NIGHT_MODE_DELAY);
