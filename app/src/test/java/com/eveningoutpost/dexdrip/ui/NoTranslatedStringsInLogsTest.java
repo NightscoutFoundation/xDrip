@@ -33,10 +33,13 @@ import java.util.stream.Stream;
  * <p>
  * What counts as a hit is {@link TranslatedLogScanner}, and its limits are this test's limits: it
  * follows a variable to the end of the block that declares it, but not text returned from another
- * method or handed to a helper that logs its argument - {@code Home.toaststaticnext} writes what
- * it is given to the Event Log, and two receivers give it translated text today. A string declared
- * {@code translatable="false"} in {@code values} is not counted. Only {@code app} is read;
- * {@code wear} has no translations.
+ * method or handed to a helper that logs its argument. Today that lets translated text through
+ * {@code Home.toaststaticnext} (to the Event Log, from {@code Home}, {@code NSClientReceiver} and
+ * {@code AidexReceiver}), {@code Home.toast}, {@code ShareFollowDownload.msg},
+ * {@code MedtrumCollectionService.status} and {@code Reminders.setFloaterText}. Nor does it see
+ * inside a Kotlin string template ({@code "${getString(...)}"}) or a {@code StringBuilder}. A
+ * string declared {@code translatable="false"} in {@code values} is not counted. Only {@code app}
+ * is read; {@code wear} has no translations.
  *
  * @author Asbjørn Aarrestad - 2026.10
  */
