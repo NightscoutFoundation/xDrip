@@ -61,7 +61,6 @@ import com.eveningoutpost.dexdrip.BasePreferenceActivity;
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.NFCReaderX;
-import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
 import com.eveningoutpost.dexdrip.alert.Registry;
@@ -81,6 +80,7 @@ import com.eveningoutpost.dexdrip.cloud.nightlite.NightLiteQR;
 import com.eveningoutpost.dexdrip.healthconnect.HealthConnectEntry;
 import com.eveningoutpost.dexdrip.healthconnect.HealthGamut;
 import com.eveningoutpost.dexdrip.insulin.inpen.InPenEntry;
+import com.eveningoutpost.dexdrip.nocturne.NocturneConnectHelper;
 import com.eveningoutpost.dexdrip.models.DesertSync;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Profile;
@@ -1044,6 +1044,25 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         .getString(preference.getKey(), ""));
     }
 
+    private static void bindPreferenceSummaryToValueAndWarnIfMuted(final Activity activity, final Preference preference) { // Volume profile summary and mute alert warning
+        bindPreferenceSummaryToValue(preference);
+        if (preference == null) return;
+        preference.setOnPreferenceChangeListener((pref, newValue) -> {
+            final String value = String.valueOf(newValue);
+            if (!"Silent".equals(value) && !"vibrate only".equals(value)) {
+                return sBindPreferenceSummaryToValueListener.onPreferenceChange(pref, newValue);
+            }
+            GenericConfirmDialog.show(activity, xdrip.gs(R.string.alert_volume_profile), xdrip.gs(R.string.volume_profile_will_be_muted,
+                    xdrip.gs(R.string.volume_profile_silent),
+                    xdrip.gs(R.string.volume_profile_vibrate_only),
+                    xdrip.gs(R.string.override_silent_mode)), () -> {
+                ((ListPreference) pref).setValue(value);
+                sBindPreferenceSummaryToValueListener.onPreferenceChange(pref, value);
+            });
+            return false;   // defer the save to the confirm callback
+        });
+    }
+
     public static void applyPrefSettingRange(String pref_key, String def, Double min, Double max) { // Correct a preference glucose setting if the value is out of range
         val notificationId = OUT_OF_RANGE_GLUCOSE_ENTRY_ID;
         String mySettingString = Pref.getString(pref_key, def);
@@ -1139,7 +1158,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(units_pref);
 
             addPreferencesFromResource(R.xml.pref_notifications);
-            bindPreferenceSummaryToValue(findPreference("bg_alert_profile"));
+            bindPreferenceSummaryToValueAndWarnIfMuted(getActivity(), findPreference("bg_alert_profile"));
+
             bindPreferenceSummaryToValue(findPreference("calibration_notification_sound"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("calibration_snooze"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("bg_unclear_readings_minutes"));
@@ -1159,6 +1179,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_uri"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_collection"));
             bindPreferenceSummaryToValue(findPreference("cloud_storage_mongodb_device_status_collection"));
+
+            final Preference nocturneConnectPref = findPreference("nocturne_connect");
+            if (nocturneConnectPref != null) {
+                nocturneConnectPref.setOnPreferenceClickListener(preference -> {
+                    NocturneConnectHelper.startConnectFlow(getActivity());
+                    return true;
+                });
+            }
+            final Preference nocturneUrlPref = findPreference("nocturne_instance_url");
+            if (nocturneUrlPref != null) {
+                bindPreferenceSummaryToValue(nocturneUrlPref);
+            }
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);
@@ -1307,17 +1339,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             profile_carb_absorption_default.setTitle(format_carb_absorption_rate(profile_carb_absorption_default.getTitle().toString(), this.prefs.getString("profile_carb_absorption_default", "")));
 
-
-            refresh_extra_items();
-            findPreference("plus_extra_features").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Home.invalidateMenu = true; // force redraw
-                    refresh_extra_items();
-
-                    return true;
-                }
-            });
 
             final Preference crash_reports = findPreference("enable_crashlytics");
             crash_reports.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -2253,7 +2274,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     preference.setSummary(newValue.toString());
-                    ParakeetHelper.notifyOnNextCheckin(true);
                     return true;
                 }
             });
@@ -3027,20 +3047,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return true;
                 }
             });
-        }
-
-        private void refresh_extra_items() {
-            try {
-                if (this.prefs == null) return;
-                if (!this.prefs.getBoolean("plus_extra_features", false)) {
-                    // getPreferenceScreen().removePreference(findPreference("plus_follow_master"));
-
-                } else {
-                    // getPreferenceScreen().addPreference(findPreference("plus_follow_master"));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Got exception in refresh extra: " + e.toString());
-            }
         }
 
         public void jumpToScreen(final String screenKey) {

@@ -100,7 +100,7 @@ public enum DexCollectionType {
         Collections.addAll(isPassive, NSEmulator, NSFollow, SHFollow, WebFollow, LibreReceiver, UiBased, CLFollow, AidexReceiver);
         Collections.addAll(canNotStartStopOrCal, NSFollow, SHFollow, WebFollow, UiBased, CLFollow, Disabled); // Collectors that cannot start/stop sensor or submit calibration
         Collections.addAll(alwaysNativeCal, Follower, GluPro); // always allow calibration entry
-        Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // parakeet separate
+        Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // the wifi uploader battery is separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, Mock);
         Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery
         Collections.addAll(newerCollector, NSFollow, SHFollow, WebFollow, CLFollow, GluPro);
@@ -338,7 +338,7 @@ public enum DexCollectionType {
                     return Pref.getInt("bridge_battery", -1);
             }
         } else if (DexCollectionType.hasWifi()) {
-            return Pref.getInt("parakeet_battery", -3);
+            return Pref.getInt("parakeet_battery", -3); // wifi uploader battery; legacy preference key
         } else {
             return -2;
         }

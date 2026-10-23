@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import com.eveningoutpost.dexdrip.importedlibraries.dexcom.Dex_Constants;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
+import com.eveningoutpost.dexdrip.utils.framework.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.tidepool.InfoInterceptor;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

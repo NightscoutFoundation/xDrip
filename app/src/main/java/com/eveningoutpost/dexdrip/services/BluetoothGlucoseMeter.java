@@ -1135,7 +1135,14 @@ public class BluetoothGlucoseMeter extends Service {
         } else {
             start_intent.putExtra("service_action", "scan");
         }
-        xdrip.getAppContext().startService(start_intent);
+        try {
+            xdrip.getAppContext().startService(start_intent);
+        } catch (Exception e) {
+            // from target sdk 26 this throws if we are in the background, eg started only for a broadcast
+            if (JoH.ratelimit("service-start-refused", 3600)) {
+                UserError.Log.e(TAG, "Could not start meter service: " + e);
+            }
+        }
     }
 
     // remote api for forgetting

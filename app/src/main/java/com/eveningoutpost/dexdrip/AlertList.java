@@ -10,7 +10,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Paint;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import android.view.View;
@@ -48,7 +48,7 @@ public class AlertList extends ActivityWithMenu {
     final int EDIT_ALERT = 2;
     SharedPreferences prefs;
     Animation anim;
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = AlertList.class.getSimpleName();
 
     String stringTimeFromAlert(AlertType alert) {
         if (alert.all_day) {

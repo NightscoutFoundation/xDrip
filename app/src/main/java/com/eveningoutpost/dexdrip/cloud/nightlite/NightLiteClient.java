@@ -9,7 +9,7 @@ import android.provider.Settings;
 
 import com.eveningoutpost.dexdrip.BuildConfig;
 import com.eveningoutpost.dexdrip.utilitymodels.OkHttpWrapper;
-import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
+import com.eveningoutpost.dexdrip.utils.framework.GzipRequestInterceptor;
 import com.eveningoutpost.dexdrip.models.ActiveBgAlert;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -91,7 +91,7 @@ public class NightLiteClient {
                 val urlString = url.getProtocol() + "://" + url.getHost() + "/upload?" + query;
                 val apiKey = pathElements.get(0);
                 UserError.Log.d(TAG, "url string: " + urlString);
-                val body = RequestBody.create(MediaType.parse("application/octet-stream"), bytes);
+                val body = RequestBody.create(bytes, MediaType.parse("application/octet-stream"));
 
                 val request = new Request.Builder()
                         .url(urlString)

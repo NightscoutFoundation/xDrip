@@ -4,13 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
-import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -51,6 +50,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     protected static final int SYNC_KEY = 1000;
     protected static final int PLATFORM_KEY = 1001;
     protected static final int VERSION_KEY = 1002;
+    protected static final int TREND_SIZE = 1003;
 
 
     protected static final int MAX_VALUES =60*24;
@@ -182,8 +182,7 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
     public boolean doWeDisplayWixelBatteryStatus() {
         DexCollectionType dexCollectionType = getDexCollectionType();
 
-        return ((dexCollectionType == DexCollectionType.DexbridgeWixel || //
-                (dexCollectionType == DexCollectionType.WifiWixel && ParakeetHelper.isRealParakeetDevice())) &&
+        return (dexCollectionType == DexCollectionType.DexbridgeWixel &&
                 getBooleanValue("display_bridge_battery", true));
     }
 
@@ -206,15 +205,8 @@ public abstract class PebbleDisplayAbstract implements PebbleDisplayInterface {
 
     public void addBatteryStatusToDictionary(PebbleDictionary dictionary) {
         if (doWeDisplayWixelBatteryStatus()) {
-
-            if (isDexBridgeWixel()) {
-                dictionary.addString(UPLOADER_BATTERY_KEY, getBatteryString("bridge_battery"));
-                dictionary.addString(NAME_KEY, "Bridge");
-            } else {
-                dictionary.addString(UPLOADER_BATTERY_KEY, getBatteryString("parakeet_battery"));
-                dictionary.addString(NAME_KEY, "Phone");
-            }
-
+            dictionary.addString(UPLOADER_BATTERY_KEY, getBatteryString("bridge_battery"));
+            dictionary.addString(NAME_KEY, "Bridge");
         } else {
             dictionary.addString(UPLOADER_BATTERY_KEY, getPhoneBatteryStatus());
             dictionary.addString(NAME_KEY, "Phone");

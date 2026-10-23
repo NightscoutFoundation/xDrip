@@ -105,7 +105,7 @@ public class TidepoolIntegrationTest extends RobolectricTestWithConfig {
                 .setBody("{\"id\":\"ds1\",\"uploadId\":\"up1\"}")
                 .addHeader("Content-Type", "application/json"));
         RequestBody body = RequestBody.create(
-                MediaType.parse("application/json"), "{\"test\":true}");
+                "{\"test\":true}", MediaType.parse("application/json"));
 
         // :: Act
         api.openDataSet("my-token", "user42", body).execute();
@@ -125,7 +125,7 @@ public class TidepoolIntegrationTest extends RobolectricTestWithConfig {
                 .addHeader("Content-Type", "application/json"));
         String jsonBody = "[{\"type\":\"cbg\",\"value\":120}]";
         RequestBody body = RequestBody.create(
-                MediaType.parse("application/json"), jsonBody);
+                jsonBody, MediaType.parse("application/json"));
 
         // :: Act
         api.doUpload("session-tok", "session99", body).execute();
@@ -145,7 +145,7 @@ public class TidepoolIntegrationTest extends RobolectricTestWithConfig {
                 .setBody("{\"id\":\"ds1\"}")
                 .addHeader("Content-Type", "application/json"));
         RequestBody body = RequestBody.create(
-                MediaType.parse("application/json"), "{\"status\":\"closed\"}");
+                "{\"status\":\"closed\"}", MediaType.parse("application/json"));
 
         // :: Act
         api.closeDataSet("close-tok", "session77", body).execute();

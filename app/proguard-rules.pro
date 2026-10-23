@@ -245,3 +245,9 @@
 -dontwarn org.apache.http.impl.client.CloseableHttpClient
 -dontwarn org.apache.http.impl.client.HttpClientBuilder
 -dontwarn org.apache.http.impl.conn.SystemDefaultRoutePlanner
+
+# Nocturne SDK: gson serializes generated models reflectively. gson 2.11+ ships its own R8
+# rules, but these keeps stay as belt-and-braces for xDrip's own models and the invoker classes
+-keep class org.nightscoutfoundation.nocturne.model.** { *; }
+-keep class org.nightscoutfoundation.nocturne.JSON { *; }
+-dontwarn org.openapitools.jackson.nullable.**

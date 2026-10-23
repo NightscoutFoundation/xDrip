@@ -136,7 +136,6 @@
     <string name="title_activity_display_qrcode">Share Settings via QR code</string>
     <string name="title_activity_send_feed_back">Send Feedback to Jamorham</string>
     <string name="title_activity_save_logs">Save Logs</string>
-    <string name="title_activity_maps">Parakeet Map</string>
     <string name="title_activity_display_preferences">Display Preferences</string>
 
     <string name="export_submenu">Import / Export features</string>
@@ -158,7 +157,7 @@
     <string name="share">Share</string>
     <string name="title_activity_profile_editor">Treatment Profile Editor</string>
     <string name="first_use_menu_to_scan">First use the menu to scan for your BT device or change the Data Source in Settings!</string>
-    <string name="first_configure_ip_address">First configure your WiFi Wixel reader IP addresses or Parakeet URL</string>
+    <string name="first_configure_ip_address">First configure your WiFi Wixel reader IP addresses</string>
     <string name="now_start_your_sensor">Now start your sensor or check Settings</string>
     <string name="please_wait_while_sensor_warms_up">Please wait while sensor warms up! (</string>
     <string name="minutes_with_bracket">" minutes)"</string>
@@ -176,9 +175,6 @@
     <string name="till">till</string>
     <string name="low_predicted">Low predicted</string>
     <string name="in">in</string>
-    <string name="yes_enter_setup_mode">Yes, enter setup mode</string>
-    <string name="nokeep_parakeet_as_it_is">No, keep Parakeet as it is</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Are you sure you want to switch the Parakeet to setup mode?\n\nNormally, this is only used to send further text messages to the Parakeet to reconfigure the transmitter it listens for etc.</string>
     <string name="split_delete_or_do_nothing">Split, delete or do nothing</string>
     <string name="split_this_block_in_two">Split this block in two</string>
     <string name="delete_this_time_block">Delete this time block</string>
@@ -193,8 +189,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"In Libre all house mode: no readings collected yet."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"In Libre all house mode: Last reading "</string>
     <string name="space_minute_ago">" Minute ago"</string>
-    <string name="show_parakeet_map">Show Parakeet map</string>
-    <string name="switch_parakeet_to_setup_mode">Switch Parakeet to Setup mode</string>
     <string name="view_events_log">View Events Log</string>
     <string name="show_libre_trend">Show Libre trend</string>
     <string name="libre_15_minutes_graph">Libre 15 minutes graph</string>
@@ -242,7 +236,7 @@
     <string name="calibration_alerts">Calibration Alerts</string>
     <string name="missed_reading_alert">Missed reading Alert</string>
     <string name="other_alerts">Other Alerts</string>
-    <string name="extra_alerts_xdrip_plus">Extra Alerts (xDrip+)</string>
+    <string name="extra_alerts_xdrip_plus">Extra Alerts (xDrip)</string>
     <string name="persistent_high_alert">Persistent High Alert</string>
     <string name="persistent_high_alert_enable">Enable</string>
     <string name="title_persistent_high_threshold">Threshold</string>
@@ -255,7 +249,7 @@
     <string name="extrapolate_data_to_try_to_predict_lows">Considering the current value and trend, calculate what the next few readings will be if the trend persists (extrapolate).  This ignores insulin or carbs on board.</string>
     <string name="alarm_at_forecasted_low_mins">Time threshold [min]</string>
     <string name="title_forecast_low_threshold">Threshold</string>
-    <string name="other_xdrip_plus_alerts">Other xDrip+ alerts</string>
+    <string name="other_xdrip_plus_alerts">Other xDrip alerts</string>
     <string name="xdrip_plus_display_settings">Display</string>
     <string name="display_customisations">Display customizations</string>
     <string name="insulin_carb_ratios_etc_for_models">Insulin, Carb ratios etc. for models</string>
@@ -382,6 +376,9 @@
     <string name="all_alerts_disabled_until">"All alerts disabled until "</string>
     <string name="low_alerts_disabled_until">"Low alerts disabled until "</string>
     <string name="high_alerts_disabled_until">"High alerts disabled until "</string>
+    <string name="you_reenable">you re-enable</string>
+    <string name="active_alert_rerise_at">Active alert exists named \"%1$s\" Alert will rerise at %2$s (%3$s minutes left)</string>
+    <string name="active_alert_snoozed_until">Active alert exists named \"%1$s\" Alert snoozed until %2$s (%3$s minutes left)</string>
     <string name="default_snooze">Default Snooze</string>
     <string name="until_you_reenable">Until you re-enable</string>
     <string name="set">Set</string>
@@ -430,8 +427,6 @@
     <string name="web_feedback_form_for_sending_messages">Web feedback form for sending messages and ratings of xDrip to the developers</string>
     <string name="be_master_for_followers">Be master for followers</string>
     <string name="this_device_will_send_data_to_followers">This device will send data to followers</string>
-    <string name="send_parakeet_map_location_to_followers">Send Parakeet map location to followers</string>
-    <string name="sync_parakeet_geolocation">Sync Parakeet Geolocation</string>
     <string name="disable_all_sync_features">Disable all sync features</string>
     <string name="temporary_work_around_disable_all_sync_detail">Temporary work-around option, completely stops all synchronization. May need reboot after being re-enabled. Use with care!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Automatic Updates, crash reports and Feedback to Developer</string>
@@ -465,9 +460,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Notify when forecasted low time reaches time threshold</string>
     <string name="predicted_low_sound">Alert Sound</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Choose the sound used for the alarm.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Notify when Parakeet device stops checking in</string>
-    <string name="parakeet_related_alerts">Parakeet related alerts</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Raise Parakeet notification silently when charging</string>
     <string name="silent_alert_when_charging">Silent alert when charging</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Alerts start out snoozed and must persist for a while to actually trigger</string>
     <string name="alarms_silenced_during_telephone_calls">Alarms silenced during telephone calls</string>
@@ -550,7 +542,6 @@
     <string name="show_graph_total_average">Show Graph total average</string>
     <string name="show_momentum_working_curve">Show Momentum working curve</string>
     <string name="show_noise_workings">Show Noise workings</string>
-    <string name="parakeet_and_extra_features">Parakeet and Extra test features</string>
     <string name="insulin_duration_hours">Insulin duration in hours</string>
     <string name="default_liver_sensitivity_ratio">Default Liver Sensitivity Ratio</string>
     <string name="key_is_used_instead_of_google_account">Key is used instead of Google account</string>
@@ -584,7 +575,7 @@
     <string name="battery">Battery</string>
     <string name="xbridge_battery">xBridge Battery</string>
     <string name="limitter_battery">Libre Battery</string>
-    <string name="parakeet_battery">Parakeet Battery</string>
+    <string name="uploader_battery">Uploader Battery</string>
     <string name="after_calibration_rewrite_history">After calibration, adjust recent raw graph to smooth to the new calibration</string>
     <string name="rewrite_history">Rewrite History</string>
     <string name="grid_time_lines_visible">Grid time lines visible</string>
@@ -872,7 +863,6 @@
     <string name="display_calculations">Display Insulin/Carb calculations</string>
     <string name="display_calculations_everytime">Display Insulin/Carb calculations at all times</string>
     <string name="always_show_bolus_wizard_preview">Always show Bolus Wizard Preview</string>
-    <string name="show_test_features">Show extra and alpha test features</string>
     <string name="show_reminder_features">Show Reminder menus and features</string>
     <string name="enable_reminder_features">Enable Reminder features</string>
     <string name="display_mathamatical_simulations">Display mathematical simulations based on profile data and carbs/insulin logs</string>
@@ -1000,7 +990,6 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="g4_share_receiver">G4 Share Receiver</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / WiFi</string>
     <string name="other">Other</string>
     <string name="which_software_is_the_wixel_running">Which software is the Wixel running?</string>
     <string name="start_source_setup_wizard">Start Source Setup Wizard</string>
@@ -1016,7 +1005,6 @@
     <string name="use_librealarm">Use LibreAlarm app as data source?</string>
     <string name="noise_blocking">Noise Blocking</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Level at which noisy data should not be broadcast as it could confuse receiving apps</string>
-    <string name="low_parakeet_battery">Low Parakeet battery</string>
     <string name="glucose_units_mmol_or_mgdl">Glucose units mmol/L or mg/dL</string>
     <string name="is_your_typical_glucose_value">Is your typical blood glucose value:  5.5 (mmol/L) or 100 (mg/dL)  Please select below</string>
     <string name="settings_updated_to_mmol">Settings updated to mmol/L</string>
@@ -1284,6 +1272,63 @@
     <string name="summary_tidepool_upload_no_treatment">Upload only CGM data to avoid duplicates with manual pump upload</string>
     <string name="title_tidepool_upload_no_treatment">Don\'t upload treatments</string>
     <string name="title_tidepool">Tidepool</string>
+
+    <!-- Nocturne connect flow -->
+    <string name="nocturne">Nocturne</string>
+    <string name="nocturne_connect_activity_label">Connect to Nocturne</string>
+    <string name="nocturne_settings_summary">Upload to Nocturne V4 API</string>
+    <string name="title_nocturne_upload_enable">Enable Nocturne upload</string>
+    <string name="title_nocturne_instance_url">Nocturne instance URL</string>
+    <string name="nocturne_instance_url_dialog_message">Enter the URL of your Nocturne instance (e.g. https://mynocturne.example.com)</string>
+    <string name="nocturne_connect_pref_summary">Authorize xDrip with your Nocturne instance</string>
+    <string name="title_nocturne_upload_sgv">Upload SGV</string>
+    <string name="summary_nocturne_upload_sgv">Upload CGM sensor glucose readings</string>
+    <string name="title_nocturne_upload_treatments">Upload treatments</string>
+    <string name="summary_nocturne_upload_treatments">Upload boluses, carbs, notes and device events</string>
+    <string name="title_nocturne_upload_calibrations">Upload calibrations</string>
+    <string name="summary_nocturne_upload_calibrations">Upload sensor calibrations</string>
+    <string name="title_nocturne_upload_bloodtests">Upload blood tests</string>
+    <string name="summary_nocturne_upload_bloodtests">Upload fingerstick meter readings</string>
+    <string name="title_nocturne_upload_heartrate">Upload heart rate</string>
+    <string name="summary_nocturne_upload_heartrate">Upload heart rate data</string>
+    <string name="title_nocturne_upload_stepcount">Upload step count</string>
+    <string name="summary_nocturne_upload_stepcount">Upload step count data</string>
+    <string name="title_nocturne_upload_devicestatus">Upload device status</string>
+    <string name="summary_nocturne_upload_devicestatus">Upload phone battery level and charging state</string>
+    <string name="title_nocturne_upload_motion">Upload motion tracking</string>
+    <string name="summary_nocturne_upload_motion">Upload recognized activity classifications</string>
+    <string name="title_nocturne_use_mobile">Use mobile data</string>
+    <string name="summary_nocturne_use_mobile">Allow uploads over mobile data</string>
+
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <string name="nocturne_connect_err_missing_url">Missing Nocturne instance URL</string>
+    <string name="nocturne_connect_err_invalid_url">Invalid URL</string>
+    <string name="nocturne_connect_warn_http">Using insecure connection (HTTP)</string>
+    <string name="nocturne_connect_err_bad_scheme">URL must start with http:// or https://</string>
+    <string name="nocturne_connect_already_connected">Already connected to %1$s</string>
+    <string name="nocturne_connect_switch_title">Switch Nocturne instance?</string>
+    <string name="nocturne_connect_switch_message">You\'re connected to:\n%1$s\n\nSwitch to:\n%2$s?</string>
+    <string name="nocturne_connect_switch_positive">Switch</string>
+    <string name="nocturne_connect_unknown_instance">(unknown)</string>
+    <string name="nocturne_connect_confirm_title">Connect to Nocturne?</string>
+    <string name="nocturne_connect_confirm_message">Connect xDrip to:\n\n%1$s</string>
+    <string name="nocturne_connect_confirm_positive">Connect</string>
+
+    <!-- NocturneConnectHelper (device flow UI) -->
+    <string name="nocturne_already_connected_disconnect">Already connected to Nocturne. Disconnect first?</string>
+    <string name="nocturne_disconnect">Disconnect</string>
+    <string name="nocturne_disconnected">Disconnected from Nocturne</string>
+    <string name="nocturne_set_url_first">Please set your Nocturne instance URL first</string>
+    <string name="nocturne_connecting">Connecting to Nocturne...</string>
+    <string name="nocturne_start_auth_failed">Failed to start authorization. Check your Nocturne URL.</string>
+    <string name="nocturne_device_code_body_auto">Enter this code on your Nocturne instance:\n\n%1$s\n\nThe code expires in %2$d minutes.\n\nTap \'Open browser\' to go to the approval page.</string>
+    <string name="nocturne_device_code_body_manual">Enter this code on your Nocturne instance:\n\n%1$s\n\nThe code expires in %2$d minutes.\n\nOpen your Nocturne instance in your browser to enter the code.</string>
+    <string name="nocturne_authorize_title">Authorize xDrip</string>
+    <string name="nocturne_open_browser">Open browser</string>
+    <string name="nocturne_connected">Connected to Nocturne!</string>
+    <string name="nocturne_auth_expired">Authorization expired. Please try again.</string>
+    <string name="nocturne_auth_denied">Authorization denied.</string>
+    <string name="nocturne_auth_timed_out">Authorization timed out. Please try again.</string>
     <string name="show_help">Show Help</string>
     <string name="load_save_settings_on_sdcard">Load / Save Settings</string>
     <string name="delete_all_bg_readings">Delete All BG readings</string>
@@ -1559,6 +1604,10 @@
     <string name="title_ongoing_notification_channel">Use ongoing notification channel</string>
     <string name="summary_notification_channels_grouping">Whether notifications should be grouped together. Incompatible with \'Number Item in Notification Area\' option</string>
     <string name="title_notification_channels_grouping">Group notifications together</string>
+    <string name="glucose_level_notifications">Glucose level alerts</string>
+    <string name="ongoing_notification">Ongoing notification</string>
+    <string name="general_notifications">General</string>
+    <string name="other_alert_notifications">Other alerts</string>
     <string name="summary_delay_ascending_3min">For ascending volume profile, delay the start of the alert sound by 3 minutes. The vibration (if enabled) starts as soon as the alert triggers regardless of this setting.</string>
     <string name="title_ascending_volume">Ascending Volume settings</string>
     <string name="title_delay_ascending_3min">Delay Ascending Volume</string>
@@ -1677,7 +1726,7 @@
     <string name="running_test_with_number_123">Running test with number: 123</string>
     <string name="unusual_internal_context_problem__please_report">Unusual internal context problem - please report</string>
     <string name="cannot_start__please_report_context_problem">Cannot start - please report context problem</string>
-    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ will not work below Android version 4.2</string>
+    <string name="xdrip_will_not_work_below_android_version_42">xDrip will not work below Android version 4.2</string>
     <string name="xdrip_oop2_not_installed">xDrip needs OOP2 to handle Libre2/LibreUS sensors.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">This app needs battery optimization whitelisting or it will not work well. Please reset app preferences</string>
     <string name="setting_disabled_">Setting disabled :)</string>
@@ -2017,6 +2066,7 @@
     <string name="alert_warning">Warning !</string>
     <string name="no_active_low_alert_warning">No low alert is active. You won\'t be notified of low glucose—please add or enable one.</string>
     <string name="volume_profile_set_to_silent">Volume Profile is set to silent!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' and \'%2$s\' ignore \'%3$s\' and make no sound. Are you sure?</string>
     <string name="volume_profile_set_to_ascending_with_delay">Ascending Volume Profile + delayed ascending means it will start silent</string>
     <string name="start_snoozed_enabled">Start Snoozed setting means alert would normally start silent</string>
     <string name="pre_snooze">pre-Snooze</string>

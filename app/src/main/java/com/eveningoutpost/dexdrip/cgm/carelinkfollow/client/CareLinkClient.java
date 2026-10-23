@@ -661,12 +661,12 @@ public class CareLinkClient {
         if(!JoH.emptyString(patientUsername))
             userJson.addProperty("patientId", patientUsername);
         if(useNewEndpoint){
-            userJson.addProperty("appVersion", "3.6.0");
+            userJson.addProperty("appVersion", "3.8.0");
         }
 
         gson = new GsonBuilder().create();
 
-        requestBody = RequestBody.create(MediaType.get("application/json; charset=utf-8"), gson.toJson(userJson));
+        requestBody = RequestBody.create(gson.toJson(userJson), MediaType.get("application/json; charset=utf-8"));
 
 
         //new endpoint url

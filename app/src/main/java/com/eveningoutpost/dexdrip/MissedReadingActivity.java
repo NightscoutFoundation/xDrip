@@ -8,7 +8,7 @@ import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Button;
@@ -61,7 +61,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
     private int endHour = 23;
     private int endMinute = 59;
     private int missedMinutes = 59;
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = MissedReadingActivity.class.getSimpleName();
     EditAlertActivity editAlert = new EditAlertActivity();
     
 
@@ -84,7 +84,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
          * by default uses the same sound file as the other alerts alert.
         **/
         if (Pref.getString("bg_missed_alerts_sound", null) == null) { // If missed reading sound file has never been set
-            Pref.setString("bg_missed_alerts_sound", Pref.getString("other_alerts_sound", "content://settings/system/alarm_alert")); // Set it to the other alerts sound
+            Pref.setString("bg_missed_alerts_sound", Pref.getString("other_alerts_sound", "default")); // Set it to the other alerts sound
         }
         alertMp3File = (EditText) findViewById(R.id.bg_missed_alerts_sound);
         

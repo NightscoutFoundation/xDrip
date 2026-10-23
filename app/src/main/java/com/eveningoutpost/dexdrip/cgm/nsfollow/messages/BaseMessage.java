@@ -18,7 +18,7 @@ public abstract class BaseMessage {
     }
 
     public RequestBody getBody() {
-        return RequestBody.create(MediaType.parse("application/json"), this.toS());
+        return RequestBody.create(this.toS(), MediaType.parse("application/json"));
     }
 
 }

@@ -30,7 +30,8 @@ public class SyncService extends IntentService {
         if (Pref.getBooleanDefaultFalse("cloud_storage_api_enable")
                 || Pref.getBooleanDefaultFalse("wear_sync")
                 || Pref.getBooleanDefaultFalse("cloud_storage_mongodb_enable")
-                || Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable")) {
+                || Pref.getBooleanDefaultFalse("cloud_storage_influxdb_enable")
+                || Pref.getBooleanDefaultFalse("nocturne_upload_enable")) {
             synctoCloudDatabases(); // attempt to sync queues
             startSyncService(6 * Constants.MINUTE_IN_MS); // set retry timer
         }

@@ -270,11 +270,9 @@ public class NightscoutFollowService extends ForegroundService {
 
         statuses.add(new StatusItem("Last poll", lastPollText + (lastPoll > 0 ? " ago" : "")));
         statuses.add(new StatusItem("Next poll in", JoH.niceTimeScalar(wakeup_time - JoH.tsl())));
-        if (lastBg != null) {
-            statuses.add(new StatusItem("Last BG time", JoH.dateTimeText(lastBg.timestamp)));
+        if (JoH.buggy_samsung) {
+            statuses.add(new StatusItem("Buggy handset", gs(R.string.yes)));
         }
-        statuses.add(new StatusItem("Next poll time", JoH.dateTimeText(wakeup_time)));
-        statuses.add(new StatusItem("Buggy handset", JoH.buggy_samsung ? gs(R.string.yes) : gs(R.string.no)));
         statuses.add(new StatusItem("Download treatments", NightscoutFollow.treatmentDownloadEnabled() ? gs(R.string.yes) : gs(R.string.no)));
 
         if (StringUtils.isNotBlank(lastState)) {

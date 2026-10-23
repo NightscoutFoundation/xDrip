@@ -17,7 +17,7 @@ import com.eveningoutpost.dexdrip.BaseAppCompatActivity;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.watch.thinjam.BlueJayEntry;
-import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
+import com.eveningoutpost.dexdrip.utils.framework.GzipRequestInterceptor;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;

@@ -1,9 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+import static com.eveningoutpost.dexdrip.Await.awaitAtMost;
 import static com.google.common.truth.Truth.assertThat;
-import static org.robolectric.Shadows.shadowOf;
-
-import android.os.Looper;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -52,11 +50,6 @@ public class NightscoutFollowDeviceStatusFallbackTest extends RobolectricTestWit
         NightscoutFollow.resetInstance();
     }
 
-    private static void awaitCallbacks() throws InterruptedException {
-        Thread.sleep(400);
-        shadowOf(Looper.getMainLooper()).idle();
-    }
-
     /** entries/treatments respond OK; devicestatus is rejected with 400 like Juggluco's wrongpath(). */
     private void useDeviceStatus400Dispatcher() {
         server.setDispatcher(new Dispatcher() {
@@ -81,7 +74,7 @@ public class NightscoutFollowDeviceStatusFallbackTest extends RobolectricTestWit
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
+        awaitAtMost(() -> !NsServerCapabilities.supportsDeviceStatus(url));
 
         // :: Verify — limitation recorded
         assertThat(NsServerCapabilities.supportsDeviceStatus(url)).isFalse();
@@ -100,15 +93,17 @@ public class NightscoutFollowDeviceStatusFallbackTest extends RobolectricTestWit
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
+        // Anchor on the entries request, which is always sent. Without this the count can be 0,
+        // the loop below never runs, and the test passes vacuously.
+        awaitAtMost(() -> server.getRequestCount() > 0);
 
         // :: Verify — no devicestatus request was made
         final int count = server.getRequestCount();
+        assertThat(count).isAtLeast(1);
         for (int i = 0; i < count; i++) {
             final RecordedRequest r = server.takeRequest(1, TimeUnit.SECONDS);
-            if (r != null && r.getPath() != null) {
-                assertThat(r.getPath()).doesNotContain("devicestatus");
-            }
+            assertThat(r).isNotNull();
+            assertThat(r.getPath()).doesNotContain("devicestatus");
         }
     }
 }

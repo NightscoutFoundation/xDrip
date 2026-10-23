@@ -19,7 +19,12 @@ import okhttp3.mockwebserver.RecordedRequest;
 import static com.google.common.truth.Truth.assertThat;
 
 /**
- * @author Asbjørn Aarrestad
+ * Contract tests for the single shared okhttp client every xDrip HTTP caller derives from.
+ * <p>
+ * Plain-HTTP Nightscout servers are a supported and widely used configuration, so the cleartext
+ * round trip is asserted here rather than left to incidental coverage.
+ *
+ * @author Asbjørn Aarrestad - 2026.08
  */
 public class OkHttpWrapperSharedClientTest extends RobolectricTestWithConfig {
 
@@ -36,6 +41,12 @@ public class OkHttpWrapperSharedClientTest extends RobolectricTestWithConfig {
         server.shutdown();
     }
 
+    // ===== Cleartext round trips =================================================================
+
+    /**
+     * The shared client reaches a plain-HTTP host, the request arrives as sent, and the response
+     * body comes back intact.
+     */
     @Test
     public void sharedClient_canPerformSimpleGet() throws Exception {
         // :: Setup
@@ -50,8 +61,15 @@ public class OkHttpWrapperSharedClientTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(response.isSuccessful()).isTrue();
         assertThat(response.body().string()).isEqualTo("hello");
+
+        RecordedRequest recorded = server.takeRequest();
+        assertThat(recorded.getPath()).isEqualTo("/test");
+        assertThat(recorded.getMethod()).isEqualTo("GET");
     }
 
+    // ===== Clients derived with newBuilder() =====================================================
+
+    /** A derived client overrides a timeout without detaching from the shared connection pool. */
     @Test
     public void sharedClient_newBuilder_canCustomizeTimeouts() throws Exception {
         // :: Setup
@@ -64,6 +82,7 @@ public class OkHttpWrapperSharedClientTest extends RobolectricTestWithConfig {
         assertThat(custom.connectionPool()).isSameInstanceAs(OkHttpWrapper.getClient().connectionPool());
     }
 
+    /** An interceptor added to a derived client reaches the wire. */
     @Test
     public void sharedClient_newBuilder_canAddInterceptor() throws Exception {
         // :: Setup
@@ -78,13 +97,18 @@ public class OkHttpWrapperSharedClientTest extends RobolectricTestWithConfig {
                 .build();
 
         // :: Act
-        custom.newCall(new Request.Builder().url(server.url("/")).build()).execute();
+        // The body is not the subject here, but an unclosed response leaks the connection and
+        // okhttp then logs the leak against whichever test happens to be running at the next GC.
+        custom.newCall(new Request.Builder().url(server.url("/")).build()).execute().close();
         RecordedRequest recorded = server.takeRequest();
 
         // :: Verify
         assertThat(recorded.getHeader("X-Custom")).isEqualTo("test");
     }
 
+    // ===== Defaults every caller inherits ========================================================
+
+    /** The three timeouts on the shared client are the ones every xDrip caller starts from. */
     @Test
     public void sharedClient_hasCorrectDefaultTimeouts() {
         // :: Setup & Act

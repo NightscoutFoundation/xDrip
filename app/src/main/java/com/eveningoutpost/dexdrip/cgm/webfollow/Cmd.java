@@ -181,7 +181,7 @@ public class Cmd {
             }
 
             if (json != null) {
-                cb.body(RequestBody.create(JSON, json.toString()));
+                cb.body(RequestBody.create(json.toString(), JSON));
                 cb.contentType(JSON_TYPE);
             }
 

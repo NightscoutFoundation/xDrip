@@ -3,7 +3,7 @@ package com.eveningoutpost.dexdrip.sharemodels;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.models.UserError;
@@ -156,7 +156,7 @@ public class ShareRest {
                                     MediaType contentType = response.body().contentType();
                                     String bodyString = response.body().string();
                                     Log.d(TAG, "Response body: " + bodyString);
-                                    return response.newBuilder().body(ResponseBody.create(contentType, bodyString)).build();
+                                    return response.newBuilder().body(ResponseBody.create(bodyString, contentType)).build();
                                 } else
                                     return response;
 

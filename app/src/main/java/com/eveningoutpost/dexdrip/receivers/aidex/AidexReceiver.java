@@ -9,10 +9,8 @@ import static com.eveningoutpost.dexdrip.xdrip.gs;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.Home;
@@ -36,7 +34,6 @@ public class AidexReceiver extends BroadcastReceiver {
     private static final String AIDEX_RECEIVER = "AidexReceiver";
     private static final boolean debug = true;
     private static final Object lock = new Object();
-    private static SharedPreferences prefs;
     private static final long segmentation_timeslice = (long) (Constants.MINUTE_IN_MS * 4.5);
 
     @Override
@@ -53,10 +50,6 @@ public class AidexReceiver extends BroadcastReceiver {
                     try {
                         UserError.Log.d(TAG, "Aidex onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
-
-                        // check source
-                        if (prefs == null)
-                            prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
                         final Bundle bundle = intent.getExtras();
                         final String action = intent.getAction();
@@ -149,7 +142,7 @@ public class AidexReceiver extends BroadcastReceiver {
         checkIfCorrectSensorIsRunning(sensorId, timeStamp);
 
         UserError.Log.i(TAG, "Aidex Broadcast NewBGEstimate received: bg=" + bgValueMgDl + ", time=" + JoH.dateTimeText(timeStamp));
-        BgReading.bgReadingInsertFromInt(bgValueMgDl, timeStamp, segmentation_timeslice, true);
+        BgReading.bgReadingInsertFromInt( bgValueMgDl, timeStamp, segmentation_timeslice, true, "Aidex");
 
     }
 

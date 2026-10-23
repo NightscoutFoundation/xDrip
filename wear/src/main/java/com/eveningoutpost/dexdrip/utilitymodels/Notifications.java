@@ -103,7 +103,6 @@ public class Notifications extends IntentService {
     public static final int riseAlertNotificationId = 011;
     public static final int failAlertNotificationId = 012;
     public static final int lowPredictAlertNotificationId = 013;
-    public static final int parakeetMissingId = 014;
     public static final int persistentHighAlertNotificationId = 015;
     private static boolean low_notifying = false;
 

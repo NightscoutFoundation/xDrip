@@ -16,6 +16,9 @@ import java.time.Duration;
 
 import lombok.val;
 
+// Required for correctness, not merely convention: without instrumenting JoH,
+// ShadowSystemClock.advanceBy() does not reach JoH.tsl() and the "expired" assertions
+// below fail. Verified 2026-07-26 by removing it — both tests failed.
 @Config(instrumentedPackages = {"com.eveningoutpost.dexdrip.models.JoH"})
 public class PersistTest extends RobolectricTestWithConfig {
 

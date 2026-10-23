@@ -12,7 +12,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 import android.widget.Toast;
 
@@ -44,7 +44,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -89,7 +88,7 @@ public class GcmActivity extends FauxActivity {
     private static final long MAX_ACK_OUTSTANDING_MS = 3600000;
     private static int recursion_depth = 0;
     private static int last_bridge_battery = -1;
-    private static int last_parakeet_battery = -1;
+    private static int last_uploader_battery = -1;
     private static final int MAX_RECURSION = 30;
     private static final int MAX_QUEUE_SIZE = 300;
     private static final int RELIABLE_MAX_PAYLOAD = 1800;
@@ -111,7 +110,6 @@ public class GcmActivity extends FauxActivity {
         if (d) Log.d(TAG, "calibrations size " + sensorCalibrations[0].calibrations.size());
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
 
@@ -142,7 +140,6 @@ public class GcmActivity extends FauxActivity {
 
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
 
@@ -392,12 +389,6 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    static void sendLocation(final String location) {
-        if (JoH.pratelimit("gcm-plu", 180)) {
-            GcmActivity.sendMessage("plu", location);
-        }
-    }
-
     public static void sendSensorBattery(final int battery) {
         if (JoH.pratelimit("gcm-sbu", 3600)) {
             GcmActivity.sendMessage("sbu", Integer.toString(battery));
@@ -413,11 +404,11 @@ public class GcmActivity extends FauxActivity {
         }
     }
 
-    public static void sendParakeetBattery(final int battery) {
-        if (battery != last_parakeet_battery) {
+    public static void sendUploaderBattery(final int battery) {
+        if (battery != last_uploader_battery) {
             if (JoH.pratelimit("gcm-pbu", 1800)) {
                 GcmActivity.sendMessage("pbu", Integer.toString(battery));
-                last_parakeet_battery = battery;
+                last_uploader_battery = battery;
             }
         }
     }
@@ -516,11 +507,14 @@ public class GcmActivity extends FauxActivity {
         return false;
     }
 
-    public static void sendNanoStatusUpdate(final String prefix, final String json) {
+    // returns true when the update was actually queued for sending
+    public static boolean sendNanoStatusUpdate(final String prefix, final String json) {
         if (JoH.pratelimit("gcm-nscu" + prefix, 30)) {
             UserError.Log.d(TAG, "Sending nano status update: " + prefix + " " + json);
             sendMessage("nscu" + prefix, json);
+            return true;
         }
+        return false;
     }
 
     public static void sendMimeoGraphUpdate(final String json) {

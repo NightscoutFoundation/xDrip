@@ -159,7 +159,7 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
         assertThat(body).contains("\"username\":\"testuser\"");
         assertThat(body).contains("\"role\":\"patient\"");
         assertThat(body).contains("\"patientId\":\"patient123\"");
-        assertThat(body).contains("\"appVersion\":\"3.6.0\"");
+        assertThat(body).contains("\"appVersion\":\"3.8.0\"");
         assertThat(request.getPath()).contains(CareLinkClient.API_PATH_DISPLAY_MESSAGE);
         assertThat(result).isNotNull();
     }
@@ -208,6 +208,44 @@ public class CareLinkClientCallerTest extends RobolectricTestWithConfig {
         RecordedRequest request = server.takeRequest();
         assertThat(request.getHeader("User-Agent")).contains("Mozilla/5.0");
         assertThat(request.getHeader("Accept")).contains("application/json");
+    }
+
+    // ===== Marker dates ==============================================================================================
+
+    /** A marker's ISO date-time from CareLink is parsed to the same instant through gson's default Date handling. */
+    @Test
+    public void getLast24Hours_parsesMarkerDateTime() throws Exception {
+        // :: Setup
+        TestableCareLinkClient client = createClient();
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .setBody("{\"markers\":[{\"type\":\"CALIBRATION\",\"dateTime\":\"2026-10-02T10:30:00.000Z\","
+                        + "\"value\":110.0}]}"));
+
+        // :: Act
+        RecentData result = client.getLast24Hours();
+
+        // :: Verify
+        assertThat(result.markers).hasSize(1);
+        assertThat(result.markers.get(0).dateTime.getTime()).isEqualTo(1_790_937_000_000L);
+    }
+
+    /** A user's ISO login date-time from CareLink is parsed to the same instant via gson's default Date handling. */
+    @Test
+    public void getMyUser_parsesLoginDateUTC() throws Exception {
+        // :: Setup
+        TestableCareLinkClient client = createClient();
+        server.enqueue(new MockResponse()
+                .setResponseCode(200)
+                .setHeader("Content-Type", "application/json")
+                .setBody("{\"loginDateUTC\":\"2026-10-02T10:30:00.000Z\",\"role\":\"patient\"}"));
+
+        // :: Act
+        User result = client.getMyUser();
+
+        // :: Verify
+        assertThat(result.loginDateUTC.getTime()).isEqualTo(1_790_937_000_000L);
     }
 
 }

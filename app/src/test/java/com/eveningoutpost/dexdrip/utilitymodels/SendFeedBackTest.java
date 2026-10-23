@@ -1,7 +1,7 @@
 package com.eveningoutpost.dexdrip.utilitymodels;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
-import com.eveningoutpost.dexdrip.cgm.nsfollow.GzipRequestInterceptor;
+import com.eveningoutpost.dexdrip.utils.framework.GzipRequestInterceptor;
 
 import org.junit.After;
 import org.junit.Before;

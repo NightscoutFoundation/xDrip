@@ -106,6 +106,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackages.add("com.microtech.aidexx.diaexport.mmoll"); //for microtech germany version, typo is intentional!
         coOptedPackages.add("com.microtech.aidexx.smart.mmoll"); //for microtech Brazil version
+        coOptedPackages.add("com.microtech.aidexx.grx1.mmoll");
         coOptedPackages.add("com.ottai.seas");
         coOptedPackages.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackages.add("com.sisensing.eco"); //for SiSensing Eco China version
@@ -117,6 +118,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackages.add("com.sinocare.ican.health.ru");
         coOptedPackages.add("com.suswel.ai");
         coOptedPackages.add("com.glucotech.app.android");
+        coOptedPackages.add("com.diabeloop.dblg2");
 
         coOptedPackagesAll.add("com.dexcom.dexcomone");
         coOptedPackagesAll.add("com.dexcom.d1plus");
@@ -130,6 +132,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.microtech.aidexx.equil.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.diaexport.mmoll");
         coOptedPackagesAll.add("com.microtech.aidexx.smart.mmoll"); //for microtech Brazil version
+        coOptedPackagesAll.add("com.microtech.aidexx.grx1.mmoll");
         coOptedPackagesAll.add("com.ottai.seas");
         coOptedPackagesAll.add("com.microtech.aidexx"); //for microtech china version
         coOptedPackagesAll.add("com.sisensing.eco"); //for SiSensing Eco China version
@@ -141,6 +144,7 @@ public class UiBasedCollector extends NotificationListenerService {
         coOptedPackagesAll.add("com.sinocare.ican.health.ru");
         coOptedPackagesAll.add("com.suswel.ai");
         coOptedPackagesAll.add("com.glucotech.app.android");
+        coOptedPackagesAll.add("com.diabeloop.dblg2");
 
         companionAppIoBPackages.add("com.insulet.myblue.pdm");
         companionAppIoBPackages.add("com.medtronic.diabetes.minimedmobile.eu");

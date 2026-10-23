@@ -1,9 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
 import static com.google.common.truth.Truth.assertThat;
-import static org.robolectric.Shadows.shadowOf;
-
-import android.os.Looper;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -16,8 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.mockwebserver.MockResponse;
@@ -54,19 +49,21 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
         BgReading.deleteALL();
     }
 
-    private static void awaitCallbacks() throws InterruptedException {
-        Thread.sleep(300);
-        shadowOf(Looper.getMainLooper()).idle();
-    }
-
-    /** Collects all requests the server received during the test. */
-    private List<String> drainRequestPaths() throws InterruptedException {
-        List<String> paths = new ArrayList<>();
+    /**
+     * Blocks until a request whose path contains {@code needle} arrives, and returns its path.
+     * <p>
+     * Unlike {@link com.eveningoutpost.dexdrip.Await}, this throws when nothing arrives: these
+     * tests assert on the <em>contents</em> of a request, so if it never came there is nothing
+     * to assert against and a named failure is the useful outcome.
+     */
+    private String awaitRequestPathContaining(String needle) throws InterruptedException {
         RecordedRequest r;
-        while ((r = server.takeRequest(500, TimeUnit.MILLISECONDS)) != null) {
-            paths.add(r.getPath());
+        while ((r = server.takeRequest(2, TimeUnit.SECONDS)) != null) {
+            if (r.getPath() != null && r.getPath().contains(needle)) {
+                return r.getPath();
+            }
         }
-        return paths;
+        throw new AssertionError("No request arrived with a path containing: " + needle);
     }
 
     private BgReading insertReading(long timestamp) {
@@ -94,15 +91,9 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
 
         // :: Verify — entries request contains find[date][$gt]=<lastTs>
-        List<String> paths = drainRequestPaths();
-        String entriesPath = paths.stream()
-                .filter(p -> p.contains("entries"))
-                .findFirst()
-                .orElse("");
-        String decoded = URLDecoder.decode(entriesPath, "UTF-8");
+        String decoded = URLDecoder.decode(awaitRequestPathContaining("entries"), "UTF-8");
         assertThat(decoded).contains("find[date][$gt]=" + lastTs);
     }
 
@@ -119,15 +110,9 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
 
         // :: Verify — count param is present alongside date filter
-        List<String> paths = drainRequestPaths();
-        String entriesPath = paths.stream()
-                .filter(p -> p.contains("entries"))
-                .findFirst()
-                .orElse("");
-        assertThat(entriesPath).contains("count=");
+        assertThat(awaitRequestPathContaining("entries")).contains("count=");
     }
 
     // ===== Safety limit is fixed 2880 (24h at 1-min × 2) ====================================
@@ -145,15 +130,9 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
 
         // :: Verify — safety count is exactly 2880 regardless of sample period
-        List<String> paths = drainRequestPaths();
-        String entriesPath = paths.stream()
-                .filter(p -> p.contains("entries"))
-                .findFirst()
-                .orElse("");
-        assertThat(entriesPath).contains("count=2880");
+        assertThat(awaitRequestPathContaining("entries")).contains("count=2880");
     }
 
     // ===== 24-hour time cap on date filter ===================================================
@@ -173,15 +152,9 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
 
         // :: Verify — date filter uses ~now-24h, not the 30h-old reading timestamp
-        List<String> paths = drainRequestPaths();
-        String entriesPath = paths.stream()
-                .filter(p -> p.contains("entries"))
-                .findFirst()
-                .orElse("");
-        String decoded = URLDecoder.decode(entriesPath, "UTF-8");
+        String decoded = URLDecoder.decode(awaitRequestPathContaining("entries"), "UTF-8");
         String afterGt = decoded.substring(decoded.indexOf("find[date][$gt]=") + "find[date][$gt]=".length());
         long actualCutoff = Long.parseLong(afterGt.split("&")[0]);
         assertThat(actualCutoff).isGreaterThan(thirtyHoursAgo);
@@ -202,14 +175,9 @@ public class NightscoutFollowEntriesWorkTest extends RobolectricTestWithConfig {
 
         // :: Act
         NightscoutFollow.work(false);
-        awaitCallbacks();
 
         // :: Verify — entries request has count but no date filter
-        List<String> paths = drainRequestPaths();
-        String entriesPath = paths.stream()
-                .filter(p -> p.contains("entries"))
-                .findFirst()
-                .orElse("");
+        String entriesPath = awaitRequestPathContaining("entries");
         assertThat(entriesPath).contains("count=");
         String decoded = URLDecoder.decode(entriesPath, "UTF-8");
         assertThat(decoded).doesNotContain("find[date][$gt]");

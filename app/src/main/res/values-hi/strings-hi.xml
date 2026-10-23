@@ -24,6 +24,9 @@
     <string name="stop_sensor">सेंसर बंद करें</string>
     <string name="bluetooth_scan">ब्लूटूथ स्कैन</string>
     <!-- trend arrow for speak -->
+    <!-- Nocturne connect flow -->
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>

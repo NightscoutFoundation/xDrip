@@ -1,9 +1,7 @@
 package com.eveningoutpost.dexdrip.cgm.nsfollow;
 
+import static com.eveningoutpost.dexdrip.Await.awaitAtMost;
 import static com.google.common.truth.Truth.assertThat;
-import static org.robolectric.Shadows.shadowOf;
-
-import android.os.Looper;
 
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -59,11 +57,6 @@ public class JugglucoEmulatorContractTest extends RobolectricTestWithConfig {
         BgReading.deleteALL();
     }
 
-    private static void awaitCallbacks() throws InterruptedException {
-        Thread.sleep(400);
-        shadowOf(Looper.getMainLooper()).idle();
-    }
-
     /** A Juggluco-shaped dispatcher: {@code entriesBody} for entries, 400 for devicestatus. */
     private void useJugglucoDispatcher(final String entriesBody) {
         server.setDispatcher(new Dispatcher() {
@@ -99,7 +92,7 @@ public class JugglucoEmulatorContractTest extends RobolectricTestWithConfig {
 
         // :: Act
         NightscoutFollow.work(true);
-        awaitCallbacks();
+        awaitAtMost(() -> !NsServerCapabilities.supportsDeviceStatus(url));
 
         // :: Verify — the follower reached the server (no parse crash), and devicestatus is disabled
         assertThat(server.getRequestCount()).isGreaterThan(0);
@@ -116,7 +109,7 @@ public class JugglucoEmulatorContractTest extends RobolectricTestWithConfig {
 
         // :: Act
         NightscoutFollow.work(true);
-        awaitCallbacks();
+        awaitAtMost(() -> BgReading.getForPreciseTimestamp(ts, 10_000) != null);
 
         // :: Verify — the reading landed in the DB
         assertThat(BgReading.getForPreciseTimestamp(ts, 10_000)).isNotNull();

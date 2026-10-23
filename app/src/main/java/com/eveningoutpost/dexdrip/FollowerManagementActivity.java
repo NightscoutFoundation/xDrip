@@ -1,9 +1,7 @@
 package com.eveningoutpost.dexdrip;
 
 import android.app.Dialog;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
@@ -53,8 +51,6 @@ public class FollowerManagementActivity extends ActivityWithMenu {
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
         populateFollowerList();
         setInviteListener();
     }

@@ -14,12 +14,14 @@ import androidx.core.app.NotificationCompat;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.ui.NumberGraphic;
 import com.eveningoutpost.dexdrip.xdrip;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 import lombok.val;
 
@@ -36,18 +38,10 @@ public class NotificationChannels {
     public static final String TAG = NotificationChannels.class.getSimpleName();
     private static HashMap<String, String> map;
 
-    public static final String LOW_BRIDGE_BATTERY_CHANNEL = "lowBridgeBattery";
-    public static final String LOW_TRANSMITTER_BATTERY_CHANNEL = "lowTransmitterBattery";
-    public static final String NIGHTSCOUT_UPLOADER_CHANNEL = "nightscoutUploaderChannel";
-    public static final String PARAKEET_STATUS_CHANNEL = "parakeetStatusChannel";
-    public static final String REMINDER_CHANNEL = "reminderChannel";
     public static final String BG_ALERT_CHANNEL = "bgAlertChannel";
-    public static final String BG_MISSED_ALERT_CHANNEL = "bgMissedAlertChannel";
-    public static final String BG_RISE_DROP_CHANNEL = "bgRiseDropChannel";
-    public static final String BG_PREDICTED_LOW_CHANNEL = "bgPredictedLowChannel";
-    public static final String BG_PERSISTENT_HIGH_CHANNEL = "bgPersistentHighChannel";
-    public static final String CALIBRATION_CHANNEL = "calibrationChannel";
     public static final String ONGOING_CHANNEL = "ongoingChannel";
+    public static final String GENERAL_CHANNEL = "generalChannel"; // This should be used for all existing notifications that have null for their channel.
+    public static final String OTHER_ALERTS_CHANNEL = "otherAlertsChannel"; // This is the channel for all Other alerts.
 
     // get a localized string for each channel / group name
     public static String getString(String id) {
@@ -60,18 +54,10 @@ public class NotificationChannels {
     private static synchronized void initialize_name_map() {
         if (map != null) return;
         map = new HashMap<>();
-        map.put(LOW_BRIDGE_BATTERY_CHANNEL, xdrip.getAppContext().getString(R.string.low_bridge_battery));
-        map.put(LOW_TRANSMITTER_BATTERY_CHANNEL, xdrip.getAppContext().getString(R.string.transmitter_battery));
-        map.put(NIGHTSCOUT_UPLOADER_CHANNEL, "Nightscout");
-        map.put(PARAKEET_STATUS_CHANNEL, xdrip.getAppContext().getString(R.string.parakeet_related_alerts));
-        map.put(REMINDER_CHANNEL, xdrip.getAppContext().getString(R.string.reminders));
-        map.put(BG_ALERT_CHANNEL, xdrip.getAppContext().getString(R.string.glucose_alerts_settings));
-        map.put(BG_MISSED_ALERT_CHANNEL, xdrip.getAppContext().getString(R.string.missed_reading_alert));
-        map.put(BG_RISE_DROP_CHANNEL, xdrip.getAppContext().getString(R.string.bg_rising_fast));
-        map.put(BG_PREDICTED_LOW_CHANNEL, xdrip.getAppContext().getString(R.string.low_predicted));
-        map.put(BG_PERSISTENT_HIGH_CHANNEL, xdrip.getAppContext().getString(R.string.persistent_high_alert));
-        map.put(CALIBRATION_CHANNEL, xdrip.getAppContext().getString(R.string.calibration_alerts));
-        map.put(ONGOING_CHANNEL, "Ongoing Notification");
+        map.put(BG_ALERT_CHANNEL, xdrip.getAppContext().getString(R.string.glucose_level_notifications));
+        map.put(ONGOING_CHANNEL, xdrip.getAppContext().getString(R.string.ongoing_notification));
+        map.put(GENERAL_CHANNEL, xdrip.getAppContext().getString(R.string.general_notifications));
+        map.put(OTHER_ALERTS_CHANNEL, xdrip.getAppContext().getString(R.string.other_alert_notifications));
     }
 
 
@@ -154,19 +140,12 @@ public class NotificationChannels {
 
     }
 
-    private static boolean addChannelGroup() {
-        // If notifications are grouped, the BG number icon doesn't update
-        if (Pref.getBooleanDefaultFalse("use_number_icon")) {
-            return false;
-        }
-        return Pref.getBooleanDefaultFalse("notification_channels_grouping");
-    }
-
     @TargetApi(26)
     public static NotificationChannel getChan(NotificationCompat.Builder wip) {
 
         final Notification temp = wip.build();
         if (temp.getChannelId() == null) return null;
+        final int importance = NotificationManager.IMPORTANCE_HIGH;
 
         // create generic audio attributes
         final AudioAttributes generic_audio = new AudioAttributes.Builder()
@@ -182,7 +161,6 @@ public class NotificationChannels {
 
 
         // mirror the notification parameters in the channel
-        template.setGroup(temp.getChannelId());
 
         val mNotification = getNotificationFromInsideBuilder(wip);
         if (mNotification != null) {
@@ -197,20 +175,17 @@ public class NotificationChannels {
 
         // get a nice string to identify the hash
         final String mhash = my_text_hash(template);
+        final String channelId = temp.getChannelId();
+        final String baseName = getBaseDisplayName(channelId);
 
         // create another notification channel using the hash because id is immutable
         final NotificationChannel channel = new NotificationChannel(
                 template.getId() + mhash,
-                getString(temp.getChannelId()) + mhash,
-                NotificationManager.IMPORTANCE_DEFAULT);
+                baseName + mhash,
+                importance); // Change from IMPORTANCE_DEFAULT
 
         // mirror the settings from the previous channel
         channel.setSound(template.getSound(), generic_audio);
-        if (addChannelGroup()) {
-            channel.setGroup(template.getGroup());
-        } else {
-            channel.setGroup(channel.getId());
-        }
         channel.setDescription(template.getDescription());
         channel.setVibrationPattern(template.getVibrationPattern());
 
@@ -222,8 +197,6 @@ public class NotificationChannels {
 
         template.setDescription(temp.getChannelId() + " " + wip.hashCode());
 
-        // create a group to hold this channel if one doesn't exist or update text
-        getNotifManager().createNotificationChannelGroup(new NotificationChannelGroup(channel.getGroup(), getString(channel.getGroup())));
         // create this channel if it doesn't exist or update text
         getNotifManager().createNotificationChannel(channel);
         return mNotification != null ? channel : null; // Note we return null to fallback old behavior if we can't get reflected access
@@ -231,60 +204,30 @@ public class NotificationChannels {
 
     @TargetApi(26)
     public static NotificationChannel getChan(Notification.Builder wip) {
+        /*
+        This method should only be used for the ongoing notification.
+        No alert should use this method.
+         */
+        final String id = ONGOING_CHANNEL;
+        final int importance = NotificationManager.IMPORTANCE_LOW;
 
-        final Notification temp = wip.build();
-        if (temp.getChannelId() == null) return null;
-
-        // create generic audio attributes
-        final AudioAttributes generic_audio = new AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
-                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                .build();
-
-        // create notification channel for hashing purposes from the existing notification builder
-        NotificationChannel template = new NotificationChannel(
-                temp.getChannelId(),
-                getString(temp.getChannelId()),
-                NotificationManager.IMPORTANCE_DEFAULT);
-
-
-        // mirror the notification parameters in the channel
-        template.setGroup(temp.getChannelId());
-        template.setVibrationPattern(temp.vibrate);
-        template.setSound(temp.sound, generic_audio);
-        template.setLightColor(temp.ledARGB);
-        if ((temp.ledOnMS != 0) && (temp.ledOffMS != 0))
-            template.enableLights(true); // weird how this doesn't work like vibration pattern
-        template.setDescription(temp.getChannelId() + " " + wip.hashCode());
-
-        // get a nice string to identify the hash
-        final String mhash = my_text_hash(template);
-
-        // create another notification channel using the hash because id is immutable
+        // Simplify: Create the channel directly using the static ID
         final NotificationChannel channel = new NotificationChannel(
-                template.getId() + mhash,
-                getString(temp.getChannelId()) + mhash,
-                NotificationManager.IMPORTANCE_DEFAULT);
+                id,
+                getBaseDisplayName(id),
+                importance);
 
-        // mirror the settings from the previous channel
-        channel.setSound(template.getSound(), generic_audio);
-        if (addChannelGroup()) {
-            channel.setGroup(template.getGroup());
-        } else {
-            channel.setGroup(channel.getId());
-        }
-        channel.setDescription(template.getDescription());
-        channel.setVibrationPattern(template.getVibrationPattern());
-        template.setLightColor(temp.ledARGB);
-        if ((temp.ledOnMS != 0) && (temp.ledOffMS != 0))
-            template.enableLights(true); // weird how this doesn't work like vibration pattern
-        template.setDescription(temp.getChannelId() + " " + wip.hashCode());
+        // Ongoing service should always be silent and not vibrate
+        channel.setSound(null, null);
+        channel.enableVibration(false);
+        channel.setShowBadge(false);
 
-        // create a group to hold this channel if one doesn't exist or update text
-        getNotifManager().createNotificationChannelGroup(new NotificationChannelGroup(channel.getGroup(), getString(channel.getGroup())));
-        // create this channel if it doesn't exist or update text
-        getNotifManager().createNotificationChannel(channel);
-        return  channel;
+        getNotifManager().createNotificationChannel(channel); // This is where we dynamically create the ongoing notification channel.
+        return channel;
+    }
+
+    private static String getBaseDisplayName(String channelId) {
+        return getString(channelId);
     }
 
     static Notification getNotificationFromInsideBuilder(final NotificationCompat.Builder builder) {
@@ -298,6 +241,54 @@ public class NotificationChannels {
                 UserError.Log.wtf(TAG, "Workaround being used for notification channels no longer works - please report");
             }
             return null;
+        }
+    }
+
+    private static void setupChannel(String id, String name, int importance, int lightColor, boolean useVibration, long[] vibratePattern, boolean showBadge) {
+        AudioAttributes attr = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN).build();
+        NotificationChannel chan = new NotificationChannel(id, name, importance);
+        chan.setSound(null, attr);
+        chan.setShowBadge(showBadge);
+        if (lightColor != 0) {
+            chan.enableLights(true);
+            chan.setLightColor(lightColor);
+        }
+        chan.enableVibration(useVibration);
+        if (useVibration && vibratePattern != null) {
+            chan.setVibrationPattern(vibratePattern);
+        }
+        getNotifManager().createNotificationChannel(chan);
+    }
+
+
+    /**
+     * Creates required notification channels and cleans up legacy ones.
+     */
+    public static void setupAllChannels() {
+        // Create the required notification channels that do not need to be created dynamically
+        // The ongoing channel is the only channel that we create dynamically. Otherwise, the ongoing notification will be grouped with the other notifications (alerts)!
+        setupChannel(BG_ALERT_CHANNEL, getString(BG_ALERT_CHANNEL), NotificationManager.IMPORTANCE_HIGH, 0xffff0000, false, null, true);
+        setupChannel(OTHER_ALERTS_CHANNEL, getString(OTHER_ALERTS_CHANNEL), NotificationManager.IMPORTANCE_HIGH, 0xffffbf00, false, null, true);
+        setupChannel(GENERAL_CHANNEL, getString(GENERAL_CHANNEL), NotificationManager.IMPORTANCE_DEFAULT, 0xff00ff00, false, null, true);
+
+        // Delete legacy or zombie channels that are no longer part of our map
+        cleanupOldChannels();
+    }
+
+    private static void cleanupOldChannels() {
+        if (map == null) initialize_name_map();
+
+        final NotificationManager manager = getNotifManager();
+        if (manager == null) return;
+
+        final Set<String> activeIds = map.keySet();
+
+        for (NotificationChannel channel : manager.getNotificationChannels()) {
+            if (!activeIds.contains(channel.getId())) {
+                manager.deleteNotificationChannel(channel.getId());
+            }
         }
     }
 

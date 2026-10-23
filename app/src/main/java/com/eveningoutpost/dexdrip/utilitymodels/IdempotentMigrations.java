@@ -7,7 +7,7 @@ import static com.eveningoutpost.dexdrip.utils.Preferences.MIN_GLUCOSE_INPUT;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.models.APStatus;
@@ -87,7 +87,7 @@ public class IdempotentMigrations {
                 lowMark = lowMark * Constants.MMOLL_TO_MGDL;
             }
             boolean bg_sound_in_silent = prefs.getBoolean("bg_sound_in_silent", true);
-            String bg_notification_sound = prefs.getString("bg_notification_sound", "content://settings/system/notification_sound");
+            String bg_notification_sound = prefs.getString("bg_notification_sound", "default");
 
             int bg_high_snooze = Integer.parseInt(prefs.getString("bg_snooze",  Integer.toString(SnoozeActivity.getDefaultSnooze(true))));
             int bg_low_snooze = Integer.parseInt(prefs.getString("bg_snooze",  Integer.toString(SnoozeActivity.getDefaultSnooze(false))));
@@ -173,6 +173,13 @@ public class IdempotentMigrations {
         Pref.setBoolean("bluetooth_frequent_reset", false);
         Pref.setBoolean("use_transmiter_pl_bluetooth", false);
         Pref.setBoolean("use_rfduino_bluetooth", false);
+        Pref.setBoolean("use_notification_channels", true);
+        Pref.setBoolean("run_service_in_foreground", true);
+        Pref.setBoolean("notification_channels_grouping", false);
+        Pref.setBoolean("use_number_icon_large", false);
+        Pref.setBoolean("number_icon_large_arrow", false);
+        Pref.setBoolean("ongoing_notification_channel", true);
+        Pref.setString("bg_notification_sound", "default"); // We need this along with a detector in the playFile method to handle the default mp3 option with SDK 26.
 
     }
 

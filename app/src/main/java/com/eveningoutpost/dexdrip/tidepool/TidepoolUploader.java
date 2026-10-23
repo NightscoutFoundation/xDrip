@@ -100,7 +100,6 @@ public class TidepoolUploader {
             final OkHttpClient client = OkHttpWrapper.getClient().newBuilder()
                     .addInterceptor(httpLoggingInterceptor)
                     .addInterceptor(new InfoInterceptor(TAG))
-                    //          .addInterceptor(new GzipRequestInterceptor())
                     .build();
 
             retrofit = new retrofit2.Retrofit.Builder()
@@ -239,7 +238,7 @@ public class TidepoolUploader {
                 UserError.Log.d(TAG, "Empty data set - marking as succeeded");
                 doCompleted(session);
             } else {
-                final RequestBody body = RequestBody.create(MediaType.parse("application/json"), chunk);
+                final RequestBody body = RequestBody.create(chunk, MediaType.parse("application/json"));
 
                 final Call<MUploadReply> call = session.service.doUpload(session.token, session.datasetReply.getUploadId(), body);
                 status("Uploading");

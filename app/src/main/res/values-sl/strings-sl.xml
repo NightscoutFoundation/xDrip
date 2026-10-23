@@ -14,6 +14,9 @@
     <!-- pebble settings -->
     <!-- Amazfit Settings -->
     <!-- trend arrow for speak -->
+    <!-- Nocturne connect flow -->
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <!-- Maybe we can use them later?
     <string name="title_clfollow_user">CareLink Username</string>
     <string name="summary_clfollow_user">CareLink login username</string>

@@ -51,7 +51,7 @@ public class InfoInterceptorTest extends RobolectricTestWithConfig {
         server.enqueue(new MockResponse().setResponseCode(201).setBody("ok"));
         final Request request = new Request.Builder()
                 .url(server.url("/v1/data"))
-                .post(RequestBody.create(JSON, "{\"a\":1}"))
+                .post(RequestBody.create("{\"a\":1}", JSON))
                 .build();
 
         // :: Act

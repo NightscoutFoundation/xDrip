@@ -44,6 +44,8 @@ public class BgSparklineBuilder {
     protected boolean useSmallDots = true;
     protected boolean useTinyDots = false;
     protected boolean showFiltered = false;
+    
+    protected boolean noLowLineFill = false;
 
     protected Integer useSpecificDotSize = null;
     protected int backgroundColor = Color.TRANSPARENT;
@@ -76,6 +78,12 @@ public class BgSparklineBuilder {
     public BgSparklineBuilder showLowLine() {
         return showLowLine(true);
     }
+
+    public BgSparklineBuilder noLowLineFill( boolean noFill) {
+        this.noLowLineFill = noFill;
+        return this;
+    }
+    public BgSparklineBuilder noLowLineFill() {return noLowLineFill(false); }
 
     public BgSparklineBuilder showAxes(boolean show) {
         this.showAxes = show;
@@ -204,9 +212,15 @@ public class BgSparklineBuilder {
             if (height <= SCALE_TRIGGER) {
                 Line line = bgGraphBuilder.lowLine();
                 line.setFilled(false);
+                if(noLowLineFill) {line.setAreaTransparency(50); line.setFilled(false);}
                 lines.add(line);
             } else {
-                lines.add(bgGraphBuilder.lowLine());
+                Line line = bgGraphBuilder.lowLine();
+                if(noLowLineFill) {
+                    line.setAreaTransparency(50);
+                    line.setFilled(false);
+                }
+                lines.add(line);
             }
         }
 

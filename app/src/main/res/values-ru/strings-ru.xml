@@ -121,7 +121,6 @@
     <string name="title_activity_display_qrcode">Поделиться настройками через QR-код</string>
     <string name="title_activity_send_feed_back">Отправить отзыв Jamorham-у</string>
     <string name="title_activity_save_logs">Сохранить логи</string>
-    <string name="title_activity_maps">Карта Parakeet</string>
     <string name="title_activity_display_preferences">Настройки отображения</string>
     <string name="export_submenu">Импорт / Экспорт данных</string>
     <string name="action_resend_to_watch">Повторно отправить значения глюкозы на часы</string>
@@ -158,9 +157,6 @@
     <string name="till">до</string>
     <string name="low_predicted">Прогнозируется гипогликемия</string>
     <string name="in">через</string>
-    <string name="yes_enter_setup_mode">Да, войти в режим настройки</string>
-    <string name="nokeep_parakeet_as_it_is">Не держите Parakeet, как есть</string>
-    <string name="are_you_sure_you_want_switch_parakeet_to_setup">Вы уверены, что хотите переключить Parakeet в режим настройки?\n\nОбычно это используется только для отправки дополнительных текстовых сообщений на Parakeet для перенастройки трансмиттера, который он прослушивает, и т.д.</string>
     <string name="split_delete_or_do_nothing">Разделить, удалить или ничего не делать</string>
     <string name="split_this_block_in_two">Разделить блок на 2 части</string>
     <string name="delete_this_time_block">Удалить данный временной блок</string>
@@ -175,8 +171,6 @@
     <string name="in_libre_all_house_mode_no_readings_collected_yet">"В режиме Libre по всему дому: нет полученных значений."</string>
     <string name="in_libre_all_house_mode_last_data_collected">"В режиме Libre по всему дому: Последние значения "</string>
     <string name="space_minute_ago">" мин. назад"</string>
-    <string name="show_parakeet_map">Показать карту Parakeet</string>
-    <string name="switch_parakeet_to_setup_mode">Переключить Parakeet в режим настройки</string>
     <string name="view_events_log">Просмотр журнала событий</string>
     <string name="show_libre_trend">Отображать тренд Libre</string>
     <string name="libre_15_minutes_graph">15-минутный график Libre</string>
@@ -235,7 +229,7 @@
     <string name="extrapolate_data_to_try_to_predict_lows">Экстраполировать данные, чтобы попытаться предсказать низкий</string>
     <string name="alarm_at_forecasted_low_mins">Тревога при предсказанном низком за x минут</string>
     <string name="title_forecast_low_threshold">Порог</string>
-    <string name="other_xdrip_plus_alerts">Другие оповещения xDrip+</string>
+    <string name="other_xdrip_plus_alerts">Другие тревоги xDrip+</string>
     <string name="xdrip_plus_display_settings">Настройки отображения xDrip+</string>
     <string name="display_customisations">Настройки отображения</string>
     <string name="insulin_carb_ratios_etc_for_models">Настройки инсулина, углеводов и т.д. для моделей</string>
@@ -399,8 +393,6 @@
     <string name="web_feedback_form_for_sending_messages">Веб-форма обратной связи для отправки сообщений и оценок xDrip+ разработчикам</string>
     <string name="be_master_for_followers">Мастер-режим для фолловеров</string>
     <string name="this_device_will_send_data_to_followers">Данное устройство будет отправлять данные фолловерам</string>
-    <string name="send_parakeet_map_location_to_followers">Делиться местоположением Parakeet с фолловерами</string>
-    <string name="sync_parakeet_geolocation">Синхронизировать данные геолокации Parakeet</string>
     <string name="disable_all_sync_features">Полностью отключить синхронизацию</string>
     <string name="temporary_work_around_disable_all_sync_detail">Временная заплатка полностью останавливающая синхронизацию. После повторного включения может потребоваться перезагрузка. Используйте с осторожностью!</string>
     <string name="automatic_updates_crash_reports_and_feedback">Автоматическое обновление, отчеты о сбоях и обратная связь с разработчиком</string>
@@ -434,9 +426,6 @@
     <string name="notify_when_predicted_low_time_reaches_threshold">Уведомлять, когда время до предсказанного низкого достигает порога</string>
     <string name="predicted_low_sound">Звук предсказанного низкого</string>
     <string name="choose_sound_used_for_predicted_low_alarm">Выберите звук для тревоги о предсказанном низком.</string>
-    <string name="notify_when_parakeet_device_stops_checking_in">Уведомлять, когда связь с устройством Parakeet потеряна</string>
-    <string name="parakeet_related_alerts">Оповещения Parakeet</string>
-    <string name="raise_parakeet_notification_silently_when_charging">Включать уведомление Parakeet без звука при зарядке</string>
     <string name="silent_alert_when_charging">Беззвучные оповещения во время зарядки</string>
     <string name="alerts_start_out_snoozed_and_must_persist_for_a_while">Показ оповещения с задержкой по времени, определяемой пользователем</string>
     <string name="alarms_silenced_during_telephone_calls">Беззвучные уведомления во время разговора</string>
@@ -518,7 +507,6 @@
     <string name="show_graph_total_average">Отображать общую среднюю на графике</string>
     <string name="show_momentum_working_curve">Отображать кривую инерции глюкозы</string>
     <string name="show_noise_workings">Отображать работу шумоподавления</string>
-    <string name="parakeet_and_extra_features">Parakeet и дополнительные тестовые функции</string>
     <string name="insulin_duration_hours">Длительность действия инсулина (в часах)</string>
     <string name="default_liver_sensitivity_ratio">Коэффициент чувствительности печени по-умолчанию</string>
     <string name="key_is_used_instead_of_google_account">Использовать заданный ключ вместо учетной записи Google</string>
@@ -552,7 +540,6 @@
     <string name="battery">Батарея</string>
     <string name="xbridge_battery">Батарея xBridge</string>
     <string name="limitter_battery">Батарея Libre</string>
-    <string name="parakeet_battery">Батарея Parakeet</string>
     <string name="after_calibration_rewrite_history">После калибровки изменить предшествующие данные на графике, чтобы сгладить его под новое калибровочное значение</string>
     <string name="rewrite_history">Скорректировать исторические данные</string>
     <string name="grid_time_lines_visible">Сделать видимыми линии временной шкалы на графике</string>
@@ -825,7 +812,6 @@
     <string name="display_calculations">Отображать расчетные дозы инсулина/углеводов</string>
     <string name="display_calculations_everytime">Всегда отображать расчетные дозы инсулина/углеводов</string>
     <string name="always_show_bolus_wizard_preview">Всегда отображать \'Bolus Wizard Preview\'</string>
-    <string name="show_test_features">Показывать дополнительные и альфа функции</string>
     <string name="show_reminder_features">Показывать меню напоминаний и функции</string>
     <string name="enable_reminder_features">Включить функцию напоминания</string>
     <string name="display_mathamatical_simulations">Отображать прогнозируемые значения (смоделированные математическим путем), основанные на данных профиля и исторических данных об употребленных углеводах/введенных дозах инсулина</string>
@@ -946,7 +932,6 @@
     <string name="are_you_sure">Вы уверены?</string>
     <string name="g4_share_receiver">G4 Share приемник</string>
     <string name="bluetooth_wixel">Bluetooth Wixel</string>
-    <string name="parakeet_wifi">Parakeet / Wi-Fi</string>
     <string name="other">Другая</string>
     <string name="which_software_is_the_wixel_running">Версия программного обеспечения Wixel?</string>
     <string name="start_source_setup_wizard">Запустить мастер настройки источника данных</string>
@@ -962,7 +947,6 @@
     <string name="use_librealarm">Использовать LibreAlarm как источник данных?</string>
     <string name="noise_blocking">Шумоподавление</string>
     <string name="level_at_which_noisy_data_should_not_be_broadcast">Порог шумных данных при котором значения будут отфильтрованы при передаче так как могут нарушить работу принимающего приложения</string>
-    <string name="low_parakeet_battery">Низкий уровень заряда Parakeet</string>
     <string name="glucose_units_mmol_or_mgdl">Единицы измерения - ммоль/л или мг/дл</string>
     <string name="is_your_typical_glucose_value">Типичный уровень глюкозы для вас: 5,5 (ммоль/л) или 100(мг/дл)? Пожалуйста, выберите ниже</string>
     <string name="settings_updated_to_mmol">Настройки изменены на ммоль/л</string>
@@ -1223,6 +1207,11 @@
     <string name="summary_tidepool_upload_no_treatment">Отправлять только данные ГК, чтобы избежать дубликатов с ручной выгрузкой с помпы</string>
     <string name="title_tidepool_upload_no_treatment">Не отправлять терапию</string>
     <string name="title_tidepool">Tidepool</string>
+    <!-- Nocturne connect flow -->
+    <string name="title_nocturne_upload_treatments">Загружать пользовательские значения</string>
+    <string name="title_nocturne_use_mobile">Использовать мобильные данные</string>
+    <!-- NocturneConnectActivity (deep link receiver) -->
+    <!-- NocturneConnectHelper (device flow UI) -->
     <string name="show_help">Показать справку</string>
     <string name="load_save_settings_on_sdcard">Загрузить/сохранить настройки на SDcard</string>
     <string name="delete_all_bg_readings">Удалить все данные глюкозы</string>
@@ -1585,7 +1574,7 @@
     <string name="running_test_with_number_123">Тест запущен с номером: 123</string>
     <string name="unusual_internal_context_problem__please_report">Необычная внутренняя проблема контекста - пожалуйста, сообщите</string>
     <string name="cannot_start__please_report_context_problem">Невозможно запустить - пожалуйста, сообщите о проблеме контекста</string>
-    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ не совместим с версиями Android ниже 4.2</string>
+    <string name="xdrip_will_not_work_below_android_version_42">xDrip+ не будет работать на Android ниже 4.2</string>
     <string name="xdrip_oop2_not_installed">xDrip+ необходим OOP2 для работы с US Libre2/Libre сенсором.</string>
     <string name="this_app_needs_battery_optimization_whitelisting_or_it_will_not_work_well_please_reset_app_preferences">Для корректной работы приложение необходимо исключить из списка оптимизации энергопотребления. Пожалуйста выполните необходимые настройки</string>
     <string name="setting_disabled_">Настройка отключена :)</string>
