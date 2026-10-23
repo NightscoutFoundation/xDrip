@@ -1007,6 +1007,16 @@ public class BluetoothGlucoseMeter extends Service {
                     final BluetoothDevice btDevice = result.getDevice();
                     scanLeDevice(false); // stop scanning
                     connect(btDevice.getAddress());
+
+                    if (!useOldBluetoothAPI()) {
+                        if ((lastScannedDeviceAddress.equals(btDevice.getAddress())) && (!JoH.ratelimit("bt-scan-repeated-address", 2))) {
+                            if (d)
+                                Log.d(TAG, "Ignoring repeated address: " + btDevice.getAddress());
+                        } else {
+                            lastScannedDeviceAddress = btDevice.getAddress();
+                            sendDeviceUpdate(btDevice);
+                        }
+                    }
                 }
 
                 @Override
@@ -1031,13 +1041,12 @@ public class BluetoothGlucoseMeter extends Service {
     }
 
     private void scanLeDevice(final boolean enable) {
-        final boolean force_old = true;
         statusUpdate(enable ? "Starting Scanning" + "\nMake sure meter is turned on - For pairing hold the meter power button until it flashes blue" : "Stopped Scanning");
         if (enable) {
             JoH.runOnUiThreadDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if ((Build.VERSION.SDK_INT < 21) || (force_old)) {
+                    if (useOldBluetoothAPI()) {
                         mBluetoothAdapter.stopLeScan(mLeScanCallback);
                     } else {
                         mLEScanner.stopScan(mScanCallback);
@@ -1047,7 +1056,7 @@ public class BluetoothGlucoseMeter extends Service {
                     // and stop the service if so
                 }
             }, SCAN_PERIOD);
-            if ((Build.VERSION.SDK_INT < 21) || (force_old)) {
+            if (useOldBluetoothAPI()) {
                 Log.d(TAG, "Starting old scan");
                 mBluetoothAdapter.startLeScan(mLeScanCallback);
             } else {
@@ -1055,16 +1064,25 @@ public class BluetoothGlucoseMeter extends Service {
                 Log.d(TAG, "Starting api21 scan");
             }
         } else {
-            if ((Build.VERSION.SDK_INT < 21) || (force_old)) {
+            if (useOldBluetoothAPI()) {
                 mBluetoothAdapter.stopLeScan(mLeScanCallback);
             } else {
-                mLEScanner.stopScan(mScanCallback);
+                if (mLEScanner != null) {
+                    mLEScanner.stopScan(mScanCallback);
+                }
             }
         }
     }
 
+    private boolean useOldBluetoothAPI() {
+        // Use old on devices before Android 12 (SDK 33).
+        // The API is available since SDK version 21, but might not be reliable on older devices
+        // This value could be decreased after testing on older devices (>21 and <33)
+        return Build.VERSION.SDK_INT < 33;
+    }
+
     private void beginScan() {
-        if (Build.VERSION.SDK_INT >= 21) {
+        if (!useOldBluetoothAPI()) {
             if (d) Log.d(TAG, "Preparing for scan...");
 
             // set up v21 scanner
