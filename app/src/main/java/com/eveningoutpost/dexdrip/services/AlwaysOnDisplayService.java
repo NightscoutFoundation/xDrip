@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
+import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Gravity;
@@ -185,6 +186,19 @@ public class AlwaysOnDisplayService extends AccessibilityService {
         return false;
     }
 
+    private float determineAlpha() {
+        float alpha = 1.0f;
+        float brightness = 0.0f;
+        try {
+            brightness = Settings.System.getInt(getContentResolver(), Settings.System.SCREEN_BRIGHTNESS);
+            if (brightness <= 60) {
+                alpha = 0.4f + (brightness / 100.0f);
+            }
+        } catch (Exception exc) {
+            alpha = 1.0f;
+        }
+        return alpha;
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private synchronized void refreshView() {
@@ -198,7 +212,7 @@ public class AlwaysOnDisplayService extends AccessibilityService {
             frameLayout = new FrameLayout(this);
         }
         aodView = views.apply(this, frameLayout);
-        aodView.setAlpha(0.8f);
+        aodView.setAlpha(determineAlpha());
         aodView.setBackgroundColor(Color.TRANSPARENT);
         if (D) aodView.setBackgroundColor(Color.RED);
 
@@ -267,6 +281,7 @@ public class AlwaysOnDisplayService extends AccessibilityService {
                 UserError.Log.d(TAG, "Couldn't determine max Y so using screen max of: " + screenMaxY);
             }
 
+            aodView.setAlpha(determineAlpha());
             layoutParams.y = bf.findRandomAvailablePositionWithFailSafe(layoutParams.height, screenMaxY);
             windowManager.updateViewLayout(aodView, layoutParams);
         } catch (Exception e) {
