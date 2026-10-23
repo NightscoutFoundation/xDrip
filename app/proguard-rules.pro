@@ -246,8 +246,8 @@
 -dontwarn org.apache.http.impl.client.HttpClientBuilder
 -dontwarn org.apache.http.impl.conn.SystemDefaultRoutePlanner
 
-# Nocturne SDK: gson serializes generated models reflectively; gson 2.8.x ships
-# no R8 rules for @SerializedName, so keep model fields and the invoker classes
+# Nocturne SDK: gson serializes generated models reflectively. gson 2.11+ ships its own R8
+# rules, but these keeps stay as belt-and-braces for xDrip's own models and the invoker classes
 -keep class org.nightscoutfoundation.nocturne.model.** { *; }
 -keep class org.nightscoutfoundation.nocturne.JSON { *; }
 -dontwarn org.openapitools.jackson.nullable.**

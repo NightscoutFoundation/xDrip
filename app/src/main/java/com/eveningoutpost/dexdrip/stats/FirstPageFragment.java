@@ -3,11 +3,11 @@ package com.eveningoutpost.dexdrip.stats;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.databinding.StatsGeneralBinding;
 import com.eveningoutpost.dexdrip.models.UserError;
