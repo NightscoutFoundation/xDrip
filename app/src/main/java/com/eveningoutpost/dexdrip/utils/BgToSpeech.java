@@ -108,7 +108,7 @@ public class BgToSpeech implements NamedSliderProcessor {
     // always speak the value passed
     public static void realSpeakNow(final double value, long timestamp, String delta_name) {
         final String text_to_speak = calculateText(value, Pref.getBooleanDefaultFalse("bg_to_speech_trend") ? delta_name : null);
-        UserError.Log.d(TAG, "Attempting to speak BG reading of: " + text_to_speak);
+        UserError.Log.d(TAG, "Attempting to speak BG reading of: " + value);
 
         SpeechUtil.say(text_to_speak);
     }
@@ -182,7 +182,7 @@ public class BgToSpeech implements NamedSliderProcessor {
         } else {
             text = xdrip.getAppContext().getString(R.string.error);
         }
-        Log.d(TAG, "calculated text: " + text);
+        Log.d(TAG, "calculated text for value " + value + " delta " + delta_name);
         return text;
     }
 

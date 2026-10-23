@@ -48,12 +48,12 @@ public class VersionTracker {
             savePhoneVersions();
             if (numeric) {
                 try {
-                    UserError.Log.ueh(TAG, xdrip.getAppContext().getString(R.string.xdrip_software_changed_format, dateTimeText(Long.parseLong(old)), dateTimeText(Long.parseLong(nu))));
+                    UserError.Log.ueh(TAG, xdrip.gsWithEnglish(R.string.xdrip_software_changed_format, dateTimeText(Long.parseLong(old)), dateTimeText(Long.parseLong(nu))));
                 } catch (Exception e) {
-                    UserError.Log.ueh(TAG, xdrip.getAppContext().getString(R.string.xdrip_software_changed_format, old, nu + " (parse failure)"));
+                    UserError.Log.ueh(TAG, xdrip.gsWithEnglish(R.string.xdrip_software_changed_format, old, nu + " (parse failure)"));
                 }
             } else {
-                UserError.Log.ueh(TAG, xdrip.getAppContext().getString(R.string.xdrip_software_changed_format, old, nu));
+                UserError.Log.ueh(TAG, xdrip.gsWithEnglish(R.string.xdrip_software_changed_format, old, nu));
             }
             return true;
         }

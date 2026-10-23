@@ -963,7 +963,7 @@ public class WatchUpdaterService extends WearableListenerService implements
                         Pref.setBoolean("force_wearG5", false);
                         final String msgDisableWear = getResources().getString(R.string.notify_disable_wearG5_on_missedreadings, bg_wear_missed_minutes);
                         JoH.static_toast_long(msgDisableWear);
-                        Log.e(TAG, "wearIsConnected disable force_wearG5:" + Pref.getBooleanDefaultFalse("force_wearG5") + " msg=" + msgDisableWear);
+                        Log.e(TAG, "wearIsConnected disable force_wearG5:" + Pref.getBooleanDefaultFalse("force_wearG5") + " msg=Disabling Force Wear Collection Service due to " + bg_wear_missed_minutes + " minutes of missed readings on watch!");
                         sendWearLocalToast(msgDisableWear, Toast.LENGTH_LONG);
                     } else if (ACTION_START_COLLECTOR.equals(action)) {//KS
                         Log.d(TAG, "onStartCommand Action=" + ACTION_START_COLLECTOR + " Path=" + START_COLLECTOR_PATH);
