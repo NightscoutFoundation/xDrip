@@ -189,7 +189,7 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
         final String ifModified = "2024-01-01T00:00:00Z";
 
         // :: Act
-        final Response<ResponseBody> response = service.downloadTreatments(API_SECRET, ifModified).execute();
+        final Response<ResponseBody> response = service.downloadTreatments(API_SECRET, ifModified, null, null).execute();
         final RecordedRequest request = server.takeRequest();
 
         // :: Verify
@@ -198,6 +198,24 @@ public class NightscoutServiceIntegrationTest extends RobolectricTestWithConfig 
         assertThat(request.getPath()).isEqualTo("/api/v1/treatments");
         assertThat(request.getHeader("api-secret")).isEqualTo(API_SECRET);
         assertThat(request.getHeader("BROKEN-If-Modified-Since")).isEqualTo(ifModified);
+    }
+
+    @Test
+    public void downloadTreatments_widerWindowAddsRangeAndCount() throws Exception {
+        // :: Setup
+        server.enqueue(new MockResponse().setResponseCode(200).setBody("[]"));
+        final String since = "2024-01-01T00:00:00Z";
+
+        // :: Act
+        final Response<ResponseBody> response = service.downloadTreatments(API_SECRET, null, since, 1000).execute();
+        final RecordedRequest request = server.takeRequest();
+
+        // :: Verify
+        assertThat(response.isSuccessful()).isTrue();
+        assertThat(request.getPath()).startsWith("/api/v1/treatments?");
+        assertThat(request.getPath()).contains("created_at");
+        assertThat(request.getPath()).contains(since);
+        assertThat(request.getPath()).contains("count=1000");
     }
 
     @Test

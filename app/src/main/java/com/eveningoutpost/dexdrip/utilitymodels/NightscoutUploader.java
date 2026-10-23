@@ -150,7 +150,8 @@ public class NightscoutUploader {
 
         @GET("treatments")
             // retrofit2/okhttp3 could do the if-modified-since natively using cache
-        Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("BROKEN-If-Modified-Since") String ifmodified);
+        Call<ResponseBody> downloadTreatments(@Header("api-secret") String secret, @Header("BROKEN-If-Modified-Since") String ifmodified,
+                                              @Query(value = "find[created_at][$gte]", encoded = true) String since, @Query("count") Integer count);
 
         @GET("treatments.json")
         Call<ResponseBody> findTreatmentByUUID(@Header("api-secret") String secret, @Query("find[uuid]") String uuid);
@@ -413,7 +414,10 @@ public class NightscoutUploader {
                         if (last_modified_string.equals(""))
                             last_modified_string = JoH.getRFC822String(0);
                         final long request_start = JoH.tsl();
-                        r = nightscoutService.downloadTreatments(hashedSecret, last_modified_string).execute();
+                        // periodically reaches back further than the newest treatments, see sweepSince()
+                        final String sweep_since = NightscoutTreatments.sweepSince("ns-rest-treatment-sweep");
+                        r = nightscoutService.downloadTreatments(hashedSecret, last_modified_string,
+                                sweep_since, sweep_since != null ? NightscoutTreatments.SWEEP_LIMIT : null).execute();
 
                         if ((r != null) && (r.raw().networkResponse().code() == HttpURLConnection.HTTP_NOT_MODIFIED)) {
                             Log.d(TAG, "Treatments on " + uri.getHost() + ":" + uri.getPort() + " not modified since: " + last_modified_string);
