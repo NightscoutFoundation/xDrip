@@ -53,7 +53,6 @@
                     android:title="@string/send_display_glucose" />
                 <EditTextPreference
                     android:defaultValue="@string/pref_default_api_url"
-                    android:dependency="cloud_storage_api_enable"
                     android:dialogMessage="@string/pref_message_api_url"
                     android:dialogTitle="@string/pref_dialog_api_url"
                     android:inputType="textUri"
@@ -63,11 +62,9 @@
 
                 <PreferenceScreen
                     android:key="download_treatments_screen"
-                    android:title="@string/title_cloud_storage_api_download_enable"
-                    android:dependency="cloud_storage_api_enable">
+                    android:title="@string/title_cloud_storage_api_download_enable">
                     <SwitchPreference
                         android:defaultValue="true"
-                        android:dependency="cloud_storage_api_enable"
                         android:key="cloud_storage_api_download_enable"
                         android:summary="@string/summary_cloud_storage_api_download_enable"
                         android:switchTextOff="@string/short_off_text_for_switches"
