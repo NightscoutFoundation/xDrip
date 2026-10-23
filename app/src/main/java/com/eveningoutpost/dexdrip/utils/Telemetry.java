@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.utils;
 
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.g5model.Ob1G5StateMachine;
