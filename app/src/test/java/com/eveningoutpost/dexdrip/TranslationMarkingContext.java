@@ -2,7 +2,10 @@ package com.eveningoutpost.dexdrip;
 
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.res.Configuration;
 import android.content.res.Resources;
+
+import java.util.Locale;
 
 /**
  * Stands in for the app context so that text read from a string resource can be told apart.
@@ -14,6 +17,10 @@ import android.content.res.Resources;
  * user in another language; text without them would not. Plurals, arrays and everything else go
  * to the real context underneath unmarked, and so does code that held on to a context or a
  * {@code Resources} from before this one was installed.
+ * <p>
+ * The language it stands for is reported as German. A context made from it for another language
+ * marks its text the same way, unless that language is English: then it reads the resources
+ * unmarked, which is how a test sees that the English was asked for and not merely read twice.
  *
  * @author Asbjørn Aarrestad - 2026.10
  */
@@ -28,7 +35,15 @@ public final class TranslationMarkingContext extends ContextWrapper {
     public TranslationMarkingContext(final Context base) {
         super(base);
         final Resources real = base.getResources();
+        final Configuration other = new Configuration(real.getConfiguration());
+        other.setLocale(Locale.GERMAN);
+        // German is only reported: built with it, these Resources would set it on the shared assets
         marking = new Resources(real.getAssets(), real.getDisplayMetrics(), real.getConfiguration()) {
+            @Override
+            public Configuration getConfiguration() {
+                return other;
+            }
+
             @Override
             public String getString(final int id) {
                 return mark(real.getString(id));
@@ -54,5 +69,11 @@ public final class TranslationMarkingContext extends ContextWrapper {
     @Override
     public Resources getResources() {
         return marking;
+    }
+
+    @Override
+    public Context createConfigurationContext(final Configuration config) {
+        final Context context = super.createConfigurationContext(config);
+        return "en".equals(config.getLocales().get(0).getLanguage()) ? context : new TranslationMarkingContext(context);
     }
 }

@@ -27,6 +27,10 @@ import java.util.stream.Stream;
  * toast, a notification, a status line - stays translated. Where both are wanted, the log call
  * gets the English text written out and the resource stays for the user.
  * <p>
+ * The Event Log ({@code ueh}, {@code uel}) is read by both: the user, who is helped by it directly,
+ * and the support group. A line there may be translated as long as the English follows it, which
+ * is what {@code xdrip.gsWithEnglish} gives.
+ * <p>
  * <b>Why this reads the source tree.</b> Under the {@code fast} flavor the unit tests only have
  * English resources (see {@link TranslationPlaceholderTest}), so a log line looks right in every
  * test whether it came from a resource or not. The source is the only place the difference shows.
@@ -69,7 +73,7 @@ public class NoTranslatedStringsInLogsTest {
 
     private static final Pattern NAME = Pattern.compile("\\bname\\s*=\\s*\"(\\w+)\"");
 
-    /** Nothing in {@code app} may log translated text. */
+    /** Nothing in {@code app} may log translated text, unless to the Event Log with the English after it. */
     @Test
     public void noLogCallLogsTranslatedText() {
         // :: Act
@@ -78,7 +82,9 @@ public class NoTranslatedStringsInLogsTest {
         // :: Verify
         assertWithMessage("log calls that log translated text. Logs are read by the support group"
                 + " and must stay English: write the English text in the log call, and keep the"
-                + " translated string for what the user sees.\n%s", report(sweep.findings))
+                + " translated string for what the user sees. In the Event Log (ueh, uel), use"
+                + " xdrip.gsWithEnglish to log the translated text with the English after it.\n%s",
+                report(sweep.findings))
                 .that(sweep.findings)
                 .isEmpty();
     }

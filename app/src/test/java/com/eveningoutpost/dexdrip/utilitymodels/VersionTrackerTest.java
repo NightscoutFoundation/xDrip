@@ -19,9 +19,10 @@ import java.util.stream.Collectors;
 /**
  * Covers the line {@link VersionTracker} writes to the Event Log when the installed version changes.
  * <p>
- * That line is often the first thing the support group looks for in a user's screenshot, so it has
- * to be English whatever language the phone is set to. It used to be formatted from a translatable
- * resource; {@link TranslationMarkingContext} is what lets a test see the difference.
+ * The Event Log is read by two people: the user, in their own language, and whoever helps them
+ * from a screenshot, in English. So the line is the translated text with the English after it, and
+ * just the English when the two are the same. {@link TranslationMarkingContext} marks text read in
+ * the user's language, which is how a test under the English-only {@code fast} flavor sees both.
  * <p>
  * Only the version-name path is exercised. {@code updateDevice()} runs once per process behind a
  * static flag, and the Robolectric sandbox keeps that flag between tests, so a second test here
@@ -49,9 +50,9 @@ public class VersionTrackerTest extends RobolectricTestWithConfig {
         xdrip.setContextAlways(RuntimeEnvironment.application);
     }
 
-    /** A new version name is logged, in English, as the old name and the new one. */
+    /** A new version name is logged as the old name and the new one, translated and in English. */
     @Test
-    public void aChangedVersionNameIsLoggedInEnglish() {
+    public void aChangedVersionNameIsLoggedTranslatedAndInEnglish() {
         // :: Setup
         PersistentStore.setString("PHONE_VERSION_SHORT", "old-version");
 
@@ -59,9 +60,10 @@ public class VersionTrackerTest extends RobolectricTestWithConfig {
         VersionTracker.updateDevice();
 
         // :: Verify
+        final String english = "Software version changed from: old-version to " + BuildConfig.VERSION_NAME;
         assertWithMessage("what VersionTracker logged")
                 .that(messages())
-                .containsExactly("Software version changed from: old-version to " + BuildConfig.VERSION_NAME);
+                .containsExactly(TranslationMarkingContext.mark(english) + " (" + english + ")");
     }
 
     private static List<String> messages() {

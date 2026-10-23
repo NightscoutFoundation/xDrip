@@ -1077,14 +1077,14 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 // This will only happen if user has entered a preference setting value out of range before the listener range limit update has been merged.
                 mySettingString = doMgdl ? max + "" : JoH.qs(max * Constants.MGDL_TO_MMOLL, 1) + "";
                 Pref.setString(pref_key, mySettingString); // Set the preference to max
-                UserError.Log.uel(TAG, pref_key + " was set to a value greater than maximum allowed. It has been changed to maximum."); // Inform the user that xDrip is changing the setting value
+                UserError.Log.uel(TAG, xdrip.gsWithEnglish(R.string.pref_was_greater_than_max, pref_key)); // Inform the user that xDrip is changing the setting value
                 showNotification(pref_key, xdrip.gs(R.string.setting_pref_to_max), null, notificationId, null, false, false, null, null, null, true);
             }
         } else if (mySettingMgdl < min) { // If the preference value is less than min, correct it and notify.
             // This will only happen if user has entered a preference setting value out of range before the listener range limit update has been merged.
             mySettingString = doMgdl ? min + "" : JoH.qs(min * Constants.MGDL_TO_MMOLL, 1) + "";
             Pref.setString(pref_key, mySettingString); // Set the preference to min
-            UserError.Log.uel(TAG, pref_key + " was set to a value less than minimum allowed. It has been changed to minimum."); // Inform the user that xDrip is changing the setting value
+            UserError.Log.uel(TAG, xdrip.gsWithEnglish(R.string.pref_was_less_than_min, pref_key)); // Inform the user that xDrip is changing the setting value
             showNotification(pref_key, xdrip.gs(R.string.setting_pref_to_min), null, notificationId, null, false, false, null, null, null, true);
 
         }

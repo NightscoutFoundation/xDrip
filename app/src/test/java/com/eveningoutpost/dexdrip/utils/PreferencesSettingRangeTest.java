@@ -27,8 +27,8 @@ import java.util.stream.Collectors;
  * Covers what {@link Preferences#applyPrefSettingRange} tells the support group and the user when it
  * pulls an out-of-range glucose setting back into range.
  * <p>
- * Two audiences, two languages. The Event Log line is for whoever helps the user, so it is English
- * whatever the phone's language; the notification is for the user, so it stays translated.
+ * The Event Log line is read by the user and by whoever helps them, so it is the translated text
+ * with the English after it; the notification is for the user alone, so it stays translated.
  * {@link TranslationMarkingContext} marks the strings read through it, which is how a test under
  * the English-only {@code fast} flavor tells the two apart.
  *
@@ -56,9 +56,9 @@ public class PreferencesSettingRangeTest extends RobolectricTestWithConfig {
         xdrip.setContextAlways(RuntimeEnvironment.application);
     }
 
-    /** A value above the maximum is set to the maximum, and the Event Log says so in English. */
+    /** A value above the maximum is set to the maximum, and the Event Log says so translated and in English. */
     @Test
-    public void aValueAboveTheMaximumIsLoggedInEnglish() {
+    public void aValueAboveTheMaximumIsLoggedTranslatedAndInEnglish() {
         // :: Setup
         Pref.setString(KEY, "500");
 
@@ -67,14 +67,16 @@ public class PreferencesSettingRangeTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertWithMessage("setting after the correction").that(Pref.getString(KEY, "")).isEqualTo("400.0");
+        final String english = KEY
+                + " was set to a value greater than maximum allowed. It has been changed to maximum.";
         assertWithMessage("what Preferences logged")
                 .that(messages())
-                .contains(KEY + " was set to a value greater than maximum allowed. It has been changed to maximum.");
+                .contains(TranslationMarkingContext.mark(english) + " (" + english + ")");
     }
 
-    /** A value below the minimum is set to the minimum, and the Event Log says so in English. */
+    /** A value below the minimum is set to the minimum, and the Event Log says so translated and in English. */
     @Test
-    public void aValueBelowTheMinimumIsLoggedInEnglish() {
+    public void aValueBelowTheMinimumIsLoggedTranslatedAndInEnglish() {
         // :: Setup
         Pref.setString(KEY, "10");
 
@@ -83,9 +85,11 @@ public class PreferencesSettingRangeTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertWithMessage("setting after the correction").that(Pref.getString(KEY, "")).isEqualTo("40.0");
+        final String english = KEY
+                + " was set to a value less than minimum allowed. It has been changed to minimum.";
         assertWithMessage("what Preferences logged")
                 .that(messages())
-                .contains(KEY + " was set to a value less than minimum allowed. It has been changed to minimum.");
+                .contains(TranslationMarkingContext.mark(english) + " (" + english + ")");
     }
 
     /** The user is still told in their own language: the notification text comes from a resource. */

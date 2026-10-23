@@ -121,6 +121,82 @@ public class TranslatedLogScannerTest {
                 .isEqualTo("A.java:2  Log.e  Log.e(TAG, xdrip.gs(R.string.a))");
     }
 
+    // =================================================== Event Log ===================================================
+
+    /** The Event Log is read by the user too, so it may log the translated text with the English after it. */
+    @Test
+    public void translatedTextWithItsEnglishIsAllowedInTheEventLog() {
+        // :: Setup
+        final String source = source(
+                "void f() {",
+                "    UserError.Log.ueh(TAG, xdrip.gsWithEnglish(R.string.a, x));",
+                "    UserError.Log.uel(TAG, xdrip.gsWithEnglish(R.string.b));",
+                "}");
+
+        // :: Act
+        final List<TranslatedLogScanner.Finding> findings = TranslatedLogScanner.scan("A.java", source);
+
+        // :: Verify
+        assertWithMessage("findings").that(lines(findings)).isEmpty();
+    }
+
+    /** Every other log is for the support group alone, so the translated half is not allowed there. */
+    @Test
+    public void translatedTextWithItsEnglishIsFoundOutsideTheEventLog() {
+        // :: Setup
+        final String source = source(
+                "void f() {",
+                "    Log.d(TAG, xdrip.gsWithEnglish(R.string.a));",
+                "    UserError.Log.e(TAG, xdrip.gsWithEnglish(R.string.b));",
+                "}");
+
+        // :: Act
+        final List<TranslatedLogScanner.Finding> findings = TranslatedLogScanner.scan("A.java", source);
+
+        // :: Verify
+        assertWithMessage("findings").that(lines(findings))
+                .containsExactly("A.java:2  Log.d", "A.java:3  Log.e")
+                .inOrder();
+    }
+
+    /** The same holds through a variable: the Event Log may log it, another log may not. */
+    @Test
+    public void aVariableWithItsEnglishIsFoundOnlyOutsideTheEventLog() {
+        // :: Setup
+        final String source = source(
+                "void f() {",
+                "    final String text = xdrip.gsWithEnglish(R.string.a);",
+                "    UserError.Log.uel(TAG, text);",
+                "    Log.i(TAG, text);",
+                "}");
+
+        // :: Act
+        final List<TranslatedLogScanner.Finding> findings = TranslatedLogScanner.scan("A.java", source);
+
+        // :: Verify
+        assertWithMessage("findings").that(lines(findings)).containsExactly("A.java:4  Log.i");
+    }
+
+    /** The English must cover all of the translated text: a plain read beside it is still found. */
+    @Test
+    public void aPlainReadBesideTheEnglishIsStillFoundInTheEventLog() {
+        // :: Setup
+        final String source = source(
+                "void f() {",
+                "    UserError.Log.ueh(TAG, xdrip.gsWithEnglish(R.string.a) + xdrip.gs(R.string.b));",
+                "    final String text = xdrip.gsWithEnglish(R.string.a) + xdrip.gs(R.string.b);",
+                "    UserError.Log.uel(TAG, text);",
+                "}");
+
+        // :: Act
+        final List<TranslatedLogScanner.Finding> findings = TranslatedLogScanner.scan("A.java", source);
+
+        // :: Verify
+        assertWithMessage("findings").that(lines(findings))
+                .containsExactly("A.java:2  Log.ueh", "A.java:4  Log.uel")
+                .inOrder();
+    }
+
     // ============================================== Through a variable ===============================================
 
     /** Text put in a local first and logged a few lines later is still the translated text. */

@@ -279,5 +279,20 @@ public class xdrip extends Application {
         return getAppContext().getString(id, (Object[]) args);
     }
 
+    // For the Event Log, read by the user and by whoever helps them: the user's language,
+    // then the English in brackets when the two differ. Meant for rare lines, not hot paths
+    public static String gsWithEnglish(@StringRes final int id, String... args) {
+        final String local = args.length == 0 ? gs(id) : gs(id, args);
+        try {
+            final Configuration config = new Configuration(getAppContext().getResources().getConfiguration());
+            config.setLocale(Locale.ENGLISH);
+            final Context english = getAppContext().createConfigurationContext(config);
+            final String inEnglish = args.length == 0 ? english.getString(id) : english.getString(id, (Object[]) args);
+            return local.equals(inEnglish) ? local : local + " (" + inEnglish + ")";
+        } catch (Exception e) {
+            return local;
+        }
+    }
+
     //}
 }
