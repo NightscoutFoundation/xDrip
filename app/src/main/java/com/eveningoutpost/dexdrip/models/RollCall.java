@@ -58,6 +58,8 @@ public class RollCall {
     @Expose
     int battery = -1;
     @Expose
+    Boolean charging;
+    @Expose
     int bridge_battery = -1;
 
     // not set by instantiation
@@ -105,9 +107,16 @@ public class RollCall {
 
     // populate with values from this device
     public RollCall populate() {
-        this.battery = getBatteryLevel();
+        final Intent batteryIntent = xdrip.getAppContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        this.battery = getBatteryLevel(batteryIntent);
+        this.charging = getChargingState(batteryIntent);
         this.bridge_battery = BridgeBattery.getBestBridgeBattery();
         this.cloud = Pusher.enabled() ? 1 : 0;
+        try {
+            this.ssid = wifiString();
+        } catch (Exception e) {
+            //
+        }
         return this;
     }
 
@@ -128,8 +137,7 @@ public class RollCall {
     }
 
     @SuppressWarnings("ConstantConditions")
-    private static int getBatteryLevel() {
-        final Intent batteryIntent = xdrip.getAppContext().registerReceiver(null, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+    private static int getBatteryLevel(final Intent batteryIntent) {
         try {
             final int level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             final int scale = batteryIntent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
@@ -142,6 +150,22 @@ public class RollCall {
         }
     }
 
+    @SuppressWarnings("ConstantConditions")
+    private static Boolean getChargingState(final Intent batteryIntent) {
+        try {
+            final int status = batteryIntent.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            if (status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL) {
+                return true;
+            }
+            if (status == BatteryManager.BATTERY_STATUS_DISCHARGING || status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
+                return false;
+            }
+            return null; // unknown (e.g. status unavailable)
+        } catch (NullPointerException e) {
+            return null;
+        }
+    }
+
 
     private String getRemoteIpStatus() {
         if (mhint != null) {
@@ -150,8 +174,8 @@ public class RollCall {
         return "";
     }
 
-    private String getRemoteWifiIndicate(final String our_wifi_ssid) {
-        if (emptyString(our_wifi_ssid)) return "";
+    private String getRemoteWifiIndicate(String our_wifi_ssid) {
+        if (our_wifi_ssid == null) our_wifi_ssid = "";
         if (emptyString(ssid)) return "";
         if (!our_wifi_ssid.equals(ssid)) return "\n" + ssid;
         return "";
@@ -175,7 +199,10 @@ public class RollCall {
         if ((device_name != null) && (device_name.length() > 2)) {
             return device_name;
         }
-        return (!device_manufactuer.equals("unknown") ? device_manufactuer + " " : "") + device_model;
+        final String manufacturer = (device_manufactuer != null) ? device_manufactuer : "";
+        final String model = (device_model != null) ? device_model : "";
+        final String result = (manufacturer.equals("unknown") ? "" : manufacturer + " ") + model;
+        return (!result.isEmpty()) ? result : "Unknown device";
     }
 
     public static RollCall fromJson(String json) {
@@ -205,6 +232,36 @@ public class RollCall {
         if (item == null) return;
         if ((item.android_version == null) || (item.android_version.length() == 0)) return;
         if (indexed == null) loadIndex();
+
+        if (Home.get_engineering_mode()) {
+            final RollCall prev = indexed.get(item.getHash());
+            if (prev != null && item.batteryValid() && prev.batteryValid()) {
+                if (Math.abs(item.battery - prev.battery) >= 5) {
+                    UserError.Log.uel(TAG, item.bestName() + " battery: " + prev.battery + "% -> " + item.battery + "%");
+                }
+            } else if (item.batteryValid()) {
+                UserError.Log.uel(TAG, item.bestName() + " battery: " + item.battery + "%");
+            }
+
+            final boolean prevCharging = Boolean.TRUE.equals(prev != null ? prev.charging : null);
+            final boolean nowCharging = Boolean.TRUE.equals(item.charging);
+            if (item.charging != null && prev != null && prev.charging != null) {
+                if (!prevCharging && nowCharging) {
+                    UserError.Log.uel(TAG, item.bestName() + " charging started");
+                } else if (prevCharging && !nowCharging) {
+                    UserError.Log.uel(TAG, item.bestName() + " charging stopped");
+                }
+            }
+
+            final String prevSsid = prev != null ? prev.ssid : null;
+            final String nowSsid = item.ssid;
+            if (prevSsid != null && nowSsid != null && !prevSsid.equals(nowSsid)) {
+                UserError.Log.uel(TAG, item.bestName() + " wifi changed: \"" + prevSsid + "\" -> \"" + nowSsid + "\"");
+            } else if (nowSsid != null && (prevSsid == null)) {
+                UserError.Log.uel(TAG, item.bestName() + " wifi: \"" + nowSsid + "\"");
+            }
+        }
+
         indexed.put(item.getHash(), item);
         item.last_seen = JoH.tsl();
         saveIndex();
@@ -291,12 +348,12 @@ public class RollCall {
         // TODO sort data
         final boolean engineering = Home.get_engineering_mode();
         final boolean desert_sync = DesertSync.isEnabled();
-        final String our_wifi_ssid = desert_sync ? wifiString() : "";
+        final String our_wifi_ssid = (desert_sync || engineering) ? wifiString() : "";
         final List<StatusItem> lf = new ArrayList<>();
         for (Map.Entry entry : indexed.entrySet()) {
             final RollCall rc = (RollCall) entry.getValue();
             // TODO refactor with stringbuilder
-            lf.add(new StatusItem(rc.role + (desert_sync ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (rc.batteryValid() ? ("\n" + rc.battery + "%") : "") + (engineering && rc.bridgeBatteryValid() ? (" " + rc.bridge_battery+"%") : "")));
+            lf.add(new StatusItem(rc.role + ((desert_sync || engineering) ? rc.getRemoteWifiIndicate(our_wifi_ssid) : "") + (engineering ? ("\n" + JoH.niceTimeSince(rc.last_seen) + " ago") : ""), rc.bestName() + (desert_sync ? rc.getRemoteIpStatus() : "") + (rc.batteryValid() ? ("\n" + rc.battery + "%" + (Boolean.TRUE.equals(rc.charging) ? " \u26A1" : "")) : "") + (engineering && rc.bridgeBatteryValid() ? (" " + rc.bridge_battery+"%") : "")));
         }
 
         Collections.sort(lf, new Comparator<StatusItem>() {

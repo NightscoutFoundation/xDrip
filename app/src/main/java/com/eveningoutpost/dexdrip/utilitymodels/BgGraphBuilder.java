@@ -2363,8 +2363,8 @@ public class BgGraphBuilder {
     public static String unitizedDeltaString(boolean showUnit, boolean highGranularity, boolean is_follower, boolean doMgdl) {
 
         List<BgReading> last2 = BgReading.latest(2, is_follower);
-        if (last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000) {
-            // don't show delta if there are not enough values or the values are more than 20 mintes apart
+        if (last2 == null || last2.size() < 2 || last2.get(0).timestamp - last2.get(1).timestamp > 20 * 60 * 1000) {
+            // don't show delta if there are not enough values or the values are more than 20 minutes apart
             return "???";
         }
 

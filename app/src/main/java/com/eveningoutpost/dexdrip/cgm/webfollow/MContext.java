@@ -125,7 +125,7 @@ public class MContext implements Exposed {
         if (ltime > 1623075881000L && lvalue != null && lvalue > 35d && ltime <= JoH.tsl()) {
             if (BgReading.getForPreciseTimestamp(ltime, DexCollectionType.getCurrentDeduplicationPeriod(), false) == null) {
                 log("Inserting new value: " + lvalue + " " + JoH.dateTimeText(ltime));
-                BgReading.bgReadingInsertFromG5(lvalue, ltime);
+                BgReading.bgReadingInsertFromWebFollow(lvalue, ltime);
             }
         } else {
             if (lvalue != null) {

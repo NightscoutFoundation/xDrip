@@ -48,7 +48,7 @@ public class AlertList extends ActivityWithMenu {
     final int EDIT_ALERT = 2;
     SharedPreferences prefs;
     Animation anim;
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = AlertList.class.getSimpleName();
 
     String stringTimeFromAlert(AlertType alert) {
         if (alert.all_day) {
