@@ -2013,6 +2013,7 @@
     <string name="alert_warning">警告！</string>
     <string name="no_active_low_alert_warning">目前沒有低血糖警報啟用。您將不會收到低血糖通知—請新增或啟用一個。</string>
     <string name="volume_profile_set_to_silent">音量設定檔已設為靜音！</string>
+    <string name="volume_profile_will_be_muted">「%1$s」和「%2$s」會忽略「%3$s」且不發出聲音。確定要繼續嗎？</string>
     <string name="volume_profile_set_to_ascending_with_delay">漸增音量設定檔 + 延遲漸增表示會以靜音開始</string>
     <string name="start_snoozed_enabled">以延遲開始的設定表示警報通常會以靜音開始</string>
     <string name="pre_snooze">預先延遲</string>
