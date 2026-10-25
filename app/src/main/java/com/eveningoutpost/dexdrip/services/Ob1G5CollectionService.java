@@ -1689,8 +1689,19 @@ public class Ob1G5CollectionService extends G5BaseService {
                 return;
             }
         }
-        UserError.Log.e(TAG, "Could not locate CGM service during discovery");
+        UserError.Log.e(TAG, "Could not locate CGM service during discovery (" + services.getBluetoothGattServices().size() + " services)");
         incrementErrors();
+        // On some phones (seen on a OnePlus with Android 16) the first discovery on a new link returns no
+        // services, while reconnecting before the stack drops the idle link (about a second) finds them.
+        // Limit this workaround to G7; at most one reconnect per minute. The requested delay is 200 ms,
+        // but RxAndroidBle queues disconnect/close before opening the new GATT, so actual timing can vary.
+        if (shortTxId() && JoH.ratelimit("ob1-missing-service-reconnect", 60)) {
+            UserError.Log.e(TAG, "Reconnecting once after missing CGM service");
+            stopDiscover();
+            stopConnect();
+            JoH.clearRatelimit("g5-to-discover");
+            changeState(CONNECT_NOW, 200);
+        }
     }
 
     private void onDiscoverFailed(Throwable throwable) {
