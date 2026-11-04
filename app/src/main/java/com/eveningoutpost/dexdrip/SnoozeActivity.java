@@ -185,14 +185,13 @@ public class SnoozeActivity extends ActivityWithMenu {
         if (Home.get_holo()) { setTheme(R.style.OldAppThemeNoTitleBar); }
     }
 
-    // overridden by the overlay and lock-screen variants so that closing the snooze screen
-    // restores the previous app or the lock screen instead of opening Home
+    // overridden by the overlay variant so that closing the snooze screen restores the
+    // previous app instead of opening Home
     protected boolean openHomeAfterSnooze() {
         return true;
     }
 
-    // the overlay and lock-screen variants disable the navigation drawer; the alarm pop-ups
-    // are modal and on the lock screen the menu must not open without unlocking
+    // the overlay variant disables the navigation drawer; the alarm pop-up is modal
     protected void lockNavigationDrawer() {
         try {
             ((DrawerLayout) findViewById(R.id.drawer_layout)).setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
@@ -202,40 +201,57 @@ public class SnoozeActivity extends ActivityWithMenu {
     }
 
     /**
-     * The pop-up variants (openHomeAfterSnooze() == false) must never stay up for an alert
-     * that has already been handled elsewhere (notification, watch, remote, automation,
-     * glucose recovery). Instead of hooking into AlertPlayer, the screen checks the alert
-     * state itself once a second while it is in the foreground and closes when the alert
-     * is no longer alerting. The alert sound has already stopped by then, so the delay of
-     * at most a second is harmless.
+     * The screens that come up by themselves when an alert fires (the overlay snooze screen
+     * and the lock-screen alert screen) must never stay up for an alert that has already
+     * been handled elsewhere (notification, watch, remote, automation, glucose recovery).
+     * Instead of hooking into AlertPlayer, the screen checks the alert state itself once a
+     * second while it is in the foreground and runs the given action (normally finish())
+     * when the alert is no longer alerting. The alert sound has already stopped by then, so
+     * the delay of at most a second is harmless.
      */
-    private static final long ALERT_WATCH_INTERVAL_MS = 1000;
-    private final Handler alertWatchHandler = new Handler(Looper.getMainLooper());
-    private final Runnable alertWatch = new Runnable() {
-        @Override
-        public void run() {
-            if (isFinishing()) return;
-            if (!ActiveBgAlert.currentlyAlerting()) {
-                resetVolumeKeyConfirmation();
-                finish();
-                return;
+    public static class AlertEndWatcher {
+        private static final long INTERVAL_MS = 1000;
+        private final Handler handler = new Handler(Looper.getMainLooper());
+        private final Runnable onEnded;
+        private final Runnable check = new Runnable() {
+            @Override
+            public void run() {
+                if (!ActiveBgAlert.currentlyAlerting()) {
+                    resetVolumeKeyConfirmation();
+                    onEnded.run();
+                    return;
+                }
+                handler.postDelayed(this, INTERVAL_MS);
             }
-            alertWatchHandler.postDelayed(this, ALERT_WATCH_INTERVAL_MS);
+        };
+
+        public AlertEndWatcher(final Runnable onEnded) {
+            this.onEnded = onEnded;
         }
-    };
+
+        public void start() {
+            handler.removeCallbacks(check);
+            handler.postDelayed(check, INTERVAL_MS);
+        }
+
+        public void stop() {
+            handler.removeCallbacks(check);
+        }
+    }
+
+    private final AlertEndWatcher alertEndWatcher = new AlertEndWatcher(() -> {
+        if (!isFinishing()) finish();
+    });
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (!openHomeAfterSnooze()) {
-            alertWatchHandler.removeCallbacks(alertWatch);
-            alertWatchHandler.postDelayed(alertWatch, ALERT_WATCH_INTERVAL_MS);
-        }
+        if (!openHomeAfterSnooze()) alertEndWatcher.start();
     }
 
     @Override
     protected void onPause() {
-        alertWatchHandler.removeCallbacks(alertWatch);
+        alertEndWatcher.stop();
         super.onPause();
     }
 
@@ -266,6 +282,14 @@ public class SnoozeActivity extends ActivityWithMenu {
      * AlertPlayer.Snooze(ctx, -1), the same call OpportunisticSnooze() wraps.
      */
     public static boolean volumeKeySnooze(final KeyEvent event) {
+        return volumeKeySnooze(event, false);
+    }
+
+    /**
+     * @param quiet suppress the confirmation and snoozing toasts; the lock-screen alert
+     *              screen shows no text about snoozing at all
+     */
+    public static boolean volumeKeySnooze(final KeyEvent event, final boolean quiet) {
         switch (event.getKeyCode()) {
             case KeyEvent.KEYCODE_VOLUME_DOWN:
             case KeyEvent.KEYCODE_VOLUME_UP:
@@ -284,7 +308,7 @@ public class SnoozeActivity extends ActivityWithMenu {
                     pendingVolumeKeyUuid = null;
                     cancelVolumeKeyConfirmToast();
                     AlertPlayer.getPlayer().Snooze(xdrip.getAppContext(), -1);
-                    JoH.static_toast_long(gs(R.string.snoozing_due_button_press));
+                    if (!quiet) JoH.static_toast_long(gs(R.string.snoozing_due_button_press));
                     Log.ueh(TAG, "Snoozing alert due to double volume button press");
                     return true;
                 }
@@ -292,7 +316,7 @@ public class SnoozeActivity extends ActivityWithMenu {
                 pendingVolumeKeyCode = event.getKeyCode();
                 pendingVolumeKeyUuid = aba.alert_uuid;
                 pendingVolumeKeySince = now;
-                showVolumeKeyConfirmToast("Press the same volume button again to snooze the alert"); // literal pending the follow-up strings PR
+                if (!quiet) showVolumeKeyConfirmToast("Press the same volume button again to snooze the alert"); // literal pending the follow-up strings PR
                 break;
         }
         return false;
@@ -340,8 +364,8 @@ public class SnoozeActivity extends ActivityWithMenu {
         }
     }
 
-    // volume keys snooze the active alert on the snooze screens too; the overlay and
-    // lock-screen variants then close themselves so the previous app or lock screen is restored
+    // volume keys snooze the active alert on the snooze screens too; the overlay variant
+    // then closes itself so the previous app is restored
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         // decide before the snooze handler flips the alerting state, so the snoozing press
@@ -398,7 +422,7 @@ public class SnoozeActivity extends ActivityWithMenu {
             public void onClick(View v) {
                 int intValue = getTimeFromSnoozeValue(snoozeValue.getValue());
                 AlertPlayer.getPlayer().Snooze(getApplicationContext(), intValue);
-                if (openHomeAfterSnooze()) { // the pop-up variants skip this so the previous app or lock screen is restored
+                if (openHomeAfterSnooze()) { // the overlay variant skips this so the previous app is restored
                     Intent intent = new Intent(getApplicationContext(), Home.class);
                     if (ActiveBgAlert.getOnly() != null) {
                         startActivity(intent);

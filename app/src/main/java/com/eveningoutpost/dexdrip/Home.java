@@ -694,7 +694,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
                 overlayPermissionDialog = new AlertDialog.Builder(new ContextThemeWrapper(this, R.style.AppTheme))
                         .setTitle(gs(R.string.please_allow_permission))
                         // literal pending the follow-up strings PR
-                        .setMessage("The snooze screen over other apps and the lock screen is enabled, but the Android permission 'Display over other apps' is not granted. Tap Allow to grant it on the next screen, or Keep off to disable the snooze screen over other apps (you can turn it on again under Alarms and Alerts).")
+                        .setMessage("The snooze screen over other apps and the alert screen on the lock screen are enabled, but the Android permission 'Display over other apps' is not granted. Tap Allow to grant it on the next screen, or Keep off to disable the snooze screen over other apps (you can turn it on again under Alarms and Alerts).")
                         .setNegativeButton("Keep off", (dialog, which) -> {
                             Pref.setBoolean(SnoozeOverlayActivity.PREF_SNOOZE_OVER_OTHER_APPS, false);
                             JoH.static_toast_long("Snooze screen over other apps turned off");

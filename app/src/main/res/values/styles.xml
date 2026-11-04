@@ -55,6 +55,12 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">true</item>
     </style>
+
+    <!-- information-free alert screen shown above the lock screen: no action bar, no title -->
+    <style name="AlertLockScreenTheme" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@drawable/holo_background</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
     <style name="KeypadButton">
         <item name="android:layout_margin">5dp</item>
         <item name="android:background">#666666</item>

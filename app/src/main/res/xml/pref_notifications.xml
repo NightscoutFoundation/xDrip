@@ -68,7 +68,7 @@
                 <CheckBoxPreference
                     android:defaultValue="true"
                     android:key="buttons_silence_alert"
-                    android:summary="Press the same volume button twice within 1.5 seconds to snooze. Works wherever the snooze screen appears; for a dark or locked screen also enable Wake Screen or 'Override silent mode'"
+                    android:summary="Press the same volume button twice within 1.5 seconds to snooze. Works on the main screen, on the snooze screens and on the alert screen that comes up on a locked phone; for that screen also enable Wake Screen or the alert's 'Override silent mode'"
                     android:title="@string/buttons_silence_alarms" />
 
                 <CheckBoxPreference

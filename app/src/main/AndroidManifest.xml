@@ -452,17 +452,19 @@
             android:launchMode="singleInstance"
             android:taskAffinity=""
             android:theme="@style/SnoozeOverlayTheme" />
-        <!-- full-screen snooze screen shown above the lock screen (without unlocking)
-             when an alert fires while the screen is off or the device is locked; own task so
-             that finishing it simply reveals the lock screen again -->
+        <!-- information-free alert screen shown above the lock screen (without unlocking)
+             when an alert fires while the screen is off or the device is locked: alert name
+             and xDrip icon only, snoozing via the volume buttons; own task so that finishing
+             it simply reveals the lock screen again -->
         <activity
             android:name=".SnoozeLockScreenActivity"
             android:configChanges="orientation|screenSize"
             android:excludeFromRecents="true"
             android:exported="false"
-            android:label="@string/snooze"
+            android:label="@string/app_name"
             android:launchMode="singleInstance"
-            android:taskAffinity="" />
+            android:taskAffinity=""
+            android:theme="@style/AlertLockScreenTheme" />
         <activity
             android:name=".FakeNumbers"
             android:label="@string/title_activity_fake_numbers" />
