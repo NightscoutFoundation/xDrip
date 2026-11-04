@@ -8,11 +8,12 @@ import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
 import com.activeandroid.util.SQLiteUtils;
-import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,7 +124,7 @@ public class StepCounter extends Model {
 
     public static int getDailyTotal() {
         int accumulator = 0;
-        val list = latestForGraph(5000, JoH.tsl() - Constants.DAY_IN_MS, JoH.tsl()); // TODO since midnight vs 24 hours?
+        val list = latestForGraph(5000, startOfToday(), JoH.tsl());
         for (val item : list) {
             if (item.isAbsolute()) {
                 accumulator += item.metric;
@@ -139,6 +140,11 @@ public class StepCounter extends Model {
         } else {
             return accumulator; // total from absolutes
         }
+    }
+
+    // Local midnight, so that the daily total matches the day shown by the step sources.
+    static long startOfToday() {
+        return LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
 
     public static List<StepCounter> latestForGraph(int number, double startTime) {
