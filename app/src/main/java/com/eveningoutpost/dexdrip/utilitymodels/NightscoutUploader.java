@@ -925,7 +925,8 @@ public class NightscoutUploader {
         if (apiSecret != null) {
             final String STORE_COUNTER = "nightscout-rest-heartrate-synced-time";
             final long syncedTillTime = Math.max(PersistentStore.getLong(STORE_COUNTER), JoH.tsl() - Constants.DAY_IN_MS * 7);
-            final List<HeartRate> readings = HeartRate.latestForGraph((MAX_ACTIVITY_RECORDS / Math.min(1, Math.max(activityErrorCount, MAX_ACTIVITY_RECORDS / 10))), syncedTillTime);
+            // The stored time is that of the newest record already uploaded, so start just after it.
+            final List<HeartRate> readings = HeartRate.latestForGraph((MAX_ACTIVITY_RECORDS / Math.min(1, Math.max(activityErrorCount, MAX_ACTIVITY_RECORDS / 10))), syncedTillTime + 1);
             final JSONArray data = new JSONArray();
             //final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             //format.setTimeZone(TimeZone.getDefault());
@@ -974,7 +975,8 @@ public class NightscoutUploader {
         final String STORE_COUNTER = "nightscout-rest-steps-synced-time";
         if (apiSecret != null) {
             final long syncedTillTime = Math.max(PersistentStore.getLong(STORE_COUNTER), JoH.tsl() - Constants.DAY_IN_MS * 7);
-            final List<StepCounter> readings = StepCounter.latestForGraph((MAX_ACTIVITY_RECORDS / Math.min(1, Math.max(activityErrorCount, MAX_ACTIVITY_RECORDS / 10))), syncedTillTime);
+            // The stored time is that of the newest record already uploaded, so start just after it.
+            final List<StepCounter> readings = StepCounter.latestForGraph((MAX_ACTIVITY_RECORDS / Math.min(1, Math.max(activityErrorCount, MAX_ACTIVITY_RECORDS / 10))), syncedTillTime + 1);
             final JSONArray data = new JSONArray();
             //final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             //format.setTimeZone(TimeZone.getDefault());
@@ -1019,7 +1021,8 @@ public class NightscoutUploader {
         final String STORE_COUNTER = "nightscout-rest-motion-synced-time";
         if (apiSecret != null) {
             final long syncedTillTime = Math.max(PersistentStore.getLong(STORE_COUNTER), JoH.tsl() - Constants.DAY_IN_MS * 7);
-            final ArrayList<ActivityRecognizedService.motionData> readings = ActivityRecognizedService.getForGraph(syncedTillTime, JoH.tsl());
+            // The stored time is that of the newest record already uploaded, so start just after it.
+            final ArrayList<ActivityRecognizedService.motionData> readings = ActivityRecognizedService.getForGraph(syncedTillTime + 1, JoH.tsl());
             int counter = 0;
 
             final JSONArray data = new JSONArray();
