@@ -5,6 +5,7 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HEALTH_CONNECT_
 import static kotlin.jvm.internal.Reflection.createKotlinClass;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -72,6 +73,7 @@ import lombok.val;
 public class HealthGamut {
 
     private static final String TAG = HealthGamut.class.getSimpleName();
+    private static final String HEALTH_CONNECT_PROVIDER = "com.google.android.apps.healthdata";
 
     private static final String[] fullPermissionList = {
             HealthPermission.getReadPermission(createKotlinClass(ExerciseSessionRecord.class)),
@@ -208,25 +210,45 @@ public class HealthGamut {
 
     public void openPermissionManager() {
         JoH.runOnUiThread(() -> {
-            try {
-                if (context instanceof Activity) {
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        val intent =
-                                new Intent("android.health.connect.action.MANAGE_HEALTH_PERMISSIONS")
-                                        .putExtra(Intent.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
-                        ((Activity) context).startActivity(intent);
-                    } else {
-                        val intent = new Intent("androidx.health.ACTION_HEALTH_CONNECT_SETTINGS");
-                        ((Activity) context).startActivity(intent);
-                    }
-
-                } else {
-                    JoH.static_toast_long(xdrip.gs(R.string.google_health_connect_needs_perms));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Cannot start permissions request: " + e);
+            if (!(context instanceof Activity)) {
+                JoH.static_toast_long(xdrip.gs(R.string.google_health_connect_needs_perms));
+                return;
             }
+            val activity = (Activity) context;
+
+            // The permission screen for this app. Android 15 and later only let apps holding
+            // GRANT_RUNTIME_PERMISSIONS open it (tested on API 35/36 emulators), so fall back below.
+            if (Build.VERSION.SDK_INT >= 34
+                    && tryStartActivity(activity, new Intent("android.health.connect.action.MANAGE_HEALTH_PERMISSIONS")
+                    .putExtra(Intent.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID))) {
+                return;
+            }
+
+            // Otherwise open Health Connect itself. Below Android 14 the settings screen comes
+            // first, as before; from Android 14 on the "manage data" screen is the public entry.
+            val settings = new Intent(HealthConnectClient.getHealthConnectSettingsAction());
+            val manageData = HealthConnectClient.getHealthConnectManageDataIntent(activity, HEALTH_CONNECT_PROVIDER);
+            val first = Build.VERSION.SDK_INT >= 34 ? manageData : settings;
+            val second = Build.VERSION.SDK_INT >= 34 ? settings : manageData;
+            if (tryStartActivity(activity, first) || tryStartActivity(activity, second)) {
+                JoH.static_toast_long(xdrip.gs(R.string.health_connect_open_app_permissions_hint));
+                return;
+            }
+
+            Log.e(TAG, "Cannot open Health Connect to manage permissions");
+            JoH.static_toast_long(xdrip.gs(R.string.health_connect_cannot_open_settings));
         });
+    }
+
+    private static boolean tryStartActivity(final Activity activity, final Intent intent) {
+        try {
+            activity.startActivity(intent);
+            return true;
+        } catch (SecurityException | ActivityNotFoundException e) {
+            // Expected for the permission screen on Android 15+; only the final failure is an error.
+            Log.d(TAG, "Cannot open " + intent.getAction() + ": " + e);
+            return false;
+        }
     }
 
     public static HealthGamut init(Activity activity) {
