@@ -12,7 +12,6 @@ buildscript {
 apply plugin: 'com.android.application'
 //apply from: 'token-replace.gradle'
 apply from: '../common.gradle'
-apply plugin: 'kotlin-android'
 
 if (project.file('local.gradle').exists()) {
     apply from: 'local.gradle'
@@ -51,7 +50,7 @@ android {
                 // changes to databinding libraries can apparently result in nasty bugs on some handsets
                 // the following checks that databinding dependencies are not changed from the tested configuration
                 // 2.3.0 and 1.3.1 are from me.tatarka.bindingcollectionadapter2
-                if (!["3.1.4", "2.3.0", "1.3.1", "3.4.3", "3.6.4", "7.4.2", "8.13.1", "8.13.2"].contains(details.target.version)) {
+                if (!["3.1.4", "2.3.0", "1.3.1", "3.4.3", "3.6.4", "7.4.2", "8.13.1", "8.13.2", "9.4.1"].contains(details.target.version)) {
                     throw new GradleException("Untested databinding version: " + details.requested.group + " " + details.requested.name + "- " + details.requested.version + " - " + details.target.version)
                 }
             }
@@ -79,19 +78,6 @@ android {
         manifestPlaceholders = ['appAuthRedirectScheme': 'xdrip',
                                 appId: applicationId
         ]
-    }
-
-    // The defaultConfig values above are fixed, so your incremental builds don't
-    // need to rebuild the manifest (and therefore the whole APK, slowing build times).
-    // But for release builds, it's okay. So the following script iterates through
-    // all the known variants, finds those that are "release" build types, and
-    // changes those properties to something dynamic.
-    applicationVariants.all { variant ->
-        if (variant.buildType.name == "release") {
-            variant.outputs.each { output ->
-                output.versionNameOverride = generateVersionName()
-            }
-        }
     }
 
     testOptions {
@@ -157,13 +143,13 @@ android {
         release {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+            proguardFiles rootProject.file('proguard-android-agp8.txt'),
                     'proguard-rules.pro'
         }
         debug {
             minifyEnabled true
             shrinkResources true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+            proguardFiles rootProject.file('proguard-android-agp8.txt'),
                     'proguard-rules.pro'
             testProguardFile 'proguard-debug.pro'
             multiDexKeepProguard file('proguard-debug.pro')
@@ -215,10 +201,67 @@ android {
 
 }
 
+// Replaces wearApp (removed in AGP 9): copies the matching watch APK into the phone APK's
+// assets, where GetWearApk finds it and sends it to the watch on request. As with wearApp,
+// release embeds the watch release APK, dev the watch debug APK, and debug none.
+def wearBuildTypeFor = [release: 'release', dev: 'debug']
+android.productFlavors.names.each { flavor ->
+    wearBuildTypeFor.each { buildType, wearBuildType ->
+        def name = "embeddedWearApk${flavor.capitalize()}${buildType.capitalize()}"
+        configurations.create(name) {
+            canBeConsumed = false
+            canBeResolved = true
+        }
+        dependencies.add(name, dependencies.project(path: ':wear',
+                configuration: "wearApk${flavor.capitalize()}${wearBuildType.capitalize()}"))
+    }
+}
+
+// The defaultConfig values above are fixed, so your incremental builds don't
+// need to rebuild the manifest (and therefore the whole APK, slowing build times).
+// But for release builds, it's okay. So the following script iterates through
+// all the known variants, finds those that are "release" build types, and
+// changes those properties to something dynamic.
+androidComponents {
+    onVariants(selector().withBuildType("release")) { variant ->
+        variant.outputs.each { output ->
+            output.versionName.set(generateVersionName())
+        }
+    }
+    onVariants(selector().all()) { variant ->
+        if (!wearBuildTypeFor.containsKey(variant.buildType)) {
+            return
+        }
+        def embed = tasks.register("embedWearApk${variant.name.capitalize()}", EmbedWearApkTask) {
+            wearApkDir.from(configurations.named("embeddedWearApk${variant.name.capitalize()}"))
+        }
+        variant.sources.assets.addGeneratedSourceDirectory(embed, { it.outputDir })
+    }
+}
+
+abstract class EmbedWearApkTask extends DefaultTask {
+    @InputFiles
+    abstract ConfigurableFileCollection getWearApkDir()
+
+    @OutputDirectory
+    abstract DirectoryProperty getOutputDir()
+
+    @TaskAction
+    void embed() {
+        def apks = wearApkDir.asFileTree.matching { include '*.apk' }.files
+        if (apks.size() != 1) {
+            throw new GradleException("Expected exactly one wear APK, found: " + apks)
+        }
+        def out = outputDir.get().asFile
+        out.deleteDir()
+        out.mkdirs()
+        java.nio.file.Files.copy(apks.first().toPath(), new File(out, "wear.apk").toPath())
+    }
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
-    wearApp project(':wear')
     //weapApp files('../wear/build/outputs/apk/wear_release.apk')
     implementation('com.github.nightscout:android-uploader:CORE_FOR_XDRIP') {
         transitive = false
