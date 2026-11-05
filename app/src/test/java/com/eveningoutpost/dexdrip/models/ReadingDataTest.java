@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.models;
 
+import com.eveningoutpost.dexdrip.HexTestTools;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.utils.LibreTrendPoint;
 
@@ -374,6 +375,87 @@ public class ReadingDataTest extends RobolectricTestWithConfig {
 
         libreTrendPoint = new LibreTrendPoint();
         assertWithMessage("Empty point has no error.").that(libreTrendPoint.isError()).isFalse();
+    }
+
+    @Test
+    public void testClearHistoryErrorsFromBlePacket() {
+        // Real BLE packet from #2763 where history[0] at sensorTime 13155 has raw == 0
+        // and libreTrendPoints has no trend point for minute 13155.
+        byte[] bleData = HexTestTools.hexStringToByteArray(
+                "10C7A309EA46AC09A486B7058446B8096C86BA0926C6C2091246C50500000804B545D4056085D70573334741");
+        long captureTimestamp = 1680446555240L;
+
+        ReadingData readingData = new ReadingData();
+        readingData.raw_data = bleData;
+        readingData.trend = LibreOOPAlgorithm.parseBleDataPerMinute(bleData, null, captureTimestamp);
+        readingData.history = LibreOOPAlgorithm.parseBleDataHistory(bleData, null, captureTimestamp);
+
+        assertThat(readingData.history).hasSize(3);
+        assertThat(readingData.history.get(0).sensorTime).isEqualTo(13155);
+        assertThat(readingData.history.get(0).glucoseLevelRaw).isEqualTo(0);
+
+        List<LibreTrendPoint> libreTrendPoints = new ArrayList<LibreTrendPoint>(16 * 24 * 60);
+        while (libreTrendPoints.size() < 16 * 24 * 60) {
+            libreTrendPoints.add(new LibreTrendPoint());
+        }
+        for (GlucoseData gd : readingData.trend) {
+            libreTrendPoints.set(gd.sensorTime, new LibreTrendPoint(gd));
+        }
+
+        readingData.ClearErrors(libreTrendPoints);
+
+        assertWithMessage("Bad BLE history point with raw == 0 should be removed")
+                .that(readingData.history).hasSize(2);
+        assertThat(readingData.history.get(0).sensorTime).isEqualTo(13140);
+        assertThat(readingData.history.get(0).glucoseLevelRaw).isEqualTo(1461);
+        assertThat(readingData.history.get(1).sensorTime).isEqualTo(13125);
+        assertThat(readingData.history.get(1).glucoseLevelRaw).isEqualTo(1376);
+    }
+
+    @Test
+    public void testClearHistoryErrorsOnGlucoseData() {
+        ReadingData readingData = new ReadingData();
+        readingData.history = new ArrayList<GlucoseData>();
+
+        GlucoseData validFramZeroFlags = new GlucoseData();
+        validFramZeroFlags.sensorTime = 1000;
+        validFramZeroFlags.glucoseLevelRaw = 1200;
+        validFramZeroFlags.flags = 0;
+        validFramZeroFlags.source = GlucoseData.DataSource.FRAM;
+        readingData.history.add(validFramZeroFlags);
+
+        GlucoseData badFramFlags = new GlucoseData();
+        badFramFlags.sensorTime = 1015;
+        badFramFlags.glucoseLevelRaw = 1200;
+        badFramFlags.flags = 0x700;
+        badFramFlags.source = GlucoseData.DataSource.FRAM;
+        readingData.history.add(badFramFlags);
+
+        GlucoseData badBleZeroRaw = new GlucoseData();
+        badBleZeroRaw.sensorTime = 1030;
+        badBleZeroRaw.glucoseLevelRaw = 0;
+        badBleZeroRaw.flags = 1;
+        badBleZeroRaw.source = GlucoseData.DataSource.BLE;
+        readingData.history.add(badBleZeroRaw);
+
+        GlucoseData validFram800Flags = new GlucoseData();
+        validFram800Flags.sensorTime = 1045;
+        validFram800Flags.glucoseLevelRaw = 1180;
+        validFram800Flags.flags = 800;
+        validFram800Flags.source = GlucoseData.DataSource.FRAM;
+        readingData.history.add(validFram800Flags);
+
+        // Unpopulated trend points (e.g. gap before scan) should still drop history points that carry errors.
+        List<LibreTrendPoint> libreTrendPoints = new ArrayList<LibreTrendPoint>(16 * 24 * 60);
+        while (libreTrendPoints.size() < 16 * 24 * 60) {
+            libreTrendPoints.add(new LibreTrendPoint());
+        }
+
+        readingData.ClearErrors(libreTrendPoints);
+
+        assertThat(readingData.history).hasSize(2);
+        assertThat(readingData.history.get(0).sensorTime).isEqualTo(1000);
+        assertThat(readingData.history.get(1).sensorTime).isEqualTo(1045);
     }
 }
 
