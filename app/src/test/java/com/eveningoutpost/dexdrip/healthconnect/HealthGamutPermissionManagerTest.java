@@ -41,11 +41,15 @@ public class HealthGamutPermissionManagerTest extends RobolectricTestWithConfig 
         final List<Intent> started = new ArrayList<>();
         final Set<String> refused = new HashSet<>();
         boolean refuseAll;
+        boolean unexpectedException;
 
         @Override
         public void startActivity(final Intent intent) {
             started.add(intent);
             if (refuseAll || refused.contains(intent.getAction())) {
+                if (unexpectedException) {
+                    throw new IllegalStateException("Unexpected failure starting " + intent);
+                }
                 throw new SecurityException("Permission Denial: starting " + intent);
             }
         }
@@ -109,10 +113,26 @@ public class HealthGamutPermissionManagerTest extends RobolectricTestWithConfig 
                 .isEqualTo(string(R.string.health_connect_cannot_open_settings));
     }
 
+    @Test
+    @Config(sdk = 34)
+    public void whenAnUnexpectedExceptionIsThrown_fallsBackInsteadOfCrashing() {
+        final RecordingActivity activity = open(new String[]{MANAGE_PERMISSIONS}, false, true);
+
+        assertThat(activity.actions()).hasSize(2);
+        assertThat(activity.actions().get(0)).isEqualTo(MANAGE_PERMISSIONS);
+        assertThat(ShadowToast.getTextOfLatestToast())
+                .isEqualTo(string(R.string.health_connect_open_app_permissions_hint));
+    }
+
     private static RecordingActivity open(final String[] refused, final boolean refuseAll) {
+        return open(refused, refuseAll, false);
+    }
+
+    private static RecordingActivity open(final String[] refused, final boolean refuseAll, final boolean unexpectedException) {
         final RecordingActivity activity = Robolectric.buildActivity(RecordingActivity.class).create().get();
         activity.refused.addAll(Arrays.asList(refused));
         activity.refuseAll = refuseAll;
+        activity.unexpectedException = unexpectedException;
         new HealthGamut(activity).openPermissionManager();
         shadowOf(Looper.getMainLooper()).idle();
         return activity;
