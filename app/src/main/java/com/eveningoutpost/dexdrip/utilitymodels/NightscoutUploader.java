@@ -976,7 +976,8 @@ public class NightscoutUploader {
         if (apiSecret != null) {
             final long syncedTillTime = Math.max(PersistentStore.getLong(STORE_COUNTER), JoH.tsl() - Constants.DAY_IN_MS * 7);
             // The stored time is that of the newest record already uploaded, so start just after it.
-            final List<StepCounter> readings = StepCounter.latestForGraph((MAX_ACTIVITY_RECORDS / Math.min(1, Math.max(activityErrorCount, MAX_ACTIVITY_RECORDS / 10))), syncedTillTime + 1);
+            // Records still within the merge window can get a higher count, so wait until they are final.
+            final List<StepCounter> readings = StepCounter.latestForGraph((MAX_ACTIVITY_RECORDS / Math.min(1, Math.max(activityErrorCount, MAX_ACTIVITY_RECORDS / 10))), syncedTillTime + 1, JoH.tsl() - StepCounter.MERGE_WINDOW_MS);
             final JSONArray data = new JSONArray();
             //final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ", Locale.US);
             //format.setTimeZone(TimeZone.getDefault());
