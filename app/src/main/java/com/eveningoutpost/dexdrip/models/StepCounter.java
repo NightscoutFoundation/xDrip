@@ -123,16 +123,18 @@ public class StepCounter extends Model {
     }
 
     public static int getDailyTotal() {
+        final long startOfToday = startOfToday();
         int accumulator = 0;
-        val list = latestForGraph(5000, startOfToday(), JoH.tsl());
+        val list = latestForGraph(5000, startOfToday, JoH.tsl());
         for (val item : list) {
             if (item.isAbsolute()) {
                 accumulator += item.metric;
             }
         }
         if (accumulator == 0) {
+            // Only a record from today counts; right after midnight the last one is still yesterday's.
             val last = last();
-            if (last != null) {
+            if (last != null && last.timestamp >= startOfToday) {
                 return last.metric;
             } else {
                 return 0;
