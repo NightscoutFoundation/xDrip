@@ -5,7 +5,6 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HEALTH_CONNECT_
 import static kotlin.jvm.internal.Reflection.createKotlinClass;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -244,8 +243,8 @@ public class HealthGamut {
         try {
             activity.startActivity(intent);
             return true;
-        } catch (SecurityException | ActivityNotFoundException e) {
-            // Expected for the permission screen on Android 15+; only the final failure is an error.
+        } catch (Exception e) {
+            // Expected for the permission screen on Android 15+ (SecurityException); only the final failure is an error.
             Log.d(TAG, "Cannot open " + intent.getAction() + ": " + e);
             return false;
         }
