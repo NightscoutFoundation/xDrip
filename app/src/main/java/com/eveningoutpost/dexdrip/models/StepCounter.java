@@ -31,6 +31,8 @@ public class StepCounter extends Model {
     private final static boolean d = false;
 
     private static final int ABSOLUTE_MASK = 1;
+    // createEfficientRecord() merges new counts into the newest record for this long after its timestamp.
+    public static final long MERGE_WINDOW_MS = 1000 * 30 * 5;
 
     @Expose
     @Column(name = "timestamp", unique = true, onUniqueConflicts = Column.ConflictAction.IGNORE)
@@ -93,7 +95,7 @@ public class StepCounter extends Model {
 
     public static StepCounter createEfficientRecord(long timestamp_ms, int data) {
         StepCounter pm = last();
-        if ((pm == null) || (data < pm.metric) || ((timestamp_ms - pm.timestamp) > (1000 * 30 * 5))) {
+        if ((pm == null) || (data < pm.metric) || ((timestamp_ms - pm.timestamp) > MERGE_WINDOW_MS)) {
             pm = new StepCounter();
             pm.timestamp = timestamp_ms;
             if (d)
