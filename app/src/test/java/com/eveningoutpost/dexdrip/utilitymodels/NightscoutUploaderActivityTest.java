@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.utilitymodels;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import com.activeandroid.query.Delete;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.HeartRate;
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -48,6 +49,9 @@ public class NightscoutUploaderActivityTest extends RobolectricTestWithConfig {
                 .create(NightscoutUploader.NightscoutService.class);
         PersistentStore.setLong("nightscout-rest-heartrate-synced-time", 0);
         PersistentStore.setLong("nightscout-rest-steps-synced-time", 0);
+        // The database is kept between the tests of this class.
+        new Delete().from(HeartRate.class).execute();
+        new Delete().from(StepCounter.class).execute();
     }
 
     @After
@@ -75,8 +79,8 @@ public class NightscoutUploaderActivityTest extends RobolectricTestWithConfig {
     @Test
     public void stepsUpload_doesNotSendTheLastUploadedRecordAgain() throws Exception {
         final long now = JoH.tsl();
-        StepCounter.createUniqueRecord(now - 120_000, 100, true);
-        StepCounter.createUniqueRecord(now - 60_000, 200, true);
+        StepCounter.createUniqueRecord(now - 600_000, 100, true);
+        StepCounter.createUniqueRecord(now - 540_000, 200, true);
 
         post("postStepsCount");
         assertThat(uploadedRecords()).isEqualTo(2);
@@ -84,9 +88,39 @@ public class NightscoutUploaderActivityTest extends RobolectricTestWithConfig {
         post("postStepsCount");
         assertThat(server.getRequestCount()).isEqualTo(1);
 
-        StepCounter.createUniqueRecord(now - 30_000, 300, true);
+        StepCounter.createUniqueRecord(now - 480_000, 300, true);
         post("postStepsCount");
         assertThat(uploadedRecords()).isEqualTo(1);
+    }
+
+    // createEfficientRecord() keeps updating the newest step record for 150 s, so a record is
+    // only uploaded once it is older than that and its count is final.
+    @Test
+    public void stepsUpload_waitsUntilTheRecordCanNoLongerBeUpdated() throws Exception {
+        final long now = JoH.tsl();
+        StepCounter.createEfficientRecord(now - 60_000, 100);
+
+        post("postStepsCount");
+        assertThat(server.getRequestCount()).isEqualTo(0);
+
+        StepCounter.createEfficientRecord(now - 30_000, 150); // merged into the same record
+        assertThat(StepCounter.last().timestamp).isEqualTo(now - 60_000);
+        assertThat(StepCounter.last().metric).isEqualTo(150);
+        post("postStepsCount");
+        assertThat(server.getRequestCount()).isEqualTo(0);
+    }
+
+    @Test
+    public void stepsUpload_sendsAMergedRecordOnceWithItsFinalCount() throws Exception {
+        final long now = JoH.tsl();
+        StepCounter.createEfficientRecord(now - 300_000, 100);
+        StepCounter.createEfficientRecord(now - 200_000, 150); // merged, 100 s later
+
+        post("postStepsCount");
+        final JSONArray records = uploadedJson();
+        assertThat(records.length()).isEqualTo(1);
+        assertThat(records.getJSONObject(0).getLong("timeStamp")).isEqualTo(now - 300_000);
+        assertThat(records.getJSONObject(0).getInt("steps")).isEqualTo(150);
     }
 
     private void post(final String methodName) throws Exception {
@@ -103,9 +137,14 @@ public class NightscoutUploaderActivityTest extends RobolectricTestWithConfig {
 
     // Number of records in the next activity request.
     private int uploadedRecords() throws Exception {
+        return uploadedJson().length();
+    }
+
+    // Records in the next activity request.
+    private JSONArray uploadedJson() throws Exception {
         final RecordedRequest request = server.takeRequest(1, TimeUnit.SECONDS);
         assertThat(request).isNotNull();
         assertThat(request.getPath()).isEqualTo("/api/v1/activity");
-        return new JSONArray(request.getBody().readUtf8()).length();
+        return new JSONArray(request.getBody().readUtf8());
     }
 }
