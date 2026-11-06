@@ -186,6 +186,7 @@ public class IdempotentMigrations {
         Pref.setBoolean("calibration_alerts_repeat", true);
         Pref.setString("calibration_snooze", "20");
         Pref.setBoolean("play_sound_for_initial_calibration", true);
+        Pref.setBoolean("ongoing_notification_channel", true);
         Pref.setString("bg_notification_sound", "default"); // We need this along with a detector in the playFile method to handle the default mp3 option with SDK 26.
 
     }

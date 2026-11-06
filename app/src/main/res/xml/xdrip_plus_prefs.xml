@@ -600,11 +600,6 @@
                 android:title="@string/title_public_notifications" />
             <CheckBoxPreference
                 android:defaultValue="true"
-                android:key="plus_extra_features"
-                android:summary="@string/show_test_features"
-                android:title="@string/parakeet_and_extra_features" />
-            <CheckBoxPreference
-                android:defaultValue="true"
                 android:key="plus_show_reminders"
                 android:summary="@string/show_reminder_features"
                 android:title="@string/enable_reminder_features" />
@@ -961,12 +956,6 @@
                 android:switchTextOff="@string/short_off_text_for_switches"
                 android:switchTextOn="@string/short_on_text_for_switches"
                 android:title="@string/title_libre_whole_house_collector" />
-            <CheckBoxPreference
-                android:defaultValue="true"
-                android:dependency="plus_follow_master"
-                android:key="plus_follow_geolocation"
-                android:summary="@string/send_parakeet_map_location_to_followers"
-                android:title="@string/sync_parakeet_geolocation" />
             <PreferenceScreen
                 android:key="xdrip_plus_remote_snooze_settings"
                 android:summary="@string/remote_snoozes"

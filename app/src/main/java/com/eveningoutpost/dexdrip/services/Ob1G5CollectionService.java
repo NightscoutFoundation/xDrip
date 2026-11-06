@@ -1315,7 +1315,8 @@ public class Ob1G5CollectionService extends G5BaseService {
         if (search_name == null && (this_address.equalsIgnoreCase(historical_address) || this_name == null ||
                 (emptyString(historical_address) && this_name.startsWith("DXCM")) ||
                 (emptyString(historical_address) && this_name.startsWith("DX02")) ||
-                (emptyString(historical_address) && this_name.startsWith("DX01")))) {
+                (emptyString(historical_address) && this_name.startsWith("DX01")) ||
+                (emptyString(historical_address) && this_name.startsWith("DX04")))) {
             return !inFailureTally(this_address) && pairKeeper.check(getTransmitterID(), this_address);
         }
 

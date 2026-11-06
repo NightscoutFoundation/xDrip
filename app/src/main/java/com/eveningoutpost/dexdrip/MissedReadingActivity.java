@@ -61,7 +61,7 @@ public class MissedReadingActivity extends ActivityWithMenu {
     private int endHour = 23;
     private int endMinute = 59;
     private int missedMinutes = 59;
-    private final static String TAG = AlertPlayer.class.getSimpleName();
+    private final static String TAG = MissedReadingActivity.class.getSimpleName();
     EditAlertActivity editAlert = new EditAlertActivity();
     
 

@@ -9,6 +9,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import lombok.val;
+
 public class DexCollectionTypeTest extends RobolectricTestWithConfig {
 
     final String opt = "calibrate_external_libre_2_algorithm_type";
@@ -17,6 +19,9 @@ public class DexCollectionTypeTest extends RobolectricTestWithConfig {
     private void cleanup() {
         Pref.removeItem(opt);
         Pref.removeItem(opt2);
+        Pref.removeItem("bridge_battery");
+        Pref.removeItem("parakeet_battery");
+        Pref.removeItem("dex_collection_method");
     }
 
     @Before
@@ -55,5 +60,36 @@ public class DexCollectionTypeTest extends RobolectricTestWithConfig {
         Pref.setString(opt,"calibrate_glucose");
         assertWithMessage("calibrate glucose matches 2").that(DexCollectionType.isLibreOOPNonCalibratebleAlgorithm(DexCollectionType.LimiTTer)).isTrue();
 
+    }
+
+    // ===== getBestBridgeBatteryPercent ==================================================================================
+
+    /**
+     * The wifi uploader battery is the only battery readout WifiWixel and Mock have. Renaming the
+     * feature must not change which preference each collection type reads.
+     */
+    @Test
+    public void getBestBridgeBatteryPercentReadsTheUploaderBatteryForWifiOnlyTypes() {
+        // :: Setup
+        Pref.setInt("bridge_battery", 71);
+        Pref.setInt("parakeet_battery", 42);
+
+        // :: Act & Verify
+        for (val type : new DexCollectionType[]{DexCollectionType.WifiWixel, DexCollectionType.Mock}) {
+            DexCollectionType.setDexCollectionType(type);
+            assertWithMessage(type + " reads the uploader battery")
+                    .that(DexCollectionType.getBestBridgeBatteryPercent()).isEqualTo(42);
+        }
+
+        for (val type : new DexCollectionType[]{DexCollectionType.WifiBlueToothWixel,
+                DexCollectionType.WifiDexBridgeWixel, DexCollectionType.LimiTTerWifi, DexCollectionType.LibreWifi}) {
+            DexCollectionType.setDexCollectionType(type);
+            assertWithMessage(type + " reads the bridge battery")
+                    .that(DexCollectionType.getBestBridgeBatteryPercent()).isEqualTo(71);
+        }
+
+        DexCollectionType.setDexCollectionType(DexCollectionType.NSFollow);
+        assertWithMessage("a type with neither wifi nor a bridge battery reports -2")
+                .that(DexCollectionType.getBestBridgeBatteryPercent()).isEqualTo(-2);
     }
 }

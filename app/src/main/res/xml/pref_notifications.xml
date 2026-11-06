@@ -115,12 +115,6 @@
                     android:title="@string/title_use_notification_channels">
                     <CheckBoxPreference
                         android:defaultValue="false"
-                        android:key="ongoing_notification_channel"
-                        android:summary="@string/summary_ongoing_notification_channel"
-                        android:title="@string/title_ongoing_notification_channel" />
-                    <CheckBoxPreference
-                        android:defaultValue="false"
-                        android:dependency="ongoing_notification_channel"
                         android:key="ongoing_notification_aodchipstyle"
                         android:summary="Display notification chip and lockscreen notification. Android 16+ only"
                         android:title="Use AOD chip style" />

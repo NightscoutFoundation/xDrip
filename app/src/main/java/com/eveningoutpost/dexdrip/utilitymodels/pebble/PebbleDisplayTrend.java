@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.utilitymodels.pebble;
 
 import android.graphics.Bitmap;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.Home;

@@ -1129,7 +1129,7 @@ public class NightscoutUploader {
         }
 
         if (DexCollectionType.hasWifi()) {
-            batteries.add(NightscoutBatteryDevice.PARAKEET);
+            batteries.add(NightscoutBatteryDevice.WIFI_UPLOADER);
         }
 
         boolean sendDexcomTxBattery = Pref.getBooleanDefaultFalse("send_ob1dex_tx_battery_to_nightscout");

@@ -6,14 +6,12 @@ import android.os.PowerManager;
 
 import com.eveningoutpost.dexdrip.GcmActivity;
 import com.eveningoutpost.dexdrip.Home;
-import com.eveningoutpost.dexdrip.MapsActivity;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.TransmitterData;
 import com.eveningoutpost.dexdrip.models.UserError.Log;
-import com.eveningoutpost.dexdrip.ParakeetHelper;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.MockDataSource;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
@@ -277,17 +275,8 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                     // themselves from actual parakeet data even though both can coexist on the
                     // parakeet web service.
 
-                   // if (JoH.ratelimit("parakeet-check-notification", 9)) {
-                        ParakeetHelper.checkParakeetNotifications(trd.CaptureDateTime, trd.GeoLocation);
-                    //}
                     if ((trd.GeoLocation != null)) {
-                        if (!trd.GeoLocation.equals("-15,-15")) {
-                            try {
-                                MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
-                            } catch (Exception e) {
-                                Log.e(TAG, "Exception with maps activity: " + e.toString());
-                            }
-                        } else {
+                        if (trd.GeoLocation.equals("-15,-15")) {
                             // look a little further if we see usb-wixel data on parakeet app engine
                             processNumberOfRecords = numberOfRecords + 1;
                         }
@@ -426,7 +415,6 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                 //System.out.println( "data size " +data.length() + " data = "+ data);
                 final TransmitterRawData trd = gson.fromJson(data, TransmitterRawData.class);
                 trd.CaptureDateTime = System.currentTimeMillis() - trd.RelativeTime;
-                MapsActivity.newMapLocation(trd.GeoLocation, trd.CaptureDateTime);
 
                 if (newest_timestamp < trd.getCaptureDateTime()) {
                     statusLog(hostName, JoH.hourMinuteString() + " OK data from:", trd.getCaptureDateTime());
@@ -595,7 +583,7 @@ public class WixelReader extends AsyncTask<String, Void, Void> {
                 if (LastReading.UploaderBatteryLife > 0) {
                     Pref.setInt("parakeet_battery", LastReading.UploaderBatteryLife);
                     if (Home.get_master()) {
-                        GcmActivity.sendParakeetBattery(LastReading.UploaderBatteryLife);
+                        GcmActivity.sendUploaderBattery(LastReading.UploaderBatteryLife);
                     }
                 }
 

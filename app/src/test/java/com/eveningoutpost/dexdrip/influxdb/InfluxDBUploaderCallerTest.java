@@ -168,6 +168,70 @@ public class InfluxDBUploaderCallerTest extends RobolectricTestWithConfig {
         assertThat(result).isFalse();
     }
 
+    // ===== Request shape and rejection ===============================================================================
+
+    /** A write goes to /write as a gzipped POST carrying database, retention policy, consistency and login. */
+    @Test
+    public void upload_postsGzippedWriteWithDatabaseAndLogin() throws Exception {
+        // :: Setup
+        startServer();
+        server.enqueue(new MockResponse().setResponseCode(204));
+        InfluxDBUploader uploader = createUploader();
+
+        // :: Act
+        boolean result = uploader.upload(
+                Collections.singletonList(glucose(5000000L)),
+                Collections.emptyList(),
+                Collections.emptyList());
+
+        // :: Verify
+        assertThat(result).isTrue();
+        RecordedRequest request = server.takeRequest();
+        assertThat(request.getMethod()).isEqualTo("POST");
+        assertThat(request.getRequestUrl().encodedPath()).isEqualTo("/write");
+        assertThat(request.getRequestUrl().queryParameter("db")).isEqualTo("testdb");
+        assertThat(request.getRequestUrl().queryParameter("rp")).isEqualTo("autogen");
+        assertThat(request.getRequestUrl().queryParameter("consistency")).isEqualTo("all");
+        assertThat(request.getRequestUrl().queryParameter("u")).isEqualTo("testuser");
+        assertThat(request.getRequestUrl().queryParameter("p")).isEqualTo("testpass");
+        assertThat(request.getHeader("Content-Encoding")).isEqualTo("gzip");
+        assertThat(decompressIfNeeded(request)).startsWith("glucose ");
+    }
+
+    /** A server that refuses the write with an error body makes the upload report failure, not crash. */
+    @Test
+    public void upload_serverRejectsWrite_returnsFalse() throws Exception {
+        // :: Setup
+        startServer();
+        server.enqueue(new MockResponse().setResponseCode(401)
+                .setHeader("Content-Type", "application/json")
+                .setBody("{\"error\":\"authorization failed\"}"));
+        InfluxDBUploader uploader = createUploader();
+
+        // :: Act
+        boolean result = uploader.upload(
+                Collections.singletonList(glucose(6000000L)),
+                Collections.emptyList(),
+                Collections.emptyList());
+
+        // :: Verify
+        assertThat(result).isFalse();
+        assertThat(server.getRequestCount()).isEqualTo(1);
+    }
+
+    private static BgReading glucose(final long timestamp) {
+        BgReading bg = new BgReading();
+        bg.timestamp = timestamp;
+        bg.calculated_value = 100.0;
+        bg.calculated_value_slope = 0.0;
+        bg.raw_data = 100.0;
+        bg.age_adjusted_raw_value = 100.0;
+        bg.filtered_data = 100.0;
+        bg.noise = "1";
+        bg.hide_slope = false;
+        return bg;
+    }
+
     // --- Helpers ---
 
     private void startServer() throws IOException {

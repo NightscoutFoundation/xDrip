@@ -16,13 +16,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.PreferenceManager;
 
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -370,12 +370,12 @@ public class SystemStatusFragment extends Fragment {
         }
     }
 
+    /**
+     * A wifi uploader is reached over the network, so the bluetooth connection state below says
+     * nothing about it. Report no data rather than claiming the phone is not connected.
+     */
     private void setConnectionStatusWifiWixel() {
-        if (ParakeetHelper.isParakeetCheckingIn()) {
-            connection_status.setText(ParakeetHelper.parakeetStatusString());
-        } else {
-            connection_status.setText(safeGetContext().getString(R.string.no_data));
-        }
+        connection_status.setText(safeGetContext().getString(R.string.no_data));
     }
 
     public void setConnectionStatus(String msg) {

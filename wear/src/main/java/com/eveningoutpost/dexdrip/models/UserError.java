@@ -10,7 +10,6 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.util.Date;
 import java.util.Hashtable;
@@ -174,7 +173,6 @@ public class UserError extends PlusModel {
     public String toS() {
         Gson gson = new GsonBuilder()
                 .excludeFieldsWithoutExposeAnnotation()
-                .registerTypeAdapter(Date.class, new DateTypeAdapter())
                 .serializeSpecialFloatingPointValues()
                 .create();
 

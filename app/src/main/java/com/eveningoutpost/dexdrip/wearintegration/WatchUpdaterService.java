@@ -75,7 +75,6 @@ import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -382,7 +381,6 @@ public class WatchUpdaterService extends WearableListenerService implements
         if (entries != null) {
             final Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
 
@@ -448,7 +446,6 @@ public class WatchUpdaterService extends WearableListenerService implements
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
 
@@ -522,7 +519,6 @@ public class WatchUpdaterService extends WearableListenerService implements
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
 
@@ -569,7 +565,6 @@ public class WatchUpdaterService extends WearableListenerService implements
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
 

@@ -20,9 +20,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.preference.PreferenceManager;
 import android.text.SpannableString;
 import android.widget.RemoteViews;
 
@@ -115,7 +115,6 @@ public class Notifications extends IntentService {
     public static final int riseAlertNotificationId = 011;
     public static final int failAlertNotificationId = 012;
     public static final int lowPredictAlertNotificationId = 013;
-    public static final int parakeetMissingId = 014;
     public static final int persistentHighAlertNotificationId = 015;
     public static final int ob1SessionRestartNotificationId = 016;
     private static boolean low_notifying = false;
@@ -1054,12 +1053,12 @@ public class Notifications extends IntentService {
             mBuilder.setVibrate(vibratePattern);
 
             float minVolume = (type.equals("bg_missed_alerts") || type.equals("persistent_high_alert")) ? MIN_ALARM_VOLUME : MIN_ALERT_VOLUME;
+            Log.ueh(TAG, message); // Other alert log
             AlertPlayer.getPlayer().triggerSoundAndVibration(context, true, otherAlertsSound, extraAlertsOverrideSilent, minVolume, type, otherAlertsVibrateOnAlert, vibratePattern);
 
             NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
             //mNotifyMgr.cancel(notificatioId);
             //Log.d(TAG, "Notify");
-            Log.ueh(TAG, message);
             mNotifyMgr.notify(notificatioId, XdripNotificationCompat.build(mBuilder));
 
             if (Pref.getBooleanDefaultFalse("pref_amazfit_enable_key")

@@ -81,6 +81,9 @@ public class NocturneUploader {
     private final boolean ready;
     private final ApiClient apiClient;
 
+    /** Set when a stream comes back 401; read once at the end of the run. */
+    private boolean tokenRejected;
+
     public NocturneUploader(final Context context) {
         final NocturneOAuthService oauthService = new NocturneOAuthService();
         final String baseUrl = oauthService.getBaseUrl();
@@ -176,6 +179,14 @@ public class NocturneUploader {
 
         if (Pref.getBooleanDefaultFalse("nocturne_upload_motion")) {
             uploadMotionTracking();
+        }
+
+        if (tokenRejected) {
+            if (NocturneOAuthService.expireAccessToken()) {
+                UserError.Log.e(TAG, "Nocturne rejected the access token - refreshing it on the next run");
+            } else {
+                UserError.Log.e(TAG, "Nocturne rejected the access token - no refresh is possible");
+            }
         }
 
         return queueSuccess;
@@ -374,6 +385,7 @@ public class NocturneUploader {
                 return DeleteOutcome.NOT_FOUND;
             }
             UserError.Log.e(TAG, "Error deleting " + what + " " + uuid + ": HTTP " + e.getCode() + " body=" + e.getResponseBody());
+            noteIfRejected(e);
             return DeleteOutcome.ERROR;
         } catch (Exception e) {
             UserError.Log.e(TAG, "Error deleting " + what + " " + uuid + ": " + e);
@@ -463,13 +475,26 @@ public class NocturneUploader {
         }
     }
 
-    private static void logFailure(final String what, final Exception e) {
+    private void logFailure(final String what, final Exception e) {
         if (e instanceof ApiException) {
             final ApiException ae = (ApiException) e;
             UserError.Log.e(TAG, what + " failed: HTTP " + ae.getCode() + " body=" + ae.getResponseBody());
+            noteIfRejected(ae);
         } else {
             UserError.Log.e(TAG, what + " failed: " + e);
         }
+    }
+
+    /**
+     * Remembers a 401 so that the end of the run can arm a refresh.
+     * <p>
+     * Only 401 counts. The token is the one thing a 401 is defined to be about, and a server that
+     * means "your token is fine but this scope is not" answers 403 (RFC 6750). A proxy's own 401
+     * also brings the refresh forward; whether that refresh clears the credentials is decided by
+     * {@link NocturneOAuthService#refreshAccessToken()}, as it would be at expiry.
+     */
+    private void noteIfRejected(final ApiException e) {
+        tokenRejected |= e.getCode() == 401;
     }
 
     // --- Mapping methods (static for testability) ---

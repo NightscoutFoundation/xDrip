@@ -80,7 +80,6 @@ import com.google.android.gms.wearable.Wearable;
 import com.google.android.gms.wearable.WearableListenerService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.bind.DateTypeAdapter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -1913,7 +1912,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
 
@@ -1971,7 +1969,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
 
@@ -2067,7 +2064,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
             if (entries != null) {
                 Gson gson = new GsonBuilder()
                             .excludeFieldsWithoutExposeAnnotation()
-                            .registerTypeAdapter(Date.class, new DateTypeAdapter())
                             .serializeSpecialFloatingPointValues()
                             .create();
                 Log.d(TAG, "syncTreatmentsData add Treatments Table entries count=" + entries.size());
@@ -2117,7 +2113,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
 
@@ -2327,7 +2322,6 @@ public class ListenerService extends WearableListenerService implements GoogleAp
 
             Gson gson = new GsonBuilder()
                     .excludeFieldsWithoutExposeAnnotation()
-                    .registerTypeAdapter(Date.class, new DateTypeAdapter())
                     .serializeSpecialFloatingPointValues()
                     .create();
 
