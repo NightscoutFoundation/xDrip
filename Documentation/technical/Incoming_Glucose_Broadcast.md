@@ -20,12 +20,7 @@ intent.setPackage("com.eveningoutpost.dexdrip");
 ```
 This is required. Manifest-declared receivers stopped receiving implicit broadcasts in Android 8. An implicit broadcast will appear to work, because xDrip also registers this receiver at runtime, but it stops being delivered whenever the xDrip process is not running, with no error on either side.
 
-If your own app targets API 30 or later, package visibility rules apply as well and `setPackage` alone is not enough. Declare xDrip in your manifest, as a direct child of `<manifest>`:
-```xml
-<queries>
-    <package android:name="com.eveningoutpost.dexdrip" />
-</queries>
-```
+You only need a `<queries>` entry for xDrip if your app also checks whether xDrip is installed, for example with `queryBroadcastReceivers` or `getPackageInfo`. Delivery works without it.
 
 ### Extra Parameters
 Add extra parameters to the intent for the data collection and JSON payload containing the sensor readings.
