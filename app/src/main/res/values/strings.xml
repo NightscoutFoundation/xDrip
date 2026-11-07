@@ -231,7 +231,7 @@
     <string name="alarms_and_alerts">Alarms and Alerts</string>
     <string name="alerts_and_notifications">Alerts and Notifications</string>
     <string name="glucose_level_alerts_list">Glucose Level Alerts List</string>
-    <string name="glucose_alerts_settings">Glucose Alerts Settings</string>
+    <string name="glucose_alerts_settings">Alert settings</string>
     <string name="smart_snoozing">Smart Snoozing</string>
     <string name="calibration_alerts">Calibration Alerts</string>
     <string name="missed_reading_alert">Missed reading Alert</string>
