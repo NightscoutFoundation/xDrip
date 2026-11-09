@@ -2148,4 +2148,5 @@
     <string name="click">Click</string>
     <string name="to_use_this_instead">to use this instead?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">The transmitter ID or pairing code you have entered is incorrect and would not work.\n\nPlease double-check the details and try again.</string>
+    <string name="notification_listener_permission_explanation">Permission is needed to receive data from other applications. xDrip does not do anything beyond this scope. Please enable xDrip on the next screen</string>
 </resources>
