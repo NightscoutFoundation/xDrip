@@ -178,6 +178,8 @@
     <string name="share_config_via_qr_code">Einstellungen per QR-Code senden</string>
     <string name="check_for_updated_version">Auf Aktualisierung prüfen</string>
     <string name="current_version_is_up_to_date">Keine neue Version im gewählten Update-Kanal</string>
+    <string name="title_dialog_check_for_update">Kein Update im %1$s Kanal</string>
+    <string name="message_dialog_check_for_update">Eine neuere Version kann in anderen Kanälen existieren.</string>
     <string name="send_feedback_to_developer">Feedback an Entwickler senden</string>
     <string name="home_screen">Startbildschirm</string>
     <string name="event_logs">Ereignisprotokolle</string>
@@ -280,6 +282,8 @@
     <string name="pref_summary_show_treatments">Zeige Behandlungspunkte in der Kurve</string>
     <string name="pref_use_wear_health">Benutze die Wear Health-Daten</string>
     <string name="pref_summary_use_wear_health">Sammle und zeige den Schrittzähler an, falls verfügbar.</string>
+    <string name="summary_enable_wear_auto_update">Wenn diese Option aktiviert ist, wird xDrip auf der Uhr automatisch aktualisiert, um es an die Version auf dem Smartphone anzupassen.</string>
+    <string name="title_enable_wear_auto_update">Automatisches Wear-Update</string>
     <string name="pebble_integration">Pebble Integration</string>
     <string name="send_data_to_pebble_watchface">Daten an Pebble Watch senden</string>
     <string name="pebble_watch_integration">Pebble Uhr Integration</string>
@@ -352,6 +356,9 @@
     <string name="all_alerts_disabled_until">"Alle Warnungen deaktiviert bis "</string>
     <string name="low_alerts_disabled_until">"Warnungen (niedrig) deaktiviert bis "</string>
     <string name="high_alerts_disabled_until">"Warnungen (Hoch) deaktiviert bis "</string>
+    <string name="you_reenable">Wieder aktivieren</string>
+    <string name="active_alert_rerise_at">Es liegt eine aktive Warnmeldung mit dem Namen „%1$s“ vor. Die Warnmeldung wird um %2$s erneut angezeigt (noch %3$s Minuten).</string>
+    <string name="active_alert_snoozed_until">Es liegt eine aktive Warnmeldung mit dem Namen „%1$s“ vor. Die Warnmeldung wurde bis %2$s zurückgestellt (noch %3$s Minuten).</string>
     <string name="default_snooze">Standard Snooze</string>
     <string name="until_you_reenable">Bis zur erneuten Aktivierung</string>
     <string name="set">Setze</string>
@@ -548,6 +555,7 @@
     <string name="battery">Batterie</string>
     <string name="xbridge_battery">xBridge Batterie</string>
     <string name="limitter_battery">Libre Akku</string>
+    <string name="uploader_battery">Akku des Hochladers</string>
     <string name="after_calibration_rewrite_history">Nach Kalibrierung: Rohwerte an neuen Wert anpassen</string>
     <string name="rewrite_history">Übersicht neu anlegen</string>
     <string name="grid_time_lines_visible">Zeitrasterlinien sichtbar</string>
@@ -635,6 +643,10 @@
     <string name="libre_use_smoothed_data_summary">Verwende Durchschnittswerte von 5 Punkten, um geglättete Libre-Daten zu erhalten.</string>
     <string name="libre_use_smoothed_data_title">Glätte Libre-Daten.</string>
     <string name="retrieve_blukon_history_title">Empfange historische Libre-Daten</string>
+    <string name="summary_libre_one_minute_interval">Empfange Daten im Minutentakt von Libre. Starte dein Smartphone neu, damit die Änderungen wirksam werden.</string>
+    <string name="title_libre_one_minute_interval">Ein (1) Minuten Intervall Libre</string>
+    <string name="summary_nsfollow_sample_period">Standard: 5 min\nAktuell: %s</string>
+    <string name="title_sample_period">Erhebungszeitraum</string>
     <string name="retrieve_blukon_history_summary">Empfange verpasste Werte vom BlueCon-Empfänger wenn er sich wieder verbindet.</string>
     <string name="interpret_share_raw">Falls du Share benutzt, wird xDrip Werte anzeigen, die normalerweise auf dem Empfänger versteckt sind.</string>
     <string name="interpret_raw">Rohwerte interpretieren</string>
@@ -808,6 +820,7 @@
     <string name="use_flair_colors">Benutze Flair-Farben</string>
     <string name="upper_title_bar_flair">Obere Titelleiste</string>
     <string name="lower_button_bar_falir">Farbe der System-Navigationsleiste</string>
+    <string name="title_language">Sprache</string>
     <string name="force_english_text">Englisch erzwingen</string>
     <string name="using_local_language">Benutze momentan die lokale Sprache deines Geräts.</string>
     <string name="forcing_alternate_language">Erzwingt momentan das Benutzen einer alternativen Sprache</string>
@@ -889,6 +902,9 @@
     <string name="only_stop_your_sensor_when_you_actually_plan">Stoppe den Sensor nur, wenn Du auch planst ihn zu entfernen. Ansonsten solltest Du ihn laufen lassen!</string>
     <string name="restart_collector">Datensammler neustarten</string>
     <string name="forget_device">Gerät löschen</string>
+    <string name="re_read_transmitter">Sender erneut lesen</string>
+    <string name="tx_reread_confirmation_title">Sender/Transmitter Details aktualisieren</string>
+    <string name="tx_reread_confirmation_message">Zwingt xDrip dazu, die Eigenschaften des Transmitters erneut einzulesen. Bietet keinen Vorteil, wenn sich der Transmitter nicht verändert hat; es kann zu vorübergehenden Änderungen auf der Statusseite kommen. Am besten zwischen den Sensor-Sitzungen verwenden.</string>
     <string name="other_notes">Andere Notizen:</string>
     <string name="delete_future_data">Zukünftige Daten löschen</string>
     <string name="show_only_untranslated">Zeige nur unübersetztes</string>
@@ -1220,6 +1236,11 @@
     <string name="title_tidepool_upload_no_treatment">Keine Behandlungen hochladen</string>
     <string name="title_tidepool">Tidepool</string>
     <!-- Nocturne connect flow -->
+    <string name="nocturne">Nocturne</string>
+    <string name="nocturne_connect_activity_label">Verbinden mit Nocturne</string>
+    <string name="nocturne_settings_summary">Zu Nocturne V4 API hochladen</string>
+    <string name="title_nocturne_upload_enable">Nocturne Upload aktivieren</string>
+    <string name="title_nocturne_instance_url">URL der Nocturne Instanz</string>
     <string name="title_nocturne_upload_treatments">Behandlungen hochladen</string>
     <string name="title_nocturne_use_mobile">Mobile Daten verwenden</string>
     <!-- NocturneConnectActivity (deep link receiver) -->
