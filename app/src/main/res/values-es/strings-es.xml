@@ -1961,6 +1961,7 @@
     <string name="alert_warning">¡Advertencia!</string>
     <string name="no_active_low_alert_warning">No hay ninguna alerta de glucosa baja activa. No recibirás notificaciones de hipoglucemia; por favor, añade o activa una.</string>
     <string name="volume_profile_set_to_silent">¡El perfil de volumen está configurado en silencio!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' y \'%2$s\' ignoran \'%3$s\' y no hacen sonido. ¿Estás seguro?</string>
     <string name="volume_profile_set_to_ascending_with_delay">El perfil de volumen ascendente + ascenso retardado significa que comenzará en silencio</string>
     <string name="start_snoozed_enabled">Iniciar aplazado significa que la alerta normalmente comenzará en silencio</string>
     <string name="pre_snooze">Aplazar</string>

@@ -4,10 +4,8 @@ package com.eveningoutpost.dexdrip;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
 import android.util.Base64;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -40,7 +38,6 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
     private static final String TAG = "jamorham nsemulator";
     private static final boolean debug = false;
     private static final boolean d = false;
-    private static SharedPreferences prefs;
     private static final Object lock = new Object();
 
     @Override
@@ -54,9 +51,6 @@ public class NSEmulatorReceiver extends BroadcastReceiver {
 
                         Log.d(TAG, "NSEmulator onReceiver: " + intent.getAction());
                         JoH.benchmark(null);
-                        // check source
-                        if (prefs == null)
-                            prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
                         final Bundle bundle = intent.getExtras();
                         //  BundleScrubber.scrub(bundle);

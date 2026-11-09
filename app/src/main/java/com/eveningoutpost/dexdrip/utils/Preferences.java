@@ -1044,6 +1044,25 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         .getString(preference.getKey(), ""));
     }
 
+    private static void bindPreferenceSummaryToValueAndWarnIfMuted(final Activity activity, final Preference preference) { // Volume profile summary and mute alert warning
+        bindPreferenceSummaryToValue(preference);
+        if (preference == null) return;
+        preference.setOnPreferenceChangeListener((pref, newValue) -> {
+            final String value = String.valueOf(newValue);
+            if (!"Silent".equals(value) && !"vibrate only".equals(value)) {
+                return sBindPreferenceSummaryToValueListener.onPreferenceChange(pref, newValue);
+            }
+            GenericConfirmDialog.show(activity, xdrip.gs(R.string.alert_volume_profile), xdrip.gs(R.string.volume_profile_will_be_muted,
+                    xdrip.gs(R.string.volume_profile_silent),
+                    xdrip.gs(R.string.volume_profile_vibrate_only),
+                    xdrip.gs(R.string.override_silent_mode)), () -> {
+                ((ListPreference) pref).setValue(value);
+                sBindPreferenceSummaryToValueListener.onPreferenceChange(pref, value);
+            });
+            return false;   // defer the save to the confirm callback
+        });
+    }
+
     public static void applyPrefSettingRange(String pref_key, String def, Double min, Double max) { // Correct a preference glucose setting if the value is out of range
         val notificationId = OUT_OF_RANGE_GLUCOSE_ENTRY_ID;
         String mySettingString = Pref.getString(pref_key, def);
@@ -1139,7 +1158,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             bindPreferenceSummaryToValue(units_pref);
 
             addPreferencesFromResource(R.xml.pref_notifications);
-            bindPreferenceSummaryToValue(findPreference("bg_alert_profile"));
+            bindPreferenceSummaryToValueAndWarnIfMuted(getActivity(), findPreference("bg_alert_profile"));
+
             bindPreferenceSummaryToValue(findPreference("calibration_notification_sound"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("calibration_snooze"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("bg_unclear_readings_minutes"));

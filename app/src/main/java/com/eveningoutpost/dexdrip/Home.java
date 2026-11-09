@@ -41,7 +41,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
+import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import androidx.annotation.NonNull;
@@ -2183,6 +2184,12 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     public static boolean get_follower() {
         if (!is_follower_set) set_is_follower();
         return Home.is_follower;
+    }
+
+    /** Forgets the cached follower flag, so the next {@link #get_follower()} reads the preference again. */
+    @VisibleForTesting
+    static void resetFollowerCacheForTests() {
+        is_follower_set = false;
     }
 
     private static void setHasLibreblock() {

@@ -68,7 +68,6 @@ import lombok.val;
 // jamorham
 
 @RequiredArgsConstructor
-@RequiresApi(api = Build.VERSION_CODES.O)
 @SuppressWarnings("unchecked")
 public class HealthGamut {
 
@@ -121,12 +120,7 @@ public class HealthGamut {
 
     private final Coroutines coroutines = Coroutines.INSTANCE;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean init() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            Log.e(TAG, "Needs above android 8");
-            return false;
-        }
 
         if (HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE) {
             client = HealthConnectClient.getOrCreate(context);
@@ -255,9 +249,7 @@ public class HealthGamut {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public synchronized void getAllData() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         val startTime = Instant.now().minus(1, ChronoUnit.DAYS);
         val endTime = Instant.now();
         val reply = new DataReply();
@@ -335,20 +327,15 @@ public class HealthGamut {
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to read hr records: " + e);
                     }
+                    // Only now are both reads complete: processing right after starting the heart
+                    // rate read lost its records whenever that read had not finished yet.
+                    try {
+                        ReadReplyProcessor.process(reply);
+                        getChangesToken();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to process records: " + e);
+                    }
                 }));
-
-                ReadReplyProcessor.process(reply);
-
-                client.getChangesToken(new ChangesTokenRequest(records, new HashSet<>()),
-                        coroutines.getContinuation((tokenResult, throwable3) -> {
-                            if (throwable3 != null) {
-                                throw new RuntimeException(throwable3);
-                            }
-
-                            Log.d(TAG, "Changes token: " + tokenResult);
-                            token = tokenResult;
-                        }));
-
 
             } catch (Exception e) {
                 Log.e(TAG, "Failed to read records: " + e);
@@ -356,8 +343,21 @@ public class HealthGamut {
         }));
     }
 
+    private void getChangesToken() {
+        client.getChangesToken(new ChangesTokenRequest(records, new HashSet<>()),
+                coroutines.getContinuation((tokenResult, throwable) -> {
+                    if (throwable != null) {
+                        Log.e(TAG, "Failed to retrieve Health Connect changes token: " + throwable);
+                        token = null; // Reset the token so it retries a fresh sync next run
+                        return;
+                    }
+
+                    Log.d(TAG, "Changes token: " + tokenResult);
+                    token = tokenResult;
+                }));
+    }
+
     public void sendGlucose(final BgReading bg) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         if (init()) {
             val list = new LinkedList<BloodGlucoseRecord>();
             val record = new BloodGlucoseRecord(Instant.ofEpochMilli(bg.timestamp),

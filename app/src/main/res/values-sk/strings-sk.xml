@@ -1616,6 +1616,7 @@ Je nutné zakázať v prípade, že chcete používať xdrip cifreník. (Požado
     <string name="reraise_alerts_before_snooze_time">Znovu zobraziť upozornenia pred uplynutím času odloženia</string>
     <string name="wake_up_screen">Prebudenie obrazovky</string>
     <string name="wake_up_screen_summary">Prebúdzať obrazovku pri upozorneniach. Môže to odomknúť zariadenia, ktoré nemajú aktivované uzamykanie obrazovky.</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' a \'%2$s\' ignorujú \'%3$s\' a neprehrajú žiadny zvuk. Naozaj chcete pokračovať?</string>
     <string name="volume_profile_high">Vysoká glykémia</string>
     <string name="glupro_disconnected">Odpojené</string>
     <string name="glupro_connected">Pripojené</string>

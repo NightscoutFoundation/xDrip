@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.util.Log;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.insulin.aaps.AAPSStatusHandler;
 import com.eveningoutpost.dexdrip.models.BgReading;
@@ -39,6 +41,12 @@ public class NSClientReceiver extends BroadcastReceiver {
     private static final String TAG = "jamorham nsreceiver";
     private static final boolean debug = false;
     private static SharedPreferences prefs;
+
+    /** Forgets the cached preference store, so the next broadcast fetches it again. */
+    @VisibleForTesting
+    static void resetPrefsCacheForTests() {
+        prefs = null;
+    }
 
     @Override
     public void onReceive(Context context, Intent intent) {

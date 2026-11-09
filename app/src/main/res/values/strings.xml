@@ -2066,6 +2066,7 @@
     <string name="alert_warning">Warning !</string>
     <string name="no_active_low_alert_warning">No low alert is active. You won\'t be notified of low glucose—please add or enable one.</string>
     <string name="volume_profile_set_to_silent">Volume Profile is set to silent!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' and \'%2$s\' ignore \'%3$s\' and make no sound. Are you sure?</string>
     <string name="volume_profile_set_to_ascending_with_delay">Ascending Volume Profile + delayed ascending means it will start silent</string>
     <string name="start_snoozed_enabled">Start Snoozed setting means alert would normally start silent</string>
     <string name="pre_snooze">pre-Snooze</string>
@@ -2147,4 +2148,5 @@
     <string name="click">Click</string>
     <string name="to_use_this_instead">to use this instead?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">The transmitter ID or pairing code you have entered is incorrect and would not work.\n\nPlease double-check the details and try again.</string>
+    <string name="notification_listener_permission_explanation">Permission is needed to receive data from other applications. xDrip does not do anything beyond this scope. Please enable xDrip on the next screen</string>
 </resources>

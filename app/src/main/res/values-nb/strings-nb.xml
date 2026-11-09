@@ -139,7 +139,7 @@
     <string name="share">Del</string>
     <string name="title_activity_profile_editor">Rediger behandlingprofil</string>
     <string name="first_use_menu_to_scan">Bruk først menyen til å søke etter din BT-enhet eller endre datakilde i innstillinger!</string>
-    <string name="first_configure_ip_address">Konfigurer først WiFi Wixel-leserens IP-adresser eller Parakeet URL</string>
+    <string name="first_configure_ip_address">Konfigurer først WiFi Wixel-leserens IP-adresser</string>
     <string name="now_start_your_sensor">Starte sensoren nå, eller sjekk innstillinger</string>
     <string name="please_wait_while_sensor_warms_up">Vennligst vent mens sensoren varmer opp! (</string>
     <string name="minutes_with_bracket">" minutter)"</string>
@@ -2015,6 +2015,7 @@
     <string name="alert_warning">Advarsel !</string>
     <string name="no_active_low_alert_warning">Inget lav varsel er aktivt. Du vil ikke få varsel ved lavt glukosenivå – legg til eller aktiver et varsel.</string>
     <string name="volume_profile_set_to_silent">Volumprofilen er satt til stille!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' og \'%2$s\' ignorerer \'%3$s\' og lager ingen lyd. Er du sikker?</string>
     <string name="volume_profile_set_to_ascending_with_delay">Stigende volumprofil + forsinket stigende betyr at den starter stille</string>
     <string name="start_snoozed_enabled">Innstillingen start slumret betyr at varselet vanligvis starter stille</string>
     <string name="pre_snooze">før-Slumre</string>

@@ -2008,6 +2008,7 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="alert_warning">Upozornění !</string>
     <string name="no_active_low_alert_warning">Není aktivní žádná výstraha nízké glykémie. Bez ní nebudete upozorněni na nízkou glykémii - prosím, vytvořte ji nebo ji povolte.</string>
     <string name="volume_profile_set_to_silent">Zvukový profil je nastaven na tichý!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' a \'%2$s\' ignorují \'%3$s\' a nedávají žádný zvuk. Opravdu pokračovat?</string>
     <string name="volume_profile_set_to_ascending_with_delay">Zvukový profil vzestupné hlasitosti + zpožděná vzestupnost znamená začátek na úrovni tiché hlasitosti</string>
     <string name="start_snoozed_enabled">Odložení znamená, že výstraha začne na úrovni tiché hlasitosti</string>
     <string name="pre_snooze">Předem odložit</string>

@@ -2011,6 +2011,7 @@
     <string name="alert_warning">Внимание!</string>
     <string name="no_active_low_alert_warning">Няма активно предупреждение за ниска глюкоза. Няма да получавате известия за ниска глюкоза – моля, добавете или активирайте такова.</string>
     <string name="volume_profile_set_to_silent">Профилът на звука е настроен на безшумен режим!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' и \'%2$s\' игнорират \'%3$s\' и не издават звук. Сигурни ли сте?</string>
     <string name="volume_profile_set_to_ascending_with_delay">Възходящ профил на силата на звука + забавено възходящо означава, че ще започне безшумно</string>
     <string name="start_snoozed_enabled">Настройката \"Стартирай отложено\" означава, че алармата ще започне безшумно</string>
     <string name="pre_snooze">предварително отлагане</string>
