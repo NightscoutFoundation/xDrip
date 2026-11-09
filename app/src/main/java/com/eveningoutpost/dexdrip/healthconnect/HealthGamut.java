@@ -327,27 +327,34 @@ public class HealthGamut {
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to read hr records: " + e);
                     }
+                    // Only now are both reads complete: processing right after starting the heart
+                    // rate read lost its records whenever that read had not finished yet.
+                    try {
+                        ReadReplyProcessor.process(reply);
+                        getChangesToken();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to process records: " + e);
+                    }
                 }));
-
-                ReadReplyProcessor.process(reply);
-
-                client.getChangesToken(new ChangesTokenRequest(records, new HashSet<>()),
-                        coroutines.getContinuation((tokenResult, throwable3) -> {
-                            if (throwable3 != null) {
-                                Log.e(TAG, "Failed to retrieve Health Connect changes token: " + throwable3);
-                                token = null; // Reset the token so it retries a fresh sync next run
-                                return;
-                            }
-
-                            Log.d(TAG, "Changes token: " + tokenResult);
-                            token = tokenResult;
-                        }));
-
 
             } catch (Exception e) {
                 Log.e(TAG, "Failed to read records: " + e);
             }
         }));
+    }
+
+    private void getChangesToken() {
+        client.getChangesToken(new ChangesTokenRequest(records, new HashSet<>()),
+                coroutines.getContinuation((tokenResult, throwable) -> {
+                    if (throwable != null) {
+                        Log.e(TAG, "Failed to retrieve Health Connect changes token: " + throwable);
+                        token = null; // Reset the token so it retries a fresh sync next run
+                        return;
+                    }
+
+                    Log.d(TAG, "Changes token: " + tokenResult);
+                    token = tokenResult;
+                }));
     }
 
     public void sendGlucose(final BgReading bg) {
