@@ -25,7 +25,7 @@ public class ESensorGlucose extends BaseElement {
     }
 
     static boolean isBgReadingValid(final BgReading bgReading) {
-        if(bgReading.calculated_value >= 39 && bgReading.calculated_value <= 500) {
+        if(bgReading.calculated_value >= 14) { // Values less than 14 mg/dL could actually be error codes rather than glucose values
             return true;
         }
         UserError.Log.e(TAG, "Ignoring invalid bg " + bgReading.toS());
