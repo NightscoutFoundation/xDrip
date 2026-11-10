@@ -645,6 +645,7 @@
     <string name="summary_libre_one_minute_interval">Accepter les données à intervalles d\'une minute de Libre. Redémarrez votre téléphone pour que les modifications prennent effet.</string>
     <string name="title_libre_one_minute_interval">Libre 1 minute</string>
     <string name="summary_nsfollow_sample_period">Par défaut : 5 min\nActuel : %s</string>
+    <string name="title_sample_period">Période d\'échantillonnage</string>
     <string name="retrieve_blukon_history_summary">Extraire l\'historique manqué du périphérique BluCon lors de la reconnexion au capteur.</string>
     <string name="interpret_share_raw">Si vous utilisez Share, xDrip affichera les valeurs quand elles sont normalement cachées sur le récepteur.</string>
     <string name="interpret_raw">Interpréter les valeurs brutes</string>
@@ -1241,6 +1242,7 @@
     <string name="title_nocturne_instance_url">URL de l\'instance Nocturne</string>
     <string name="nocturne_instance_url_dialog_message">Entrez l\'URL de votre instance Nocturne (par exemple https://mynocturne.example.com)</string>
     <string name="nocturne_connect_pref_summary">Autorisez xDrip+ avec votre instance Nocturne</string>
+    <string name="summary_nocturne_upload_sgv">Télécharger les glycémies du capteur CGM</string>
     <string name="title_nocturne_upload_treatments">Charger les traitements</string>
     <string name="summary_nocturne_upload_treatments">Télécharger des bolus, des glucides, des notes et des événements de l\'appareil</string>
     <string name="title_nocturne_upload_calibrations">Télécharger les calibrations</string>
@@ -1253,9 +1255,31 @@
     <string name="summary_nocturne_upload_stepcount">Télécharger les données du nombre de pas</string>
     <string name="title_nocturne_upload_devicestatus">Télécharger le statut de l\'appareil</string>
     <string name="summary_nocturne_upload_devicestatus">Télécharger le niveau de batterie du téléphone et le statut de charge</string>
+    <string name="title_nocturne_upload_motion">Télécharger le suivi des mouvements</string>
+    <string name="summary_nocturne_upload_motion">Télécharger les classifications d\'activité reconnues</string>
     <string name="title_nocturne_use_mobile">Utiliser les données mobiles</string>
+    <string name="summary_nocturne_use_mobile">Autoriser les téléversements via les données mobiles</string>
     <!-- NocturneConnectActivity (deep link receiver) -->
+    <string name="nocturne_connect_err_missing_url">URL de l\'instance Nocturne manquante</string>
+    <string name="nocturne_connect_err_invalid_url">URL invalide</string>
+    <string name="nocturne_connect_warn_http">Utilisation d\'une connexion non sécurisée (HTTP)</string>
+    <string name="nocturne_connect_err_bad_scheme">L\'URL doit commencer par http:// ou https://</string>
+    <string name="nocturne_connect_already_connected">Déjà connecté à %1$s</string>
+    <string name="nocturne_connect_switch_title">Changer d\'instance de Nocturne ?</string>
+    <string name="nocturne_connect_switch_message">Vous êtes connecté à:\n%1$s\n\nPasser à:\n%2$s?</string>
+    <string name="nocturne_connect_switch_positive">Changer</string>
+    <string name="nocturne_connect_unknown_instance">(inconnu)</string>
+    <string name="nocturne_connect_confirm_title">Se connecter à Nocturne?</string>
+    <string name="nocturne_connect_confirm_message">Connecter xDrip à:\n\n%1$s</string>
+    <string name="nocturne_connect_confirm_positive">Connecter</string>
     <!-- NocturneConnectHelper (device flow UI) -->
+    <string name="nocturne_already_connected_disconnect">Déjà connecté à Nocturne. Déconnecter d\'abord ?</string>
+    <string name="nocturne_disconnect">Déconnecter</string>
+    <string name="nocturne_disconnected">Déconnecté de Nocturne</string>
+    <string name="nocturne_set_url_first">Veuillez d\'abord définir l\'URL de votre instance Nocturne</string>
+    <string name="nocturne_connecting">Connexion à Nocturne...</string>
+    <string name="nocturne_start_auth_failed">Impossible de démarrer l\'autorisation. Vérifiez votre URL de Nocturne.</string>
+    <string name="nocturne_device_code_body_auto">Entrez ce code sur votre instance Nocturne :\n\n%1$s\n\nLe code expire dans %2$d minutes.\n\nAppuyez sur \'Ouvrir le navigateur\' pour aller à la page d\'approbation.</string>
     <string name="show_help">Afficher l\'aide</string>
     <string name="load_save_settings_on_sdcard">Charger / Enregistrer les paramètres</string>
     <string name="delete_all_bg_readings">Supprimer toutes les lectures BG</string>
@@ -1995,4 +2019,5 @@
     <string name="click">Cliquer</string>
     <string name="to_use_this_instead">utiliser ceci à la place ?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">L\'ID du transmetteur ou le code d\'appairage que vous avez entré est incorrect et ne fonctionnerait pas.\n\nVeuillez vérifier les détails et réessayer.</string>
+    <string name="notification_listener_permission_explanation">Une autorisation est nécessaire pour recevoir les données d\'autres applications. xDrip ne fait rien d\'autre que recevoir. Veuillez activer xDrip sur l\'écran suivant</string>
 </resources>
