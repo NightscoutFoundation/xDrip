@@ -48,6 +48,9 @@ android {
         unitTests {
             includeAndroidResources = true
             returnDefaultValues = true
+            all {
+                jvmArgs '--add-opens=java.base/java.util=ALL-UNNAMED' // as in app: DexCollectionService needs it under JDK 17+
+            }
         }
     }
 
@@ -116,6 +119,7 @@ dependencies {
     compileOnly 'com.google.android.wearable:wearable:2.5.0'
     implementation 'com.google.android.support:wearable:2.5.0'
     implementation 'androidx.appcompat:appcompat:1.0.0'
+    implementation 'androidx.preference:preference:1.0.0'
     // FIX upgrade to play-services-wearable:17.0.0 requires upgrade to AndroidX libraries, https://developers.google.com/android/guides/releases#june_17_2019
     implementation 'com.google.android.gms:play-services-wearable:10.2.1'
     implementation 'com.squareup.wire:wire-runtime:2.2.0'
