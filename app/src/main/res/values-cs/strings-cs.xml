@@ -2090,4 +2090,5 @@ môže spôsobovať pády alebo zamrznutia telefónu! Klepnutím otestujte predt
     <string name="click">Kliknutím na</string>
     <string name="to_use_this_instead">použít opravenou verzi?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">Zadaný identifikátor vysílače nebo párovací kód není správný a nebude fungovat.\n\nZkontrolujte prosím zadané údaje a zkuste to znovu.</string>
+    <string name="notification_listener_permission_explanation">Aplikace potřebuje oprávnění k přijímání dat z jiných aplikací. xDrip tato data pouze přijímá a nijak dál je nevyužívá. Na další obrazovce prosím toto oprávnění pro xDrip povolte</string>
 </resources>
