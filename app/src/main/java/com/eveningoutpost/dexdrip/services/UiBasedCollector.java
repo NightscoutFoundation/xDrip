@@ -152,10 +152,17 @@ public class UiBasedCollector extends NotificationListenerService {
         // The IoB value should be captured into the first match group.
         // English localization of the Omnipod 5 App
         companionAppIoBRegexes.add(Pattern.compile("IOB: ([\\d\\.,]+) U"));
-        // MiniMed Mobile (EU): "Active Insulin" label and "1.234 U" value in separate TextViews
-        companionAppIoBRegexes.add(Pattern.compile("^([\\d\\.]+) U$"));
-        // MiniMed Mobile (EU): "Aktives Insulin" label and "1,234 IE" value in separate TextViews
-        companionAppIoBRegexes.add(Pattern.compile("^([\\d\\,]+) IE$"));
+
+        // MiniMed Mobile (EU): All locales handled
+        // ("Active Insulin" label and "1.234 U" are separate TextViews)
+        val numberPattern = "\\p{Nd}+[.,\u066B]\\p{Nd}+";  // Any unicode digits separated by dot, comma, or Arabic "٫"
+        val suffixPattern = String.join("|",
+            " U", " IE", " J", " E", " e", " j", " Ü", " единици",  // Space before unit (most locales)
+            "U",                                                    // No space before unit (ko, zh)
+            " j\\.", " Ед\\.", " Од\\.",                            // Dot after unit (sk, ru, uk)
+            " \u05D9\u05D7'",                                       // Hebrew: יח'
+            " \u0648");                                             // Arabic: و
+        companionAppIoBRegexes.add(Pattern.compile("^(" + numberPattern + ")(" + suffixPattern + ")$"));
     }
 
     @Override

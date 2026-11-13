@@ -81,13 +81,37 @@ public class UiBasedCollectorTest extends RobolectricTestWithConfig {
     public void parseIoBMiniMedTest() {
         val i = new UiBasedCollector();
 
-        val valid = "2.400 U";
-        val invalidNoUnit = "2.400";
-        val invalidExtraText = "Active Insulin 2.400 U";
+        // Basic variations
+        assertWithMessage("one decimal place").that(i.parseIoB("0.8 U")).isEqualTo(0.8);
+        assertWithMessage("two decimal places").that(i.parseIoB("3.65 IE")).isEqualTo(3.65);
+        assertWithMessage("three decimal places").that(i.parseIoB("7.975 J")).isEqualTo(7.975);
+        assertWithMessage("more insulin").that(i.parseIoB("37.4 e")).isEqualTo(37.4);
 
-        assertWithMessage("valid MiniMed IoB message").that(i.parseIoB(valid)).isEqualTo(2.4);
-        assertWithMessage("invalid IoB message (no unit)").that(i.parseIoB(invalidNoUnit)).isNull();
-        assertWithMessage("invalid IoB message (extra text)").that(i.parseIoB(invalidExtraText)).isNull();
+        // Test all locales
+        assertWithMessage("locales en,el,ja,pt,pt-rBR").that(i.parseIoB("1.234 U")).isEqualTo(1.234);
+        assertWithMessage("locales es,fi,fr,it,lt,lv,mk,ro").that(i.parseIoB("1,234 U")).isEqualTo(1.234);
+        assertWithMessage("locales da,hu,nl,sl,sv").that(i.parseIoB("1,234 E")).isEqualTo(1.234);
+        assertWithMessage("locales cs,hr,sr").that(i.parseIoB("1,234 J")).isEqualTo(1.234);
+        assertWithMessage("locales nb,nn").that(i.parseIoB("1,234 e")).isEqualTo(1.234);
+        assertWithMessage("locales et,tr").that(i.parseIoB("1,234 Ü")).isEqualTo(1.234);
+        assertWithMessage("locales ko,zh").that(i.parseIoB("1.234U")).isEqualTo(1.234);
+        assertWithMessage("locale de").that(i.parseIoB("1,234 IE")).isEqualTo(1.234);
+        assertWithMessage("locale pl").that(i.parseIoB("1,234 j")).isEqualTo(1.234);
+        assertWithMessage("locale sk").that(i.parseIoB("1,234 j.")).isEqualTo(1.234);
+        assertWithMessage("locale ru").that(i.parseIoB("1,234 Ед.")).isEqualTo(1.234);
+        assertWithMessage("locale uk").that(i.parseIoB("1,234 Од.")).isEqualTo(1.234);
+        assertWithMessage("locale bg").that(i.parseIoB("1,234 единици")).isEqualTo(1.234);
+        assertWithMessage("locale iw").that(i.parseIoB("1.234 \u05D9\u05D7'")).isEqualTo(1.234);  // 1.234 יח'
+        assertWithMessage("locale ar 1").that(i.parseIoB("1.234 \u0648")).isEqualTo(1.234);  // 1.234 و
+        assertWithMessage("locale ar 2").that(i.parseIoB("\u0661\u066B\u0662\u0663\u0664 \u0648")).isEqualTo(1.234);  // ١٫٢٣٤ و
+
+        // Some invalid variants
+        assertWithMessage("missing unit").that(i.parseIoB("1.234")).isNull();
+        assertWithMessage("unexpected prefix").that(i.parseIoB("Active Insulin 1.234 U")).isNull();
+        assertWithMessage("invalid unit").that(i.parseIoB("1.234 X")).isNull();
+        assertWithMessage("no accidental wildcard").that(i.parseIoB("1,234 jx")).isNull();
+        assertWithMessage("missing space").that(i.parseIoB("1,234IE")).isNull();
+        assertWithMessage("integer value").that(i.parseIoB("5")).isNull();
     }
 
     // standard 5 minute apart readings are all accepted
