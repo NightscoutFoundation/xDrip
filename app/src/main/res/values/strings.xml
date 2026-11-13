@@ -2244,6 +2244,6 @@
     <string name="li3_last_life_count">Last life count</string>
     <string name="li3_backfilled">Backfilled</string>
     <string name="li3_fast_data">Fast data</string>
-    <string name="sensor_is_factory_calibrated">This sensor is factory calibrated; xDrip does not calibrate it</string>
+    <string name="sensor_is_factory_calibrated">Calibration is off for this data source. Readings are used as the sensor reports them.</string>
     <string name="notification_listener_permission_explanation">Permission is needed to receive data from other applications. xDrip does not do anything beyond this scope. Please enable xDrip on the next screen</string>
 </resources>

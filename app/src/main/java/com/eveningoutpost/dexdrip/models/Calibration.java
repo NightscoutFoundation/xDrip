@@ -662,10 +662,10 @@ public class Calibration extends Model {
         return Calibration.last();
     }
 
-    // a factory calibrated collector is never calibrated
+    // calibration is off for this source: its readings are used as the sensor reports them
     private static boolean refuseCalibration() {
         if (!DexCollectionType.isNoCalibration()) return false;
-        Log.e(TAG, "Not calibrating: " + DexCollectionType.getDexCollectionType() + " is factory calibrated");
+        Log.uel(TAG, "Calibration not used: calibration is off for " + DexCollectionType.getDexCollectionType());
         JoH.static_toast_long(xdrip.gs(R.string.sensor_is_factory_calibrated));
         return true;
     }

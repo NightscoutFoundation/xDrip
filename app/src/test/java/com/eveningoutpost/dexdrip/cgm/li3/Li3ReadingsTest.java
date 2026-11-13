@@ -4,6 +4,9 @@ import static com.eveningoutpost.dexdrip.models.JoH.tsl;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.google.common.truth.Truth.assertThat;
+import static org.robolectric.Shadows.shadowOf;
+
+import android.os.Looper;
 
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
@@ -20,6 +23,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import org.junit.After;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowToast;
 
 import java.util.List;
 
@@ -774,6 +778,40 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         assertThat(calibration).isNull();
         assertThat(Calibration.getCalibrationsForSensor(Sensor.currentSensor(), 3)).isEmpty();
         assertThat(storedAt(1010).calculated_value).isEqualTo(120.0);
+    }
+
+    /**
+     * A refused calibration is an event, not an error: the event log says calibration is off for the source, nothing is
+     * logged as an error, and the toast says the readings are used as the sensor reports them.
+     */
+    @Test
+    public void calibration_li3_refusalLoggedAsEventWithReason() {
+        // :: Setup
+        DexCollectionType.setDexCollectionType(DexCollectionType.Li3);
+        readings.onRealtime(reading(1010, 120), now);
+
+        // :: Act
+        Calibration.create(100, RuntimeEnvironment.application);
+
+        // :: Verify
+        int events = 0;
+        int errors = 0;
+        for (UserError entry : UserError.all()) {
+            if (!"Calibration".equals(entry.shortError)) {
+                continue;
+            }
+            if (entry.severity == 5 && "Calibration not used: calibration is off for Li3".equals(entry.message)) {
+                events++;
+            }
+            if (entry.severity == 2 || entry.severity == 3) {
+                errors++;
+            }
+        }
+        assertThat(events).isEqualTo(1);
+        assertThat(errors).isEqualTo(0);
+        shadowOf(Looper.getMainLooper()).idle();
+        assertThat(ShadowToast.getTextOfLatestToast())
+                .isEqualTo("Calibration is off for this data source. Readings are used as the sensor reports them.");
     }
 
     /** A finger-stick kept as a note only is still stored for the graph, and the reading keeps the sensor's value. */
