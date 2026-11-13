@@ -1646,7 +1646,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final PreferenceScreen nfcScreen = (PreferenceScreen) findPreference("xdrip_plus_nfc_settings");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
             final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
-            final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
+            final PreferenceScreen alertsScreen = (PreferenceScreen) findPreference("whole_alerts_screen");
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
             final PreferenceScreen calibrationSettingsScreen = (PreferenceScreen) findPreference("xdrip_plus_calibration_settings");
             final PreferenceScreen colorScreen = (PreferenceScreen) findPreference("xdrip_plus_color_settings");
@@ -1873,10 +1873,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 collectionCategory.removePreference(shareKey);
                 collectionCategory.removePreference(scanShare);
                 otherCategory.removePreference(interpretRaw);
-                alertsCategory.addPreference(calibrationAlertsScreen);
+                alertsScreen.addPreference(calibrationAlertsScreen);
             } else {
                 otherCategory.removePreference(predictiveBG);
-                alertsCategory.removePreference(calibrationAlertsScreen);
+                alertsScreen.removePreference(calibrationAlertsScreen);
                 this.prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
 
@@ -2552,13 +2552,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         collectionCategory.removePreference(scanShare);
                         otherCategory.removePreference(interpretRaw);
                         otherCategory.addPreference(predictiveBG);
-                        alertsCategory.addPreference(calibrationAlertsScreen);
+                        alertsScreen.addPreference(calibrationAlertsScreen);
                     } else {
                         collectionCategory.addPreference(shareKey);
                         collectionCategory.addPreference(scanShare);
                         otherCategory.addPreference(interpretRaw);
                         otherCategory.removePreference(predictiveBG);
-                        alertsCategory.removePreference(calibrationAlertsScreen);
+                        alertsScreen.removePreference(calibrationAlertsScreen);
                         AllPrefsFragment.this.prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
 
