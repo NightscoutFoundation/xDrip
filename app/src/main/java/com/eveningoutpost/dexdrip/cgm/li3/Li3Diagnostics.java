@@ -80,7 +80,7 @@ public final class Li3Diagnostics {
                     + minutes(state.warmupMinutes()) + ", wear " + minutes(state.wearMinutes()) + ", identity "
                     + (state.identityLabel() == null ? NONE : state.identityLabel())
                     + ", paired key " + yesNo(state.kAuth() != null) + ", last life count "
-                    + orUnknown(state.lastLifeCount()));
+                    + orUnknown(state.lastLifeCount()) + ", history owed " + historyOwed(state));
         }
         sb.append('\n');
 
@@ -154,6 +154,15 @@ public final class Li3Diagnostics {
     /** A fact the sensor has not told us yet. */
     private static String orUnknown(Object value) {
         return value == null ? UNKNOWN : value.toString();
+    }
+
+    /**
+     * The minutes the sensor still owes history for, and the life count its last ask went out at, so a report says
+     * whether a hole is still being chased or was given up on.
+     */
+    private static String historyOwed(Li3SensorState state) {
+        return state.backfillFrom() == 0 ? NONE : state.backfillFrom() + " to " + state.backfillTo()
+                + ", asked at " + state.backfillAskedAt();
     }
 
     private static String minutes(Integer value) {

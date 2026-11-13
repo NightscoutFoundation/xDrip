@@ -27,7 +27,7 @@ import xrwd.li3.util.Hex;
  * Turns the Li3's realtime and historic values into xDrip readings. A reading's time is the sensor start plus
  * its life count in minutes. Realtime values are the sensor's own mg/dL, stored every minute with
  * {@code libre_one_minute} on and every five minutes otherwise, and smoothed only when the user asks. History fills
- * gaps and never replaces a reading or brings back one that was refused.
+ * gaps, the minutes ahead of the last realtime reading included, and never replaces a reading already stored.
  *
  * @author Asbjørn Aarrestad - 2026.10
  */
@@ -42,6 +42,8 @@ public final class Li3Readings {
     private static final long KEEP_RECENT_MS = 60 * MINUTE_IN_MS;
     /** A realtime reading is the sensor's current minute; this allows for the start time being off either way. */
     private static final long MAX_CLOCK_OFFSET_MS = 15 * MINUTE_IN_MS;
+    /** The refusal of a reading the sensor's own data quality or sensor condition flags mark, nothing else. */
+    private static final String REFUSED_QUALITY = "not displayable";
 
     private final Li3SensorState state;
     /** Recent accepted realtime values as {timestamp, mg/dL}, oldest first, for smoothing. */
@@ -58,8 +60,9 @@ public final class Li3Readings {
     }
 
     /**
-     * Stores a realtime reading when it is valid, new and on the chosen interval. A refused reading's life count is
-     * remembered, so history does not store it later.
+     * Stores a realtime reading when it is valid, new and on the chosen interval. A reading refused for its value or
+     * its time has its life count remembered, so history does not store that minute later; one refused only for its
+     * quality flags does not, and history can still bring that minute back.
      *
      * @return true when a reading was stored
      */
@@ -73,14 +76,19 @@ public final class Li3Readings {
             return false;
         }
         String reason = refusal(lifeCount, reading.mgdl(), nowMs);
-        if (reason == null && !reading.displayable()) {
-            reason = "not displayable";
-        }
         if (reason == null && timestamp(lifeCount) < nowMs - MAX_CLOCK_OFFSET_MS) {
             reason = "time is more than 15 minutes ago, start time looks wrong";
         }
+        // only a refusal for the quality flags alone leaves the minute to history; a wrong value or time would be
+        // stored by history the same way, so those are remembered
+        boolean historyCanFill = reason == null;
+        if (reason == null && !reading.displayable()) {
+            reason = REFUSED_QUALITY;
+        }
         if (reason != null) {
-            state.addRejectedLifeCount(lifeCount);
+            if (!historyCanFill) {
+                state.addRejectedLifeCount(lifeCount);
+            }
             Li3Store.updateState(state);
             String message = "Li3 reading at life count " + lifeCount + " not stored: " + reason;
             if (reason.equals(lastRefusal)) {
@@ -119,8 +127,11 @@ public final class Li3Readings {
     }
 
     /**
-     * Stores the history entries that fill a gap: valid, not after the last realtime reading, not refused before, and
-     * with no reading within a minute of their time.
+     * Stores the history entries that fill a gap: valid, not refused before for a reason history cannot improve, and
+     * with no reading within a minute of their time. Entries ahead of the last realtime reading are stored too: those
+     * minutes are exactly the ones no realtime reading was stored for, and history is the only source that has them.
+     * Their time is checked against the clock only for being ahead, as a realtime reading's is, so a wrong start
+     * time cannot put a page far into the future; unlike realtime, a time far in the past is not refused.
      *
      * @return how many were stored
      */
@@ -129,11 +140,9 @@ public final class Li3Readings {
             UserError.Log.e(TAG, "Li3 " + state.serial() + " is no longer the stored sensor, history not stored");
             return 0;
         }
-        Integer current = state.lastLifeCount();
         int stored = 0;
         for (HistoricalPage.Entry entry : entries) {
-            String reason = current == null || entry.lifeCount > current ? "after the last reading"
-                    : state.rejectedLifeCounts().contains(entry.lifeCount) ? "refused before"
+            String reason = state.rejectedLifeCounts().contains(entry.lifeCount) ? "refused before"
                     : refusal(entry.lifeCount, entry.mgdl, nowMs);
             if (reason != null) {
                 UserError.Log.d(TAG, "History at life count " + entry.lifeCount + " skipped: " + reason);
@@ -151,6 +160,7 @@ public final class Li3Readings {
         if (!entries.isEmpty()) {
             UserError.Log.d(TAG, "History: " + entries.size() + " entries, life counts " + entries.get(0).lifeCount
                     + " to " + entries.get(entries.size() - 1).lifeCount + ", " + stored + " stored");
+            Li3Store.updateState(state);
         }
         if (stored > 0) {
             backfilled += stored;
@@ -159,8 +169,10 @@ public final class Li3Readings {
         return stored;
     }
 
+    /** Keeps the sensor's latest status for the status rows, and saves the state the connection may have changed. */
     public synchronized void onStatus(PatchStatus status) {
         lastStatus = status;
+        Li3Store.updateState(state); // the connection may have asked for or given up on history on this frame
     }
 
     /** @return why the last realtime reading was refused, or null when it was accepted */

@@ -450,6 +450,11 @@ public class Li3Service extends ForegroundService {
         return recent(lastReceivedAt);
     }
 
+    /** Whether a reading was stored in the last 12 minutes; a refused one does not count. */
+    static boolean hasRecentReading() {
+        return recent(lastReadingAt);
+    }
+
     /** Whether a time is set and less than 12 minutes ago. */
     private static boolean recent(long at) {
         return at > 0 && msSince(at) < MINUTE_IN_MS * 12;
@@ -463,6 +468,11 @@ public class Li3Service extends ForegroundService {
             return new SpannableString(gs(R.string.li3_reading_not_stored) + ": " + refusal);
         }
         // a refused reading counts as collecting, but only a stored one hides the stage
-        return stage.isEmpty() || recent(lastReadingAt) ? null : new SpannableString(stage);
+        if (stage.isEmpty() || recent(lastReadingAt)) {
+            return null;
+        }
+        // the home screen says where the setup steps are; the Li3 screen shows them next to the stage
+        return new SpannableString(stage.equals(gs(R.string.li3_stage_no_sensor))
+                ? gs(R.string.li3_home_no_sensor) : stage);
     }
 }

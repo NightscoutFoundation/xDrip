@@ -16,11 +16,11 @@ import xrwd.li3.util.Hex;
 
 /**
  * What is kept about one sensor between connections: its address and PIN from activation, the cycle read over NFC,
- * the receiver ID it was started or taken over with, the cached kAuth and the last reading. The PIN and kAuth are
- * secrets: {@link #toString()} leaves them out, and the JSON is for private app storage only. It is shared between
- * the Bluetooth worker and the status screen, so every access holds its lock. Ported from
- * RoundWhiteDiscKit {@code *SensorState.swift} and {@code *SensorStateLoader.swift} (MIT); the JSON keys
- * it shares with them are kept.
+ * the receiver ID it was started or taken over with, the cached kAuth, the last reading and the minutes of history
+ * the sensor still owes. The PIN and kAuth are secrets: {@link #toString()} leaves them out, and the JSON is for
+ * private app storage only. It is shared between the Bluetooth worker and the status screen, so every access holds its
+ * lock. Ported from RoundWhiteDiscKit {@code *SensorState.swift} and {@code *SensorStateLoader.swift} (MIT); the JSON
+ * keys it shares with them are kept.
  *
  * @author Asbjørn Aarrestad - 2026.10
  */
@@ -29,7 +29,7 @@ public final class Li3SensorState {
     private static final int PIN_SIZE = 4;
     private static final int KAUTH_SIZE = 16;
     private static final int SENSOR_KEY_SIZE = 65;
-    /** Refused life counts kept behind the newest one; history is not asked for further back. */
+    /** Life counts refused for their value or time, kept behind the newest one for as long as history can reach. */
     private static final int KEEP_REJECTED_MINUTES = 24 * 60;
 
     private final String serial;
@@ -51,6 +51,17 @@ public final class Li3SensorState {
     private Integer lastLifeCount;
     private Integer lastMgdl;
     private Set<Integer> rejectedLifeCounts = new HashSet<>();
+    /** Oldest minute the sensor still owes history for; 0 when nothing is outstanding. */
+    private int backfillFrom;
+    /** Newest minute of the outstanding hole, on the five-minute grid history is written on. */
+    private int backfillTo;
+    /** Life count the last ask for this hole went out at; -1 when it has never been asked for. */
+    private int backfillAskedAt = -1;
+    /**
+     * Newest minute no longer owed: history came back for it or the sensor had its chances. A refused reading leaves
+     * the last stored minute behind, so without this every one would open those minutes again; 0 when none.
+     */
+    private int settledThrough;
 
     /** @throws IllegalArgumentException unless the PIN is 4 bytes */
     public Li3SensorState(String serial, String bleAddress, byte[] blePin) {
@@ -117,6 +128,14 @@ public final class Li3SensorState {
                 rejected.put(lifeCount);
             }
             json.put("rejectedLifeCounts", rejected);
+            if (settledThrough != 0) {
+                json.put("historySettledThrough", settledThrough);
+            }
+            if (backfillFrom != 0) { // only while a hole is outstanding, so a settled state stays as small as it was
+                json.put("backfillFrom", backfillFrom)
+                        .put("backfillTo", backfillTo)
+                        .put("backfillAskedAt", backfillAskedAt);
+            }
             return json.toString();
         } catch (JSONException e) {
             throw new IllegalStateException("Cannot write sensor state", e);
@@ -158,6 +177,10 @@ public final class Li3SensorState {
                     state.rejectedLifeCounts.add(rejected.getInt(i));
                 }
             }
+            state.backfillFrom = json.optInt("backfillFrom", 0);
+            state.backfillTo = json.optInt("backfillTo", 0);
+            state.backfillAskedAt = json.optInt("backfillAskedAt", -1);
+            state.settledThrough = json.optInt("historySettledThrough", 0);
             return state;
         } catch (JSONException e) {
             throw new IllegalArgumentException("Not a stored Li3 sensor state", e);
@@ -291,11 +314,79 @@ public final class Li3SensorState {
         }
     }
 
+    /** @return the oldest minute the sensor still owes history for, 0 when nothing is outstanding */
+    public synchronized int backfillFrom() {
+        return backfillFrom;
+    }
+
+    /** @return the newest minute of the outstanding hole, 0 when nothing is outstanding */
+    public synchronized int backfillTo() {
+        return backfillTo;
+    }
+
+    /** @return the life count the last ask went out at, or -1 when this hole has never been asked for */
+    public synchronized int backfillAskedAt() {
+        return backfillAskedAt;
+    }
+
+    /**
+     * Opens a hole the sensor owes history for, or widens the one already open. Minutes already settled are not owed
+     * again, so the hole starts after them. Only a new oldest minute restarts the chase, so minutes that have been
+     * asked about keep the ask they had. A hole that ends before it starts holds no minute and opens nothing.
+     *
+     * @param from the first minute that is missing
+     * @param to   the newest minute of the hole, on the grid history is written on
+     */
+    public synchronized void openHole(int from, int to) {
+        from = Math.max(from, settledThrough + 1);
+        if (to < from) {
+            return;
+        }
+        if (backfillFrom == 0 || from < backfillFrom) {
+            backfillFrom = from;
+            backfillAskedAt = -1; // these minutes have never been asked for
+        }
+        backfillTo = Math.max(backfillTo, to);
+    }
+
+    /**
+     * Moves the oldest end of the hole forward over the minutes the sensor answered with a value, so the next ask
+     * starts at the first slot it left empty. Closes the hole once the front passes its end.
+     */
+    public synchronized void advanceHoleFrom(int lifeCount) {
+        if (backfillFrom == 0) {
+            return;
+        }
+        if (lifeCount > backfillFrom) {
+            backfillFrom = lifeCount;
+            settledThrough = Math.max(settledThrough, lifeCount - 1);
+        }
+        if (backfillFrom > backfillTo) {
+            closeHole();
+        }
+    }
+
+    /** Says the sensor owes us nothing more, whether its history came back or it has had its chances. */
+    public synchronized void closeHole() {
+        settledThrough = Math.max(settledThrough, backfillTo);
+        backfillFrom = 0;
+        backfillTo = 0;
+        backfillAskedAt = -1;
+    }
+
+    /** Records that the outstanding hole was asked for at this life count. */
+    public synchronized void markHoleAskedAt(int lifeCount) {
+        if (backfillFrom != 0) {
+            backfillAskedAt = lifeCount;
+        }
+    }
+
     @Override
     public synchronized String toString() {
         return "Li3SensorState(serial=" + serial + ", address=" + bleAddress
                 + ", receiver=" + (receiverId == null ? "none" : receiverId.littleEndianHex())
                 + ", fold=" + fold + ", region=" + region + ", warmup=" + warmupMinutes + ", wear=" + wearMinutes
-                + ", identity=" + identityLabel + ", paired=" + (kAuth != null) + ", last=" + lastLifeCount + ")";
+                + ", identity=" + identityLabel + ", paired=" + (kAuth != null) + ", last=" + lastLifeCount
+                + (backfillFrom == 0 ? "" : ", backfill=" + backfillFrom + " to " + backfillTo) + ")";
     }
 }

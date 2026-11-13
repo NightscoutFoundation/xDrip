@@ -262,6 +262,282 @@ public class Li3SensorStateTest {
         assertThat(restored.lifecycle().usable(21600)).isFalse();
     }
 
+    // ================================================= Backfill hole =================================================
+
+    /** A first hole opens from its oldest minute to its newest, and has never been asked for. */
+    @Test
+    public void openHole_noneOpen_opensUnasked() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+
+        // :: Act
+        state.openHole(1061, 1070);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(1061);
+        assertThat(state.backfillTo()).isEqualTo(1070);
+        assertThat(state.backfillAskedAt()).isEqualTo(-1);
+    }
+
+    /** A hole that ends before it starts holds no minute, and opens nothing. */
+    @Test
+    public void openHole_endBeforeStart_opensNothing() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+
+        // :: Act
+        state.openHole(1001, 1000);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(0);
+        assertThat(state.backfillTo()).isEqualTo(0);
+    }
+
+    /** A hole that starts earlier than the open one moves its oldest end back and starts the asking over. */
+    @Test
+    public void openHole_olderStart_widensAndForgetsAsk() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.markHoleAskedAt(1073);
+
+        // :: Act
+        state.openHole(1050, 1065);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(1050);
+        assertThat(state.backfillTo()).isEqualTo(1070);
+        assertThat(state.backfillAskedAt()).isEqualTo(-1);
+    }
+
+    /** A hole that starts later than the open one only moves its newest end, and the last ask stands. */
+    @Test
+    public void openHole_laterStart_widensEndAndKeepsAsk() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.markHoleAskedAt(1073);
+
+        // :: Act
+        state.openHole(1080, 1085);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(1061);
+        assertThat(state.backfillTo()).isEqualTo(1085);
+        assertThat(state.backfillAskedAt()).isEqualTo(1073);
+    }
+
+    /**
+     * A minute behind the front history has already answered for does not move the front back or start the asking
+     * over: a reading that is refused keeps the last stored minute where it was, and must not undo the history.
+     */
+    @Test
+    public void openHole_behindAnsweredFront_keepsFrontAndAsk() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1080);
+        state.markHoleAskedAt(1083);
+        state.advanceHoleFrom(1071);
+
+        // :: Act
+        state.openHole(1061, 1085);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(1071);
+        assertThat(state.backfillTo()).isEqualTo(1085);
+        assertThat(state.backfillAskedAt()).isEqualTo(1083);
+    }
+
+    /** After a hole has all come back, its minutes are not owed again: a new hole starts after them. */
+    @Test
+    public void openHole_afterHoleCameBack_startsAfterIt() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.advanceHoleFrom(1071);
+
+        // :: Act
+        state.openHole(1061, 1075);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(1071);
+        assertThat(state.backfillTo()).isEqualTo(1075);
+        assertThat(state.backfillAskedAt()).isEqualTo(-1);
+    }
+
+    /** After a hole is closed, whether it came back or was given up on, the same minutes open nothing. */
+    @Test
+    public void openHole_sameMinutesAfterClose_opensNothing() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.closeHole();
+
+        // :: Act
+        state.openHole(1061, 1070);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(0);
+        assertThat(state.backfillTo()).isEqualTo(0);
+    }
+
+    /** Minutes that came back move the oldest end of the hole forward, and the ask stands. */
+    @Test
+    public void advanceHoleFrom_insideHole_movesStart() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1080);
+        state.markHoleAskedAt(1083);
+
+        // :: Act
+        state.advanceHoleFrom(1071);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(1071);
+        assertThat(state.backfillTo()).isEqualTo(1080);
+        assertThat(state.backfillAskedAt()).isEqualTo(1083);
+    }
+
+    /** A minute before the oldest end of the hole leaves it where it is. */
+    @Test
+    public void advanceHoleFrom_beforeStart_unchanged() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1080);
+
+        // :: Act
+        state.advanceHoleFrom(1050);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(1061);
+        assertThat(state.backfillTo()).isEqualTo(1080);
+    }
+
+    /** Once the oldest end passes the newest, nothing is owed and the hole closes. */
+    @Test
+    public void advanceHoleFrom_pastEnd_closes() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.markHoleAskedAt(1073);
+
+        // :: Act
+        state.advanceHoleFrom(1071);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(0);
+        assertThat(state.backfillTo()).isEqualTo(0);
+        assertThat(state.backfillAskedAt()).isEqualTo(-1);
+    }
+
+    /** With no hole open, history that comes back opens none. */
+    @Test
+    public void advanceHoleFrom_noHole_staysClosed() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+
+        // :: Act
+        state.advanceHoleFrom(1071);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(0);
+        assertThat(state.backfillTo()).isEqualTo(0);
+    }
+
+    /** Closing a hole forgets its minutes and its last ask. */
+    @Test
+    public void closeHole_open_forgetsAll() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.markHoleAskedAt(1073);
+
+        // :: Act
+        state.closeHole();
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(0);
+        assertThat(state.backfillTo()).isEqualTo(0);
+        assertThat(state.backfillAskedAt()).isEqualTo(-1);
+    }
+
+    /** An ask is only recorded while a hole is open, so a later hole starts unasked. */
+    @Test
+    public void markHoleAskedAt_noHole_ignored() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+
+        // :: Act
+        state.markHoleAskedAt(1073);
+        state.openHole(1080, 1085);
+
+        // :: Verify
+        assertThat(state.backfillAskedAt()).isEqualTo(-1);
+    }
+
+    /** An open hole and its last ask survive a restart, so the chase goes on where it was. */
+    @Test
+    public void toJson_openHole_roundTrips() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.markHoleAskedAt(1073);
+
+        // :: Act
+        Li3SensorState restored = Li3SensorState.fromJson(state.toJson());
+
+        // :: Verify
+        assertThat(restored.backfillFrom()).isEqualTo(1061);
+        assertThat(restored.backfillTo()).isEqualTo(1070);
+        assertThat(restored.backfillAskedAt()).isEqualTo(1073);
+    }
+
+    /** The minutes already settled survive a restart, so a refused reading after it does not ask for them again. */
+    @Test
+    public void toJson_settledMinutes_roundTrip() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.closeHole();
+
+        // :: Act
+        Li3SensorState restored = Li3SensorState.fromJson(state.toJson());
+        restored.openHole(1061, 1070);
+
+        // :: Verify
+        assertThat(restored.backfillFrom()).isEqualTo(0);
+    }
+
+    /** With no hole open the stored state carries no backfill keys, so it stays as small as before. */
+    @Test
+    public void toJson_noHole_omitsBackfillKeys() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.openHole(1061, 1070);
+        state.closeHole();
+
+        // :: Act
+        String json = state.toJson();
+
+        // :: Verify
+        assertThat(json).doesNotContain("backfill");
+    }
+
+    /** A state stored before holes were kept reads back with none open. */
+    @Test
+    public void fromJson_noBackfillKeys_noHole() {
+        // :: Setup
+        String json = new Li3SensorState(SERIAL, ADDRESS, PIN).toJson();
+
+        // :: Act
+        Li3SensorState restored = Li3SensorState.fromJson(json);
+
+        // :: Verify
+        assertThat(restored.backfillFrom()).isEqualTo(0);
+        assertThat(restored.backfillTo()).isEqualTo(0);
+        assertThat(restored.backfillAskedAt()).isEqualTo(-1);
+    }
+
     // =================================================== toString ====================================================
 
     /** The PIN and kAuth never reach a log line through {@code toString()}. */

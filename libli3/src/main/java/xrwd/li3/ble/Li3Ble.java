@@ -83,8 +83,10 @@ public class Li3Ble extends BleManager implements Li3Transport {
     private static final int ACTIVE_ATTEMPTS = 6;
     private static final long BACKGROUND_WAIT_MS = 10 * 60_000;
     private static final long BEFORE_BACKGROUND_MS = 60_000;
-    /** xDrip4iOS waits this long between historic backfill requests. */
-    private static final long BACKFILL_INTERVAL_MS = 22 * 60_000;
+    /** Re-asked this often, in the sensor's own minutes, which is how often its history gains a slot. */
+    private static final int BACKFILL_RETRY_MINUTES = 5;
+    /** How long, in the sensor's own minutes, to keep asking for one hole. */
+    private static final int BACKFILL_GIVE_UP_MINUTES = 60;
     /** Data-plane frames in a row that may fail before the connection is dropped and paired again. */
     private static final int MAX_DROPPED_IN_A_ROW = 5;
 
@@ -158,8 +160,6 @@ public class Li3Ble extends BleManager implements Li3Transport {
     private long timerDueAt;
     /** Worker thread only. */
     private int outboundSequence;
-    /** Worker thread only; 0 when none was sent on this connection. */
-    private long lastBackfillAt;
     /** Worker thread only. Whether a frame decrypted on this connection, which is what ends the reconnect attempts. */
     private boolean decryptedOnConnection;
     /** Worker thread only. Frames in a row that did not decrypt or parse on this connection. */
@@ -681,7 +681,6 @@ public class Li3Ble extends BleManager implements Li3Transport {
     private void session() {
         crypto = null;
         outboundSequence = 0;
-        lastBackfillAt = 0;
         decryptedOnConnection = false;
         droppedInARow = 0;
         AppIdentity identity = currentIdentity();
@@ -796,37 +795,94 @@ public class Li3Ble extends BleManager implements Li3Transport {
         switch (channel) {
             case PATCH_STATUS:
                 PatchStatus status = PatchStatus.parse(plain);
-                return () -> listener.onStatus(status);
+                return () -> {
+                    requestBackfill(keys, status.currentLifeCount());
+                    listener.onStatus(status);
+                };
             case GLUCOSE_DATA:
                 RealtimeReading reading = RealtimeReading.parse(plain);
                 return () -> {
-                    requestBackfillAfterGap(keys, reading.lifeCount());
+                    noteMissingMinutes(reading.lifeCount());
+                    requestBackfill(keys, reading.lifeCount());
                     listener.onReading(reading);
                 };
             default:
                 List<HistoricalPage.Entry> entries = HistoricalPage.parse(plain);
-                return () -> listener.onHistory(entries);
+                return () -> {
+                    backfillCovered(entries);
+                    listener.onHistory(entries);
+                };
         }
     }
 
-    /** Worker thread. Asks for history after the last stored reading when this one does not follow it. */
-    private void requestBackfillAfterGap(DataPlaneCrypto keys, int lifeCount) {
+    /**
+     * Worker thread. A reading that does not follow on from the last one held leaves the minutes in between to
+     * history, which holds one every five minutes, so the hole ends at the last grid minute at or before this
+     * reading. A gap with no grid minute in it is left alone: history has nothing for it. Only a realtime reading
+     * opens a hole, because only it says which minute was the last one held; a status frame's life count only moves
+     * the asking on.
+     */
+    private void noteMissingMinutes(int lifeCount) {
         Integer last = state.lastLifeCount();
-        if (last == null || lifeCount <= last + 1) {
+        if (last != null && lifeCount > last + 1) {
+            state.openHole(last + 1, lifeCount - lifeCount % HistoricalPage.SPACING);
+        }
+    }
+
+    /**
+     * Worker thread. Asks for history from the oldest minute the sensor still owes, and asks again as the sensor's
+     * clock moves on until a value comes back for the newest minute of the hole. One request is not enough: the
+     * answer can be lost with the link or the write go unanswered, and the sensor has not written the newest part of
+     * its history yet when the gap shows up. The hole and the last ask are kept in the sensor state rather than here,
+     * so a connection that drops, a collector that restarts or a phone that sleeps takes the chase up where it was,
+     * and the sensor's own clock, not the phone's, says whether a minute has had its chances.
+     *
+     * @param lifeCount where the sensor's clock has got to, from a reading or from its status
+     */
+    private void requestBackfill(DataPlaneCrypto keys, int lifeCount) {
+        int from = state.backfillFrom();
+        if (from == 0 || lifeCount < from) {
+            return; // the sensor's clock has not reached the hole, so it cannot answer for it yet
+        }
+        if (lifeCount > state.backfillTo() + BACKFILL_GIVE_UP_MINUTES) {
+            state.closeHole(); // the sensor has had its chances at these minutes, or they are older than this session
             return;
         }
-        long now = SystemClock.elapsedRealtime();
-        if (lastBackfillAt != 0 && now - lastBackfillAt < BACKFILL_INTERVAL_MS) {
+        int askedAt = state.backfillAskedAt();
+        if (askedAt >= 0 && lifeCount - askedAt < BACKFILL_RETRY_MINUTES) {
             return;
         }
-        lastBackfillAt = now;
+        state.markHoleAskedAt(lifeCount);
         outboundSequence++;
         try {
             write(Gatt.PATCH_CONTROL, keys.encrypt(PatchControl.WRITE_KIND, outboundSequence,
-                    PatchControl.backfillFrom(last + 1)));
-            listener.onStage("Backfill requested from life count " + (last + 1));
+                    PatchControl.backfillFrom(from)));
+            listener.onStage("Backfill requested from life count " + from + " to " + state.backfillTo());
         } catch (GeneralSecurityException | IOException e) {
             listener.onError("Backfill request failed: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Worker thread. A page holding a value at or after the newest minute of the hole means the whole hole came back.
+     * A page whose newest slots are the empty ones the sensor writes later leaves those minutes in the hole, and moves
+     * its oldest end up to the first of them, so the next ask starts there instead of re-sending pages already held.
+     */
+    private void backfillCovered(List<HistoricalPage.Entry> entries) {
+        if (state.backfillFrom() == 0) {
+            return;
+        }
+        for (HistoricalPage.Entry entry : entries) {
+            if (entry.mgdl == null) {
+                continue;
+            }
+            if (entry.lifeCount >= state.backfillTo()) {
+                state.closeHole();
+                return;
+            }
+            if (entry.lifeCount >= state.backfillFrom()) {
+                state.advanceHoleFrom(entry.lifeCount + HistoricalPage.SPACING);
+            }
         }
     }
 }

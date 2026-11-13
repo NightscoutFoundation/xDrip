@@ -1,5 +1,6 @@
 package com.eveningoutpost.dexdrip.cgm.li3;
 
+import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 import static com.google.common.truth.Truth.assertThat;
 import static org.robolectric.Shadows.shadowOf;
@@ -24,6 +25,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.cgm.li3.Li3AccountLookupTest.FakeAccountServer;
 import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -44,6 +46,9 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import xrwd.li3.Li3SensorState;
+import xrwd.li3.data.RealtimeReading;
+import xrwd.li3.nfc.PatchInfo;
+import xrwd.li3.util.Hex;
 
 /**
  * Tests for {@link Li3Activity}: the screen asks for location, which the Bluetooth scan needs, without an app
@@ -55,11 +60,18 @@ import xrwd.li3.Li3SensorState;
  */
 public class Li3ActivityTest extends RobolectricTestWithConfig {
 
+    /** A US 15-day Li3: 60 minutes warm-up, 21600 minutes wear. */
+    private static final String PATCH_INFO = "00a50001000200010060541e020401040c0130525243393839415151ff17";
+
+    /** Minutes since activation of a reading the collector stores: well past warm-up, on the 5-minute interval. */
+    private static final int STORED_LIFE_COUNT = 1000;
+
     @Override
     public void setUp() {
         super.setUp();
         xdrip.setContextAlways(RuntimeEnvironment.application);
         ShadowDialog.reset();
+        Li3Service.forgetReadingTimes();
     }
 
     @After
@@ -69,6 +81,7 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         Pref.removeItem(Li3Store.PREF_ACCOUNT_ID);
         Li3Activity.lookupFactory = Li3Activity.DEFAULT_LOOKUP;
         Li3Store.forgetSensor();
+        Sensor.stopSensor();
     }
 
     // ================================================ Offer download =================================================
@@ -206,6 +219,134 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(screenText(screen.get())).contains(gs(R.string.li3_stage_no_sensor));
+    }
+
+    // ================================================== Setup steps ==================================================
+
+    /** Without location the screen names allowing it as the next step. */
+    @Test
+    public void onResume_noLocation_locationIsNextStep() {
+        // :: Act
+        Li3Activity screen = Robolectric.buildActivity(Li3Activity.class).setup().get();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        String text = screenText(screen);
+        assertThat(text).contains(
+                "○ 1. " + gs(R.string.li3_step_location) + " (" + gs(R.string.li3_setup_next) + ")");
+        assertThat(text).contains("○ 5. " + gs(R.string.li3_step_readings));
+    }
+
+    /** Location allowed but turned off still leaves the location step open. */
+    @Test
+    public void onResume_locationOff_locationStepOpen() {
+        // :: Setup
+        grantLocation();
+        setLocationEnabled(false);
+
+        // :: Act
+        Li3Activity screen = Robolectric.buildActivity(Li3Activity.class).setup().get();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(screenText(screen)).contains("○ 1. " + gs(R.string.li3_step_location));
+    }
+
+    /** With location allowed and no credential, the screen ticks location and names the download as next. */
+    @Test
+    public void onResume_noCredential_downloadIsNextStep() {
+        // :: Setup
+        grantLocation();
+
+        // :: Act
+        Li3Activity screen = Robolectric.buildActivity(Li3Activity.class).setup().get();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        String text = screenText(screen);
+        assertThat(text).contains("✓ 1. " + gs(R.string.li3_step_location) + "\n");
+        assertThat(text).contains(
+                "○ 2. " + gs(R.string.li3_step_credential) + " (" + gs(R.string.li3_setup_next) + ")");
+    }
+
+    /** An account ID that is set shows as a ticked account step. */
+    @Test
+    public void onResume_accountIdSet_accountStepTicked() {
+        // :: Setup
+        grantLocation();
+        Pref.setString(Li3Store.PREF_ACCOUNT_ID, "ABCDEF01-2345-6789-ABCD-EF0123456789");
+
+        // :: Act
+        Li3Activity screen = Robolectric.buildActivity(Li3Activity.class).setup().get();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(screenText(screen)).contains("✓ 3. " + gs(R.string.li3_step_account));
+    }
+
+    /** A sensor scanned while the screen is open ticks the scan step, without leaving the screen. */
+    @Test
+    public void onResume_sensorStartedWhileOpen_scanStepTicked() {
+        // :: Setup
+        grantLocation();
+        ActivityController<Li3Activity> screen = Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+        assertThat(screenText(screen.get())).contains("○ 4. " + gs(R.string.li3_step_scan));
+
+        // :: Act
+        startSensor("Connecting");
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(5));
+
+        // :: Verify
+        assertThat(screenText(screen.get())).contains("✓ 4. " + gs(R.string.li3_step_scan));
+    }
+
+    /** A reading stored moments ago ticks the last step. */
+    @Test
+    public void onResume_readingStored_readingsStepTicked() {
+        // :: Setup
+        grantLocation();
+        Li3Service.Session session = startSensor("Streaming");
+
+        // :: Act
+        session.onReading(reading(STORED_LIFE_COUNT, 120));
+        Li3Activity screen = Robolectric.buildActivity(Li3Activity.class).setup().get();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(screenText(screen)).contains("✓ 5. " + gs(R.string.li3_step_readings));
+    }
+
+    /** A reading that came but was refused, here one during warm-up, leaves the last step open: nothing is stored. */
+    @Test
+    public void onResume_readingRefused_readingsStepOpen() {
+        // :: Setup
+        grantLocation();
+        Li3Service.Session session = startSensor("Streaming");
+
+        // :: Act
+        session.onReading(reading(1, 120));
+        Li3Activity screen = Robolectric.buildActivity(Li3Activity.class).setup().get();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(screenText(screen)).contains("○ 5. " + gs(R.string.li3_step_readings));
+    }
+
+    /** A forgotten sensor's last reading does not tick the last step: no sensor is set up. */
+    @Test
+    public void onResume_readingThenForget_readingsStepOpen() {
+        // :: Setup
+        grantLocation();
+        startSensor("Streaming").onReading(reading(STORED_LIFE_COUNT, 120));
+
+        // :: Act
+        Li3Store.forgetSensor();
+        Li3Activity screen = Robolectric.buildActivity(Li3Activity.class).setup().get();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(screenText(screen)).contains("○ 5. " + gs(R.string.li3_step_readings));
     }
 
     // ============================================== Look up account ID ===============================================
@@ -350,11 +491,31 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         }
     }
 
-    /** Stores a sensor as an NFC scan does, and has the collector report the given stage for it. */
-    private static void startSensor(String stage) {
+    /**
+     * Stores a sensor as an NFC scan does, and has the collector report the given stage for it.
+     *
+     * @return the collector's session for the sensor
+     */
+    private static Li3Service.Session startSensor(String stage) {
         Li3SensorState state = new Li3SensorState("0RRC989AQ", "CC:22:DF:B8:F9:58", new byte[]{1, 2, 3, 4});
+        state.setActivationMs(JoH.tsl() - STORED_LIFE_COUNT * MINUTE_IN_MS);
+        state.applySensorCycle(PatchInfo.parse(Hex.toBytes(PATCH_INFO)));
         Li3Store.saveState(state);
-        new Li3Service.Session(new Li3Readings(state)).onStage(stage);
+        Li3Store.ensureSensor(state);
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(state));
+        session.onStage(stage);
+        return session;
+    }
+
+    /** A realtime reading at the given life count and value, with the quality flags a stored reading has. */
+    private static RealtimeReading reading(int lifeCount, int mgdl) {
+        byte[] b = new byte[RealtimeReading.SIZE];
+        b[0] = (byte) lifeCount;
+        b[1] = (byte) (lifeCount >> 8);
+        b[14] = 3;
+        b[15] = (byte) mgdl;
+        b[16] = (byte) (mgdl >> 8);
+        return RealtimeReading.parse(b);
     }
 
     /** The text of every view on the screen, one per line. */

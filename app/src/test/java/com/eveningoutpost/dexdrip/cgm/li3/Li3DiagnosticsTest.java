@@ -99,6 +99,35 @@ public class Li3DiagnosticsTest extends RobolectricTestWithConfig {
         assertThat(text).doesNotContain("null");
     }
 
+    /** A sensor with no history hole says it is owed none. */
+    @Test
+    public void text_noHole_saysHistoryOwedNone() {
+        // :: Setup
+        Li3Store.saveState(sensor());
+
+        // :: Act
+        String text = Li3Diagnostics.text(context);
+
+        // :: Verify
+        assertThat(text).contains("history owed none");
+    }
+
+    /** An open history hole is shown with its life counts and the life count its last ask went out at. */
+    @Test
+    public void text_openHole_namesHoleAndAsk() {
+        // :: Setup
+        Li3SensorState state = sensor();
+        state.openHole(1061, 1070);
+        state.markHoleAskedAt(1073);
+        Li3Store.saveState(state);
+
+        // :: Act
+        String text = Li3Diagnostics.text(context);
+
+        // :: Verify
+        assertThat(text).contains("history owed 1061 to 1070, asked at 1073");
+    }
+
     /** A paired sensor's PIN and key, and the account ID, are not in the report in any common spelling. */
     @Test
     public void text_pairedSensor_holdsNoSecrets() {

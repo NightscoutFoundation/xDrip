@@ -6,6 +6,7 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.google.common.truth.Truth.assertThat;
 
 import com.activeandroid.query.Delete;
+import com.activeandroid.query.Select;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.Calibration;
@@ -297,10 +298,10 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         Li3Store.ensureSensor(state);
 
         // :: Act
-        int stored = readings.onHistory(entries(1000, 180), now);
+        readings.onHistory(entries(1000, 180), now);
 
         // :: Verify
-        assertThat(stored).isEqualTo(0);
+        assertThat(readingsAt(1000)).isEqualTo(1);
     }
 
     /** A history entry for a life count whose realtime reading was rejected is not stored. */
@@ -330,9 +331,9 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         assertThat(storedAt(990).calculated_value).isEqualTo(39.0);
     }
 
-    /** A history entry beyond the current life count is not stored. */
+    /** A history entry ahead of the last realtime reading is stored: no realtime reading was stored for it. */
     @Test
-    public void onHistory_beyondCurrentLifeCount_notStored() {
+    public void onHistory_aheadOfLastReading_stored() {
         // :: Setup
         readings.onRealtime(reading(1000, 120), now);
 
@@ -340,7 +341,106 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         readings.onHistory(entries(1005, 130), now);
 
         // :: Verify
-        assertThat(storedAt(1005)).isNull();
+        assertThat(storedAt(1005).calculated_value).isEqualTo(130.0);
+    }
+
+    /** History with no realtime reading at all is stored, so a hole at the start of a connection is filled. */
+    @Test
+    public void onHistory_noRealtimeReading_stored() {
+        // :: Act
+        readings.onHistory(entries(982, 130), now);
+
+        // :: Verify
+        assertThat(storedAt(982).calculated_value).isEqualTo(130.0);
+    }
+
+    /** A history entry whose time is more than fifteen minutes ahead of now is not stored. */
+    @Test
+    public void onHistory_moreThanFifteenMinutesAhead_notStored() {
+        // :: Setup
+        readings.onRealtime(reading(1000, 120), now);
+
+        // :: Act
+        int stored = readings.onHistory(entries(1030, 130), now);
+
+        // :: Verify
+        assertThat(stored).isEqualTo(0);
+    }
+
+    /**
+     * A realtime reading refused only for the sensor's quality flags is not remembered as refused, so history can still
+     * fill that minute.
+     */
+    @Test
+    public void onHistory_afterNotDisplayableReading_fillsThatMinute() {
+        // :: Setup
+        readings.onRealtime(reading(1000, 120, 0x8001), now);
+
+        // :: Act
+        readings.onHistory(entries(1000, 130), now);
+
+        // :: Verify
+        assertThat(state.rejectedLifeCounts()).doesNotContain(1000);
+        assertThat(storedAt(1000).calculated_value).isEqualTo(130.0);
+    }
+
+    /** A realtime reading refused for a time too far in the past is remembered, so history does not fill it either. */
+    @Test
+    public void onHistory_afterReadingTooOld_notStored() {
+        // :: Setup
+        state.setActivationMs(now - DAY_IN_MS);
+        readings.onRealtime(reading(1000, 120), now);
+
+        // :: Act
+        readings.onHistory(entries(1000, 130), now);
+
+        // :: Verify
+        assertThat(storedAt(1000)).isNull();
+    }
+
+    /**
+     * A reading flagged not displayable whose time is also too far in the past is remembered as refused, so history
+     * does not store that minute at the same wrong time.
+     */
+    @Test
+    public void onHistory_afterNotDisplayableReadingTooOld_notStored() {
+        // :: Setup
+        state.setActivationMs(now - DAY_IN_MS);
+        readings.onRealtime(reading(1000, 120, 0x8001), now);
+
+        // :: Act
+        readings.onHistory(entries(1000, 130), now);
+
+        // :: Verify
+        assertThat(state.rejectedLifeCounts()).contains(1000);
+        assertThat(storedAt(1000)).isNull();
+    }
+
+    /** A status frame saves the sensor state, so a backfill ask or give-up made on a status frame is kept. */
+    @Test
+    public void onStatus_savesState() {
+        // :: Setup
+        state.openHole(1061, 1070);
+
+        // :: Act
+        readings.onStatus(PatchStatus.parse(Hex.toBytes("0000000000000004e8030000")));
+
+        // :: Verify
+        assertThat(Li3Store.loadState().backfillFrom()).isEqualTo(1061);
+    }
+
+    /** A history page saves the sensor state, so a backfill hole opened or closed on the connection is kept. */
+    @Test
+    public void onHistory_page_savesState() {
+        // :: Setup
+        state.openHole(1061, 1070);
+
+        // :: Act
+        readings.onHistory(entries(982, 130), now);
+
+        // :: Verify
+        assertThat(Li3Store.loadState().backfillFrom()).isEqualTo(1061);
+        assertThat(Li3Store.loadState().backfillTo()).isEqualTo(1070);
     }
 
     /** A valid entry in a gap is stored with the sensor's value, on a life count off the five-minute grid too. */
@@ -546,7 +646,7 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         readings.onHistory(entries(982, 130), now);
 
         // :: Verify
-        assertThat(logged("History: 6 entries, life counts 982 to 1007, 4 stored")).isTrue();
+        assertThat(logged("History: 6 entries, life counts 982 to 1007, 6 stored")).isTrue();
     }
 
     // ================================================== megaStatus ===================================================
@@ -567,7 +667,7 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         assertThat(text).contains("Li3, 15 days");
         assertThat(text).contains("1000");
         assertThat(text).contains("0102030405a0b0c0");
-        assertThat(text).contains("Backfilled: 4");
+        assertThat(text).contains("Backfilled: 6");
         assertThat(text).contains("Sensor state: 4");
     }
 
@@ -731,6 +831,12 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
             }
         }
         return count;
+    }
+
+    /** How many readings, under any xDrip sensor, are stored at this life count's time. */
+    private int readingsAt(int lifeCount) {
+        return new Select().from(BgReading.class)
+                .where("timestamp = ?", state.activationMs() + lifeCount * MINUTE_IN_MS).execute().size();
     }
 
     private BgReading storedAt(int lifeCount) {

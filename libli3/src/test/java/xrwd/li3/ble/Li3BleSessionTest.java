@@ -66,6 +66,8 @@ public class Li3BleSessionTest {
     private Thread.UncaughtExceptionHandler previousHandler;
     private FakeGattSensor gatt;
     private Li3Ble ble;
+    /** The sensor state the connection under test reads and keeps its backfill hole in. */
+    private Li3SensorState state;
 
     @Before
     public void setUp() {
@@ -141,6 +143,335 @@ public class Li3BleSessionTest {
         assertThat(recorder.history.get(5).lifeCount).isEqualTo(1025);
         assertThat(recorder.history.get(5).mgdl).isEqualTo(105);
         assertThat(recorder.errors).isEmpty();
+    }
+
+    // =================================================== backfill ====================================================
+
+    /**
+     * The history request the sensor gets names the first missing minute: {@code 01 00 01}, then life count 1061
+     * little-endian, then {@code 00 00}, sealed with the session keys.
+     */
+    @Test
+    public void reading_afterGap_writesRequestFromFirstMissingMinute() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1060, 100);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyReading(1, 1073, 151);
+        pumpUntil(() -> !gatt.patchControlWrites.isEmpty());
+
+        // :: Verify
+        assertThat(gatt.patchControlWrites).hasSize(1);
+        byte[] plain = new DataPlaneCrypto(K_ENC, IV_ENC).decrypt(DataPlaneCrypto.Channel.PATCH_STATUS,
+                gatt.patchControlWrites.get(0));
+        assertThat(Hex.of(plain)).isEqualTo("01000125040000");
+    }
+
+    /**
+     * A reading that skips minutes after the last one held asks for history from the first missing minute, up to
+     * the last five-minute slot at or before the reading.
+     */
+    @Test
+    public void reading_afterGap_asksFromFirstMissingMinute() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1060, 100);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyReading(1, 1073, 151);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+
+        // :: Verify
+        assertThat(backfillAsks()).containsExactly("Backfill requested from life count 1061 to 1070");
+        assertThat(state.backfillAskedAt()).isEqualTo(1073);
+        assertThat(recorder.errors).isEmpty();
+    }
+
+    /**
+     * A gap with no five-minute slot in it leaves nothing history could fill: no hole is opened and nothing is asked,
+     * so a dropped packet or a run of refused readings does not ask every minute.
+     */
+    @Test
+    public void reading_gapWithinOneSlot_asksNothing() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1000, 100);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyReading(1, 1002, 151);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(0);
+        assertThat(backfillAsks()).isEmpty();
+    }
+
+    /** A gap holding exactly one five-minute slot is owed that slot. */
+    @Test
+    public void reading_gapHoldingOneSlot_asksForIt() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1004, 100);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyReading(1, 1006, 151);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+
+        // :: Verify
+        assertThat(backfillAsks()).containsExactly("Backfill requested from life count 1005 to 1005");
+    }
+
+    /** A reading that follows on from the last one held leaves nothing owed and asks for nothing. */
+    @Test
+    public void reading_followsLast_asksNothing() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1072, 100);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyReading(1, 1073, 151);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+
+        // :: Verify
+        assertThat(backfillAsks()).isEmpty();
+        assertThat(state.backfillFrom()).isEqualTo(0);
+    }
+
+    /** Fewer than five of the sensor's minutes after an ask, a status frame does not ask again. */
+    @Test
+    public void status_withinFiveMinutesOfAsk_notAskedAgain() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1060, 100);
+        ble.start();
+        awaitStreaming();
+        notifyReading(1, 1073, 151);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+
+        // :: Act
+        notifyStatus(2, 1077);
+
+        // :: Verify
+        assertThat(backfillAsks()).hasSize(1);
+        assertThat(state.backfillAskedAt()).isEqualTo(1073);
+    }
+
+    /** Five of the sensor's minutes after an ask that brought nothing back, a status frame asks again. */
+    @Test
+    public void status_fiveMinutesAfterAsk_asksAgain() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1060, 100);
+        ble.start();
+        awaitStreaming();
+        notifyReading(1, 1073, 151);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+
+        // :: Act
+        notifyStatus(2, 1078);
+
+        // :: Verify
+        assertThat(backfillAsks()).containsExactly("Backfill requested from life count 1061 to 1070",
+                "Backfill requested from life count 1061 to 1070");
+        assertThat(state.backfillAskedAt()).isEqualTo(1078);
+    }
+
+    /** An ask kept from an earlier connection counts, so a new connection does not ask again within five minutes. */
+    @Test
+    public void status_askFromEarlierConnection_notAskedAgain() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.openHole(1061, 1070);
+        state.markHoleAskedAt(1073);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyStatus(1, 1075);
+
+        // :: Verify
+        assertThat(backfillAsks()).isEmpty();
+        assertThat(state.backfillFrom()).isEqualTo(1061);
+    }
+
+    /** A status frame whose clock has not reached the hole yet cannot be answered for it, so nothing is asked. */
+    @Test
+    public void status_beforeHole_asksNothing() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.openHole(1100, 1105);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyStatus(1, 1090);
+
+        // :: Verify
+        assertThat(backfillAsks()).isEmpty();
+        assertThat(state.backfillFrom()).isEqualTo(1100);
+    }
+
+    /** An hour after the newest minute of the hole, the sensor is still asked once more. */
+    @Test
+    public void status_anHourPastHole_stillAsks() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.openHole(1061, 1070);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyStatus(1, 1130);
+
+        // :: Verify
+        assertThat(backfillAsks()).containsExactly("Backfill requested from life count 1061 to 1070");
+    }
+
+    /** More than an hour after the newest minute of the hole, the sensor has had its chances: the hole is closed. */
+    @Test
+    public void status_pastAnHour_givesUp() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.openHole(1061, 1070);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyStatus(1, 1131);
+
+        // :: Verify
+        assertThat(backfillAsks()).isEmpty();
+        assertThat(state.backfillFrom()).isEqualTo(0);
+    }
+
+    /** A page with a value at the newest minute of the hole means the whole hole came back: it is closed. */
+    @Test
+    public void history_valueAtHoleEnd_closesHole() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.openHole(1061, 1070);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyHistory(1, 1045, 100, 101, 102, 103, 104, 105);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(0);
+        assertThat(state.backfillTo()).isEqualTo(0);
+    }
+
+    /**
+     * A page whose newest slots are still empty moves the oldest end of the hole to the first empty slot, and the
+     * next ask starts there.
+     */
+    @Test
+    public void history_emptyNewestSlots_nextAskStartsAtFirstEmpty() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.openHole(1061, 1090);
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyHistory(1, 1060, 100, 101, 102, 0, 0, 0);
+        notifyStatus(2, 1095);
+
+        // :: Verify
+        assertThat(state.backfillTo()).isEqualTo(1090);
+        assertThat(backfillAsks()).containsExactly("Backfill requested from life count 1075 to 1090");
+    }
+
+    /**
+     * A refused reading leaves the last stored minute where it was. After history has answered for the start of the
+     * hole, the next refused reading neither moves the hole back over those minutes nor asks again early.
+     */
+    @Test
+    public void reading_refusedAfterHistoryAnswered_notAskedAgainEarly() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1060, 100);
+        ble.start();
+        awaitStreaming();
+        notifyReading(1, 1073, 151);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+        notifyHistory(2, 1060, 100, 101, 0);
+
+        // :: Act
+        notifyReading(3, 1074, 152);
+        pumpUntil(() -> recorder.readings.size() > 1);
+
+        // :: Verify
+        assertThat(backfillAsks()).containsExactly("Backfill requested from life count 1061 to 1070");
+        assertThat(state.backfillFrom()).isEqualTo(1070);
+        assertThat(state.backfillAskedAt()).isEqualTo(1073);
+    }
+
+    /** After the whole hole came back, the next refused reading does not open it again. */
+    @Test
+    public void reading_refusedAfterHoleCameBack_notReopened() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1060, 100);
+        ble.start();
+        awaitStreaming();
+        notifyReading(1, 1073, 151);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+        notifyHistory(2, 1060, 100, 101, 102);
+
+        // :: Act
+        notifyReading(3, 1074, 152);
+        pumpUntil(() -> recorder.readings.size() > 1);
+
+        // :: Verify
+        assertThat(backfillAsks()).hasSize(1);
+        assertThat(state.backfillFrom()).isEqualTo(0);
+    }
+
+    /** After giving up on a hole, a later gap is asked for from after the given-up minutes, not from the old start. */
+    @Test
+    public void reading_afterGiveUp_asksOnlyForNewerMinutes() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        state.updateLastGlucose(1060, 100);
+        state.openHole(1061, 1070);
+        ble.start();
+        awaitStreaming();
+        notifyStatus(1, 1131);
+
+        // :: Act
+        notifyReading(2, 1132, 150);
+        pumpUntil(() -> !recorder.readings.isEmpty());
+
+        // :: Verify
+        assertThat(backfillAsks()).containsExactly("Backfill requested from life count 1071 to 1130");
+    }
+
+    /** A page that comes with no hole open opens none. */
+    @Test
+    public void history_noHole_staysClosed() throws Exception {
+        // :: Setup
+        ble = cachedKeyBle();
+        ble.start();
+        awaitStreaming();
+
+        // :: Act
+        notifyHistory(1, 1060, 100, 101, 102, 0, 0, 0);
+
+        // :: Verify
+        assertThat(state.backfillFrom()).isEqualTo(0);
+        assertThat(backfillAsks()).isEmpty();
     }
 
     // ================================================ clinical data ==================================================
@@ -540,7 +871,7 @@ public class Li3BleSessionTest {
 
     /** A sensor at a known address whose cached key it still accepts. */
     private Li3Ble cachedKeyBle() {
-        Li3SensorState state = new Li3SensorState("0RRC989AQ", ADDRESS, new byte[]{1, 2, 3, 4});
+        state = new Li3SensorState("0RRC989AQ", ADDRESS, new byte[]{1, 2, 3, 4});
         state.setKAuth(KAUTH);
         state.setIdentityLabel("test");
         sensor.acceptedKAuth = KAUTH;
@@ -590,6 +921,38 @@ public class Li3BleSessionTest {
         byte[] wire = frame(DataPlaneCrypto.PacketKind.KIND3, sequence, plain);
         gatt.notifyData(Gatt.GLUCOSE_DATA, Arrays.copyOfRange(wire, 0, GLUCOSE_FIRST_HALF));
         gatt.notifyData(Gatt.GLUCOSE_DATA, Arrays.copyOfRange(wire, GLUCOSE_FIRST_HALF, wire.length));
+    }
+
+    /** Sends a patch status frame whose clock reads {@code lifeCount}, and waits for the collector to get it. */
+    private void notifyStatus(int sequence, int lifeCount) throws GeneralSecurityException {
+        int seen = recorder.statuses.size();
+        byte[] plain = new byte[PatchStatus.SIZE];
+        putU16(plain, 8, lifeCount);
+        gatt.notifyData(Gatt.PATCH_STATUS, frame(DataPlaneCrypto.PacketKind.KIND2, sequence, plain));
+        pumpUntil(() -> recorder.statuses.size() == seen + 1);
+    }
+
+    /** Sends a page of history from {@code lifeCount} with these raw values, 0 for a slot not written yet. */
+    private void notifyHistory(int sequence, int lifeCount, int... values) throws GeneralSecurityException {
+        int seen = recorder.history.size();
+        byte[] plain = new byte[HistoricalPage.SIZE];
+        putU16(plain, 0, lifeCount);
+        for (int i = 0; i < values.length; i++) {
+            putU16(plain, 2 + 2 * i, values[i]);
+        }
+        gatt.notifyData(Gatt.HISTORIC_DATA, frame(DataPlaneCrypto.PacketKind.KIND4, sequence, plain));
+        pumpUntil(() -> recorder.history.size() > seen);
+    }
+
+    /** The backfill requests the connection has reported, oldest first. */
+    private List<String> backfillAsks() {
+        List<String> asks = new ArrayList<>();
+        for (String stage : recorder.stages) {
+            if (stage.startsWith("Backfill requested")) {
+                asks.add(stage);
+            }
+        }
+        return asks;
     }
 
     /** Six historic readings five minutes apart from {@code lifeCount}, rising 1 mg/dL at a time from {@code mgdl}. */

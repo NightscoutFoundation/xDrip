@@ -551,6 +551,20 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         assertThat(Li3Service.nanoStatus().toString()).isEqualTo("Reading not stored: warmup");
     }
 
+    /** With no sensor, the line under the graph says where the setup steps are, since the scan alone is not enough. */
+    @Test
+    public void nanoStatus_noSensor_pointsToLi3Screen() {
+        // :: Setup
+        selectSource(DexCollectionType.Li3);
+        Li3Store.forgetSensor();
+
+        // :: Act
+        Robolectric.buildService(Li3Service.class).create().startCommand(0, 1);
+
+        // :: Verify
+        assertThat(String.valueOf(Li3Service.nanoStatus())).isEqualTo(gs(R.string.li3_home_no_sensor));
+    }
+
     /** Once the collector restarts after "Forget sensor", the old sensor's refusal is gone from under the graph. */
     @Test
     public void nanoStatus_refusedThenForgetAndRestart_noReason() {

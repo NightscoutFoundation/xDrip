@@ -2170,6 +2170,7 @@
     <string name="li3_scan_on_li3_screen">Scan the sensor again on the Li3 screen to start it or take it over</string>
     <string name="li3_nfc_done">Li3 sensor ready, connecting by Bluetooth</string>
     <string name="li3_stage_no_sensor">No sensor; scan one with NFC</string>
+    <string name="li3_home_no_sensor">No Li3 sensor; see the setup steps under System Status, Li3</string>
     <string name="li3_stage_sensor_ended">Sensor ended; scan a new one with NFC</string>
     <string name="li3_stage_no_credential">No app credential; download it on the Li3 screen from the Li3 status page</string>
     <string name="li3_location_needed">Location is needed to find the sensor; tap to allow it</string>
@@ -2183,7 +2184,13 @@
     <string name="li3_expired">expired</string>
     <string name="li3_last_reading">Last reading</string>
     <string name="li3_open">Open</string>
-    <string name="li3_help">Scan a Li3 with NFC to start it or take it over. Set the account ID and app in the Li3 settings first; without an account ID only a new sensor can be started.</string>
+    <string name="li3_setup">Setup</string>
+    <string name="li3_setup_next">next</string>
+    <string name="li3_step_location">Allow location, so the phone can find the sensor by Bluetooth</string>
+    <string name="li3_step_credential">Download the app credential with the button below</string>
+    <string name="li3_step_account">Only to take over a sensor started by an official app: look up its account ID below, and pick that app in the Li3 settings</string>
+    <string name="li3_step_scan">Hold the phone to the sensor while this screen is open, to start it or take it over</string>
+    <string name="li3_step_readings">Wait for the first reading, which can take a few minutes</string>
     <string name="li3_credential">App credential</string>
     <string name="li3_credential_ready">downloaded</string>
     <string name="li3_download_credential">Download app credential</string>

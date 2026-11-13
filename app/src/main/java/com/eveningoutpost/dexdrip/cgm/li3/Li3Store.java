@@ -146,7 +146,8 @@ public final class Li3Store {
                 + dateTimeText(sensor.started_at));
     }
 
-    static void startControlActivity() {
+    /** Opens the Li3 screen, from anywhere in the app. */
+    public static void startControlActivity() {
         Context context = xdrip.getAppContext();
         Intent intent = new Intent(context, Li3Activity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP

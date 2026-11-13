@@ -16,6 +16,7 @@ import org.robolectric.shadows.ShadowBluetoothGatt;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.UUID;
 
 import xrwd.li3.pairing.FakeSensor;
@@ -49,6 +50,8 @@ final class FakeGattSensor {
     volatile UUID unconfirmedNotifications;
     /** How many writes and notification requests the sensor has left unanswered so far. */
     volatile int unanswered;
+    /** Every frame the phone wrote to patch control, as sent, oldest first. */
+    final List<byte[]> patchControlWrites = new CopyOnWriteArrayList<>();
 
     FakeGattSensor(String address, FakeSensor sensor) {
         this.sensor = sensor;
@@ -149,6 +152,9 @@ final class FakeGattSensor {
                 return;
             }
             byte[] value = characteristic.getValue().clone();
+            if (characteristic.getUuid().equals(Gatt.PATCH_CONTROL)) {
+                patchControlWrites.add(value);
+            }
             deliver(gatt, () -> delegate.onCharacteristicWrite(gatt, characteristic, status));
             if (!Gatt.HANDSHAKE_NOTIFYING.contains(characteristic.getUuid())) {
                 return; // the fake sensor plays only the handshake

@@ -29,8 +29,8 @@ import java.security.GeneralSecurityException;
 import java.util.function.Supplier;
 
 /**
- * The Li3 screen: what the collector knows, asking for location, downloading the app credential, looking up the
- * account ID, and forgetting the sensor.
+ * The Li3 screen: the setup steps and which are done, what the collector knows, asking for location, downloading
+ * the app credential, looking up the account ID, and forgetting the sensor.
  * Starting or taking over a sensor is done by scanning it with NFC; the screen reads scans itself while it is open.
  *
  * @author Asbjørn Aarrestad - 2026.10
@@ -56,6 +56,7 @@ public class Li3Activity extends ActivityWithMenu {
     @VisibleForTesting
     static Supplier<Li3AccountLookup> lookupFactory = DEFAULT_LOOKUP;
 
+    private TextView steps;
     private TextView status;
     private boolean offeredDownload;
     /** A lookup is running; a second OK would send the login twice. */
@@ -69,9 +70,8 @@ public class Li3Activity extends ActivityWithMenu {
         layout.setOrientation(LinearLayout.VERTICAL);
         layout.setPadding(pad, pad, pad, pad);
 
-        TextView help = new TextView(this);
-        help.setText(R.string.li3_help);
-        layout.addView(help);
+        steps = new TextView(this);
+        layout.addView(steps);
 
         status = new TextView(this);
         status.setPadding(0, pad, 0, pad);
@@ -152,6 +152,7 @@ public class Li3Activity extends ActivityWithMenu {
     }
 
     private void refresh() {
+        steps.setText(Li3Setup.text(this));
         StringBuilder sb = new StringBuilder();
         for (StatusItem item : Li3Service.megaStatus()) {
             if (item.runnable == null) {
