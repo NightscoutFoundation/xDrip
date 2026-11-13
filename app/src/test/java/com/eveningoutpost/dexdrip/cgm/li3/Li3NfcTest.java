@@ -10,6 +10,8 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.XmlResourceParser;
 import android.nfc.tech.NfcV;
@@ -20,8 +22,10 @@ import com.eveningoutpost.dexdrip.NFCFilterX;
 import com.eveningoutpost.dexdrip.NFCReaderX;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.LibreOOPAlgorithm.SensorType;
 import com.eveningoutpost.dexdrip.models.UserError;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -30,6 +34,7 @@ import org.junit.After;
 import org.junit.Test;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowAlertDialog;
 import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowToast;
 import org.xmlpull.v1.XmlPullParser;
@@ -75,6 +80,7 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
     public void tearDown() {
         Pref.removeItem("use_nfc_scan");
         Pref.removeItem(DexCollectionType.DEX_COLLECTION_METHOD);
+        Pref.removeItem(Li3Store.PREF_ACCOUNT_ID);
         Li3Store.forgetSensor();
         Li3Nfc.clearPending();
     }
@@ -466,6 +472,129 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
         assertThat(Li3Store.loadState()).isNull();
     }
 
+    // =============================================== Takeover question ===============================================
+
+    /**
+     * Taking over a running sensor without an account ID works only for a sensor that no official app reads, so the
+     * question offers to look the ID up first, and scanning anyway is the second choice.
+     */
+    @Test
+    public void onScan_takeoverWithoutAccount_offersLookupFirst() {
+        // :: Setup
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+
+        // :: Act
+        Li3Nfc.onScan(activity, null, Hex.toBytes(ACTIVE));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
+        assertThat(dialog.getButton(AlertDialog.BUTTON_POSITIVE).getText().toString())
+                .isEqualTo(gs(R.string.li3_lookup_account));
+        assertThat(dialog.getButton(AlertDialog.BUTTON_NEUTRAL).getText().toString())
+                .isEqualTo(gs(R.string.li3_scan_anyway));
+        assertThat(String.valueOf(shadowOf(dialog).getMessage()))
+                .isEqualTo(gs(R.string.li3_warn_takeover_accountless) + "\n\n" + gs(R.string.li3_scan_anyway_again));
+        assertThat(Li3Nfc.pending(SERIAL, tsl())).isNull();
+    }
+
+    /** Scan anyway confirms the takeover without an account, so the next scan sends it. */
+    @Test
+    public void onScan_takeoverWithoutAccountScanAnyway_confirms() {
+        // :: Setup
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        Li3Nfc.onScan(activity, null, Hex.toBytes(ACTIVE));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_NEUTRAL).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        Li3Nfc.Decision pending = Li3Nfc.pending(SERIAL, tsl());
+        assertThat(pending).isNotNull();
+        assertThat(pending.code).isEqualTo(NfcCommand.Code.SWITCH_RECEIVER);
+        assertThat(pending.account).isEmpty();
+    }
+
+    /** Looking the ID up from a screen other than the Li3 screen opens the Li3 screen, and confirms nothing. */
+    @Test
+    public void onScan_takeoverWithoutAccountLookup_opensLi3Screen() {
+        // :: Setup
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        Li3Nfc.onScan(activity, null, Hex.toBytes(ACTIVE));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        Intent opened = shadowOf(RuntimeEnvironment.application).getNextStartedActivity();
+        assertThat(opened).isNotNull();
+        assertThat(opened.getComponent().getClassName()).isEqualTo(Li3Activity.class.getName());
+        assertThat(Li3Nfc.pending(SERIAL, tsl())).isNull();
+    }
+
+    /** Looking the ID up on the Li3 screen asks for the account login there, and confirms nothing. */
+    @Test
+    public void onScan_takeoverWithoutAccountLookupOnLi3Screen_asksLogin() {
+        // :: Setup
+        Activity screen = Robolectric.buildActivity(Li3Activity.class).setup().get();
+        shadowOf(Looper.getMainLooper()).idle();
+        Li3Nfc.onScan(screen, null, Hex.toBytes(ACTIVE));
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        AlertDialog login = ShadowAlertDialog.getLatestAlertDialog();
+        assertThat(login.isShowing()).isTrue();
+        assertThat(String.valueOf(shadowOf(login).getMessage())).isEqualTo(gs(R.string.li3_lookup_hint));
+        assertThat(Li3Nfc.pending(SERIAL, tsl())).isNull();
+    }
+
+    /** With an account ID set, the takeover question keeps OK, which confirms the takeover with that account. */
+    @Test
+    public void onScan_takeoverWithAccount_okConfirms() {
+        // :: Setup
+        Pref.setString(Li3Store.PREF_ACCOUNT_ID, ACCOUNT);
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        Li3Nfc.onScan(activity, null, Hex.toBytes(ACTIVE));
+        shadowOf(Looper.getMainLooper()).idle();
+        AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
+        assertThat(dialog.getButton(AlertDialog.BUTTON_POSITIVE).getText().toString()).isEqualTo(gs(R.string.ok));
+
+        // :: Act
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        Li3Nfc.Decision pending = Li3Nfc.pending(SERIAL, tsl());
+        assertThat(pending).isNotNull();
+        assertThat(pending.account).isEqualTo(ACCOUNT);
+    }
+
+    /** Starting a sensor without an account ID needs nothing more, so its question keeps OK. */
+    @Test
+    public void onScan_freshWithoutAccount_okConfirms() {
+        // :: Setup
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        Li3Nfc.onScan(activity, null, Hex.toBytes(FRESH));
+        shadowOf(Looper.getMainLooper()).idle();
+        AlertDialog dialog = ShadowAlertDialog.getLatestAlertDialog();
+        assertThat(dialog.getButton(AlertDialog.BUTTON_POSITIVE).getText().toString()).isEqualTo(gs(R.string.ok));
+
+        // :: Act
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(Li3Nfc.pending(SERIAL, tsl()).code).isEqualTo(NfcCommand.Code.ACTIVATE);
+    }
+
     // ==================================================== pending ====================================================
 
     /** The second scan of the same sensor within five minutes picks up the choice confirmed after the first. */
@@ -619,6 +748,41 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(Li3Store.loadState().activationMs()).isEqualTo(0x69ee2bfcL * 1000);
+    }
+
+    /** A stored sensor finishes the setup, so the setup notification goes away. */
+    @Test
+    public void onResponse_stored_cancelsSetupNotification() {
+        // :: Setup
+        JoH.showNotification("Li3", "setup", null, Constants.LI3_CREDENTIAL_NOTIFICATION_ID, false, false, false);
+        NotificationManager manager = (NotificationManager) RuntimeEnvironment.getApplication()
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        assertThat(shadowOf(manager).getNotification(Constants.LI3_CREDENTIAL_NOTIFICATION_ID)).isNotNull();
+        PatchInfo info = patchInfo(FRESH);
+
+        // :: Act
+        Li3Nfc.onResponse(info, Li3Nfc.decide(info, null, ACCOUNT, ReceiverId.Fold.LI3_APP, UNIQUE_ID),
+                Hex.toBytes(ACTIVATED_REPLY), NOW);
+
+        // :: Verify
+        assertThat(shadowOf(manager).getNotification(Constants.LI3_CREDENTIAL_NOTIFICATION_ID)).isNull();
+    }
+
+    /** A reply that is not understood stores nothing, so the setup notification stays. */
+    @Test
+    public void onResponse_unparseableReply_keepsSetupNotification() {
+        // :: Setup
+        JoH.showNotification("Li3", "setup", null, Constants.LI3_CREDENTIAL_NOTIFICATION_ID, false, false, false);
+        NotificationManager manager = (NotificationManager) RuntimeEnvironment.getApplication()
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        PatchInfo info = patchInfo(FRESH);
+
+        // :: Act
+        Li3Nfc.onResponse(info, Li3Nfc.decide(info, null, ACCOUNT, ReceiverId.Fold.LI3_APP, UNIQUE_ID),
+                new byte[0], NOW);
+
+        // :: Verify
+        assertThat(shadowOf(manager).getNotification(Constants.LI3_CREDENTIAL_NOTIFICATION_ID)).isNotNull();
     }
 
     private static PatchInfo patchInfo(String hex) {

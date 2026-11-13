@@ -9,10 +9,12 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.nfc.NfcAdapter;
 import android.os.Looper;
+import android.provider.Settings;
 import android.text.InputType;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
@@ -40,21 +42,29 @@ import org.robolectric.shadows.ShadowDialog;
 import org.robolectric.shadows.ShadowNfcAdapter;
 import org.robolectric.shadows.ShadowToast;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import okhttp3.OkHttpClient;
 
 import xrwd.li3.Li3SensorState;
 import xrwd.li3.data.RealtimeReading;
 import xrwd.li3.nfc.PatchInfo;
+import xrwd.li3.pairing.ReceiverId;
 import xrwd.li3.util.Hex;
 
 /**
  * Tests for {@link Li3Activity}: the screen asks for location, which the Bluetooth scan needs, without an app
  * credential it offers to download it, once per visit, it reads NFC scans itself while it is open, and its status
  * follows the collector while it is open. Looking up the account ID asks for an account login, never sends a blank
- * one, asks before replacing an ID already set, and fills the ID in.
+ * one, asks before replacing an ID already set, fills the ID in, and then asks which app started the sensor. With no
+ * sensor yet it says what keeps NFC scanning from working. A failed credential download says how to retry, and a
+ * second tap while one runs starts nothing.
  *
  * @author Asbjørn Aarrestad - 2026.11
  */
@@ -79,7 +89,9 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         Pref.removeItem("use_nfc_scan");
         Pref.removeItem(DexCollectionType.DEX_COLLECTION_METHOD);
         Pref.removeItem(Li3Store.PREF_ACCOUNT_ID);
+        Pref.removeItem(Li3Store.PREF_FOLD);
         Li3Activity.lookupFactory = Li3Activity.DEFAULT_LOOKUP;
+        Li3Activity.clientFactory = Li3Activity.DEFAULT_CLIENT;
         Li3Store.forgetSensor();
         Sensor.stopSensor();
     }
@@ -108,6 +120,7 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
     public void onResume_again_offersOnce() {
         // :: Setup
         grantLocation();
+        enableNfcScan();
         ActivityController<Li3Activity> screen = Robolectric.buildActivity(Li3Activity.class).setup();
         shadowOf(Looper.getMainLooper()).idle();
         ShadowAlertDialog.getLatestAlertDialog().dismiss();
@@ -179,6 +192,145 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(shadowOf(NfcAdapter.getDefaultAdapter(screen.get())).isInReaderMode()).isFalse();
+    }
+
+    // ================================================ NFC check ======================================================
+
+    /** NFC scanning is off in xDrip by default; with no sensor yet, the screen asks to turn it on after the download. */
+    @Test
+    public void onResume_nfcScanOff_asksToTurnItOn() {
+        // :: Setup
+        grantLocation();
+        nfcPhone(true, true);
+        Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().dismiss(); // the download offer
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(ShadowDialog.getShownDialogs()).hasSize(2);
+        assertThat(latestMessage()).isEqualTo(gs(R.string.li3_nfc_scan_off));
+    }
+
+    /** Turn on switches NFC scanning on in xDrip, and the open screen reads scans at once. */
+    @Test
+    public void nfcScanOffDialog_turnOn_readsScans() {
+        // :: Setup
+        grantLocation();
+        nfcPhone(true, true);
+        ActivityController<Li3Activity> screen = Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+        ShadowAlertDialog.getLatestAlertDialog().dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(Pref.getBooleanDefaultFalse("use_nfc_scan")).isTrue();
+        assertThat(shadowOf(NfcAdapter.getDefaultAdapter(screen.get())).isInReaderMode()).isTrue();
+    }
+
+    /** Turning on NFC scanning in xDrip with NFC off on the phone goes on to say that NFC is off on the phone. */
+    @Test
+    public void nfcScanOffDialog_turnOnWithPhoneNfcOff_asksForPhoneNfc() {
+        // :: Setup
+        grantLocation();
+        nfcPhone(true, false);
+        Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+        ShadowAlertDialog.getLatestAlertDialog().dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(shadowOf(ShadowAlertDialog.getLatestAlertDialog()).getMessage().toString())
+                .isEqualTo(gs(R.string.li3_nfc_phone_off));
+    }
+
+    /** NFC switched off on the phone: the screen says so and opens the phone's NFC settings. */
+    @Test
+    public void onResume_phoneNfcOff_opensNfcSettings() {
+        // :: Setup
+        grantLocation();
+        nfcPhone(true, false);
+        Pref.setBoolean("use_nfc_scan", true);
+        ActivityController<Li3Activity> screen = Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+        ShadowAlertDialog.getLatestAlertDialog().dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+        assertThat(latestMessage()).isEqualTo(gs(R.string.li3_nfc_phone_off));
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        Intent opened = shadowOf(screen.get()).getNextStartedActivity();
+        assertThat(opened).isNotNull();
+        assertThat(opened.getAction()).isEqualTo(Settings.ACTION_NFC_SETTINGS);
+    }
+
+    /** A phone without NFC cannot start a sensor; the screen says so. */
+    @Test
+    public void onResume_noNfc_saysSensorCannotStart() {
+        // :: Setup
+        grantLocation();
+        nfcPhone(false, false);
+        Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(latestMessage()).isEqualTo(gs(R.string.li3_nfc_missing));
+    }
+
+    /** With a sensor already scanned, NFC is not needed now, so nothing is asked about it. */
+    @Test
+    public void onResume_sensorStored_noNfcQuestion() {
+        // :: Setup
+        grantLocation();
+        nfcPhone(true, true);
+        startSensor("Streaming");
+        Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        ShadowAlertDialog.getLatestAlertDialog().dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(ShadowDialog.getShownDialogs()).hasSize(1);
+    }
+
+    /** The NFC question, once answered, is not asked again on coming back to the screen. */
+    @Test
+    public void onResume_againAfterNfcQuestion_asksOnce() {
+        // :: Setup
+        grantLocation();
+        nfcPhone(true, true);
+        ActivityController<Li3Activity> screen = Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+        ShadowAlertDialog.getLatestAlertDialog().dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+        ShadowAlertDialog.getLatestAlertDialog().dismiss();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        screen.pause().resume();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(ShadowDialog.getShownDialogs()).hasSize(2);
     }
 
     // ==================================================== Status =====================================================
@@ -431,6 +583,189 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(gs(R.string.li3_lookup_done));
     }
 
+    /** After the account ID is filled in, the screen asks which app started the sensor, and keeps the answer. */
+    @Test
+    public void lookupDialog_ok_asksWhichApp() {
+        // :: Setup
+        Li3Activity.lookupFactory = () -> Li3AccountLookupTest.lookup(new FakeAccountServer().answer(200,
+                "{\"status\":0,\"data\":{\"user\":{\"id\":\"ABCDEF01-2345-6789-ABCD-EF0123456789\"}}}"));
+        Li3Activity screen = openScreen();
+        clickLookup(screen);
+        AlertDialog login = ShadowAlertDialog.getLatestAlertDialog();
+        editTexts(login).get(0).setText("someone@example.com");
+        editTexts(login).get(1).setText("pass-word");
+        login.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        awaitToast(gs(R.string.li3_lookup_done));
+        AlertDialog whichApp = ShadowAlertDialog.getLatestAlertDialog();
+        assertThat(shadowOf(whichApp).getTitle().toString()).isEqualTo(gs(R.string.li3_which_app));
+
+        // :: Act
+        shadowOf(whichApp).clickOnItem(1);
+
+        // :: Verify
+        assertThat(Li3Store.fold()).isEqualTo(ReceiverId.Fold.MULTI_SENSOR_APP);
+    }
+
+    /** A screen closed while the lookup runs, as on a rotation, is not asked which app; its window is gone. */
+    @Test
+    public void lookupDone_afterScreenClosed_asksNothing() {
+        // :: Setup
+        Li3Activity.lookupFactory = () -> Li3AccountLookupTest.lookup(new FakeAccountServer().answer(200,
+                "{\"status\":0,\"data\":{\"user\":{\"id\":\"ABCDEF01-2345-6789-ABCD-EF0123456789\"}}}"));
+        grantLocation();
+        ActivityController<Li3Activity> screen = Robolectric.buildActivity(Li3Activity.class).setup();
+        shadowOf(Looper.getMainLooper()).idle();
+        clickLookup(screen.get());
+        AlertDialog login = ShadowAlertDialog.getLatestAlertDialog();
+        editTexts(login).get(0).setText("someone@example.com");
+        editTexts(login).get(1).setText("pass-word");
+        login.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+
+        // :: Act
+        screen.pause().stop().destroy();
+        awaitToast(gs(R.string.li3_lookup_done));
+
+        // :: Verify
+        assertThat(ShadowAlertDialog.getLatestAlertDialog()).isSameInstanceAs(login);
+    }
+
+    /** A lookup that fails asks nothing more. */
+    @Test
+    public void lookupDialog_failed_asksNothingMore() {
+        // :: Setup
+        Li3Activity.lookupFactory = () -> Li3AccountLookupTest.lookup(new FakeAccountServer().answer(401, "{}"));
+        Li3Activity screen = openScreen();
+        clickLookup(screen);
+        AlertDialog login = ShadowAlertDialog.getLatestAlertDialog();
+        editTexts(login).get(0).setText("someone@example.com");
+        editTexts(login).get(1).setText("wrong");
+        int shown = ShadowDialog.getShownDialogs().size();
+
+        // :: Act
+        login.getButton(AlertDialog.BUTTON_POSITIVE).performClick();
+        awaitAnyToastBut(gs(R.string.li3_looking_up));
+
+        // :: Verify
+        assertThat(ShadowToast.getTextOfLatestToast()).isNotEqualTo(gs(R.string.li3_lookup_done));
+        assertThat(ShadowDialog.getShownDialogs()).hasSize(shown);
+    }
+
+    // =================================================== Sensor app ==================================================
+
+    /** The sensor app button names the app chosen now, the Li3 app unless changed. */
+    @Test
+    public void sensorAppButton_default_namesLi3App() {
+        // :: Act
+        Li3Activity screen = openScreen();
+
+        // :: Verify
+        assertThat(findButton(screen.getWindow().getDecorView(),
+                gs(R.string.li3_sensor_app_button, gs(R.string.li3_fold_li3_app)))).isNotNull();
+    }
+
+    /** Choosing another app with the button keeps it, and the button names it. */
+    @Test
+    public void sensorAppButton_choose_keepsAndShowsChoice() {
+        // :: Setup
+        Li3Activity screen = openScreen();
+        findButton(screen.getWindow().getDecorView(),
+                gs(R.string.li3_sensor_app_button, gs(R.string.li3_fold_li3_app))).performClick();
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Act
+        shadowOf(ShadowAlertDialog.getLatestAlertDialog()).clickOnItem(1);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(Li3Store.fold()).isEqualTo(ReceiverId.Fold.MULTI_SENSOR_APP);
+        assertThat(findButton(screen.getWindow().getDecorView(),
+                gs(R.string.li3_sensor_app_button, gs(R.string.li3_fold_multi_sensor_app)))).isNotNull();
+    }
+
+    // =================================================== Download ====================================================
+
+    /** A failed download says to check the connection and tap Download again, and the button works again. */
+    @Test
+    public void downloadButton_failed_saysHowToRetry() {
+        // :: Setup
+        Li3Activity.clientFactory = () -> client(chain -> {
+            throw new IOException("offline");
+        });
+        Li3Activity screen = openScreen();
+        Button download = findButton(screen.getWindow().getDecorView(), gs(R.string.li3_download_credential));
+
+        // :: Act
+        download.performClick();
+        awaitToast(gs(R.string.li3_download_failed_retry));
+
+        // :: Verify
+        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(gs(R.string.li3_download_failed_retry));
+        assertThat(download.isEnabled()).isTrue();
+    }
+
+    /** While a download runs the button is off, and a second tap starts no second download. */
+    @Test
+    public void downloadButton_whileRunning_startsOnce() throws Exception {
+        // :: Setup
+        CountDownLatch started = new CountDownLatch(1);
+        CountDownLatch release = new CountDownLatch(1);
+        AtomicInteger requests = new AtomicInteger();
+        Li3Activity.clientFactory = () -> client(chain -> {
+            if (requests.incrementAndGet() == 1) {
+                started.countDown();
+                try {
+                    release.await(5, TimeUnit.SECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+            throw new IOException("offline");
+        });
+        Li3Activity screen = openScreen();
+        Button download = findButton(screen.getWindow().getDecorView(), gs(R.string.li3_download_credential));
+        int toastsBefore = ShadowToast.shownToastCount();
+        download.performClick();
+        assertThat(started.await(5, TimeUnit.SECONDS)).isTrue();
+
+        // :: Act
+        boolean enabledWhileRunning = download.isEnabled();
+        download.callOnClick();
+        shadowOf(Looper.getMainLooper()).idle();
+        // each start says it is downloading at once, while a request may still be on its way to the client
+        int startedWhileRunning = ShadowToast.shownToastCount() - toastsBefore;
+        release.countDown();
+        awaitToast(gs(R.string.li3_download_failed_retry));
+
+        // :: Verify
+        assertThat(enabledWhileRunning).isFalse();
+        assertThat(startedWhileRunning).isEqualTo(1);
+        assertThat(download.isEnabled()).isTrue();
+    }
+
+    // ==================================================== Layout =====================================================
+
+    /** The setup buttons come right after the steps, and the collector's status after them. */
+    @Test
+    public void layout_setupButtonsBeforeStatus() {
+        // :: Act
+        List<String> lines = List.of(screenText(openScreen()).split("\n"));
+
+        // :: Verify
+        int download = lines.indexOf(gs(R.string.li3_download_credential));
+        int lookup = lines.indexOf(gs(R.string.li3_lookup_account));
+        int app = lines.indexOf(gs(R.string.li3_sensor_app_button, gs(R.string.li3_fold_li3_app)));
+        int status = lineContaining(lines, gs(R.string.li3_stage_no_sensor));
+        int forget = lines.indexOf(gs(R.string.li3_forget_sensor));
+        int diagnostics = lines.indexOf(gs(R.string.li3_copy_diagnostics));
+        int steps = lineContaining(lines, gs(R.string.li3_step_readings));
+        assertThat(steps).isLessThan(download);
+        assertThat(download).isLessThan(lookup);
+        assertThat(lookup).isLessThan(app);
+        assertThat(app).isLessThan(status);
+        assertThat(status).isLessThan(forget);
+        assertThat(forget).isLessThan(diagnostics);
+    }
+
     // ==================================================== helpers ====================================================
 
     /** The screen opened with location granted, the download offer dismissed. */
@@ -551,6 +886,41 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
                 .setSystemFeature(PackageManager.FEATURE_NFC, true);
         shadowOf(NfcAdapter.getDefaultAdapter(RuntimeEnvironment.getApplication())).setEnabled(true);
+    }
+
+    /** NFC scanning on in xDrip, with the Li3 collector and the given NFC hardware and switch. */
+    private static void nfcPhone(boolean hardware, boolean enabled) {
+        DexCollectionType.setDexCollectionType(DexCollectionType.Li3);
+        ShadowNfcAdapter.setNfcHardwareExists(hardware);
+        shadowOf(RuntimeEnvironment.getApplication().getPackageManager())
+                .setSystemFeature(PackageManager.FEATURE_NFC, hardware);
+        if (hardware) {
+            shadowOf(NfcAdapter.getDefaultAdapter(RuntimeEnvironment.getApplication())).setEnabled(enabled);
+        }
+    }
+
+    /** A client whose every request goes through the given interceptor, so nothing reaches the network. */
+    private static OkHttpClient client(okhttp3.Interceptor interceptor) {
+        return new OkHttpClient.Builder().addInterceptor(interceptor).build();
+    }
+
+    /** Waits up to five seconds for any toast other than the given one. */
+    private static void awaitAnyToastBut(String text) {
+        long deadline = JoH.tsl() + 5_000;
+        while ((ShadowToast.getTextOfLatestToast() == null || text.equals(ShadowToast.getTextOfLatestToast()))
+                && JoH.tsl() < deadline) {
+            shadowOf(Looper.getMainLooper()).idle();
+            Thread.yield();
+        }
+    }
+
+    private static int lineContaining(List<String> lines, String text) {
+        for (int i = 0; i < lines.size(); i++) {
+            if (lines.get(i).contains(text)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     private static void grantLocation() {

@@ -75,7 +75,7 @@ public class Li3Service extends ForegroundService {
     private Session session;
     private String bleSerial;
     private long wakeupTime;
-    private boolean offeredCredential;
+    private boolean offeredSetup;
 
     /**
      * One Bluetooth session's listener. It keeps the readings of its own sensor, so a value still arriving from an old
@@ -269,7 +269,7 @@ public class Li3Service extends ForegroundService {
                 stopSelf();
                 return START_NOT_STICKY;
             }
-            offerCredential();
+            offerSetup();
             startIfNeeded();
             scheduleWakeUp();
         } finally {
@@ -286,16 +286,18 @@ public class Li3Service extends ForegroundService {
     }
 
     /**
-     * Without a credential, notifies once per start of the collector. The notification opens the Li3 screen, which
-     * offers the download, and goes away when the credential is kept.
+     * With the setup not finished, no credential or no sensor, notifies once per start of the collector. The
+     * notification opens the Li3 screen, which shows the next step, and goes away when the credential is kept or a
+     * sensor is stored.
      */
-    private void offerCredential() {
-        if (!offeredCredential && Li3Credential.get(this).load().isEmpty()) {
-            offeredCredential = true;
+    private void offerSetup() {
+        if (!offeredSetup && !Li3Setup.finished(!Li3Credential.get(this).load().isEmpty(),
+                Li3Store.loadState() != null)) {
+            offeredSetup = true;
             final Intent intent = new Intent(this, Li3Activity.class);
             final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            JoH.showNotification(gs(R.string.li3_title), gs(R.string.li3_stage_no_credential), pendingIntent,
+            JoH.showNotification(gs(R.string.li3_title), gs(R.string.li3_setup_not_finished), pendingIntent,
                     Constants.LI3_CREDENTIAL_NOTIFICATION_ID, false, false, false);
         }
     }
@@ -463,6 +465,18 @@ public class Li3Service extends ForegroundService {
     // accessed via reflection
     public static SpannableString nanoStatus() {
         String refusal = lastRefusal;
+        String home = homeText(stage);
+        boolean warmupMayExplain = refusal != null ? Li3Readings.REFUSED_WARMUP.equals(refusal)
+                : home.equals(gs(R.string.li3_home_waiting)) || home.equals(gs(R.string.li3_home_connecting));
+        if (!recent(lastReadingAt) && warmupMayExplain) {
+            // a link problem is shown as it is; once connected, warm-up is why no reading comes yet. Any other refusal,
+            // such as a start time that looks wrong, is shown as it is: a wrong start time also makes warm-up look longer
+            long warmupLeft = warmupLeftMs(Li3Store.loadState(), tsl());
+            if (warmupLeft > 0) {
+                return new SpannableString(gs(R.string.li3_home_warmup,
+                        Long.toString((warmupLeft + MINUTE_IN_MS - 1) / MINUTE_IN_MS)));
+            }
+        }
         if (refusal != null) {
             // the stage says the sensor streams, while no reading from it is stored
             return new SpannableString(gs(R.string.li3_reading_not_stored) + ": " + refusal);
@@ -471,8 +485,42 @@ public class Li3Service extends ForegroundService {
         if (stage.isEmpty() || recent(lastReadingAt)) {
             return null;
         }
-        // the home screen says where the setup steps are; the Li3 screen shows them next to the stage
-        return new SpannableString(stage.equals(gs(R.string.li3_stage_no_sensor))
-                ? gs(R.string.li3_home_no_sensor) : stage);
+        return new SpannableString(home);
+    }
+
+    /** How long the stored sensor's warm-up still runs, from its start time; 0 when over or unknown. */
+    private static long warmupLeftMs(Li3SensorState state, long now) {
+        if (state == null || state.activationMs() <= 0) {
+            return 0;
+        }
+        return Math.max(0, state.activationMs() + Li3Store.getWarmupMs() - now);
+    }
+
+    /**
+     * The stage in plain words for the line under the graph; the status page keeps the stage itself. The setup
+     * stages say where the setup steps are, and a stage not known here is shown as it is.
+     */
+    private static String homeText(String stage) {
+        if (stage.startsWith("Scanning") || stage.startsWith("Waiting in the background")) {
+            return gs(R.string.li3_home_looking);
+        }
+        if (stage.startsWith("Reconnecting")) {
+            return gs(stage.endsWith("Bluetooth is off")
+                    ? R.string.li3_home_bluetooth_off : R.string.li3_home_reconnecting);
+        }
+        if (stage.startsWith("Connecting") || stage.startsWith("Connected") || stage.startsWith("Pairing")
+                || stage.startsWith("Paired")) {
+            return gs(R.string.li3_home_connecting);
+        }
+        if (stage.startsWith("Streaming") || stage.startsWith("Backfill")) {
+            return gs(R.string.li3_home_waiting);
+        }
+        if (stage.equals(gs(R.string.li3_stage_no_sensor))) {
+            return gs(R.string.li3_home_no_sensor);
+        }
+        if (stage.equals(gs(R.string.li3_stage_no_credential))) {
+            return gs(R.string.li3_home_setup);
+        }
+        return stage;
     }
 }

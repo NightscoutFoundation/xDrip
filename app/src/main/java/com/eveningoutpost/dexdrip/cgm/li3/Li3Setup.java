@@ -3,8 +3,10 @@ package com.eveningoutpost.dexdrip.cgm.li3;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
 import android.content.Context;
+import android.nfc.NfcAdapter;
 
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utils.LocationHelper;
 
 /**
@@ -18,6 +20,8 @@ final class Li3Setup {
 
     private static final String DONE = "✓ ";
     private static final String OPEN = "○ ";
+    /** NFCReaderX's setting for NFC scanning in xDrip. */
+    static final String NFC_SCAN_PREF = "use_nfc_scan";
 
     private Li3Setup() {
     }
@@ -58,5 +62,33 @@ final class Li3Setup {
             return true;
         }
         return false;
+    }
+
+    /** What keeps NFC scanning from working, the first of them, if anything. */
+    enum NfcGap {
+        NONE,
+        /** NFC scanning is off in xDrip, its default. */
+        SCAN_OFF,
+        /** NFC is switched off on the phone. */
+        PHONE_OFF,
+        /** The phone has no NFC. */
+        MISSING
+    }
+
+    /** What keeps a scan of the sensor from reaching xDrip on this phone. */
+    static NfcGap nfcGap(Context context) {
+        NfcAdapter adapter = NfcAdapter.getDefaultAdapter(context);
+        if (adapter == null) {
+            return NfcGap.MISSING;
+        }
+        if (!Pref.getBooleanDefaultFalse(NFC_SCAN_PREF)) {
+            return NfcGap.SCAN_OFF;
+        }
+        return adapter.isEnabled() ? NfcGap.NONE : NfcGap.PHONE_OFF;
+    }
+
+    /** Setup is finished with a credential to pair with and a sensor to connect to. */
+    static boolean finished(boolean credential, boolean sensor) {
+        return credential && sensor;
     }
 }

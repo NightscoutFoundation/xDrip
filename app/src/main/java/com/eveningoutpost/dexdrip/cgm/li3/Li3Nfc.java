@@ -13,6 +13,7 @@ import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.LibreOOPAlgorithm.SensorType;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 
 import java.io.IOException;
@@ -177,6 +178,8 @@ public final class Li3Nfc {
         state.setActivationMs(activationMs);
         state.applySensorCycle(info);
         Li3Store.saveState(state);
+        // a stored sensor is the last setup step the notification points to
+        JoH.cancelNotification(Constants.LI3_CREDENTIAL_NOTIFICATION_ID);
         return null;
     }
 
@@ -245,14 +248,31 @@ public final class Li3Nfc {
                 UserError.Log.e(TAG, "Li3 question not shown: the screen has closed");
                 return;
             }
-            new AlertDialog.Builder(activity)
+            AlertDialog.Builder question = new AlertDialog.Builder(activity)
                     .setTitle(decision.code == NfcCommand.Code.ACTIVATE
                             ? R.string.li3_title_activate : R.string.li3_title_takeover)
-                    .setMessage(decision.warning + "\n\n" + gs(R.string.li3_scan_again))
-                    .setPositiveButton(R.string.ok, (dialog, which) -> confirm(serial, decision, tsl()))
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
+                    .setNegativeButton(R.string.cancel, null);
+            if (decision.code == NfcCommand.Code.SWITCH_RECEIVER && decision.account.isEmpty()) {
+                // a sensor an official app reads is only taken over with its account ID, so looking it up comes first
+                question.setMessage(decision.warning + "\n\n" + gs(R.string.li3_scan_anyway_again))
+                        .setPositiveButton(R.string.li3_lookup_account, (dialog, which) -> lookUpAccountId(activity))
+                        .setNeutralButton(R.string.li3_scan_anyway, (dialog, which) ->
+                                confirm(serial, decision, tsl()));
+            } else {
+                question.setMessage(decision.warning + "\n\n" + gs(R.string.li3_scan_again))
+                        .setPositiveButton(R.string.ok, (dialog, which) -> confirm(serial, decision, tsl()));
+            }
+            question.show();
         });
+    }
+
+    /** Asks for the account login on the Li3 screen, opening it first when the scan came on another screen. */
+    private static void lookUpAccountId(Activity activity) {
+        if (activity instanceof Li3Activity) {
+            ((Li3Activity) activity).lookUpAccountId();
+        } else {
+            Li3Store.startControlActivity();
+        }
     }
 
     private static void showMessage(Activity activity, String message) {
@@ -282,7 +302,7 @@ public final class Li3Nfc {
         return activity instanceof NFCFilterX;
     }
 
-    private static String foldName(ReceiverId.Fold fold) {
+    static String foldName(ReceiverId.Fold fold) {
         return gs(fold == ReceiverId.Fold.MULTI_SENSOR_APP
                 ? R.string.li3_fold_multi_sensor_app : R.string.li3_fold_li3_app);
     }

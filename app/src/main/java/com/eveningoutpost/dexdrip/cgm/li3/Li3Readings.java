@@ -19,6 +19,7 @@ import java.util.Locale;
 
 import xrwd.li3.Li3SensorState;
 import xrwd.li3.data.HistoricalPage;
+import xrwd.li3.data.Lifecycle;
 import xrwd.li3.data.PatchStatus;
 import xrwd.li3.data.RealtimeReading;
 import xrwd.li3.util.Hex;
@@ -44,6 +45,8 @@ public final class Li3Readings {
     private static final long MAX_CLOCK_OFFSET_MS = 15 * MINUTE_IN_MS;
     /** The refusal of a reading the sensor's own data quality or sensor condition flags mark, nothing else. */
     private static final String REFUSED_QUALITY = "not displayable";
+    /** The refusal of a reading the sensor counts as still in warm-up. */
+    static final String REFUSED_WARMUP = Lifecycle.Phase.WARMUP.name().toLowerCase(Locale.ROOT);
 
     private final Li3SensorState state;
     /** Recent accepted realtime values as {timestamp, mg/dL}, oldest first, for smoothing. */

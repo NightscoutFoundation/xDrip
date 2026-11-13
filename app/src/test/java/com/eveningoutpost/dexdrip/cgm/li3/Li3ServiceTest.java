@@ -307,7 +307,23 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         Notification notification = notifications().getNotification(Constants.LI3_CREDENTIAL_NOTIFICATION_ID);
         assertThat(shadowOf(notification.contentIntent).getSavedIntent().getComponent().getClassName())
                 .isEqualTo(Li3Activity.class.getName());
+        assertThat(String.valueOf(notification.extras.getCharSequence(Notification.EXTRA_TEXT)))
+                .isEqualTo(gs(R.string.li3_setup_not_finished));
         assertThat(shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity()).isNull();
+    }
+
+    /** A sensor already stored does not make the setup finished while the credential is missing. */
+    @Test
+    public void onStartCommand_noCredentialSensorStored_notifies() {
+        // :: Setup
+        selectSource(DexCollectionType.Li3);
+        sensor("0RRC989AQ", now - 2 * DAY_IN_MS);
+
+        // :: Act
+        Robolectric.buildService(Li3Service.class).create().startCommand(0, 1);
+
+        // :: Verify
+        assertThat(notifications().getNotification(Constants.LI3_CREDENTIAL_NOTIFICATION_ID)).isNotNull();
     }
 
     /** A dismissed notification stays dismissed on the five-minute wake-ups; only a new collector start posts it. */
@@ -541,7 +557,8 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
     @Test
     public void nanoStatus_readingRefused_showsReason() {
         // :: Setup
-        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now)));
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 2 * HOUR_IN_MS)));
         session.onStage("Streaming");
 
         // :: Act
@@ -699,7 +716,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
     public void nanoStatus_refusedThenReconnecting_showsStage() {
         // :: Setup
         Li3Service.forgetReadingTimes();
-        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now)));
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 2 * HOUR_IN_MS)));
         session.onStage("Streaming");
         session.onReading(reading(1, 120));
 
@@ -708,7 +725,101 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         SpannableString nano = Li3Service.nanoStatus();
 
         // :: Verify
-        assertThat(String.valueOf(nano)).isEqualTo("Reconnecting in 5 s: disconnected, reason 8");
+        assertThat(String.valueOf(nano)).isEqualTo(gs(R.string.li3_home_reconnecting));
+    }
+
+    /**
+     * During warm-up the line under the graph says when the first reading comes, from the start time and the sensor's
+     * warm-up, rather than that each reading is refused.
+     */
+    @Test
+    public void nanoStatus_inWarmup_showsMinutesLeft() {
+        // :: Setup
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 20 * MINUTE_IN_MS)));
+        session.onStage("Streaming");
+
+        // :: Act
+        session.onReading(reading(20, 120));
+
+        // :: Verify
+        assertThat(String.valueOf(Li3Service.nanoStatus())).isEqualTo(gs(R.string.li3_home_warmup, "40"));
+    }
+
+    /**
+     * A reading refused because the start time looks wrong is shown as it is, even when that start time puts the
+     * sensor in warm-up: no reading will be stored until the start time is right, so counting down would hide it.
+     */
+    @Test
+    public void nanoStatus_startTimeWrongInWarmup_showsReason() {
+        // :: Setup
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 20 * MINUTE_IN_MS)));
+        session.onStage("Streaming");
+
+        // :: Act
+        session.onReading(reading(120, 120));
+
+        // :: Verify
+        assertThat(String.valueOf(Li3Service.nanoStatus()))
+                .isEqualTo("Reading not stored: time is more than 15 minutes ahead, start time looks wrong");
+    }
+
+    /** Right after warm-up the line no longer says the sensor is warming up. */
+    @Test
+    public void nanoStatus_warmupOver_noWarmupLine() {
+        // :: Setup
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 61 * MINUTE_IN_MS)));
+
+        // :: Act
+        session.onStage("Streaming");
+
+        // :: Verify
+        assertThat(String.valueOf(Li3Service.nanoStatus())).isEqualTo(gs(R.string.li3_home_waiting));
+    }
+
+    /** The line under the graph says in plain words what the collector is doing, not its stage. */
+    @Test
+    public void nanoStatus_stages_plainText() {
+        // :: Setup
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 2 * HOUR_IN_MS)));
+        String[][] cases = {
+                {"Scanning for ABCD", gs(R.string.li3_home_looking)},
+                {"Waiting in the background for up to 10 min", gs(R.string.li3_home_looking)},
+                {"Reconnecting in 5 s: Bluetooth is off", gs(R.string.li3_home_bluetooth_off)},
+                {"Reconnecting in 30 s: no sensor found", gs(R.string.li3_home_reconnecting)},
+                {"Connecting", gs(R.string.li3_home_connecting)},
+                {"Connected from the background wait", gs(R.string.li3_home_connecting)},
+                {"Pairing with identity A, cached key", gs(R.string.li3_home_connecting)},
+                {"Paired at 3, fresh key", gs(R.string.li3_home_connecting)},
+                {"Streaming", gs(R.string.li3_home_waiting)},
+                {"Backfill requested from life count 10 to 20", gs(R.string.li3_home_waiting)},
+                {gs(R.string.li3_stage_no_credential), gs(R.string.li3_home_setup)},
+                {gs(R.string.li3_stage_sensor_ended), gs(R.string.li3_stage_sensor_ended)},
+        };
+
+        for (String[] c : cases) {
+            // :: Act
+            session.onStage(c[0]);
+
+            // :: Verify
+            assertThat(String.valueOf(Li3Service.nanoStatus())).isEqualTo(c[1]);
+        }
+    }
+
+    /** The status page keeps the full stage, for a report. */
+    @Test
+    public void megaStatus_scanning_showsFullStage() {
+        // :: Setup
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 2 * HOUR_IN_MS)));
+
+        // :: Act
+        session.onStage("Scanning for ABCD");
+
+        // :: Verify
+        assertThat(value(Li3Service.megaStatus(), R.string.li3_stage)).isEqualTo("Scanning for ABCD");
     }
 
     /** A refused reading does not show as the last reading on the status page: no reading was stored. */
