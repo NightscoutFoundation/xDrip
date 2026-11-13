@@ -32,7 +32,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.g5model.AuthChallengeRxMessage;
 import com.eveningoutpost.dexdrip.g5model.AuthChallengeTxMessage;

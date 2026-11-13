@@ -514,7 +514,7 @@ public class UiBasedCollector extends NotificationListenerService {
     private static void enableNotificationService(final Activity activity) {
         if (!isNotificationServiceEnabled()) {
             JoH.show_ok_dialog(activity, gs(R.string.please_allow_permission),
-                    "Permission is needed to receive data from other applications. xDrip does not do anything beyond this scope. Please enable xDrip on the next screen",
+                    gs(R.string.notification_listener_permission_explanation),
                     () -> activity.startActivity(new Intent(ACTION_NOTIFICATION_LISTENER_SETTINGS)));
         }
     }
