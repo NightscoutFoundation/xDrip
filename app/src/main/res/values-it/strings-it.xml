@@ -2095,4 +2095,5 @@
     <string name="click">Clicca</string>
     <string name="to_use_this_instead">usare questo invece?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">L\'ID del trasmettitore o il codice di accoppiamento che hai inserito è errato e non funzionerebbe.\n\nRicontrolla i dettagli e riprova.</string>
+    <string name="notification_listener_permission_explanation">Il permesso è necessario per ricevere dati da altre applicazioni. xDrip non fa nulla al di là di questo scopo. Abilitare xDrip nella schermata successiva</string>
 </resources>

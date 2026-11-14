@@ -2043,4 +2043,5 @@
     <string name="click">Clic</string>
     <string name="to_use_this_instead">¿Usar esto en su lugar?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">El ID del transmisor o el código de emparejamiento que ha introducido es incorrecto y no funcionaría.\n\nCompruebe los detalles e inténtelo de nuevo.</string>
+    <string name="notification_listener_permission_explanation">Se necesita permiso para recibir datos de otras aplicaciones. xDrip no hace nada más allá de este ámbito. Por favor, habilita xDrip en la siguiente pantalla</string>
 </resources>
