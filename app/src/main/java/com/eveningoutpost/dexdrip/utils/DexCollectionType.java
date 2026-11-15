@@ -103,7 +103,7 @@ public enum DexCollectionType {
         Collections.addAll(isPassive, NSEmulator, NSFollow, SHFollow, WebFollow, LibreReceiver, UiBased, CLFollow, AidexReceiver);
         Collections.addAll(canNotStartStopOrCal, NSFollow, SHFollow, WebFollow, UiBased, CLFollow, Disabled); // Collectors that cannot start/stop sensor or submit calibration
         Collections.addAll(alwaysNativeCal, Follower, GluPro); // always allow calibration entry
-        Collections.addAll(noCalibration, Li3); // factory calibrated, xDrip never calibrates it
+        Collections.addAll(noCalibration, Li3); // no calibration for this data source (at least, not yet)
         Collections.addAll(usesBattery, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel, Follower, LimiTTer, LibreAlarm, LimiTTerWifi, LibreWifi); // the wifi uploader battery is separate
         Collections.addAll(usesDexcomRaw, BluetoothWixel, DexbridgeWixel, WifiWixel, WifiBlueToothWixel, DexcomG5, WifiDexBridgeWixel, Mock);
         Collections.addAll(usesTransmitterBattery, WifiWixel, BluetoothWixel, DexbridgeWixel, WifiBlueToothWixel, WifiDexBridgeWixel); // G4 transmitter battery

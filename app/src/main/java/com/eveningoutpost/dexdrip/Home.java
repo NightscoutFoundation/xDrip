@@ -724,7 +724,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private synchronized void processFingerStickCalibration(final double glucosenumber, final double timeoffset, boolean dontask) {
         JoH.clearCache();
         UserError.Log.uel(TAG, "Processing Finger stick Calibration with values: glucose: " + glucosenumber + " timeoffset: " + timeoffset + " full auto: " + dontask);
-        if (DexCollectionType.isNoCalibration()) return; // factory calibrated, never calibrated
+        if (DexCollectionType.isNoCalibration()) return; // no calibration for this data source (at least, not yet)
         if (glucosenumber > 0) {
 
             if (timeoffset < 0) {
@@ -793,7 +793,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
             GcmActivity.syncBloodTests();
             if (!Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto") // If automatic calibration is disabled
-                    && !DexCollectionType.isNoCalibration()) { // and the sensor is not factory calibrated
+                    && !DexCollectionType.isNoCalibration()) { // and the data source can be calibrated
                 if (calibration_type.equals("ask")) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(gs(R.string.use_bg_for_calibration));

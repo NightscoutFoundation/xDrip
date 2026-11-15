@@ -781,8 +781,8 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
     }
 
     /**
-     * A refused calibration is an event, not an error: the event log says calibration is off for the source, nothing is
-     * logged as an error, and the toast says the readings are used as the sensor reports them.
+     * A refused calibration is an event, not an error: the event log says the source cannot be calibrated, nothing is
+     * logged as an error, and the toast says the sensor cannot be calibrated.
      */
     @Test
     public void calibration_li3_refusalLoggedAsEventWithReason() {
@@ -800,7 +800,7 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
             if (!"Calibration".equals(entry.shortError)) {
                 continue;
             }
-            if (entry.severity == 5 && "Calibration not used: calibration is off for Li3".equals(entry.message)) {
+            if (entry.severity == 5 && "Calibration not used: Li3 cannot be calibrated".equals(entry.message)) {
                 events++;
             }
             if (entry.severity == 2 || entry.severity == 3) {
@@ -811,7 +811,7 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         assertThat(errors).isEqualTo(0);
         shadowOf(Looper.getMainLooper()).idle();
         assertThat(ShadowToast.getTextOfLatestToast())
-                .isEqualTo("Calibration is off for this data source. Readings are used as the sensor reports them.");
+                .isEqualTo("This sensor cannot be calibrated.");
     }
 
     /** A finger-stick kept as a note only is still stored for the graph, and the reading keeps the sensor's value. */

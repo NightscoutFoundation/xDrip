@@ -662,11 +662,11 @@ public class Calibration extends Model {
         return Calibration.last();
     }
 
-    // calibration is off for this source: its readings are used as the sensor reports them
+    // no calibration for this data source (at least, not yet)
     private static boolean refuseCalibration() {
         if (!DexCollectionType.isNoCalibration()) return false;
-        Log.uel(TAG, "Calibration not used: calibration is off for " + DexCollectionType.getDexCollectionType());
-        JoH.static_toast_long(xdrip.gs(R.string.sensor_is_factory_calibrated));
+        Log.uel(TAG, "Calibration not used: " + DexCollectionType.getDexCollectionType() + " cannot be calibrated");
+        JoH.static_toast_long(xdrip.gs(R.string.sensor_cannot_be_calibrated));
         return true;
     }
 
