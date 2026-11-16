@@ -166,9 +166,12 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         assertThat(storedAt(1000).displayValue(null)).isEqualTo("HIGH");
     }
 
-    /** A reading during warm-up is not stored. */
+    /** A current reading during warm-up is not stored. */
     @Test
     public void onRealtime_warmup_notStored() {
+        // :: Setup
+        state.setActivationMs(now - 55 * MINUTE_IN_MS);
+
         // :: Act
         readings.onRealtime(reading(55, 120), now);
 
@@ -180,13 +183,27 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
     @Test
     public void onRealtime_pastWear_notStored() {
         // :: Setup
-        state.setActivationMs(now - 16 * DAY_IN_MS);
+        state.setActivationMs(now - 21600 * MINUTE_IN_MS);
 
         // :: Act
         readings.onRealtime(reading(21600, 120), now);
 
         // :: Verify
         assertThat(storedAt(21600)).isNull();
+    }
+
+    /** A reading is not stored while the sensor's start time is unknown, and that is the reason given. */
+    @Test
+    public void onRealtime_startTimeUnknown_notStoredForThatReason() {
+        // :: Setup
+        state.setActivationMs(0);
+
+        // :: Act
+        readings.onRealtime(reading(1000, 120), now);
+
+        // :: Verify
+        assertThat(BgReading.last()).isNull();
+        assertThat(readings.lastRefusal()).isEqualTo("start time unknown");
     }
 
     /** A reading the sensor flags as not displayable is not stored. */
@@ -222,6 +239,7 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(storedAt(1445)).isNull();
+        assertThat(BgReading.last()).isNull(); // not at now either, where a reading ahead is stored
     }
 
     /**
@@ -369,6 +387,70 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(stored).isEqualTo(0);
+    }
+
+    /**
+     * History from warm-up is not stored: those values are not glucose yet and must not reach the loop. #4847 saw them
+     * reach it on another sensor.
+     */
+    @Test
+    public void onHistory_warmup_notStored() {
+        // :: Act
+        int stored = readings.onHistory(entries(30, 120), now);
+
+        // :: Verify
+        assertThat(stored).isEqualTo(0);
+        assertThat(BgReading.last()).isNull();
+    }
+
+    /** History at or after the end of wear is not stored. */
+    @Test
+    public void onHistory_pastWear_notStored() {
+        // :: Setup
+        state.setActivationMs(now - 16 * DAY_IN_MS);
+
+        // :: Act
+        int stored = readings.onHistory(entries(21600, 120), now);
+
+        // :: Verify
+        assertThat(stored).isEqualTo(0);
+        assertThat(BgReading.last()).isNull();
+    }
+
+    /** A history entry where the sensor stored no value is skipped, not stored as a number. */
+    @Test
+    public void onHistory_noValue_notStored() {
+        // :: Act
+        int stored = readings.onHistory(sameValue(985, 0), now);
+
+        // :: Verify
+        assertThat(stored).isEqualTo(0);
+        assertThat(BgReading.last()).isNull();
+    }
+
+    /** A history value far above HI, such as the 3000 mg/dL seen in #4847, is skipped. */
+    @Test
+    public void onHistory_farAboveHigh_notStored() {
+        // :: Act
+        int stored = readings.onHistory(sameValue(985, 3000), now);
+
+        // :: Verify
+        assertThat(stored).isEqualTo(0);
+        assertThat(BgReading.last()).isNull();
+    }
+
+    /** History is not stored while the sensor's start time is unknown: its times would be a guess. */
+    @Test
+    public void onHistory_startTimeUnknown_notStored() {
+        // :: Setup
+        state.setActivationMs(0);
+
+        // :: Act
+        int stored = readings.onHistory(entries(985, 120), now);
+
+        // :: Verify
+        assertThat(stored).isEqualTo(0);
+        assertThat(BgReading.last()).isNull();
     }
 
     /**
@@ -901,6 +983,16 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         putU16(b, 0, start);
         for (int i = 0; i < 6; i++) {
             putU16(b, 2 + 2 * i, first + i);
+        }
+        return HistoricalPage.parse(b);
+    }
+
+    /** One historic page from {@code start}, every entry the raw value {@code raw}, five minutes apart. */
+    private static List<HistoricalPage.Entry> sameValue(int start, int raw) {
+        byte[] b = new byte[HistoricalPage.SIZE];
+        putU16(b, 0, start);
+        for (int i = 0; i < 6; i++) {
+            putU16(b, 2 + 2 * i, raw);
         }
         return HistoricalPage.parse(b);
     }
