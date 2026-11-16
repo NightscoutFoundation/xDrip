@@ -60,6 +60,8 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
     /** A US 15-day Li3: 60 minutes warm-up, 21600 minutes wear. */
     private static final String PATCH_INFO = "00a50001000200010060541e020401040c0130525243393839415151ff17";
 
+    private static final byte[] KAUTH = Hex.toBytes("00112233445566778899aabbccddeeff");
+
     private long now;
 
     @Override
@@ -121,6 +123,39 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         // :: Verify
         BgReading stored = BgReading.getForPreciseTimestamp(current.activationMs() + 1000 * MINUTE_IN_MS, 1000);
         assertThat(stored.calculated_value).isEqualTo(120.0);
+    }
+
+    /** A pairing finished by the current sensor's session stores the new key. */
+    @Test
+    public void onPaired_currentSession_keyStored() {
+        // :: Setup
+        Li3SensorState current = sensor("0RRC989AQ", now - 1010 * MINUTE_IN_MS);
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(current));
+        current.setKAuth(KAUTH);
+
+        // :: Act
+        session.onPaired(current);
+
+        // :: Verify
+        assertThat(Li3Store.loadState().kAuth()).isEqualTo(KAUTH);
+    }
+
+    /** A pairing finished by the old sensor's session after a new sensor was scanned leaves the new sensor stored. */
+    @Test
+    public void onPaired_oldSessionAfterNewSensor_newSensorKept() {
+        // :: Setup
+        Li3SensorState old = sensor("0RRC989AQ", now - 1010 * MINUTE_IN_MS);
+        Li3Service.Session oldSession = new Li3Service.Session(new Li3Readings(old));
+        sensor("0RRCNEW00", now - 2000 * MINUTE_IN_MS);
+        old.setKAuth(KAUTH);
+
+        // :: Act
+        oldSession.onPaired(old);
+
+        // :: Verify
+        Li3SensorState stored = Li3Store.loadState();
+        assertThat(stored.serial()).isEqualTo("0RRCNEW00");
+        assertThat(stored.kAuth()).isNull();
     }
 
     /** With extra logging on for the collector, a Bluetooth debug line is kept in xDrip's log, where a tester can send it. */

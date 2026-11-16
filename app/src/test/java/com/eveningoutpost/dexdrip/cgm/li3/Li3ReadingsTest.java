@@ -781,6 +781,23 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         assertThat(text).contains("App credential: none");
     }
 
+    /**
+     * With no sensor started in xDrip, as after the user stopped it there, a reading is not stored and does not count
+     * as stored.
+     */
+    @Test
+    public void onRealtime_noXdripSensor_notStored() {
+        // :: Setup
+        Sensor.stopSensor();
+
+        // :: Act
+        boolean stored = readings.onRealtime(reading(1000, 120), now);
+
+        // :: Verify
+        assertThat(stored).isFalse();
+        assertThat(storedAt(1000)).isNull();
+    }
+
     // ================================================ sensor replaced ================================================
 
     /**
