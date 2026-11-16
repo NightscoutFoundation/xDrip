@@ -385,7 +385,7 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         // :: Verify
         String text = screenText(screen);
         assertThat(text).contains(
-                "○ 1. " + gs(R.string.li3_step_location) + " (" + gs(R.string.li3_setup_next) + ")");
+                "○ 1. " + gs(R.string.li3_step_location) + " (" + gs(R.string.next) + ")");
         assertThat(text).contains("○ 5. " + gs(R.string.li3_step_readings));
     }
 
@@ -418,7 +418,7 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         String text = screenText(screen);
         assertThat(text).contains("✓ 1. " + gs(R.string.li3_step_location) + "\n");
         assertThat(text).contains(
-                "○ 2. " + gs(R.string.li3_step_credential) + " (" + gs(R.string.li3_setup_next) + ")");
+                "○ 2. " + gs(R.string.li3_step_credential) + " (" + gs(R.string.next) + ")");
     }
 
     /** An account ID that is set shows as a ticked account step. */
@@ -755,7 +755,7 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         int lookup = lines.indexOf(gs(R.string.li3_lookup_account));
         int app = lines.indexOf(gs(R.string.li3_sensor_app_button, gs(R.string.li3_fold_li3_app)));
         int status = lineContaining(lines, gs(R.string.li3_stage_no_sensor));
-        int forget = lines.indexOf(gs(R.string.li3_forget_sensor));
+        int forget = lines.indexOf(gs(R.string.forget_device));
         int diagnostics = lines.indexOf(gs(R.string.li3_copy_diagnostics));
         int steps = lineContaining(lines, gs(R.string.li3_step_readings));
         assertThat(steps).isLessThan(download);

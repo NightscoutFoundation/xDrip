@@ -124,7 +124,7 @@
             android:exported="false" />
         <activity
             android:name=".cgm.li3.Li3Activity"
-            android:label="@string/li3_activity_title"
+            android:label="@string/li3_title"
             android:exported="false" />
         <activity
             android:name=".HealthPrivacy"

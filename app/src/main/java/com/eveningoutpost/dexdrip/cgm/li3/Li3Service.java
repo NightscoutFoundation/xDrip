@@ -297,7 +297,7 @@ public class Li3Service extends ForegroundService {
             final Intent intent = new Intent(this, Li3Activity.class);
             final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            JoH.showNotification(gs(R.string.li3_title), gs(R.string.li3_setup_not_finished), pendingIntent,
+            JoH.showNotification(gs(R.string.li3_title), gs(R.string.li3_home_setup), pendingIntent,
                     Constants.LI3_CREDENTIAL_NOTIFICATION_ID, false, false, false);
         }
     }
@@ -400,8 +400,8 @@ public class Li3Service extends ForegroundService {
         if (current != null) {
             si.addAll(current.megaStatus());
         } else {
-            si.add(new StatusItem(gs(R.string.li3_sensor),
-                    state == null ? gs(R.string.li3_none) : state.serial()));
+            si.add(new StatusItem(gs(R.string.li3_device),
+                    state == null ? gs(R.string.none) : state.serial()));
         }
         String shownStage = state == null ? gs(R.string.li3_stage_no_sensor) : stage;
         if (!shownStage.isEmpty()) {
@@ -424,12 +424,12 @@ public class Li3Service extends ForegroundService {
             }
         }
         if (lastReadingAt > 0) {
-            si.add(new StatusItem(gs(R.string.li3_last_reading), niceTimeScalar(msSince(lastReadingAt))));
+            si.add(new StatusItem(gs(R.string.last_reading), niceTimeScalar(msSince(lastReadingAt))));
         }
         Li3Credential stored = Li3Credential.get(xdrip.getAppContext());
         boolean credential = !stored.load().isEmpty();
         si.add(new StatusItem(gs(R.string.li3_credential),
-                credential ? gs(R.string.li3_credential_ready) : gs(R.string.li3_none),
+                credential ? gs(R.string.li3_credential_ready) : gs(R.string.none),
                 credential ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.BAD));
         String downloadError = stored.lastDownloadError();
         if (!credential && !downloadError.isEmpty()) {
@@ -467,7 +467,7 @@ public class Li3Service extends ForegroundService {
         String refusal = lastRefusal;
         String home = homeText(stage);
         boolean warmupMayExplain = refusal != null ? Li3Readings.REFUSED_WARMUP.equals(refusal)
-                : home.equals(gs(R.string.li3_home_waiting)) || home.equals(gs(R.string.li3_home_connecting));
+                : home.equals(gs(R.string.li3_home_waiting)) || home.equals(gs(R.string.connecting_to_device));
         if (!recent(lastReadingAt) && warmupMayExplain) {
             // a link problem is shown as it is; once connected, warm-up is why no reading comes yet. Any other refusal,
             // such as a start time that looks wrong, is shown as it is: a wrong start time also makes warm-up look longer
@@ -510,7 +510,7 @@ public class Li3Service extends ForegroundService {
         }
         if (stage.startsWith("Connecting") || stage.startsWith("Connected") || stage.startsWith("Pairing")
                 || stage.startsWith("Paired")) {
-            return gs(R.string.li3_home_connecting);
+            return gs(R.string.connecting_to_device);
         }
         if (stage.startsWith("Streaming") || stage.startsWith("Backfill")) {
             return gs(R.string.li3_home_waiting);

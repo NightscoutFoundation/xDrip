@@ -99,7 +99,7 @@ public final class Li3Nfc {
      * A fresh sensor is started with the account's receiver ID, or the per-install ID when no account is given. A
      * running sensor is taken over the same way: with the account it was started with, or without one with the
      * per-install ID, which only a sensor this install started accepts. The running sensor xDrip already uses is not
-     * taken over again, since that would only reset its pairing; "Forget sensor" lets the user do it on purpose.
+     * taken over again, since that would only reset its pairing; "Forget Device" lets the user do it on purpose.
      *
      * @param stored the sensor xDrip uses now, or null
      */
@@ -109,7 +109,7 @@ public final class Li3Nfc {
         boolean hasAccount = !trimmed.isEmpty();
         if (info.recommended() != NfcCommand.Code.ACTIVATE && stored != null
                 && stored.serial().equals(info.serial())) {
-            return new Decision(null, null, fold, "", null, gs(R.string.li3_already_in_use));
+            return new Decision(null, null, fold, "", null, gs(R.string.li3_already_in_use, gs(R.string.forget_device)));
         }
         if (info.recommended() == NfcCommand.Code.ACTIVATE) {
             if (hasAccount) {
@@ -163,7 +163,7 @@ public final class Li3Nfc {
             UserError.Log.uel(TAG, "Li3 command not accepted: app " + foldName(decision.fold) + ", "
                     + (decision.account.isEmpty() ? "no account" : "with account") + ", " + e.getMessage());
             return gs(R.string.li3_error_bad_reply, foldName(decision.fold),
-                    decision.account.isEmpty() ? gs(R.string.li3_no_account) : decision.account);
+                    decision.account.isEmpty() ? gs(R.string.none) : decision.account);
         }
         long reported = littleEndianSeconds(response.activationTimeRaw()) * 1000;
         long activationMs = reported > 0 ? reported : commandMs;
@@ -250,11 +250,11 @@ public final class Li3Nfc {
             }
             AlertDialog.Builder question = new AlertDialog.Builder(activity)
                     .setTitle(decision.code == NfcCommand.Code.ACTIVATE
-                            ? R.string.li3_title_activate : R.string.li3_title_takeover)
+                            ? R.string.start_sensor : R.string.li3_title_takeover)
                     .setNegativeButton(R.string.cancel, null);
             if (decision.code == NfcCommand.Code.SWITCH_RECEIVER && decision.account.isEmpty()) {
                 // a sensor an official app reads is only taken over with its account ID, so looking it up comes first
-                question.setMessage(decision.warning + "\n\n" + gs(R.string.li3_scan_anyway_again))
+                question.setMessage(decision.warning + "\n\n" + gs(R.string.li3_scan_anyway_again, gs(R.string.li3_scan_anyway)))
                         .setPositiveButton(R.string.li3_lookup_account, (dialog, which) -> lookUpAccountId(activity))
                         .setNeutralButton(R.string.li3_scan_anyway, (dialog, which) ->
                                 confirm(serial, decision, tsl()));

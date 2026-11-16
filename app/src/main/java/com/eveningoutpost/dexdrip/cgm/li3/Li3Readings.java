@@ -186,7 +186,7 @@ public final class Li3Readings {
     /** Status rows for this sensor. Never shows the PIN or kAuth. */
     public synchronized List<StatusItem> megaStatus() {
         List<StatusItem> si = new ArrayList<>();
-        si.add(new StatusItem(gs(R.string.li3_sensor), state.serial()));
+        si.add(new StatusItem(gs(R.string.li3_device), state.serial()));
         Integer wear = state.wearMinutes();
         if (wear != null && wear > 0) {
             // The longer sensor is worn 15 days, the shorter 14; the generation field is 1 on a US 15-day sensor too

@@ -63,7 +63,7 @@ public class Li3DiagnosticsTest extends RobolectricTestWithConfig {
         String text = Li3Diagnostics.text(context);
 
         // :: Verify
-        assertThat(text).contains("Sensor: none");
+        assertThat(text).contains("Device: none");
         assertThat(text).contains("xDrip ");
         assertThat(text).contains("Location permission: no");
     }

@@ -58,7 +58,7 @@ final class Li3Setup {
     private static boolean step(StringBuilder sb, int number, int text, boolean done, boolean mayBeNext) {
         sb.append('\n').append(done ? DONE : OPEN).append(number).append(". ").append(gs(text));
         if (!done && mayBeNext) {
-            sb.append(" (").append(gs(R.string.li3_setup_next)).append(')');
+            sb.append(" (").append(gs(R.string.next)).append(')');
             return true;
         }
         return false;

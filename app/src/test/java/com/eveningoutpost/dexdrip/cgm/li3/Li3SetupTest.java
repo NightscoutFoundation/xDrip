@@ -41,7 +41,7 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(text).isEqualTo(gs(R.string.li3_setup) + "\n"
-                + "○ 1. " + gs(R.string.li3_step_location) + " (" + gs(R.string.li3_setup_next) + ")\n"
+                + "○ 1. " + gs(R.string.li3_step_location) + " (" + gs(R.string.next) + ")\n"
                 + "○ 2. " + gs(R.string.li3_step_credential) + "\n"
                 + "○ 3. " + gs(R.string.li3_step_account) + "\n"
                 + "○ 4. " + gs(R.string.li3_step_scan) + "\n"
@@ -58,7 +58,7 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
         assertThat(text).contains("✓ 1. " + gs(R.string.li3_step_location) + "\n");
         assertThat(text).contains("✓ 2. " + gs(R.string.li3_step_credential) + "\n");
         assertThat(text).contains("○ 3. " + gs(R.string.li3_step_account) + "\n");
-        assertThat(text).contains("○ 4. " + gs(R.string.li3_step_scan) + " (" + gs(R.string.li3_setup_next) + ")");
+        assertThat(text).contains("○ 4. " + gs(R.string.li3_step_scan) + " (" + gs(R.string.next) + ")");
     }
 
     /** An account ID that is set ticks the account step. */
@@ -78,7 +78,7 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
         String text = Li3Setup.text(true, false, false, true, false);
 
         // :: Verify
-        assertThat(text).contains("○ 2. " + gs(R.string.li3_step_credential) + " (" + gs(R.string.li3_setup_next) + ")");
+        assertThat(text).contains("○ 2. " + gs(R.string.li3_step_credential) + " (" + gs(R.string.next) + ")");
         assertThat(text).contains("✓ 4. " + gs(R.string.li3_step_scan) + "\n");
     }
 
@@ -89,7 +89,7 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
         String text = Li3Setup.text(true, true, false, true, false);
 
         // :: Verify
-        assertThat(text).endsWith("○ 5. " + gs(R.string.li3_step_readings) + " (" + gs(R.string.li3_setup_next) + ")");
+        assertThat(text).endsWith("○ 5. " + gs(R.string.li3_step_readings) + " (" + gs(R.string.next) + ")");
     }
 
     /** With readings coming, every needed step is ticked and none is next. */
@@ -100,7 +100,7 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(text).contains("✓ 5. " + gs(R.string.li3_step_readings));
-        assertThat(text).doesNotContain(gs(R.string.li3_setup_next));
+        assertThat(text).doesNotContain(gs(R.string.next));
     }
 
     // ==================================================== Finished ===================================================

@@ -264,7 +264,7 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
 
     /**
      * Without an account a running sensor is taken over with this install's ID, so a sensor this install started can
-     * be picked up again after a lost reply or "Forget sensor". The user is warned first.
+     * be picked up again after a lost reply or "Forget Device". The user is warned first.
      */
     @Test
     public void decide_activeWithoutAccount_takesOverWithInstallId() {
@@ -289,7 +289,7 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(decision.code).isNull();
-        assertThat(decision.error).isEqualTo(gs(R.string.li3_already_in_use));
+        assertThat(decision.error).isEqualTo(gs(R.string.li3_already_in_use, gs(R.string.forget_device)));
     }
 
     /** A running sensor other than the one xDrip uses is still taken over. */
@@ -334,7 +334,7 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
         // :: Verify
         assertThat(ShadowDialog.getShownDialogs()).hasSize(1);
         AlertDialog dialog = (AlertDialog) ShadowDialog.getLatestDialog();
-        assertThat(String.valueOf(shadowOf(dialog).getMessage())).isEqualTo(gs(R.string.li3_already_in_use));
+        assertThat(String.valueOf(shadowOf(dialog).getMessage())).isEqualTo(gs(R.string.li3_already_in_use, gs(R.string.forget_device)));
         assertThat(Li3Store.loadState().kAuth()).isEqualTo(KAUTH);
     }
 
@@ -352,7 +352,7 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(ShadowDialog.getShownDialogs()).isEmpty();
-        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(gs(R.string.li3_already_in_use));
+        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(gs(R.string.li3_already_in_use, gs(R.string.forget_device)));
     }
 
     /** The takeover question is not shown on a screen that has closed, and nothing is confirmed. */
@@ -451,7 +451,7 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(ShadowDialog.getShownDialogs()).isEmpty();
-        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(gs(R.string.li3_already_in_use));
+        assertThat(ShadowToast.getTextOfLatestToast()).isEqualTo(gs(R.string.li3_already_in_use, gs(R.string.forget_device)));
     }
 
     /** Lost contact while sending keeps the confirmed choice, so the next scan sends it without asking again. */
@@ -494,7 +494,7 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
         assertThat(dialog.getButton(AlertDialog.BUTTON_NEUTRAL).getText().toString())
                 .isEqualTo(gs(R.string.li3_scan_anyway));
         assertThat(String.valueOf(shadowOf(dialog).getMessage()))
-                .isEqualTo(gs(R.string.li3_warn_takeover_accountless) + "\n\n" + gs(R.string.li3_scan_anyway_again));
+                .isEqualTo(gs(R.string.li3_warn_takeover_accountless) + "\n\n" + gs(R.string.li3_scan_anyway_again, gs(R.string.li3_scan_anyway)));
         assertThat(Li3Nfc.pending(SERIAL, tsl())).isNull();
     }
 

@@ -186,7 +186,7 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
                 addAsection(GLU_PRO, getString(R.string.glupro_status));
             }
             if (dexCollectionType.equals(Li3)) {
-                addAsection(LI3, getString(R.string.li3_status));
+                addAsection(LI3, "Li3 Status");
             }
             if (BlueJayEntry.isEnabled()) {
                 addAsection(BLUEJAY_STATUS, "BlueJay Watch Status");

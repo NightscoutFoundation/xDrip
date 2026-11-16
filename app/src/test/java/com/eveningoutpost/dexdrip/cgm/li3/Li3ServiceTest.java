@@ -308,7 +308,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         assertThat(shadowOf(notification.contentIntent).getSavedIntent().getComponent().getClassName())
                 .isEqualTo(Li3Activity.class.getName());
         assertThat(String.valueOf(notification.extras.getCharSequence(Notification.EXTRA_TEXT)))
-                .isEqualTo(gs(R.string.li3_setup_not_finished));
+                .isEqualTo(gs(R.string.li3_home_setup));
         assertThat(shadowOf(RuntimeEnvironment.getApplication()).getNextStartedActivity()).isNull();
     }
 
@@ -435,7 +435,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         assertThat(status.stream().anyMatch(item -> item.value.contains("HTTP 404"))).isTrue();
     }
 
-    /** Right after "Forget sensor" the old session's stage is gone: the page says there is no sensor. */
+    /** Right after "Forget Device" the old session's stage is gone: the page says there is no device. */
     @Test
     public void megaStatus_afterForget_showsNoSensor() {
         // :: Setup
@@ -447,7 +447,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_sensor)).isEqualTo(gs(R.string.li3_none));
+        assertThat(value(status, R.string.li3_device)).isEqualTo(gs(R.string.none));
         assertThat(value(status, R.string.li3_stage)).isEqualTo(gs(R.string.li3_stage_no_sensor));
     }
 
@@ -496,7 +496,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         assertThat(value(status, R.string.li3_reading_not_stored)).isNull();
     }
 
-    /** Right after "Forget sensor" the status page no longer shows why the old sensor's reading was refused. */
+    /** Right after "Forget Device" the status page no longer shows why the old sensor's reading was refused. */
     @Test
     public void megaStatus_refusedThenForget_noReason() {
         // :: Setup
@@ -582,7 +582,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         assertThat(String.valueOf(Li3Service.nanoStatus())).isEqualTo(gs(R.string.li3_home_no_sensor));
     }
 
-    /** Once the collector restarts after "Forget sensor", the old sensor's refusal is gone from under the graph. */
+    /** Once the collector restarts after "Forget Device", the old sensor's refusal is gone from under the graph. */
     @Test
     public void nanoStatus_refusedThenForgetAndRestart_noReason() {
         // :: Setup
@@ -790,10 +790,10 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
                 {"Waiting in the background for up to 10 min", gs(R.string.li3_home_looking)},
                 {"Reconnecting in 5 s: Bluetooth is off", gs(R.string.li3_home_bluetooth_off)},
                 {"Reconnecting in 30 s: no sensor found", gs(R.string.li3_home_reconnecting)},
-                {"Connecting", gs(R.string.li3_home_connecting)},
-                {"Connected from the background wait", gs(R.string.li3_home_connecting)},
-                {"Pairing with identity A, cached key", gs(R.string.li3_home_connecting)},
-                {"Paired at 3, fresh key", gs(R.string.li3_home_connecting)},
+                {"Connecting", gs(R.string.connecting_to_device)},
+                {"Connected from the background wait", gs(R.string.connecting_to_device)},
+                {"Pairing with identity A, cached key", gs(R.string.connecting_to_device)},
+                {"Paired at 3, fresh key", gs(R.string.connecting_to_device)},
                 {"Streaming", gs(R.string.li3_home_waiting)},
                 {"Backfill requested from life count 10 to 20", gs(R.string.li3_home_waiting)},
                 {gs(R.string.li3_stage_no_credential), gs(R.string.li3_home_setup)},
@@ -834,7 +834,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_last_reading)).isNull();
+        assertThat(value(status, R.string.last_reading)).isNull();
     }
 
     // ================================================= Bluetooth off =================================================

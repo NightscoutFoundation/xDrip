@@ -112,7 +112,7 @@ public class Li3Activity extends ActivityWithMenu {
         layout.addView(status);
 
         Button forget = new Button(this);
-        forget.setText(R.string.li3_forget_sensor);
+        forget.setText(R.string.forget_device);
         forget.setOnClickListener(v -> confirmForget());
         layout.addView(forget);
 
@@ -199,7 +199,7 @@ public class Li3Activity extends ActivityWithMenu {
         switch (gap) {
             case SCAN_OFF:
                 question.setMessage(R.string.li3_nfc_scan_off)
-                        .setPositiveButton(R.string.li3_nfc_turn_on, (dialog, which) -> {
+                        .setPositiveButton(R.string.enable, (dialog, which) -> {
                             Pref.setBoolean(Li3Setup.NFC_SCAN_PREF, true);
                             UserError.Log.uel(TAG, "NFC scanning turned on from the Li3 screen");
                             NFControl.initNFC(this, false);
@@ -211,7 +211,7 @@ public class Li3Activity extends ActivityWithMenu {
                 break;
             case PHONE_OFF:
                 question.setMessage(R.string.li3_nfc_phone_off)
-                        .setPositiveButton(R.string.li3_nfc_open_settings, (dialog, which) -> openNfcSettings())
+                        .setPositiveButton(R.string.settings, (dialog, which) -> openNfcSettings())
                         .setNegativeButton(R.string.cancel, null);
                 break;
             default:
@@ -356,7 +356,7 @@ public class Li3Activity extends ActivityWithMenu {
 
     private void confirmForget() {
         new AlertDialog.Builder(this)
-                .setTitle(R.string.li3_forget_sensor)
+                .setTitle(R.string.forget_device)
                 .setMessage(R.string.li3_forget_sensor_confirm)
                 .setPositiveButton(R.string.ok, (dialog, which) -> {
                     Li3Store.forgetSensor();
