@@ -61,6 +61,10 @@ public final class FakeSensor implements Li3Transport {
     /** The kAuth a cached reconnect is accepted with; null refuses every cached reconnect. */
     public byte[] acceptedKAuth;
     byte[] phase6KeyOverride;
+    /** The R1 the Phase 6 reply echoes; null echoes the challenge that was sent. */
+    byte[] phase6R1Override;
+    /** The answer to SendChallengeLoadDone; 0x08 accepts the challenge. */
+    int challengeAnswer = 0x08;
     int certificateAnswer = 0x04;
     int silentAfter = -1;
 
@@ -209,9 +213,13 @@ public final class FakeSensor implements Li3Transport {
                 } catch (GeneralSecurityException wrongKey) {
                     // the sensor answers anyway; the phone cannot open what follows
                 }
-                respond(0x08);
+                respond(challengeAnswer);
+                if (challengeAnswer != 0x08) {
+                    break;
+                }
                 byte[] key = phase6KeyOverride != null ? phase6KeyOverride : kAuth;
-                byte[] sealed = AesCcm.encrypt(key, PHASE6_NONCE, concat(phoneR2, R1, K_ENC, IV_ENC), 4);
+                byte[] r1 = phase6R1Override != null ? phase6R1Override : R1;
+                byte[] sealed = AesCcm.encrypt(key, PHASE6_NONCE, concat(phoneR2, r1, K_ENC, IV_ENC), 4);
                 notify(Gatt.SEC_CHALLENGE_DATA, concat(sealed, PHASE6_NONCE));
                 break;
             default:

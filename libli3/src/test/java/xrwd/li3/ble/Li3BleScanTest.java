@@ -6,8 +6,12 @@ import static org.robolectric.Shadows.shadowOf;
 import android.Manifest;
 import android.app.Application;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.location.LocationManager;
+import android.os.Looper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -16,9 +20,11 @@ import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.RuntimeEnvironment;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import xrwd.li3.Li3SensorState;
 import xrwd.li3.data.HistoricalPage;
@@ -127,6 +133,74 @@ public class Li3BleScanTest {
         assertThat(recorder.errors).isEmpty();
     }
 
+    // ================================================= scan results ==================================================
+
+    /** A scan that sees the sensor's address stops and connects to it. */
+    @Test
+    public void scanResult_sensorAddress_connects() {
+        // :: Setup
+        grant(Manifest.permission.ACCESS_FINE_LOCATION);
+        ble = addressedScanBle();
+        ble.start(1);
+
+        // :: Act
+        deliverScanResult(SENSOR_ADDRESS);
+
+        // :: Verify
+        assertThat(recorder.stages).containsExactly("Scanning for AABBCCDDEEFF", "Connecting").inOrder();
+    }
+
+    /** A scan that sees another device keeps looking: the phone never connects to a device that is not the sensor. */
+    @Test
+    public void scanResult_otherDevice_doesNotConnect() {
+        // :: Setup
+        grant(Manifest.permission.ACCESS_FINE_LOCATION);
+        ble = addressedScanBle();
+        ble.start(1);
+
+        // :: Act
+        deliverScanResult("11:22:33:44:55:66");
+
+        // :: Verify
+        assertThat(recorder.stages).containsExactly("Scanning for AABBCCDDEEFF");
+    }
+
+    /** A scan Android reports as failed is retried at once, naming the error, instead of waiting out its timeout. */
+    @Test
+    public void scanFailed_reconnectsNamingError() {
+        // :: Setup
+        grant(Manifest.permission.ACCESS_FINE_LOCATION);
+        ble = addressedScanBle();
+        ble.start(1);
+
+        // :: Act
+        for (ScanCallback callback : scanCallbacks()) {
+            callback.onScanFailed(ScanCallback.SCAN_FAILED_APPLICATION_REGISTRATION_FAILED);
+        }
+        idleMainLooper();
+
+        // :: Verify
+        assertThat(recorder.errors).containsExactly("Scan failed, error 2");
+        assertThat(recorder.stages.get(recorder.stages.size() - 1)).endsWith(": scan failed, error 2");
+        assertThat(scanCallbacks()).isEmpty();
+    }
+
+    /** A scan that does not see the sensor within 30 s stops and tries again later. */
+    @Test
+    public void scan_sensorNotSeen_reconnectsAfterTimeout() {
+        // :: Setup
+        grant(Manifest.permission.ACCESS_FINE_LOCATION);
+        ble = addressedScanBle();
+        ble.start(1);
+
+        // :: Act
+        shadowOf(Looper.getMainLooper()).idleFor(Duration.ofSeconds(31));
+
+        // :: Verify
+        assertThat(recorder.stages.get(1)).endsWith(": sensor not seen");
+        assertThat(scanCallbacks()).isEmpty();
+    }
+
     // =================================================== restart =====================================================
 
     /** A failed attempt counts, so a restarted connection can go on from it. */
@@ -157,6 +231,34 @@ public class Li3BleScanTest {
     }
 
     // ==================================================== helpers ====================================================
+
+    private static final String SENSOR_ADDRESS = "AA:BB:CC:DD:EE:FF";
+
+    /** A sensor with a Bluetooth address; its second attempt is a scan, with the address as one of the filters. */
+    private Li3Ble addressedScanBle() {
+        Li3SensorState state = new Li3SensorState("0RRC989AQ", SENSOR_ADDRESS, new byte[]{1, 2, 3, 4});
+        return new Li3Ble(RuntimeEnvironment.getApplication(), state, Collections.emptyList(), recorder);
+    }
+
+    private static Set<ScanCallback> scanCallbacks() {
+        return shadowOf(BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner()).getScanCallbacks();
+    }
+
+    /** Hands every running scan a result from the device at this address, without a scan record. */
+    private static void deliverScanResult(String address) {
+        idleMainLooper();
+        assertThat(scanCallbacks()).isNotEmpty();
+        BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
+        for (ScanCallback callback : scanCallbacks()) {
+            callback.onScanResult(ScanSettings.CALLBACK_TYPE_ALL_MATCHES,
+                    new ScanResult(adapter.getRemoteDevice(address), null, -60, 0));
+        }
+        idleMainLooper();
+    }
+
+    private static void idleMainLooper() {
+        shadowOf(Looper.getMainLooper()).idle();
+    }
 
     /** A sensor without a usable Bluetooth address, so the first attempt is a scan by name. */
     private Li3Ble scanningBle() {

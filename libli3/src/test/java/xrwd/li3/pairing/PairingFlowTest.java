@@ -220,6 +220,42 @@ public class PairingFlowTest {
         assertThrows(GeneralSecurityException.class, pair);
     }
 
+    /**
+     * A Phase 6 reply that opens under kAuth but does not echo the challenge sent is not a result: it may be a reply
+     * replayed from another session.
+     */
+    @Test
+    public void firstPair_phase6NotEchoingChallenge_throwsSecurityException() {
+        // :: Setup
+        FakeSensor sensor = new FakeSensor();
+        sensor.phase6R1Override = Hex.toBytes("ffffffffffffffffffffffffffffffff");
+        PairingFlow flow = flow(sensor, "0000000000000000000000000000000000000000000000000000000000002222");
+
+        // :: Act
+        ThrowingRunnable pair = () -> flow.firstPair(BLE_PIN);
+
+        // :: Verify
+        GeneralSecurityException e = assertThrows(GeneralSecurityException.class, pair);
+        assertThat(e).hasMessageThat().contains("echo");
+    }
+
+    /** A sensor that refuses the challenge on a first pair fails the pairing, naming the stage and the answer. */
+    @Test
+    public void firstPair_challengeRefused_throwsNamingStage() {
+        // :: Setup
+        FakeSensor sensor = new FakeSensor();
+        sensor.challengeAnswer = 0x0b;
+        PairingFlow flow = flow(sensor, "0000000000000000000000000000000000000000000000000000000000002222");
+
+        // :: Act
+        ThrowingRunnable pair = () -> flow.firstPair(BLE_PIN);
+
+        // :: Verify
+        IOException e = assertThrows(IOException.class, pair);
+        assertThat(e).hasMessageThat().contains("PatchChallengeLoadDone");
+        assertThat(e).hasMessageThat().contains("0b");
+    }
+
     // =============================================== Cached reconnect ================================================
 
     /** A cached reconnect starts at StartAuthorization and never sends a certificate or ephemeral key. */
@@ -277,6 +313,24 @@ public class PairingFlowTest {
 
         // :: Verify
         assertThrows(GeneralSecurityException.class, reconnect);
+        assertThat(sensor.commands).containsExactly(0x11, 0x08).inOrder();
+    }
+
+    /** A sensor that refuses the challenge on a cached reconnect has rejected the key, so the caller can drop it. */
+    @Test
+    public void reconnect_challengeRefused_throwsSecurityException() {
+        // :: Setup
+        FakeSensor sensor = new FakeSensor();
+        sensor.acceptedKAuth = Hex.toBytes("404142434445464748494a4b4c4d4e4f");
+        sensor.challengeAnswer = 0x0b;
+        PairingFlow flow = flow(sensor, "0000000000000000000000000000000000000000000000000000000000002222");
+
+        // :: Act
+        ThrowingRunnable reconnect = () -> flow.reconnect(sensor.acceptedKAuth, BLE_PIN);
+
+        // :: Verify
+        GeneralSecurityException e = assertThrows(GeneralSecurityException.class, reconnect);
+        assertThat(e).hasMessageThat().contains("PatchChallengeLoadDone");
         assertThat(sensor.commands).containsExactly(0x11, 0x08).inOrder();
     }
 
