@@ -477,7 +477,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_reading_not_stored)).isEqualTo("warmup");
+        assertThat(value(status, R.string.li3_reading_not_stored)).isEqualTo(gs(R.string.li3_refused_warmup));
     }
 
     /** An accepted reading after refused ones takes the reason off the status page. */
@@ -565,7 +565,8 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         session.onReading(reading(1, 120));
 
         // :: Verify
-        assertThat(Li3Service.nanoStatus().toString()).isEqualTo("Reading not stored: warmup");
+        assertThat(Li3Service.nanoStatus().toString())
+                .isEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_refused_warmup));
     }
 
     /** With no sensor, the line under the graph says where the setup steps are, since the scan alone is not enough. */
@@ -595,7 +596,8 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         Robolectric.buildService(Li3Service.class).create().startCommand(0, 1);
 
         // :: Verify
-        assertThat(String.valueOf(Li3Service.nanoStatus())).isNotEqualTo("Reading not stored: warmup");
+        assertThat(String.valueOf(Li3Service.nanoStatus()))
+                .isNotEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_refused_warmup));
     }
 
     /**
@@ -732,6 +734,54 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
      * During warm-up the line under the graph says when the first reading comes, from the start time and the sensor's
      * warm-up, rather than that each reading is refused.
      */
+    /** A reading with no valid value says so under the graph, in the app's language rather than as logged. */
+    @Test
+    public void nanoStatus_noValidValue_showsReason() {
+        // :: Setup
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 2 * DAY_IN_MS)));
+        session.onStage("Streaming");
+
+        // :: Act
+        session.onReading(reading(2880, 0));
+
+        // :: Verify
+        assertThat(String.valueOf(Li3Service.nanoStatus()))
+                .isEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_refused_value));
+    }
+
+    /** A reading the sensor marks as unreliable says so under the graph. */
+    @Test
+    public void nanoStatus_notDisplayable_showsReason() {
+        // :: Setup
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 2 * DAY_IN_MS)));
+        session.onStage("Streaming");
+
+        // :: Act
+        session.onReading(reading(2880, 120, 0x8001));
+
+        // :: Verify
+        assertThat(String.valueOf(Li3Service.nanoStatus()))
+                .isEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_refused_quality));
+    }
+
+    /** A reading after the end of wear says the sensor has expired. */
+    @Test
+    public void nanoStatus_pastWear_showsExpired() {
+        // :: Setup
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 16 * DAY_IN_MS)));
+        session.onStage("Streaming");
+
+        // :: Act
+        session.onReading(reading(16 * 1440, 120));
+
+        // :: Verify
+        assertThat(String.valueOf(Li3Service.nanoStatus()))
+                .isEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_expired));
+    }
+
     @Test
     public void nanoStatus_inWarmup_showsMinutesLeft() {
         // :: Setup
@@ -762,7 +812,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(String.valueOf(Li3Service.nanoStatus()))
-                .isEqualTo("Reading not stored: time is more than 15 minutes ahead, start time looks wrong");
+                .isEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_refused_time));
     }
 
     /** Right after warm-up the line no longer says the sensor is warming up. */
@@ -948,9 +998,15 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
     }
 
     private static RealtimeReading reading(int lifeCount, int mgdl) {
+        return reading(lifeCount, mgdl, 0);
+    }
+
+    private static RealtimeReading reading(int lifeCount, int mgdl, int qualityWord) {
         byte[] b = new byte[RealtimeReading.SIZE];
         b[0] = (byte) lifeCount;
         b[1] = (byte) (lifeCount >> 8);
+        b[2] = (byte) qualityWord;
+        b[3] = (byte) (qualityWord >> 8);
         b[14] = 3;
         b[15] = (byte) mgdl;
         b[16] = (byte) (mgdl >> 8);

@@ -47,6 +47,11 @@ public final class Li3Readings {
     private static final String REFUSED_QUALITY = "not displayable";
     /** The refusal of a reading the sensor counts as still in warm-up. */
     static final String REFUSED_WARMUP = Lifecycle.Phase.WARMUP.name().toLowerCase(Locale.ROOT);
+    private static final String REFUSED_EXPIRED = Lifecycle.Phase.EXPIRED.name().toLowerCase(Locale.ROOT);
+    private static final String REFUSED_VALUE = "value ";
+    private static final String REFUSED_NO_START = "start time unknown";
+    private static final String REFUSED_AHEAD = "time is more than 15 minutes ahead, start time looks wrong";
+    private static final String REFUSED_BEHIND = "time is more than 15 minutes ago, start time looks wrong";
 
     private final Li3SensorState state;
     /** Recent accepted realtime values as {timestamp, mg/dL}, oldest first, for smoothing. */
@@ -80,7 +85,7 @@ public final class Li3Readings {
         }
         String reason = refusal(lifeCount, reading.mgdl(), nowMs);
         if (reason == null && timestamp(lifeCount) < nowMs - MAX_CLOCK_OFFSET_MS) {
-            reason = "time is more than 15 minutes ago, start time looks wrong";
+            reason = REFUSED_BEHIND;
         }
         // only a refusal for the quality flags alone leaves the minute to history; a wrong value or time would be
         // stored by history the same way, so those are remembered
@@ -178,6 +183,29 @@ public final class Li3Readings {
         Li3Store.updateState(state); // the connection may have asked for or given up on history on this frame
     }
 
+    /**
+     * @return a refusal from {@link #lastRefusal()} as the user reads it, in the app's language; the event log keeps
+     * it in English
+     */
+    public static String refusalText(String reason) {
+        if (reason.startsWith(REFUSED_VALUE)) {
+            return gs(R.string.li3_refused_value);
+        }
+        if (reason.equals(REFUSED_WARMUP)) {
+            return gs(R.string.li3_refused_warmup);
+        }
+        if (reason.equals(REFUSED_EXPIRED)) {
+            return gs(R.string.li3_expired);
+        }
+        if (reason.equals(REFUSED_QUALITY)) {
+            return gs(R.string.li3_refused_quality);
+        }
+        if (reason.equals(REFUSED_NO_START) || reason.equals(REFUSED_AHEAD) || reason.equals(REFUSED_BEHIND)) {
+            return gs(R.string.li3_refused_time);
+        }
+        return reason;
+    }
+
     /** @return why the last realtime reading was refused, or null when it was accepted */
     public synchronized String lastRefusal() {
         return lastRefusal;
@@ -213,16 +241,16 @@ public final class Li3Readings {
     /** Why a value at this life count is not stored, or null when it can be. */
     private String refusal(int lifeCount, Integer mgdl, long nowMs) {
         if (mgdl == null || mgdl < MIN_MGDL || mgdl > MAX_MGDL) {
-            return "value " + mgdl + " outside " + MIN_MGDL + "-" + MAX_MGDL;
+            return REFUSED_VALUE + mgdl + " outside " + MIN_MGDL + "-" + MAX_MGDL;
         }
         if (!state.lifecycle().usable(lifeCount)) {
             return state.lifecycle().phase(lifeCount).name().toLowerCase(Locale.ROOT);
         }
         if (state.activationMs() <= 0) {
-            return "start time unknown";
+            return REFUSED_NO_START;
         }
         if (timestamp(lifeCount) > nowMs + MAX_CLOCK_OFFSET_MS) {
-            return "time is more than 15 minutes ahead, start time looks wrong";
+            return REFUSED_AHEAD;
         }
         return null;
     }

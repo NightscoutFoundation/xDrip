@@ -2175,6 +2175,10 @@
     <string name="li3_stage">Stage</string>
     <string name="li3_last_error">Last error</string>
     <string name="li3_reading_not_stored">Reading not stored</string>
+    <string name="li3_refused_value">no valid value from the sensor</string>
+    <string name="li3_refused_warmup">sensor warming up</string>
+    <string name="li3_refused_time">the sensor start time looks wrong</string>
+    <string name="li3_refused_quality">the sensor marked the reading as unreliable</string>
     <string name="li3_started">Started</string>
     <string name="li3_remaining">Sensor life</string>
     <string name="li3_expired">expired</string>

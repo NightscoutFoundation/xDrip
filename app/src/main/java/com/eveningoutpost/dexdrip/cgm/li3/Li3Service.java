@@ -412,7 +412,8 @@ public class Li3Service extends ForegroundService {
         }
         String refusal = lastRefusal;
         if (state != null && refusal != null) {
-            si.add(new StatusItem(gs(R.string.li3_reading_not_stored), refusal, StatusItem.Highlight.BAD));
+            si.add(new StatusItem(gs(R.string.li3_reading_not_stored), Li3Readings.refusalText(refusal),
+                    StatusItem.Highlight.BAD));
         }
         if (state != null && state.activationMs() > 0) {
             si.add(new StatusItem(gs(R.string.li3_started), dateTimeText(state.activationMs())));
@@ -479,7 +480,7 @@ public class Li3Service extends ForegroundService {
         }
         if (refusal != null) {
             // the stage says the sensor streams, while no reading from it is stored
-            return new SpannableString(gs(R.string.li3_reading_not_stored) + ": " + refusal);
+            return new SpannableString(gs(R.string.li3_reading_not_stored) + ": " + Li3Readings.refusalText(refusal));
         }
         // a refused reading counts as collecting, but only a stored one hides the stage
         if (stage.isEmpty() || recent(lastReadingAt)) {
