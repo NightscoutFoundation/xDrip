@@ -435,7 +435,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         Robolectric.buildService(Li3Service.class).create().startCommand(0, 1);
 
         // :: Verify
-        assertThat(value(Li3Service.megaStatus(), R.string.li3_stage))
+        assertThat(value(Li3Service.megaStatus(), "Stage"))
                 .isEqualTo(gs(R.string.li3_stage_sensor_ended));
     }
 
@@ -450,7 +450,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         Robolectric.buildService(Li3Service.class).create().startCommand(0, 1);
 
         // :: Verify
-        assertThat(value(Li3Service.megaStatus(), R.string.li3_stage))
+        assertThat(value(Li3Service.megaStatus(), "Stage"))
                 .isNotEqualTo(gs(R.string.li3_stage_sensor_ended));
     }
 
@@ -482,8 +482,8 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_device)).isEqualTo(gs(R.string.none));
-        assertThat(value(status, R.string.li3_stage)).isEqualTo(gs(R.string.li3_stage_no_sensor));
+        assertThat(value(status, gs(R.string.glupro_device))).isEqualTo(gs(R.string.none));
+        assertThat(value(status, "Stage")).isEqualTo(gs(R.string.li3_stage_no_sensor));
     }
 
     /** A reading after an error shows the connection works again, so the status page drops the old error. */
@@ -498,7 +498,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_last_error)).isNull();
+        assertThat(value(status, "Last error")).isNull();
     }
 
     /** A reading xDrip refuses, here one in warm-up, shows on the status page with the reason. */
@@ -512,7 +512,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_reading_not_stored)).isEqualTo(gs(R.string.li3_refused_warmup));
+        assertThat(value(status, gs(R.string.li3_reading_not_stored))).isEqualTo(gs(R.string.li3_refused_warmup));
     }
 
     /** An accepted reading after refused ones takes the reason off the status page. */
@@ -528,7 +528,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_reading_not_stored)).isNull();
+        assertThat(value(status, gs(R.string.li3_reading_not_stored))).isNull();
     }
 
     /** Right after "Forget Device" the status page no longer shows why the old sensor's reading was refused. */
@@ -543,7 +543,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_reading_not_stored)).isNull();
+        assertThat(value(status, gs(R.string.li3_reading_not_stored))).isNull();
     }
 
     /** When the link drops after refused readings, the status page shows the reconnect, not the old refusal. */
@@ -560,8 +560,8 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_stage)).isEqualTo("Reconnecting in 5 s: disconnected, reason 8");
-        assertThat(value(status, R.string.li3_reading_not_stored)).isNull();
+        assertThat(value(status, "Stage")).isEqualTo("Reconnecting in 5 s: disconnected, reason 8");
+        assertThat(value(status, gs(R.string.li3_reading_not_stored))).isNull();
     }
 
     /**
@@ -580,7 +580,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_reading_not_stored)).isNull();
+        assertThat(value(status, gs(R.string.li3_reading_not_stored))).isNull();
     }
 
     // ================================================== nanoStatus ===================================================
@@ -709,8 +709,8 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.li3_remaining)).isEqualTo("Ends in 13 days");
-        assertThat(value(status, R.string.li3_remaining)).isEqualTo(SensorDays.get().getSpannable().toString());
+        assertThat(value(status, gs(R.string.li3_remaining))).isEqualTo("Ends in 13 days");
+        assertThat(value(status, gs(R.string.li3_remaining))).isEqualTo(SensorDays.get().getSpannable().toString());
     }
 
     // ================================================= isCollecting ==================================================
@@ -904,7 +904,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         session.onStage("Scanning for ABCD");
 
         // :: Verify
-        assertThat(value(Li3Service.megaStatus(), R.string.li3_stage)).isEqualTo("Scanning for ABCD");
+        assertThat(value(Li3Service.megaStatus(), "Stage")).isEqualTo("Scanning for ABCD");
     }
 
     /** A refused reading does not show as the last reading on the status page: no reading was stored. */
@@ -919,7 +919,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, R.string.last_reading)).isNull();
+        assertThat(value(status, gs(R.string.last_reading))).isNull();
     }
 
     // ================================================= Bluetooth off =================================================
@@ -994,8 +994,8 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
     }
 
     /** The value of the status row with this name, or null when the page has no such row. */
-    private static String value(List<StatusItem> status, int name) {
-        return status.stream().filter(item -> gs(name).equals(item.name)).map(item -> item.value).findFirst()
+    private static String value(List<StatusItem> status, String name) {
+        return status.stream().filter(item -> name.equals(item.name)).map(item -> item.value).findFirst()
                 .orElse(null);
     }
 

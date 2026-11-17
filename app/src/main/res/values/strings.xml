@@ -2150,15 +2150,14 @@
     <string name="click">Click</string>
     <string name="to_use_this_instead">to use this instead?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">The transmitter ID or pairing code you have entered is incorrect and would not work.\n\nPlease double-check the details and try again.</string>
-    <string name="li3_title" translatable="false">Li3</string>
     <string name="li3_fold_li3_app">Li3 app</string>
     <string name="li3_fold_multi_sensor_app">Multi-sensor app</string>
     <string name="li3_title_takeover">Take over Li3</string>
     <string name="li3_warn_activate_account">This starts the session for xDrip. The %1$s will not get its readings, but can take the device back later with the same account.</string>
-    <string name="li3_warn_activate_accountless">No account ID is set, so this starts the session for this xDrip install only. The device can never move to an official app, and is lost if xDrip is reinstalled.</string>
+    <string name="li3_warn_activate_accountless">No account ID is set, so this starts the session for xDrip on this phone only. The device can never move to an official app, and is lost if xDrip is reinstalled.</string>
     <string name="li3_warn_takeover">This takes the session in progress over from the %1$s. That app stops getting its readings and alarms.</string>
     <string name="li3_error_not_li3">This is not a Li3. Choose another data source in settings to use it.</string>
-    <string name="li3_warn_takeover_accountless">This device already has a session in progress and no account ID is set. This only works for a session started by this xDrip install. For a session started by an official app, look up its account ID first.</string>
+    <string name="li3_warn_takeover_accountless">This device already has a session in progress and no account ID is set. This only works for a session started by xDrip on this phone. For a session started by an official app, look up its account ID first.</string>
     <string name="li3_error_bad_reply">The device did not accept the command. Check that the app (%1$s) and the account ID (%2$s) are the ones the session was started with.</string>
     <string name="li3_error_patch_info">The Li3 device info could not be read. Please scan again.</string>
     <string name="li3_error_nfc_failed">Lost contact with the device. Please scan again and hold the phone still.</string>
@@ -2168,12 +2167,9 @@
     <string name="li3_nfc_done">Li3 ready, connecting by Bluetooth</string>
     <string name="li3_stage_no_sensor">No device; scan one with NFC</string>
     <string name="li3_home_no_sensor">No Li3 device; open System Status, Li3 to set it up</string>
-    <string name="li3_stage_sensor_ended">Sensor ended; scan a new one with NFC</string>
+    <string name="li3_stage_sensor_ended">Session ended; scan a new device with NFC</string>
     <string name="li3_stage_no_credential">No app credential; tap Download on the Li3 screen</string>
     <string name="li3_location_needed">Location is needed to find the device; tap to allow it</string>
-    <string name="li3_device">Device</string>
-    <string name="li3_stage">Stage</string>
-    <string name="li3_last_error">Last error</string>
     <string name="li3_reading_not_stored">Reading not stored</string>
     <string name="li3_refused_value">no valid value from the sensor</string>
     <string name="li3_refused_warmup">sensor warming up</string>
@@ -2188,7 +2184,7 @@
     <string name="li3_step_credential">Download the app credential with the button below</string>
     <string name="li3_step_account">Only to take over a session started by an official app: look up its account ID, then choose that app, with the buttons below</string>
     <string name="li3_step_scan">Scan the device with this screen open. Answer the question, then scan again.</string>
-    <string name="li3_step_readings">Wait for the first reading. A new sensor warms up for up to 60 minutes.</string>
+    <string name="li3_step_readings">Wait for the first reading. A new sensor sends none during its first hour or so.</string>
     <string name="li3_credential">App credential</string>
     <string name="li3_credential_ready">downloaded</string>
     <string name="li3_download_credential">Download app credential</string>
@@ -2205,9 +2201,9 @@
     <string name="li3_lookup_terms">Open the app this account uses, accept its new terms, then try again</string>
     <string name="li3_lookup_failed">Account ID lookup failed; enter it in Li3 settings</string>
     <string name="li3_offer_download">The device pairs with an app credential, and none is downloaded yet. Download it now?</string>
-    <string name="li3_forget_sensor_confirm">xDrip stops talking to this device. To use it again, scan it with NFC. A session started without an account can only come back to this xDrip install.</string>
+    <string name="li3_forget_sensor_confirm">xDrip stops talking to this device. To use it again, scan it with NFC. A session started without an account can only come back to xDrip on this phone.</string>
     <string name="li3_copy_diagnostics">Copy diagnostics</string>
-    <string name="li3_diagnostics_copied">Diagnostics copied; paste them in your report</string>
+    <string name="li3_diagnostics_copied">Diagnostics copied. Paste them when you ask for help.</string>
     <string name="li3_nfc_scan_off">NFC scanning is required to capture the device. Turn it on?</string>
     <string name="li3_nfc_phone_off">NFC is off on this phone. Turn it on in the phone settings, then come back.</string>
     <string name="li3_nfc_missing">This phone has no NFC, so it cannot start a Li3.</string>
@@ -2224,16 +2220,11 @@
     <string name="li3_home_waiting">Connected; waiting for a reading</string>
     <string name="li3_settings_summary">Account and app used to start or take over a Li3</string>
     <string name="li3_account_id_title">Account ID</string>
-    <string name="li3_account_id_summary">Needed to take over a session in progress. Leave empty to start a new session for this xDrip only.</string>
+    <string name="li3_account_id_summary">Needed to take over a session in progress. Leave empty to start a new session for xDrip on this phone only.</string>
     <string name="li3_fold_title">Official app</string>
     <string name="li3_fold_summary">The app the account uses</string>
     <string name="li3_smoothing_title">Smooth Li3 readings</string>
     <string name="li3_smoothing_summary">Off shows the raw per-minute values</string>
-    <string name="li3_product">Product</string>
-    <string name="li3_sensor_state">Sensor state</string>
-    <string name="li3_last_life_count">Last life count</string>
-    <string name="li3_backfilled">Backfilled</string>
-    <string name="li3_fast_data">Fast data</string>
     <string name="sensor_cannot_be_calibrated">This sensor cannot be calibrated.</string>
     <string name="notification_listener_permission_explanation">Permission is needed to receive data from other applications. xDrip does not do anything beyond this scope. Please enable xDrip on the next screen</string>
 </resources>

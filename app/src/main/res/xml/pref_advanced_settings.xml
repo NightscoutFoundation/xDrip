@@ -1607,7 +1607,7 @@
                 <PreferenceScreen
                     android:key="li3_settings"
                     android:summary="@string/li3_settings_summary"
-                    android:title="@string/li3_title">
+                    android:title="Li3">
 
                     <EditTextPreference
                         android:defaultValue=""

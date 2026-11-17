@@ -277,7 +277,7 @@ public class Li3NfcTest extends RobolectricTestWithConfig {
         assertThat(decision.code).isEqualTo(NfcCommand.Code.SWITCH_RECEIVER);
         assertThat(decision.receiverId).isEqualTo(ReceiverId.accountless(UNIQUE_ID));
         assertThat(decision.account).isEmpty();
-        assertThat(decision.warning).contains("started by this xDrip install");
+        assertThat(decision.warning).contains(gs(R.string.li3_warn_takeover_accountless));
     }
 
     /** The running sensor xDrip already uses is not taken over again: that would only reset its pairing. */

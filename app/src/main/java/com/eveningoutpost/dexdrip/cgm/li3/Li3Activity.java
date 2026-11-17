@@ -195,7 +195,7 @@ public class Li3Activity extends ActivityWithMenu {
             return;
         }
         offeredNfc = true;
-        AlertDialog.Builder question = new AlertDialog.Builder(this).setTitle(R.string.li3_title);
+        AlertDialog.Builder question = new AlertDialog.Builder(this).setTitle("Li3");
         switch (gap) {
             case SCAN_OFF:
                 question.setMessage(R.string.li3_nfc_scan_off)

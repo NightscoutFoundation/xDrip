@@ -217,7 +217,7 @@ public class Li3Service extends ForegroundService {
             final Intent intent = new Intent(context, Li3Activity.class);
             final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            JoH.showNotification(gs(R.string.li3_title), gs(R.string.li3_location_needed), pendingIntent,
+            JoH.showNotification("Li3", gs(R.string.li3_location_needed), pendingIntent,
                     Constants.LI3_LOCATION_NOTIFICATION_ID, false, false, false);
         }
 
@@ -297,7 +297,7 @@ public class Li3Service extends ForegroundService {
             final Intent intent = new Intent(this, Li3Activity.class);
             final PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            JoH.showNotification(gs(R.string.li3_title), gs(R.string.li3_home_setup), pendingIntent,
+            JoH.showNotification("Li3", gs(R.string.li3_home_setup), pendingIntent,
                     Constants.LI3_CREDENTIAL_NOTIFICATION_ID, false, false, false);
         }
     }
@@ -400,15 +400,15 @@ public class Li3Service extends ForegroundService {
         if (current != null) {
             si.addAll(current.megaStatus());
         } else {
-            si.add(new StatusItem(gs(R.string.li3_device),
+            si.add(new StatusItem(gs(R.string.glupro_device),
                     state == null ? gs(R.string.none) : state.serial()));
         }
         String shownStage = state == null ? gs(R.string.li3_stage_no_sensor) : stage;
         if (!shownStage.isEmpty()) {
-            si.add(new StatusItem(gs(R.string.li3_stage), shownStage));
+            si.add(new StatusItem("Stage", shownStage));
         }
         if (!lastError.isEmpty()) {
-            si.add(new StatusItem(gs(R.string.li3_last_error), lastError, StatusItem.Highlight.BAD));
+            si.add(new StatusItem("Last error", lastError, StatusItem.Highlight.BAD));
         }
         String refusal = lastRefusal;
         if (state != null && refusal != null) {
@@ -436,7 +436,7 @@ public class Li3Service extends ForegroundService {
         if (!credential && !downloadError.isEmpty()) {
             si.add(new StatusItem(gs(R.string.li3_download_failed), downloadError, StatusItem.Highlight.BAD));
         }
-        si.add(new StatusItem(gs(R.string.li3_title), gs(R.string.li3_open), StatusItem.Highlight.NORMAL,
+        si.add(new StatusItem("Li3", gs(R.string.li3_open), StatusItem.Highlight.NORMAL,
                 "button-press", Li3Store::startControlActivity));
         return si;
     }

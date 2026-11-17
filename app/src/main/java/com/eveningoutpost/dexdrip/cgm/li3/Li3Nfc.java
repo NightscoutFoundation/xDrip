@@ -282,7 +282,7 @@ public final class Li3Nfc {
                 return;
             }
             new AlertDialog.Builder(activity)
-                    .setTitle(R.string.li3_title)
+                    .setTitle("Li3")
                     .setMessage(message)
                     .setPositiveButton(R.string.ok, null)
                     .show();

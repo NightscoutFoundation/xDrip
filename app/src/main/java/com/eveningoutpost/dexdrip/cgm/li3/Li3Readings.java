@@ -214,26 +214,26 @@ public final class Li3Readings {
     /** Status rows for this sensor. Never shows the PIN or kAuth. */
     public synchronized List<StatusItem> megaStatus() {
         List<StatusItem> si = new ArrayList<>();
-        si.add(new StatusItem(gs(R.string.li3_device), state.serial()));
+        si.add(new StatusItem(gs(R.string.glupro_device), state.serial()));
         Integer wear = state.wearMinutes();
         if (wear != null && wear > 0) {
             // The longer sensor is worn 15 days, the shorter 14; the generation field is 1 on a US 15-day sensor too
-            si.add(new StatusItem(gs(R.string.li3_product), wear > 14 * 24 * 60 ? "Li3, 15 days" : "Li3, 14 days"));
+            si.add(new StatusItem("Product", wear > 14 * 24 * 60 ? "Li3, 15 days" : "Li3, 14 days"));
         }
         if (lastStatus != null) {
             PatchStatus.Attention attention = lastStatus.attention();
-            si.add(new StatusItem(gs(R.string.li3_sensor_state), lastStatus.state()
+            si.add(new StatusItem("Sensor state", lastStatus.state()
                     + (attention == PatchStatus.Attention.NONE ? "" : " (" + attention + ")"),
                     attention == PatchStatus.Attention.NONE ? StatusItem.Highlight.NORMAL : StatusItem.Highlight.BAD));
         }
         Integer last = state.lastLifeCount();
         if (last != null) {
-            si.add(new StatusItem(gs(R.string.li3_last_life_count), last + " (" + dateTimeText(timestamp(last))
+            si.add(new StatusItem("Last life count", last + " (" + dateTimeText(timestamp(last))
                     + ", " + state.lastMgdl() + " mg/dL)"));
         }
-        si.add(new StatusItem(gs(R.string.li3_backfilled), Integer.toString(backfilled)));
+        si.add(new StatusItem("Backfilled", Integer.toString(backfilled)));
         if (lastFastData != null) {
-            si.add(new StatusItem(gs(R.string.li3_fast_data), lastFastData));
+            si.add(new StatusItem("Fast data", lastFastData));
         }
         return si;
     }
