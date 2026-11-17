@@ -385,11 +385,11 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         // :: Verify
         String text = screenText(screen);
         assertThat(text).contains(
-                "○ 1. " + gs(R.string.li3_step_location) + " (" + gs(R.string.next) + ")");
+                "○ 1. " + gs(R.string.location_permission_needed_to_use_bluetooth) + " (" + gs(R.string.next) + ")");
         assertThat(text).contains("○ 5. " + gs(R.string.li3_step_readings));
     }
 
-    /** Location allowed but turned off still leaves the location step open. */
+    /** Location allowed but turned off still leaves the location step open, and it says location is off. */
     @Test
     public void onResume_locationOff_locationStepOpen() {
         // :: Setup
@@ -401,7 +401,7 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
         shadowOf(Looper.getMainLooper()).idle();
 
         // :: Verify
-        assertThat(screenText(screen)).contains("○ 1. " + gs(R.string.li3_step_location));
+        assertThat(screenText(screen)).contains("○ 1. " + gs(R.string.location_not_found_title));
     }
 
     /** With location allowed and no credential, the screen ticks location and names the download as next. */
@@ -416,7 +416,7 @@ public class Li3ActivityTest extends RobolectricTestWithConfig {
 
         // :: Verify
         String text = screenText(screen);
-        assertThat(text).contains("✓ 1. " + gs(R.string.li3_step_location) + "\n");
+        assertThat(text).contains("✓ 1. " + gs(R.string.location_permission_needed_to_use_bluetooth) + "\n");
         assertThat(text).contains(
                 "○ 2. " + gs(R.string.li3_step_credential) + " (" + gs(R.string.next) + ")");
     }

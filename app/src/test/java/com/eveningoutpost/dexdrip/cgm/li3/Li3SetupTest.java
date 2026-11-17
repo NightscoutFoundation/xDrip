@@ -37,11 +37,11 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
     @Test
     public void text_nothingDone_locationNext() {
         // :: Act
-        String text = Li3Setup.text(false, false, false, false, false);
+        String text = Li3Setup.text(false, false, false, false, false, false);
 
         // :: Verify
         assertThat(text).isEqualTo(gs(R.string.li3_setup) + "\n"
-                + "○ 1. " + gs(R.string.li3_step_location) + " (" + gs(R.string.next) + ")\n"
+                + "○ 1. " + gs(R.string.location_permission_needed_to_use_bluetooth) + " (" + gs(R.string.next) + ")\n"
                 + "○ 2. " + gs(R.string.li3_step_credential) + "\n"
                 + "○ 3. " + gs(R.string.li3_step_account) + "\n"
                 + "○ 4. " + gs(R.string.li3_step_scan) + "\n"
@@ -52,20 +52,30 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
     @Test
     public void text_credentialDone_scanNext() {
         // :: Act
-        String text = Li3Setup.text(true, true, false, false, false);
+        String text = Li3Setup.text(true, true, true, false, false, false);
 
         // :: Verify
-        assertThat(text).contains("✓ 1. " + gs(R.string.li3_step_location) + "\n");
+        assertThat(text).contains("✓ 1. " + gs(R.string.location_permission_needed_to_use_bluetooth) + "\n");
         assertThat(text).contains("✓ 2. " + gs(R.string.li3_step_credential) + "\n");
         assertThat(text).contains("○ 3. " + gs(R.string.li3_step_account) + "\n");
         assertThat(text).contains("○ 4. " + gs(R.string.li3_step_scan) + " (" + gs(R.string.next) + ")");
+    }
+
+    /** With the permission given but location turned off, the location step says location is off. */
+    @Test
+    public void text_permissionButLocationOff_saysNotEnabled() {
+        // :: Act
+        String text = Li3Setup.text(true, false, false, false, false, false);
+
+        // :: Verify
+        assertThat(text).contains("○ 1. " + gs(R.string.location_not_found_title) + " (" + gs(R.string.next) + ")\n");
     }
 
     /** An account ID that is set ticks the account step. */
     @Test
     public void text_accountIdSet_accountTicked() {
         // :: Act
-        String text = Li3Setup.text(false, false, true, false, false);
+        String text = Li3Setup.text(false, false, false, true, false, false);
 
         // :: Verify
         assertThat(text).contains("✓ 3. " + gs(R.string.li3_step_account));
@@ -75,7 +85,7 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
     @Test
     public void text_sensorWithoutCredential_credentialNext() {
         // :: Act
-        String text = Li3Setup.text(true, false, false, true, false);
+        String text = Li3Setup.text(true, true, false, false, true, false);
 
         // :: Verify
         assertThat(text).contains("○ 2. " + gs(R.string.li3_step_credential) + " (" + gs(R.string.next) + ")");
@@ -86,7 +96,7 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
     @Test
     public void text_sensorStored_readingsNext() {
         // :: Act
-        String text = Li3Setup.text(true, true, false, true, false);
+        String text = Li3Setup.text(true, true, true, false, true, false);
 
         // :: Verify
         assertThat(text).endsWith("○ 5. " + gs(R.string.li3_step_readings) + " (" + gs(R.string.next) + ")");
@@ -96,7 +106,7 @@ public class Li3SetupTest extends RobolectricTestWithConfig {
     @Test
     public void text_allDone_nothingNext() {
         // :: Act
-        String text = Li3Setup.text(true, true, false, true, true);
+        String text = Li3Setup.text(true, true, true, false, true, true);
 
         // :: Verify
         assertThat(text).contains("✓ 5. " + gs(R.string.li3_step_readings));

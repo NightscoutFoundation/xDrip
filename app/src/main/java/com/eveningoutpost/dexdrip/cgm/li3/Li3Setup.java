@@ -29,7 +29,7 @@ final class Li3Setup {
     /** The steps as they stand now on this phone. */
     static String text(Context context) {
         boolean sensor = Li3Store.loadState() != null;
-        return text(LocationHelper.isLocationPermissionOk(context) && LocationHelper.isLocationEnabled(context),
+        return text(LocationHelper.isLocationPermissionOk(context), LocationHelper.isLocationEnabled(context),
                 !Li3Credential.get(context).load().isEmpty(),
                 !Li3Store.accountId().isEmpty(),
                 sensor,
@@ -38,11 +38,17 @@ final class Li3Setup {
                 sensor && Li3Service.hasRecentReading());
     }
 
-    /** The steps, given which of them are done. */
-    static String text(boolean location, boolean credential, boolean accountId, boolean sensor, boolean readings) {
+    /**
+     * The steps, given which of them are done. The location step needs both the permission and location turned on,
+     * and names location when only that is missing.
+     */
+    static String text(boolean permission, boolean locationOn, boolean credential, boolean accountId, boolean sensor,
+                       boolean readings) {
         StringBuilder sb = new StringBuilder(gs(R.string.li3_setup));
         boolean nextShown = false;
-        nextShown |= step(sb, 1, R.string.li3_step_location, location, !nextShown);
+        int locationStep = permission && !locationOn
+                ? R.string.location_not_found_title : R.string.location_permission_needed_to_use_bluetooth;
+        nextShown |= step(sb, 1, locationStep, permission && locationOn, !nextShown);
         nextShown |= step(sb, 2, R.string.li3_step_credential, credential, !nextShown);
         step(sb, 3, R.string.li3_step_account, accountId, false);
         nextShown |= step(sb, 4, R.string.li3_step_scan, sensor, !nextShown);

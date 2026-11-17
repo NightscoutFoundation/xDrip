@@ -192,7 +192,7 @@ public final class Li3Readings {
             return gs(R.string.li3_refused_value);
         }
         if (reason.equals(REFUSED_WARMUP)) {
-            return gs(R.string.li3_refused_warmup);
+            return gs(R.string.sensor_is_still_warming_up_please_wait);
         }
         if (reason.equals(REFUSED_EXPIRED)) {
             return gs(R.string.li3_expired);

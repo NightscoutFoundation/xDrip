@@ -9,10 +9,12 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assert.assertThrows;
 import static org.robolectric.Shadows.shadowOf;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.location.LocationManager;
 import android.text.SpannableString;
 import android.util.Log;
 
@@ -512,7 +514,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         List<StatusItem> status = Li3Service.megaStatus();
 
         // :: Verify
-        assertThat(value(status, gs(R.string.li3_reading_not_stored))).isEqualTo(gs(R.string.li3_refused_warmup));
+        assertThat(value(status, gs(R.string.li3_reading_not_stored))).isEqualTo(gs(R.string.sensor_is_still_warming_up_please_wait));
     }
 
     /** An accepted reading after refused ones takes the reason off the status page. */
@@ -601,7 +603,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(Li3Service.nanoStatus().toString())
-                .isEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_refused_warmup));
+                .isEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.sensor_is_still_warming_up_please_wait));
     }
 
     /** With no sensor, the line under the graph says where the setup steps are, since the scan alone is not enough. */
@@ -632,7 +634,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(String.valueOf(Li3Service.nanoStatus()))
-                .isNotEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_refused_warmup));
+                .isNotEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.sensor_is_still_warming_up_please_wait));
     }
 
     /**
@@ -666,6 +668,61 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         Notification notification = notifications().getNotification(Constants.LI3_LOCATION_NOTIFICATION_ID);
         assertThat(shadowOf(notification.contentIntent).getSavedIntent().getComponent().getClassName())
                 .isEqualTo(Li3Activity.class.getName());
+    }
+
+    /** Without the location permission, the notification says the permission is needed, in xDrip's usual words. */
+    @Test
+    public void onLocationNeeded_noPermission_saysPermissionNeeded() {
+        // :: Setup
+        shadowOf(RuntimeEnvironment.getApplication()).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now)));
+
+        // :: Act
+        session.onLocationNeeded();
+
+        // :: Verify
+        assertThat(notificationText(Constants.LI3_LOCATION_NOTIFICATION_ID))
+                .isEqualTo(gs(R.string.location_permission_needed_to_use_bluetooth));
+    }
+
+    /**
+     * Approximate location is enough for the scan, so with only that allowed and location turned off the notification
+     * names location, not the permission.
+     */
+    @Test
+    public void onLocationNeeded_approximatePermissionLocationOff_saysNotEnabled() {
+        // :: Setup
+        shadowOf(RuntimeEnvironment.getApplication()).grantPermissions(Manifest.permission.ACCESS_COARSE_LOCATION);
+        shadowOf(RuntimeEnvironment.getApplication()).denyPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
+        shadowOf((LocationManager) RuntimeEnvironment.getApplication().getSystemService(Context.LOCATION_SERVICE))
+                .setLocationEnabled(false);
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now)));
+
+        // :: Act
+        session.onLocationNeeded();
+
+        // :: Verify
+        assertThat(notificationText(Constants.LI3_LOCATION_NOTIFICATION_ID))
+                .isEqualTo(gs(R.string.location_not_found_title));
+    }
+
+    /** With the permission given but location turned off, the notification says location is not enabled. */
+    @Test
+    public void onLocationNeeded_locationOff_saysNotEnabled() {
+        // :: Setup
+        shadowOf(RuntimeEnvironment.getApplication()).grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION);
+        shadowOf((LocationManager) RuntimeEnvironment.getApplication().getSystemService(Context.LOCATION_SERVICE))
+                .setLocationEnabled(false);
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now)));
+
+        // :: Act
+        session.onLocationNeeded();
+
+        // :: Verify
+        assertThat(notificationText(Constants.LI3_LOCATION_NOTIFICATION_ID))
+                .isEqualTo(gs(R.string.location_not_found_title));
     }
 
     /** Every retry asks again; a dismissed notification stays dismissed for the rest of the session. */
@@ -817,8 +874,12 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
                 .isEqualTo(gs(R.string.li3_reading_not_stored) + ": " + gs(R.string.li3_expired));
     }
 
+    /**
+     * During warm-up the line under the graph says so in xDrip's usual words; the home screen counts the minutes down
+     * above the graph. Followers and broadcasts get the same line.
+     */
     @Test
-    public void nanoStatus_inWarmup_showsMinutesLeft() {
+    public void nanoStatus_inWarmup_saysWarmingUp() {
         // :: Setup
         Li3Service.forgetReadingTimes();
         Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 20 * MINUTE_IN_MS)));
@@ -828,7 +889,21 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         session.onReading(reading(20, 120));
 
         // :: Verify
-        assertThat(String.valueOf(Li3Service.nanoStatus())).isEqualTo(gs(R.string.li3_home_warmup, "40"));
+        assertThat(String.valueOf(Li3Service.nanoStatus())).isEqualTo(gs(R.string.sensor_is_still_warming_up_please_wait));
+    }
+
+    /** Warm-up shows before the first reading too, while the phone is still connecting. */
+    @Test
+    public void nanoStatus_connectingInWarmup_saysWarmingUp() {
+        // :: Setup
+        Li3Service.forgetReadingTimes();
+        Li3Service.Session session = new Li3Service.Session(new Li3Readings(sensor("0RRC989AQ", now - 20 * MINUTE_IN_MS)));
+
+        // :: Act
+        session.onStage("Connecting");
+
+        // :: Verify
+        assertThat(String.valueOf(Li3Service.nanoStatus())).isEqualTo(gs(R.string.sensor_is_still_warming_up_please_wait));
     }
 
     /**
@@ -873,7 +948,7 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         String[][] cases = {
                 {"Scanning for ABCD", gs(R.string.li3_home_looking)},
                 {"Waiting in the background for up to 10 min", gs(R.string.li3_home_looking)},
-                {"Reconnecting in 5 s: Bluetooth is off", gs(R.string.li3_home_bluetooth_off)},
+                {"Reconnecting in 5 s: Bluetooth is off", gs(R.string.glupro_bluetooth_disabled)},
                 {"Reconnecting in 30 s: no sensor found", gs(R.string.li3_home_reconnecting)},
                 {"Connecting", gs(R.string.connecting_to_device)},
                 {"Connected from the background wait", gs(R.string.connecting_to_device)},
@@ -991,6 +1066,11 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
 
     private static ShadowNotificationManager notifications() {
         return shadowOf((NotificationManager) xdrip.getAppContext().getSystemService(Context.NOTIFICATION_SERVICE));
+    }
+
+    /** The text of the posted notification with this ID. */
+    private static String notificationText(int id) {
+        return String.valueOf(notifications().getNotification(id).extras.getCharSequence(Notification.EXTRA_TEXT));
     }
 
     /** The value of the status row with this name, or null when the page has no such row. */

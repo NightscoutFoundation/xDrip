@@ -9,9 +9,11 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
 
+import android.Manifest;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.os.PowerManager;
 import android.text.SpannableString;
@@ -217,7 +219,14 @@ public class Li3Service extends ForegroundService {
             final Intent intent = new Intent(context, Li3Activity.class);
             final PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent,
                     PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-            JoH.showNotification("Li3", gs(R.string.li3_location_needed), pendingIntent,
+            // the scan asks for the permission first, and takes precise or approximate location while xDrip is open
+            final boolean permitted = context.checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED
+                    || context.checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED;
+            final int text = permitted
+                    ? R.string.location_not_found_title : R.string.location_permission_needed_to_use_bluetooth;
+            JoH.showNotification("Li3", gs(text), pendingIntent,
                     Constants.LI3_LOCATION_NOTIFICATION_ID, false, false, false);
         }
 
@@ -470,12 +479,11 @@ public class Li3Service extends ForegroundService {
         boolean warmupMayExplain = refusal != null ? Li3Readings.REFUSED_WARMUP.equals(refusal)
                 : home.equals(gs(R.string.li3_home_waiting)) || home.equals(gs(R.string.connecting_to_device));
         if (!recent(lastReadingAt) && warmupMayExplain) {
-            // a link problem is shown as it is; once connected, warm-up is why no reading comes yet. Any other refusal,
-            // such as a start time that looks wrong, is shown as it is: a wrong start time also makes warm-up look longer
-            long warmupLeft = warmupLeftMs(Li3Store.loadState(), tsl());
-            if (warmupLeft > 0) {
-                return new SpannableString(gs(R.string.li3_home_warmup,
-                        Long.toString((warmupLeft + MINUTE_IN_MS - 1) / MINUTE_IN_MS)));
+            // a link problem is shown as it is; once connected, warm-up is why no reading comes yet, and the home screen
+            // counts its minutes down above the graph. Any other refusal, such as a start time that looks wrong, is
+            // shown as it is: a wrong start time also makes warm-up look longer
+            if (warmupLeftMs(Li3Store.loadState(), tsl()) > 0) {
+                return new SpannableString(gs(R.string.sensor_is_still_warming_up_please_wait));
             }
         }
         if (refusal != null) {
@@ -507,7 +515,7 @@ public class Li3Service extends ForegroundService {
         }
         if (stage.startsWith("Reconnecting")) {
             return gs(stage.endsWith("Bluetooth is off")
-                    ? R.string.li3_home_bluetooth_off : R.string.li3_home_reconnecting);
+                    ? R.string.glupro_bluetooth_disabled : R.string.li3_home_reconnecting);
         }
         if (stage.startsWith("Connecting") || stage.startsWith("Connected") || stage.startsWith("Pairing")
                 || stage.startsWith("Paired")) {

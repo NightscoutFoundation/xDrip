@@ -2169,10 +2169,8 @@
     <string name="li3_home_no_sensor">No Li3 device; open System Status, Li3 to set it up</string>
     <string name="li3_stage_sensor_ended">Session ended; scan a new device with NFC</string>
     <string name="li3_stage_no_credential">No app credential; tap Download on the Li3 screen</string>
-    <string name="li3_location_needed">Location is needed to find the device; tap to allow it</string>
     <string name="li3_reading_not_stored">Reading not stored</string>
     <string name="li3_refused_value">no valid value from the sensor</string>
-    <string name="li3_refused_warmup">sensor warming up</string>
     <string name="li3_refused_time">the session start time looks wrong</string>
     <string name="li3_refused_quality">the sensor marked the reading as unreliable</string>
     <string name="li3_started">Started</string>
@@ -2180,7 +2178,6 @@
     <string name="li3_expired">expired</string>
     <string name="li3_open">Open</string>
     <string name="li3_setup">Setup</string>
-    <string name="li3_step_location">Allow location, so the phone can find the device by Bluetooth</string>
     <string name="li3_step_credential">Download the app credential with the button below</string>
     <string name="li3_step_account">Only to take over a session started by an official app: look up its account ID, then choose that app, with the buttons below</string>
     <string name="li3_step_scan">Scan the device with this screen open. Answer the question, then scan again.</string>
@@ -2213,9 +2210,7 @@
     <string name="li3_sensor_app_button">Sensor app: %1$s</string>
     <string name="li3_download_failed_retry">Download failed. Check the internet connection, then tap Download again.</string>
     <string name="li3_home_setup">Li3 setup not finished; open System Status, Li3</string>
-    <string name="li3_home_warmup">Li3 warming up; first reading in about %1$s min</string>
     <string name="li3_home_looking">Looking for the device; keep the phone near it</string>
-    <string name="li3_home_bluetooth_off">Bluetooth is off; turn it on</string>
     <string name="li3_home_reconnecting">Lost the device; trying again soon</string>
     <string name="li3_home_waiting">Connected; waiting for a reading</string>
     <string name="li3_settings_summary">Account and app used to start or take over a Li3</string>
