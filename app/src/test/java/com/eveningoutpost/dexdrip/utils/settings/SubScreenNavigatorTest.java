@@ -135,6 +135,33 @@ public class SubScreenNavigatorTest extends RobolectricTestWithConfig {
     // ===== Recreation ================================================================================================
 
     /**
+     * Leaving a page two screens deep gives the activity back the root's title and leaves nothing to go back to.
+     */
+    @Test
+    public void leaveRestoresRootTitle() {
+        // :: Setup
+        final PreferenceTestHost host = PreferenceTestHost.start();
+        final PreferenceScreen root = host.screen("root", "Root");
+        final PreferenceScreen sub = host.screen("sub", "Sub");
+        root.addPreference(sub);
+        final PreferenceScreen inner = host.screen("inner", "Inner");
+        sub.addPreference(inner);
+        host.plain(inner, "inner_item");
+        host.setRoot(root);
+        final SubScreenNavigator navigator = navigator(host);
+        navigator.show(sub);
+        navigator.show(inner);
+
+        // :: Act
+        navigator.leave();
+
+        // :: Verify
+        assertThat(host.activityTitle()).isEqualTo(PreferenceTestHost.ROOT_TITLE);
+        assertThat(navigator.shownKey()).isNull();
+        assertThat(navigator.back()).isFalse();
+    }
+
+    /**
      * The saved path of a sub-screen two levels down reopens it on a new page, and back from there lands on the level
      * above it.
      */

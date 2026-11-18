@@ -124,6 +124,16 @@ public final class SettingsScreenDriver {
         idle();
     }
 
+    /**
+     * Starts the open settings screen again with {@code action}, as another screen does when it brings settings to
+     * the front.
+     */
+    public void deliverNewIntent(final String action) {
+        controller.newIntent(new Intent(org.robolectric.RuntimeEnvironment.getApplication(), Preferences.class)
+                .setAction(action));
+        idle();
+    }
+
     // ===== Where am I ================================================================================================
 
     /**
@@ -144,6 +154,13 @@ public final class SettingsScreenDriver {
             return String.valueOf(activity().getTitle());
         }
         return String.valueOf(shown.getTitle());
+    }
+
+    /**
+     * The title the activity shows in its action bar.
+     */
+    public String activityTitle() {
+        return String.valueOf(activity().getTitle());
     }
 
     /**

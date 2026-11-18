@@ -113,6 +113,25 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     }
 
     /**
+     * Settings brought to the front again from another screen, while a sub-screen is open, shows the root with the
+     * root's title, as the old screen did when it closed its sub-screen dialogs.
+     */
+    @Test
+    public void newIntentOnSubScreenShowsRootTitle() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final String rootTitle = driver.activityTitle();
+        driver.openScreen(SPEAK_SCREEN);
+
+        // :: Act
+        driver.deliverNewIntent(SPEAK_SCREEN);
+
+        // :: Verify
+        assertThat(driver.shownScreenKey()).isNull();
+        assertThat(driver.activityTitle()).isEqualTo(rootTitle);
+    }
+
+    /**
      * Every keyed sub-screen of the settings XMLs that is in the live tree opens when tapped. Screens that only start
      * an activity (an {@code <intent>} child, or no children and a click listener in code, like the QR scanner) are
      * not sub-screens a person navigates into, so they are left out here. A disabled sub-screen (its dependency is off)

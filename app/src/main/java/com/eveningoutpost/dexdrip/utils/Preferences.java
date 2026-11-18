@@ -206,6 +206,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     public static final double MAX_GLUCOSE_INPUT = 400; // The largest acceptable input glucose value in mg/dL
 
     private void refreshFragments(final String jumpTo) {
+        if (this.preferenceFragment != null && this.preferenceFragment.isAdded()) {
+            this.preferenceFragment.navigator.leave(); // the old screen closed its sub-screen dialogs here
+        }
         this.preferenceFragment = new AllPrefsFragment(jumpTo);
         this.preferenceFragment.setParent(this);
         pFragment = this.preferenceFragment;

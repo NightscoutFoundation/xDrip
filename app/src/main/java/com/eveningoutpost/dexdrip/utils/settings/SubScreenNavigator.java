@@ -76,6 +76,17 @@ public class SubScreenNavigator {
     }
 
     /**
+     * Forgets the open screens and gives the activity back the root's title, for a page about to be replaced.
+     */
+    public void leave() {
+        if (stack.isEmpty()) {
+            return;
+        }
+        stack.clear();
+        host.requireActivity().setTitle(rootTitle);
+    }
+
+    /**
      * The key of the screen shown, or null when the root is shown.
      */
     @Nullable
