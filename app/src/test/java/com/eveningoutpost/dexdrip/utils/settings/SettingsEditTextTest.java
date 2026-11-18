@@ -1,9 +1,6 @@
 package com.eveningoutpost.dexdrip.utils.settings;
 
 import android.content.SharedPreferences;
-import android.text.InputFilter;
-import android.text.SpannableStringBuilder;
-import android.text.method.KeyListener;
 import android.util.AttributeSet;
 import android.widget.EditText;
 
@@ -36,9 +33,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
  * @author Asbjørn Aarrestad - 2026.11
  */
 public class SettingsEditTextTest extends RobolectricTestWithConfig {
-
-    /** Characters typed into both fields to compare which ones each key listener lets through. */
-    private static final String PROBE = "0123456789.,-+ eE:/abcXYZ_@#";
 
     /** Mac address of a pretend Mi Band, so its model can be stored. */
     private static final String MIBAND_MAC = "AA:BB:CC:DD:EE:FF";
@@ -89,7 +83,7 @@ public class SettingsEditTextTest extends RobolectricTestWithConfig {
     public void everyFieldMatchesItsXml() {
         // :: Setup
         final Map<String, String> expected = new LinkedHashMap<>();
-        SettingsXml.forEach("EditTextPreference", (key, attrs) -> expected.put(key, describe(reference(attrs))));
+        SettingsXml.forEach("EditTextPreference", (key, attrs) -> expected.put(key, EditTextProbe.describe(reference(attrs))));
         final Set<String> compared = new TreeSet<>();
         final Set<String> shown = new TreeSet<>();
 
@@ -107,7 +101,7 @@ public class SettingsEditTextTest extends RobolectricTestWithConfig {
                     continue;
                 }
                 assertWithMessage("text field " + key + " in state " + state.getKey())
-                        .that(describe(driver.editTextOf(key))).isEqualTo(field.getValue());
+                        .that(EditTextProbe.describe(driver.editTextOf(key))).isEqualTo(field.getValue());
                 compared.add(key);
             }
         }
@@ -155,36 +149,5 @@ public class SettingsEditTextTest extends RobolectricTestWithConfig {
 
     private static EditText reference(final AttributeSet attrs) {
         return new EditText(RuntimeEnvironment.getApplication(), attrs);
-    }
-
-    /**
-     * One line with every property this test compares, so a mismatch shows all of them at once.
-     */
-    private static String describe(final EditText field) {
-        final KeyListener listener = field.getKeyListener();
-        return "inputType=0x" + Integer.toHexString(field.getInputType())
-                + " maxLength=" + maxLength(field)
-                + " keyListener=" + (listener == null ? "null" : listener.getClass().getSimpleName())
-                + " accepts=" + accepted(listener)
-                + " maxLines=" + field.getMaxLines()
-                + " selectable=" + field.isTextSelectable();
-    }
-
-    private static String maxLength(final EditText field) {
-        for (final InputFilter filter : field.getFilters()) {
-            if (filter instanceof InputFilter.LengthFilter) {
-                return String.valueOf(((InputFilter.LengthFilter) filter).getMax());
-            }
-        }
-        return "none";
-    }
-
-    private static String accepted(final KeyListener listener) {
-        if (!(listener instanceof InputFilter)) {
-            return "all";
-        }
-        final CharSequence kept = ((InputFilter) listener).filter(PROBE, 0, PROBE.length(),
-                new SpannableStringBuilder(), 0, 0);
-        return kept == null ? PROBE : kept.toString();
     }
 }
