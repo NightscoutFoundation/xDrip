@@ -88,10 +88,13 @@ public final class Li3SensorState {
         lastMgdl = mgdl;
     }
 
-    /** The stored cycle; without one, the default warm-up and no wear end, as a reconnect without NFC has. */
+    /**
+     * The stored cycle; without one, as a reconnect without NFC has, the default warm-up and the longest wear. Unlike
+     * RoundWhiteDiscKit, which has no wear end then, so no reading is taken as valid past any sensor's end.
+     */
     public synchronized Lifecycle lifecycle() {
         return new Lifecycle(warmupMinutes != null ? warmupMinutes : Lifecycle.DEFAULT_WARMUP_MINUTES,
-                wearMinutes != null ? wearMinutes : Integer.MAX_VALUE);
+                wearMinutes != null ? wearMinutes : Lifecycle.DEFAULT_WEAR_MINUTES);
     }
 
     public synchronized String toJson() {

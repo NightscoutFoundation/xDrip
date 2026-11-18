@@ -192,6 +192,24 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
         assertThat(storedAt(21600)).isNull();
     }
 
+    /**
+     * Without the cycle from a scan, wear ends after 15 days, the longest a Li3 is worn, as the status page and the
+     * sensor age already assume; the last reading before that is stored and the one at the end is not.
+     */
+    @Test
+    public void onRealtime_noStoredCycle_endsAfterFifteenDays() {
+        // :: Setup
+        readings = readingsWithoutCycle(now - 21600 * MINUTE_IN_MS);
+
+        // :: Act
+        readings.onRealtime(reading(21595, 120), now);
+        readings.onRealtime(reading(21600, 120), now);
+
+        // :: Verify
+        assertThat(storedAt(21595)).isNotNull();
+        assertThat(storedAt(21600)).isNull();
+    }
+
     /** A reading is not stored while the sensor's start time is unknown, and that is the reason given. */
     @Test
     public void onRealtime_startTimeUnknown_notStoredForThatReason() {
@@ -949,6 +967,16 @@ public class Li3ReadingsTest extends RobolectricTestWithConfig {
     }
 
     // ==================================================== helpers ====================================================
+
+    /** Readings for a sensor taken over without a scan, so no warm-up or wear is stored for it. */
+    private Li3Readings readingsWithoutCycle(long activationMs) {
+        state = new Li3SensorState("0RRC989AQ", "CC:22:DF:B8:F9:58", PIN);
+        state.setActivationMs(activationMs);
+        state.setKAuth(KAUTH);
+        Li3Store.saveState(state);
+        Li3Store.ensureSensor(state);
+        return new Li3Readings(state);
+    }
 
     private static boolean logged(String message) {
         for (UserError entry : UserError.all()) {

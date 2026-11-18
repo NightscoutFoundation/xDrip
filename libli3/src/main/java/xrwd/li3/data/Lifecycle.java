@@ -9,6 +9,8 @@ package xrwd.li3.data;
 public final class Lifecycle {
 
     public static final int DEFAULT_WARMUP_MINUTES = 60;
+    /** The longest a Li3 is worn, 15 days, for a sensor whose own wear is not known. */
+    public static final int DEFAULT_WEAR_MINUTES = 15 * 24 * 60;
 
     public enum Phase {
         WARMUP, ACTIVE, EXPIRED

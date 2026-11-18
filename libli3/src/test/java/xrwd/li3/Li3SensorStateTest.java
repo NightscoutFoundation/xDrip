@@ -80,9 +80,12 @@ public class Li3SensorStateTest {
         assertThrows(IllegalArgumentException.class, load);
     }
 
-    /** *SensorStateLoaderTests.swift:88-97: without a stored cycle the default warm-up applies, and no wear end. */
+    /**
+     * *SensorStateLoaderTests.swift:88-97: without a stored cycle the default warm-up applies. Unlike there, wear ends
+     * after 15 days, the longest a Li3 is worn, so a reading is never taken as valid past any sensor's end.
+     */
     @Test
-    public void lifecycle_noStoredCycle_usesDefaultWarmup() {
+    public void lifecycle_noStoredCycle_usesDefaultWarmupAndWear() {
         // :: Setup
         Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
 
@@ -94,7 +97,8 @@ public class Li3SensorStateTest {
         assertThat(state.wearMinutes()).isNull();
         assertThat(lifecycle.usable(Lifecycle.DEFAULT_WARMUP_MINUTES - 1)).isFalse();
         assertThat(lifecycle.usable(Lifecycle.DEFAULT_WARMUP_MINUTES)).isTrue();
-        assertThat(lifecycle.usable(1_000_000)).isTrue();
+        assertThat(lifecycle.usable(21599)).isTrue();
+        assertThat(lifecycle.usable(21600)).isFalse();
     }
 
     // ==================================================== toJson =====================================================

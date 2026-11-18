@@ -2,7 +2,6 @@ package com.eveningoutpost.dexdrip.cgm.li3;
 
 import static com.eveningoutpost.dexdrip.models.JoH.dateTimeText;
 import static com.eveningoutpost.dexdrip.models.JoH.tsl;
-import static com.eveningoutpost.dexdrip.utilitymodels.Constants.DAY_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 
@@ -19,6 +18,7 @@ import com.eveningoutpost.dexdrip.xdrip;
 import java.util.Arrays;
 
 import xrwd.li3.Li3SensorState;
+import xrwd.li3.data.Lifecycle;
 import xrwd.li3.pairing.ReceiverId;
 
 /**
@@ -39,7 +39,7 @@ public final class Li3Store {
     private static final String RECORD_SERIAL_KEY = "li3-record-serial";
     private static final String RECORD_UUID_KEY = "li3-record-uuid";
 
-    private static final long DEFAULT_WEAR_MS = 15 * DAY_IN_MS;
+    private static final long DEFAULT_WEAR_MS = Lifecycle.DEFAULT_WEAR_MINUTES * MINUTE_IN_MS;
 
     private Li3Store() {
     }
