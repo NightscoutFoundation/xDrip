@@ -16,7 +16,8 @@ import androidx.preference.Preference;
  * <p>
  * It reads {@code android:ringtoneType}, {@code android:showDefault} and {@code android:showSilent} with the same
  * defaults as the old {@code android.preference.RingtonePreference}, starts the picker with the same extras, and
- * stores the result the same way: the picked sound's uri as a string, or an empty string for silence. The settings page
+ * stores the result the same way: the picked sound's uri as a string, or an empty string for silence. Its XML default
+ * is stored when the setting is first added, as before. The settings page
  * starts the picker from {@link #buildPickerIntent} and hands the result to {@link #onPickerResult}.
  *
  * @author Asbjørn Aarrestad - 2026.11
@@ -86,9 +87,16 @@ public class RingtonePickerPreference extends Preference {
     }
 
     /**
-     * Stores nothing, as the old setting did: the default value is only what the alert code falls back to.
+     * Stores the XML default the first time, as the old setting did, parsed as a uri like a picked sound.
      */
     @Override
-    protected void onSetInitialValue(@Nullable final Object defaultValue) {
+    protected void onSetInitialValue(final boolean restorePersistedValue, @Nullable final Object defaultValue) {
+        if (restorePersistedValue) {
+            return;
+        }
+        final String value = (String) defaultValue;
+        if (!TextUtils.isEmpty(value)) {
+            persistString(Uri.parse(value).toString());
+        }
     }
 }

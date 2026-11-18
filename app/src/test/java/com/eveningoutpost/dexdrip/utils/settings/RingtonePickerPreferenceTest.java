@@ -178,10 +178,10 @@ public class RingtonePickerPreferenceTest extends RobolectricTestWithConfig {
     // ===== Default value =============================================================================================
 
     /**
-     * Adding the setting does not store its default value, as the old one did not.
+     * Adding the setting stores its default value when nothing is stored yet, as the old one did.
      */
     @Test
-    public void initialValueIsNotPersisted() {
+    public void initialValueIsPersisted() {
         // :: Setup
         final PreferenceTestHost host = PreferenceTestHost.start();
 
@@ -189,7 +189,23 @@ public class RingtonePickerPreferenceTest extends RobolectricTestWithConfig {
         addTo(host, Robolectric.buildAttributeSet().addAttribute(android.R.attr.defaultValue, "default"));
 
         // :: Verify
-        assertThat(prefs().contains(KEY)).isFalse();
+        assertThat(prefs().getString(KEY, "<absent>")).isEqualTo("default");
+    }
+
+    /**
+     * Adding the setting leaves a stored sound alone.
+     */
+    @Test
+    public void storedValueIsKeptOverDefault() {
+        // :: Setup
+        final PreferenceTestHost host = PreferenceTestHost.start();
+        prefs().edit().putString(KEY, "").commit();
+
+        // :: Act
+        addTo(host, Robolectric.buildAttributeSet().addAttribute(android.R.attr.defaultValue, "default"));
+
+        // :: Verify
+        assertThat(prefs().getString(KEY, "<absent>")).isEqualTo("");
     }
 
     // ===== Helpers ===================================================================================================

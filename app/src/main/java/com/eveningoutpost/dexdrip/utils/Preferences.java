@@ -22,7 +22,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -31,30 +30,31 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
-import android.preference.EditTextPreference;
-import android.preference.ListPreference;
-import android.preference.Preference;
-import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
-import android.preference.PreferenceManager;
-import android.preference.PreferenceScreen;
-import android.preference.RingtonePreference;
-import android.preference.SwitchPreference;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.preference.CheckBoxPreference;
+import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceCategory;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup;
+import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.SwitchPreference;
 import android.text.InputFilter;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.BaseAdapter;
+import android.view.View;
 import android.widget.Toast;
 
 import com.bytehamster.lib.preferencesearch.SearchConfiguration;
+import com.bytehamster.lib.preferencesearch.SearchPreferenceFragment;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResult;
 import com.bytehamster.lib.preferencesearch.SearchPreferenceResultListener;
 import com.eveningoutpost.dexdrip.BasePreferenceActivity;
@@ -104,6 +104,8 @@ import com.eveningoutpost.dexdrip.ui.LockScreenWallPaper;
 import com.eveningoutpost.dexdrip.ui.dialog.GenericConfirmDialog;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorPicker;
+import com.eveningoutpost.dexdrip.utilitymodels.ColorPickerDialogFragment;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
 import com.eveningoutpost.dexdrip.utilitymodels.Experience;
 import com.eveningoutpost.dexdrip.utilitymodels.Inevitable;
@@ -121,6 +123,9 @@ import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleTr
 import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleTrendWatchFace;
 import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
+import com.eveningoutpost.dexdrip.utils.settings.EditTextAttributes;
+import com.eveningoutpost.dexdrip.utils.settings.RingtonePickerPreference;
+import com.eveningoutpost.dexdrip.utils.settings.SubScreenNavigator;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.watch.miband.MiBandEntry;
@@ -147,11 +152,11 @@ import net.tribe7.common.base.Joiner;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
 import java.net.URI;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -160,7 +165,7 @@ import lombok.Setter;
 import lombok.val;
 
 /**
- * A {@link PreferenceActivity} that presents a set of application settings. On
+ * The settings screen, an activity that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
  * settings are split by category, with category headers shown to the left of
  * the list of settings.
@@ -204,7 +209,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         this.preferenceFragment = new AllPrefsFragment(jumpTo);
         this.preferenceFragment.setParent(this);
         pFragment = this.preferenceFragment;
-        getFragmentManager().beginTransaction().replace(android.R.id.content,
+        getSupportFragmentManager().beginTransaction().replace(android.R.id.content,
                 this.preferenceFragment).commit();
     }
 
@@ -235,8 +240,15 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     @Override
     public void onSearchResultClicked(@NonNull SearchPreferenceResult searchPreferenceResult) {
         try {
+            final AllPrefsFragment fragment = this.preferenceFragment;
+            final Preference found = fragment == null ? null : fragment.findPreference(searchPreferenceResult.getKey());
             searchPreferenceResult.closeSearchPage(this);
-            searchPreferenceResult.highlight(this.preferenceFragment, Color.YELLOW);
+            if (found == null) {
+                Log.e(TAG, "Search result is no longer in the settings: " + searchPreferenceResult.getKey());
+                return;
+            }
+            fragment.showScreensLeadingTo(found);
+            searchPreferenceResult.highlight(fragment, Color.YELLOW);
         } catch (RuntimeException e) {
             Log.wtf(TAG, "Got error trying to highlight search results: " + e);
             JoH.static_toast_long("" + e);
@@ -368,6 +380,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
     @Override
     protected synchronized void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data); // delivers results to the settings fragment
         // Let's reset variables just to be sure
         scanFormat = null;
         scanContents = null;
@@ -525,7 +538,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     @Override
     public void onCreate(Bundle savedInstanceState) {
         try {
-            setTheme(R.style.OldAppTheme);
+            setTheme(R.style.SettingsTheme);
         } catch (Exception e) {
             Log.e(TAG, "Failed to set theme");
         }
@@ -654,27 +667,18 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
     }
 
+    /**
+     * Back closes the search page first, then goes back one sub-screen, as the old sub-screen dialogs did.
+     */
     @Override
-    protected boolean isValidFragment(String fragmentName) {
-        if (AllPrefsFragment.class.getName().equals(fragmentName)) {
-            return true;
+    public void onBackPressed() {
+        final AllPrefsFragment fragment = this.preferenceFragment;
+        final boolean searchShown = getSupportFragmentManager().findFragmentById(android.R.id.content)
+                instanceof SearchPreferenceFragment;
+        if (!searchShown && fragment != null && fragment.navigator.back()) {
+            return;
         }
-        return false;
-    }
-
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
-
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    @Override
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
+        super.onBackPressed();
     }
 
     @Override
@@ -729,7 +733,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                                 ? listPreference.getEntries()[index]
                                 : null);
 
-            } else if (preference instanceof RingtonePreference) {
+            } else if (preference instanceof RingtonePickerPreference) {
                 // For ringtone preferences, look up the correct display value
                 // using RingtoneManager.
                 if (TextUtils.isEmpty(stringValue)) {
@@ -800,7 +804,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
             if (do_update) {
-                preference.getEditor().putString(preference.getKey(), value.toString()).apply(); // update prefs now
+                preference.getSharedPreferences().edit().putString(preference.getKey(), value.toString()).apply(); // update prefs now
                 UpdateActivity.last_check_time = -2;
                 UpdateActivity.checkForAnUpdate(preference.getContext());
             }
@@ -820,7 +824,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z]+\\)$", "") + "  (" + value.toString() + ")");
             if (do_update) {
-                preference.getEditor().putInt(preference.getKey(), (int)value).apply(); // update prefs now
+                preference.getSharedPreferences().edit().putInt(preference.getKey(), (int)value).apply(); // update prefs now
             }
             return true;
         }
@@ -838,7 +842,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z.]+\\)$", "") + "  (" + value.toString() + ")");
             if (do_update) {
-                preference.getEditor().putString(preference.getKey(), (String) value).apply(); // update prefs now
+                preference.getSharedPreferences().edit().putString(preference.getKey(), (String) value).apply(); // update prefs now
             }
             return true;
         }
@@ -858,7 +862,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 title = title + "  (" + value.toString() + ")";
             preference.setTitle(title);
             if (do_update) {
-                preference.getEditor().putString(preference.getKey(), (String) value).apply(); // update prefs now
+                preference.getSharedPreferences().edit().putString(preference.getKey(), (String) value).apply(); // update prefs now
             }
             return true;
         }
@@ -895,7 +899,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         EditTextPreference thispref = (EditTextPreference) preference;
                 thispref.setText(newValue);
         if (from_change) {
-            preference.getEditor().putString("profile_insulin_sensitivitiy", newValue);
+            preference.getSharedPreferences().edit().putString("profile_insulin_sensitivitiy", newValue);
         }
 
         preference.setTitle(format_insulin_sensitivity(preference.getTitle().toString(), newValue));
@@ -978,7 +982,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                 preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z \\.]+\\)$", "") + "  (" + (unitize ? BgGraphBuilder.unitized_string_static_no_interpretation_short(result) : result) + ")");
                 if (do_update) {
-                    preference.getEditor().putInt(preference.getKey(), (int) value).apply(); // update prefs now
+                    preference.getSharedPreferences().edit().putInt(preference.getKey(), (int) value).apply(); // update prefs now
                 }
                 return true;
             }
@@ -1010,7 +1014,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                 preference.setSummary(preference.getSummary().toString().replaceAll("  \\([a-z0-9A-Z \\.]+\\)$", "") + "  (" + (unitize ? BgGraphBuilder.unitized_string_static_no_interpretation_short(result) : result) + ")");
                 if (do_update) {
-                    preference.getEditor().putInt(preference.getKey(), (int) value).apply(); // update prefs now
+                    preference.getSharedPreferences().edit().putInt(preference.getKey(), (int) value).apply(); // update prefs now
                 }
                 return true;
             }
@@ -1091,9 +1095,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     }
 
     @RequiredArgsConstructor
-    public static class AllPrefsFragment extends PreferenceFragment {
+    public static class AllPrefsFragment extends PreferenceFragmentCompat {
+
+        /** androidx's tag for a setting's dialog, which it checks to open only one at a time. */
+        private static final String DIALOG_TAG = "androidx.preference.PreferenceFragment.DIALOG";
+        private static final int RC_RINGTONE = 0x5E7;
 
         final String jumpTo;
+        /** Opens nested screens in this page's list, keeping the whole tree live. */
+        final SubScreenNavigator navigator = new SubScreenNavigator(this, this::onCreateAdapter);
+        /** The sound setting whose picker is open. */
+        private String ringtoneKey;
 
         @Setter
         Preferences parent;
@@ -1144,8 +1156,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
         @SuppressLint("ApplySharedPref")
         @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
+        public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             this.prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
             final DexCollectionType collectionType = DexCollectionType.getType(this.prefs.getString("dex_collection_method", "BluetoothWixel"));
 
@@ -1194,6 +1205,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
             addPreferencesFromResource(R.xml.pref_advanced_settings);
             addPreferencesFromResource(R.xml.xdrip_plus_prefs);
+            bindEditTextAttributes();
 
             bindPreferenceSummaryToValue(findPreference("persistent_high_threshold_mins"));
             bindPreferenceSummaryToValue(findPreference("persistent_high_repeat_mins"));
@@ -1710,19 +1722,19 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             findPreference("scan_and_pair_meter").setSummary(prefs.getString("selected_bluetooth_meter_info", ""));
 
             findPreference("xdrip_webservice").setOnPreferenceChangeListener((preference, newValue) -> {
-                preference.getEditor().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
+                preference.getSharedPreferences().edit().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
                 XdripWebService.immortality(); // start or stop service when preference toggled
                 return true;
             });
 
             findPreference("xdrip_webservice_open").setOnPreferenceChangeListener((preference, newValue) -> {
-                preference.getEditor().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
+                preference.getSharedPreferences().edit().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
                 XdripWebService.settingsChanged(); // refresh
                 return true;
             });
 
             findPreference("desert_sync_enabled").setOnPreferenceChangeListener((preference, newValue) -> {
-                preference.getEditor().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
+                preference.getSharedPreferences().edit().putBoolean(preference.getKey(), (boolean) newValue).apply(); // write early for method below
                 DesertSync.settingsChanged(); // refresh
                 return true;
             });
@@ -1732,7 +1744,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             if (enableBF != null ) enableBF.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                                                                               @Override
                                                                               public boolean onPreferenceChange(Preference preference, Object newValue) {
-                                                                                  preference.getEditor().putBoolean(preference.getKey(),(boolean)newValue).apply();
+                                                                                  preference.getSharedPreferences().edit().putBoolean(preference.getKey(),(boolean)newValue).apply();
                                                                                   xdrip.initBF();
                                                                                   return true;
                                                                               }
@@ -1963,7 +1975,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                                     public void onClick(DialogInterface dialog, int which) {
                                         dialog.dismiss();
                                         ((SwitchPreference) preference).setChecked(true);
-                                        preference.getEditor().putBoolean("use_nfc_scan", true).apply();
+                                        preference.getSharedPreferences().edit().putBoolean("use_nfc_scan", true).apply();
                                         NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
                                     }
                                 });
@@ -1977,7 +1989,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                             } else {
                                 ((SwitchPreference) preference).setChecked(true);
-                                preference.getEditor().putBoolean("use_nfc_scan", true).apply();
+                                preference.getSharedPreferences().edit().putBoolean("use_nfc_scan", true).apply();
                                 NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), (boolean) newValue && prefs.getBoolean("nfc_scan_homescreen", false));
                                 return true;
                             }
@@ -2512,16 +2524,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             });
 
             bindPreferenceSummaryToValue(transmitterId); // duplicated below but this sets initial value
-            transmitterId.getEditText().setFilters(new InputFilter[]{new InputFilter.AllCaps()});
-            transmitterId.getEditText().post(() -> {
-                try {
-                    // position to end of input text
-                    transmitterId.getEditText().setSelection(transmitterId.getEditText().getText().length());
-                } catch (Exception e) {
-                    UserError.Log.d(TAG, "Could not set selection for transmitter id: " + e);
-                }
-            });
-            TxIdHelper.attachValidator(transmitterId.getEditText());
+            // its text field is set up by bindEditTextAttributes, each time its dialog opens
             transmitterId.setOnPreferenceChangeListener((preference, newValue) -> {
 
                 TxIdHelper.handleTransmitterEntry((String)newValue, getActivity(), transmitterId1 -> {
@@ -2641,7 +2644,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                                         ? listPreference.getEntries()[index]
                                         : null);
 
-                    } else if (preference instanceof RingtonePreference) {
+                    } else if (preference instanceof RingtonePickerPreference) {
                         if (TextUtils.isEmpty(stringValue)) {
                             preference.setSummary(R.string.pref_ringtone_silent);
 
@@ -2738,7 +2741,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             // lazy instantiation
             if (searchConfiguration == null) {
                 try {
-                    searchConfiguration = new SearchConfiguration(getActivity());
+                    searchConfiguration = new SearchConfiguration((AppCompatActivity) getActivity());
+                    searchConfiguration.setFragmentContainerViewId(android.R.id.content);
                     searchConfiguration.setBreadcrumbsEnabled(true);
 
                     searchConfiguration.getKeysList().addAll(getAllPreferenceKeys(this.getPreferenceScreen()));
@@ -2805,7 +2809,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
                     // have to pre-save it
-                    preference.getEditor().putString("nfc_expiry_days", (String) newValue).apply();
+                    preference.getSharedPreferences().edit().putString("nfc_expiry_days", (String) newValue).apply();
                     update_nfc_expiry_preferences(null);
                     return true;
                 }
@@ -2874,19 +2878,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 force_english.setTitle("Force " + word + " Text");
             } catch (NullPointerException e) {
                 Log.e(TAG, "Nullpointer in update_force_english_title: " + e);
-            }
-        }
-
-        private static void recursive_notify_all_preference_screens(PreferenceGroup preferenceGroup) {
-            if (preferenceGroup instanceof PreferenceScreen) {
-                ((BaseAdapter) ((PreferenceScreen) preferenceGroup).getRootAdapter()).notifyDataSetChanged();
-            } else {
-                for (int index = 0; index < preferenceGroup.getPreferenceCount(); index++) {
-                    final Preference pref = preferenceGroup.getPreference(index);
-                    if (pref instanceof PreferenceGroup) {
-                        recursive_notify_all_preference_screens((PreferenceGroup) pref);
-                    }
-                }
             }
         }
 
@@ -3052,29 +3043,117 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         public void jumpToScreen(final String screenKey) {
             if (screenKey == null) return;
             UserError.Log.d(TAG, "jump to screen: " + screenKey);
-            PreferenceScreen subPreferenceScreen = (PreferenceScreen) findPreference(screenKey);
-            final AllPrefsFragment fragment = this;
-            JoH.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    clickScreen(fragment, subPreferenceScreen);
-                }
-            });
+            final PreferenceScreen subPreferenceScreen = findPreference(screenKey);
+            JoH.runOnUiThread(() -> showScreen(subPreferenceScreen));
         }
 
-        private static void clickScreen(final PreferenceFragment fragment, final PreferenceScreen screen) {
+        private void showScreen(final PreferenceScreen screen) {
             if (screen == null) return;
-            if (fragment.getPreferenceScreen() != screen) {
-                try {
-                    final Method method = screen.getClass().getDeclaredMethod("onClick");
-                    method.setAccessible(true);
-                    method.invoke(screen);
-                } catch (Exception e) {
-                    android.util.Log.e(TAG, "" + e);
+            if (getPreferenceScreen() != screen) {
+                if (getListView() == null) {
+                    android.util.Log.e(TAG, "No list yet to show " + screen.getKey());
+                    return;
                 }
+                navigator.show(screen);
             } else {
                 android.util.Log.d(TAG, "Already on that screen");
             }
+        }
+
+        /**
+         * Goes back to the root, then opens each sub-screen on the way to {@code preference}, so that it is shown.
+         */
+        void showScreensLeadingTo(final Preference preference) {
+            final List<PreferenceScreen> path = new ArrayList<>();
+            for (PreferenceGroup group = preference.getParent(); group != null && group != getPreferenceScreen();
+                 group = group.getParent()) {
+                if (group instanceof PreferenceScreen) {
+                    path.add(0, (PreferenceScreen) group);
+                }
+            }
+            while (navigator.back()) {
+                // back to the root
+            }
+            for (final PreferenceScreen screen : path) {
+                navigator.show(screen);
+            }
+        }
+
+        /** A nested screen opens in this page's list instead of replacing the tree. */
+        @Override
+        public void onNavigateToScreen(final PreferenceScreen preferenceScreen) {
+            navigator.show(preferenceScreen);
+        }
+
+        /** Gives the text fields their XML attributes, and the transmitter id field its own set-up. */
+        private void bindEditTextAttributes() {
+            final Map<String, EditTextPreference.OnBindEditTextListener> extra = new HashMap<>();
+            extra.put("dex_txid", editText -> {
+                editText.setFilters(new InputFilter[]{new InputFilter.AllCaps()});
+                editText.post(() -> {
+                    try {
+                        // position to end of input text
+                        editText.setSelection(editText.getText().length());
+                    } catch (Exception e) {
+                        UserError.Log.d(TAG, "Could not set selection for transmitter id: " + e);
+                    }
+                });
+                TxIdHelper.attachValidator(editText);
+            });
+            EditTextAttributes.bindAll(getPreferenceScreen(), EditTextAttributes.parse(getActivity(),
+                    R.xml.pref_license, R.xml.pref_general, R.xml.pref_notifications, R.xml.pref_data_source,
+                    R.xml.pref_data_sync, R.xml.pref_advanced_settings, R.xml.xdrip_plus_prefs), extra);
+        }
+
+        @Override
+        public void onViewCreated(@NonNull final View view, final Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            final int pad = (int) (16 * getResources().getDisplayMetrics().density);
+            getListView().setPadding(pad, 0, pad, 0);
+            getListView().setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
+            setDivider(getResources().getDrawable(R.drawable.settings_divider));
+        }
+
+        /** The time and colour settings have their own dialogs, which androidx does not know. */
+        @Override
+        public void onDisplayPreferenceDialog(final Preference preference) {
+            final DialogFragment dialog;
+            if (preference instanceof TimePreference) {
+                dialog = TimePreferenceDialogFragment.newInstance(preference.getKey());
+            } else if (preference instanceof ColorPicker) {
+                dialog = ColorPickerDialogFragment.newInstance(preference.getKey());
+            } else {
+                super.onDisplayPreferenceDialog(preference);
+                return;
+            }
+            if (requireFragmentManager().findFragmentByTag(DIALOG_TAG) != null) {
+                return;
+            }
+            dialog.setTargetFragment(this, 0);
+            dialog.show(requireFragmentManager(), DIALOG_TAG);
+        }
+
+        /** A sound setting opens the system sound picker. */
+        @Override
+        public boolean onPreferenceTreeClick(final Preference preference) {
+            if (preference instanceof RingtonePickerPreference) {
+                ringtoneKey = preference.getKey();
+                startActivityForResult(((RingtonePickerPreference) preference).buildPickerIntent(), RC_RINGTONE);
+                return true;
+            }
+            return super.onPreferenceTreeClick(preference);
+        }
+
+        @Override
+        public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
+            if (requestCode == RC_RINGTONE) {
+                final RingtonePickerPreference sound = ringtoneKey == null ? null : findPreference(ringtoneKey);
+                if (sound != null) {
+                    sound.onPickerResult(data);
+                }
+                return;
+            }
+            super.onActivityResult(requestCode, resultCode, data);
         }
 
         private void bindTTSListener() {

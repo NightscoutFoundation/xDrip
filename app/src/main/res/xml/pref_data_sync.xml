@@ -1,4 +1,5 @@
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
          dismiss it. -->
@@ -317,6 +318,7 @@
                     android:summary=""
                     android:max="300"
                     android:min="0"
+                    app:min="0"
                     android:defaultValue="0" />
                 <CheckBoxPreference
                     android:defaultValue="false"

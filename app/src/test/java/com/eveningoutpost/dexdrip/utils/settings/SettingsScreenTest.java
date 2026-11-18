@@ -1,15 +1,23 @@
 package com.eveningoutpost.dexdrip.utils.settings;
 
 import android.Manifest;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.provider.Settings;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TimePicker;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.xdrip;
+import com.rarepebble.colorpicker.ColorPickerView;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -17,6 +25,7 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +49,9 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     private static final String API_DOWNLOAD = "cloud_storage_api_download_enable";
     /** Matches the hidden test-mode serial number and settings that are still on the screen. */
     private static final String SEARCH_QUERY = "serial number";
+    private static final String NIGHT_START = "miband_nightmode_start";
+    private static final String MIBAND_MAC = "AA:BB:CC:DD:EE:FF";
+    private static final String HIGH_COLOUR = "color_high_values";
     private static final String AUDIO_ATTRIBUTES_FLAGS = "android.intent.extra.ringtone.AUDIO_ATTRIBUTES_FLAGS";
 
     // ===== Setup =====================================================================================================
@@ -381,7 +393,114 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
         assertThat(store().getString("share_key", "<absent>")).isEqualTo("SM12345678");
     }
 
+    // ===== Time and colour dialogs ===================================================================================
+
+    /**
+     * Setting a time in the night mode start dialog stores it as a time stamp with that hour and minute.
+     */
+    @Test
+    public void timeDialogStoresSetTime() {
+        // :: Setup
+        useMiBand4();
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Dialog dialog = driver.dialogOf(NIGHT_START);
+        final TimePicker picker = find(dialog.getWindow().getDecorView(), TimePicker.class);
+
+        // :: Act
+        picker.setCurrentHour(7);
+        picker.setCurrentMinute(30);
+        driver.press(dialog, DialogInterface.BUTTON_POSITIVE);
+
+        // :: Verify
+        final Calendar stored = Calendar.getInstance();
+        stored.setTimeInMillis(store().getLong(NIGHT_START, -1));
+        assertThat(stored.get(Calendar.HOUR_OF_DAY)).isEqualTo(7);
+        assertThat(stored.get(Calendar.MINUTE)).isEqualTo(30);
+    }
+
+    /**
+     * Closing the time dialog stores nothing.
+     */
+    @Test
+    public void timeDialogCloseStoresNothing() {
+        // :: Setup
+        useMiBand4();
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Dialog dialog = driver.dialogOf(NIGHT_START);
+        find(dialog.getWindow().getDecorView(), TimePicker.class).setCurrentHour(7);
+
+        // :: Act
+        driver.press(dialog, DialogInterface.BUTTON_NEGATIVE);
+
+        // :: Verify
+        assertThat(store().contains(NIGHT_START)).isFalse();
+    }
+
+    /**
+     * A colour picked in the high values dialog is stored as an int.
+     */
+    @Test
+    public void colourDialogStoresPickedColour() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Dialog dialog = driver.dialogOf(HIGH_COLOUR);
+
+        // :: Act
+        find(dialog.getWindow().getDecorView(), ColorPickerView.class).setColor(0xFF112233);
+        driver.press(dialog, DialogInterface.BUTTON_POSITIVE);
+
+        // :: Verify
+        assertThat(store().getInt(HIGH_COLOUR, 0)).isEqualTo(0xFF112233);
+    }
+
+    /**
+     * "Revert to default" in the colour dialog stores the setting's XML default colour.
+     */
+    @Test
+    public void colourDialogRevertStoresDefault() {
+        // :: Setup
+        store().edit().putInt(HIGH_COLOUR, 0xFF112233).commit();
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Dialog dialog = driver.dialogOf(HIGH_COLOUR);
+
+        // :: Act
+        driver.press(dialog, DialogInterface.BUTTON_NEUTRAL);
+
+        // :: Verify
+        assertThat(store().getInt(HIGH_COLOUR, 0)).isEqualTo(0xFFFFBB33);
+    }
+
     // ===== Helpers ===================================================================================================
+
+    /**
+     * Stores a paired, enabled Mi Band 4, which is what puts the night mode settings on the screen and enables them.
+     */
+    private static void useMiBand4() {
+        store().edit().putBoolean("miband_enabled", true).putString("miband_data_mac", MIBAND_MAC).commit();
+        PersistentStore.setString("miband_model_" + MIBAND_MAC, MiBand.MiBandType.MI_BAND4.toString());
+    }
+
+    /**
+     * The first view of {@code type} in {@code view}'s tree. Fails when there is none.
+     */
+    private static <T extends View> T find(final View view, final Class<T> type) {
+        if (type.isInstance(view)) {
+            return type.cast(view);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                final View child = ((ViewGroup) view).getChildAt(i);
+                if (type.isInstance(child) || child instanceof ViewGroup) {
+                    try {
+                        return find(child, type);
+                    } catch (AssertionError e) {
+                        // not in this branch
+                    }
+                }
+            }
+        }
+        throw new AssertionError("no " + type.getSimpleName() + " in the dialog");
+    }
 
     private static String storedSound() {
         return store().getString(ALERT_SOUND, "<absent>");

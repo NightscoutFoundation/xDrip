@@ -1,24 +1,25 @@
 package com.eveningoutpost.dexdrip.utils.settings;
 
 import android.app.Dialog;
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Looper;
-import android.preference.EditTextPreference;
-import android.preference.Preference;
-import android.preference.PreferenceFragment;
-import android.preference.PreferenceGroup;
-import android.preference.PreferenceScreen;
-import android.preference.TwoStatePreference;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.preference.EditTextPreference;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.preference.PreferenceGroup;
+import androidx.preference.PreferenceGroupAdapter;
+import androidx.preference.PreferenceManager;
+import androidx.preference.PreferenceScreen;
+import androidx.preference.TwoStatePreference;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bytehamster.lib.preferencesearch.SearchPreferenceFragment;
@@ -49,6 +50,9 @@ import static org.robolectric.Shadows.shadowOf;
  * @author Asbjørn Aarrestad - 2026.11
  */
 public final class SettingsScreenDriver {
+
+    /** androidx's tag for a setting's dialog. */
+    private static final String DIALOG_TAG = "androidx.preference.PreferenceFragment.DIALOG";
 
     private final ActivityController<Preferences> controller;
     private Intent lastStarted;
@@ -85,7 +89,7 @@ public final class SettingsScreenDriver {
      * store belongs to an earlier test. Without the copy the screen would show that test's state.
      */
     private static void mirrorIntoPref() {
-        final SharedPreferences store = android.preference.PreferenceManager
+        final SharedPreferences store = PreferenceManager
                 .getDefaultSharedPreferences(org.robolectric.RuntimeEnvironment.getApplication());
         final SharedPreferences cached = Pref.getInstance();
         if (cached == null || cached == store) {
@@ -200,7 +204,7 @@ public final class SettingsScreenDriver {
         if (shown == root()) {
             fail("back pressed on the root screen");
         }
-        shown.getDialog().dismiss();
+        activity().onBackPressed();
         idle();
     }
 
@@ -241,7 +245,8 @@ public final class SettingsScreenDriver {
         enable(key, 5);
         showScreenOf(key);
         tap(key);
-        final Dialog dialog = ((EditTextPreference) pref).getDialog();
+        final Fragment opened = activity().getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
+        final Dialog dialog = opened instanceof DialogFragment ? ((DialogFragment) opened).getDialog() : null;
         if (dialog == null || !dialog.isShowing()) {
             fail("no edit dialog opened for " + key);
         }
@@ -250,9 +255,36 @@ public final class SettingsScreenDriver {
             fail("edit dialog of " + key + " has no text field");
         }
         final EditText editText = (EditText) field;
-        dialog.dismiss();
+        ((DialogFragment) opened).dismiss();
         idle();
         return editText;
+    }
+
+    /**
+     * Opens the dialog of the setting {@code key}, from wherever it is, and returns it while it is shown. A setting
+     * that is disabled by its dependency gets that switch tapped first, as a person would.
+     */
+    public Dialog dialogOf(final String key) {
+        enable(key, 5);
+        showScreenOf(key);
+        tap(key);
+        final Fragment opened = activity().getSupportFragmentManager().findFragmentByTag(DIALOG_TAG);
+        final Dialog dialog = opened instanceof DialogFragment ? ((DialogFragment) opened).getDialog() : null;
+        if (dialog == null || !dialog.isShowing()) {
+            fail("no dialog opened for " + key);
+        }
+        return dialog;
+    }
+
+    /**
+     * Presses {@code button} ({@code DialogInterface.BUTTON_*}) of a dialog from {@link #dialogOf}.
+     */
+    public void press(final Dialog dialog, final int button) {
+        if (!(dialog instanceof androidx.appcompat.app.AlertDialog)) {
+            fail("not a button dialog: " + dialog.getClass().getSimpleName());
+        }
+        ((androidx.appcompat.app.AlertDialog) dialog).getButton(button).performClick();
+        idle();
     }
 
     /**
@@ -408,17 +440,17 @@ public final class SettingsScreenDriver {
     /**
      * The settings fragment; the search page may sit on top of it in the same container.
      */
-    private PreferenceFragment settingsFragment() {
+    private PreferenceFragmentCompat settingsFragment() {
         final List<Fragment> found = new ArrayList<>();
-        for (final Fragment fragment : activity().getFragmentManager().getFragments()) {
-            if (fragment instanceof PreferenceFragment && fragment.isAdded()) {
+        for (final Fragment fragment : activity().getSupportFragmentManager().getFragments()) {
+            if (fragment instanceof PreferenceFragmentCompat && fragment.isAdded()) {
                 found.add(fragment);
             }
         }
         if (found.size() != 1) {
             fail("expected one settings fragment, found " + found);
         }
-        return (PreferenceFragment) found.get(0);
+        return (PreferenceFragmentCompat) found.get(0);
     }
 
     private Preference find(final String key) {
@@ -430,23 +462,22 @@ public final class SettingsScreenDriver {
     }
 
     /**
-     * The deepest sub-screen whose dialog is showing, or the root.
+     * The screen whose settings the list shows: the one that lists the first row.
      */
     private PreferenceScreen shownScreen() {
-        PreferenceScreen shown = root();
-        boolean deeper = true;
-        while (deeper) {
-            deeper = false;
-            for (final PreferenceScreen child : childScreens(shown)) {
-                final Dialog dialog = child.getDialog();
-                if (dialog != null && dialog.isShowing()) {
-                    shown = child;
-                    deeper = true;
-                    break;
-                }
-            }
+        final PreferenceGroupAdapter adapter = adapter();
+        if (adapter.getItemCount() == 0) {
+            fail("the settings list is empty");
         }
-        return shown;
+        return ownerScreen(adapter.getItem(0));
+    }
+
+    private PreferenceGroupAdapter adapter() {
+        final RecyclerView.Adapter<?> adapter = settingsFragment().getListView().getAdapter();
+        if (!(adapter instanceof PreferenceGroupAdapter)) {
+            fail("the settings list has no preference adapter but " + adapter);
+        }
+        return (PreferenceGroupAdapter) adapter;
     }
 
     private static List<PreferenceScreen> childScreens(final PreferenceGroup group) {
@@ -514,28 +545,23 @@ public final class SettingsScreenDriver {
         if (ownerScreen(pref) != shownScreen()) {
             fail(key + " is not on the shown screen " + shownScreenKey());
         }
-        final PreferenceScreen shown = shownScreen();
-        final View content = shown == root()
-                ? settingsFragment().getView()
-                : shown.getDialog().getWindow().getDecorView();
-        final ListView list = content.findViewById(android.R.id.list);
-        if (list == null) {
-            fail("no list on the shown screen " + shownScreenKey());
+        final RecyclerView list = settingsFragment().getListView();
+        final int pos = adapter().getPreferenceAdapterPosition(pref);
+        if (pos < 0) {
+            fail(key + " is not in the list of the shown screen " + shownScreenKey());
         }
-        final ListAdapter adapter = list.getAdapter();
-        for (int pos = 0; pos < adapter.getCount(); pos++) {
-            if (adapter.getItem(pos) == pref) {
-                list.performItemClick(null, pos, adapter.getItemId(pos));
-                idle();
-                return;
-            }
+        layOutAll(list);
+        final RecyclerView.ViewHolder row = list.findViewHolderForAdapterPosition(pos);
+        if (row == null) {
+            fail(key + " has no row in the list of the shown screen " + shownScreenKey());
         }
-        fail(key + " is not in the list of the shown screen " + shownScreenKey());
+        row.itemView.performClick();
+        idle();
     }
 
     /**
-     * Lays the result list out tall enough that every result is an attached row, so its click handler sees a valid
-     * position, as on a phone after scrolling to it.
+     * Lays a list out tall enough that every row is attached, so its click handler sees a valid position, as on a
+     * phone after scrolling to it.
      */
     private static void layOutAll(final RecyclerView list) {
         final int width = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY);
@@ -545,7 +571,7 @@ public final class SettingsScreenDriver {
     }
 
     private SearchPreferenceFragment searchFragment() {
-        for (final Fragment fragment : activity().getFragmentManager().getFragments()) {
+        for (final Fragment fragment : activity().getSupportFragmentManager().getFragments()) {
             if (fragment instanceof SearchPreferenceFragment) {
                 return (SearchPreferenceFragment) fragment;
             }
