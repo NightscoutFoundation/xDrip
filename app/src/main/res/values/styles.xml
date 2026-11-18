@@ -127,6 +127,20 @@
         <item name="android:listPreferredItemPaddingStart">8dp</item>
         <item name="android:listPreferredItemPaddingRight">8dp</item>
         <item name="android:listPreferredItemPaddingEnd">8dp</item>
+        <item name="android:switchStyle">@style/SettingsPref.SwitchWidget</item>
+    </style>
+    <!-- Shows a switch's switchTextOn/Off (ON/OFF, km/miles), as the old switches did. -->
+    <style name="SettingsPref.SwitchWidget" parent="android:Widget.Material.CompoundButton.Switch">
+        <item name="android:showText">true</item>
+        <item name="android:thumb">@drawable/settings_switch_thumb</item>
+        <item name="android:track">@drawable/settings_switch_track</item>
+        <item name="android:thumbTextPadding">12dp</item>
+        <item name="android:switchMinWidth">96dp</item>
+        <item name="android:switchTextAppearance">@style/SettingsPref.SwitchText</item>
+    </style>
+    <style name="SettingsPref.SwitchText" parent="android:TextAppearance.Material.Small">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textSize">12sp</item>
     </style>
     <style name="SettingsActionBar" parent="Widget.AppCompat.ActionBar.Solid">
         <item name="background">@color/settings_action_bar</item>
