@@ -541,6 +541,18 @@ public final class SettingsScreenDriver {
     }
 
     private void tap(final Preference pref) {
+        rowOf(pref).performClick();
+        idle();
+    }
+
+    /**
+     * The row the list shows for {@code key} on the screen on top, as it is drawn now.
+     */
+    public View rowOf(final String key) {
+        return rowOf(find(key));
+    }
+
+    private View rowOf(final Preference pref) {
         final String key = pref.getKey();
         if (ownerScreen(pref) != shownScreen()) {
             fail(key + " is not on the shown screen " + shownScreenKey());
@@ -555,8 +567,7 @@ public final class SettingsScreenDriver {
         if (row == null) {
             fail(key + " has no row in the list of the shown screen " + shownScreenKey());
         }
-        row.itemView.performClick();
-        idle();
+        return row.itemView;
     }
 
     /**

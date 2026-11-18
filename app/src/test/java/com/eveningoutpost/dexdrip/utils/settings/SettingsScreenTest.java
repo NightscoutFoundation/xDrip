@@ -19,6 +19,9 @@ import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.rarepebble.colorpicker.ColorPickerView;
 
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.view.LineChartView;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
@@ -52,6 +55,7 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     private static final String NIGHT_START = "miband_nightmode_start";
     private static final String MIBAND_MAC = "AA:BB:CC:DD:EE:FF";
     private static final String HIGH_COLOUR = "color_high_values";
+    private static final String EXAMPLE_CHART = "example_chart";
     private static final String AUDIO_ATTRIBUTES_FLAGS = "android.intent.extra.ringtone.AUDIO_ATTRIBUTES_FLAGS";
 
     // ===== Setup =====================================================================================================
@@ -468,6 +472,28 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(store().getInt(HIGH_COLOUR, 0)).isEqualTo(0xFFFFBB33);
+    }
+
+    /**
+     * Picking a colour draws the example graph above the colour settings again, so it shows the new colour.
+     * <p>
+     * The graph's colours are read through {@code Pref}, which in a test run can hold another store than the one the
+     * dialog writes to, so this checks that the graph was drawn again rather than which colour it got.
+     */
+    @Test
+    public void colourDialogRedrawsExampleChart() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Dialog dialog = driver.dialogOf(HIGH_COLOUR);
+        final LineChartData before = find(driver.rowOf(EXAMPLE_CHART), LineChartView.class).getLineChartData();
+
+        // :: Act
+        find(dialog.getWindow().getDecorView(), ColorPickerView.class).setColor(0xFF112233);
+        driver.press(dialog, DialogInterface.BUTTON_POSITIVE);
+
+        // :: Verify
+        final LineChartData after = find(driver.rowOf(EXAMPLE_CHART), LineChartView.class).getLineChartData();
+        assertThat(after).isNotSameInstanceAs(before);
     }
 
     // ===== Helpers ===================================================================================================

@@ -52,4 +52,11 @@ public class ExampleChartPreferenceView extends Preference {
     protected void onClick() {
         notifyChanged();
     }
+
+    /**
+     * Draws the graph again, with the colours as they are stored now.
+     */
+    public void refresh() {
+        notifyChanged();
+    }
 }

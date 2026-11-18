@@ -10,10 +10,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.preference.DialogPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceViewHolder;
 
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.WidgetUpdateService;
+import com.eveningoutpost.dexdrip.utils.ExampleChartPreferenceView;
 import com.eveningoutpost.dexdrip.xdrip;
 
 /**
@@ -27,6 +29,8 @@ public class ColorPicker extends DialogPreference {
 
     /** The colour the library falls back to when there is no default. */
     private static final int FALLBACK_COLOR = 0xFF888888;
+    /** The example graph on the colour settings screen, drawn with these colours. */
+    private static final String EXAMPLE_CHART_KEY = "example_chart";
 
     // From the library's ColorPreference.
     final String selectNoneButtonText;
@@ -122,6 +126,12 @@ public class ColorPicker extends DialogPreference {
             Log.d(TAG, "mparent is null :(");
         }
         notifyChanged();
+        // the old list redrew every row on a change; androidx redraws only this one, so ask the graph to redraw
+        final Preference chart = getPreferenceManager() == null ? null
+                : getPreferenceManager().findPreference(EXAMPLE_CHART_KEY);
+        if (chart instanceof ExampleChartPreferenceView) {
+            ((ExampleChartPreferenceView) chart).refresh();
+        }
 
         // TODO probably should check whether data has actually changed before updating all the graphics
         Home.staticRefreshBGCharts(true);
