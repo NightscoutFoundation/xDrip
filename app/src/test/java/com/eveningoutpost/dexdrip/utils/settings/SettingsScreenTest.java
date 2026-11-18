@@ -175,17 +175,19 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     // ===== Search ====================================================================================================
 
     /**
-     * A search result for a setting in a sub-screen opens that sub-screen. The speak threshold has no title, so the
-     * result is picked by its summary.
+     * A search result for a setting in a sub-screen opens that sub-screen. The speak threshold has no title, so it is
+     * found and picked by its summary. Search shows at most ten results and a broad word such as "speak" matches more
+     * than ten, so the search uses the summary itself.
      */
     @Test
     public void searchOpensSubScreen() {
         // :: Setup
+        final String summary = RuntimeEnvironment.getApplication().getString(R.string.title_When_changes_by);
         final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
-        driver.search("speak");
+        driver.search(summary);
 
         // :: Act
-        driver.clickSearchResult(RuntimeEnvironment.getApplication().getString(R.string.title_When_changes_by));
+        driver.clickSearchResult(summary);
 
         // :: Verify
         assertThat(driver.shownScreenKey()).isEqualTo(SPEAK_SCREEN);

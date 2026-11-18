@@ -53,6 +53,9 @@ public final class SettingsScreenDriver {
     private final ActivityController<Preferences> controller;
     private Intent lastStarted;
 
+    /** The text last typed into search, typed again while the search index is still being built. */
+    private String lastQuery;
+
     private SettingsScreenDriver(final ActivityController<Preferences> controller) {
         this.controller = controller;
     }
@@ -314,17 +317,21 @@ public final class SettingsScreenDriver {
     public void search(final String query) {
         activity().showSearch(null);
         idle();
+        lastQuery = query;
         searchFragment().setSearchTerm(query);
         idle();
     }
 
     /**
      * Taps the one search result that shows {@code text} as its title or its summary, as a person picks a result by
-     * what it says. Waits for the search index, which is built in the background. Fails unless exactly one result
-     * matches.
+     * what it says. Fails unless exactly one result matches.
+     * <p>
+     * The search index is built in the background. The search page waits at most five seconds for it and then shows
+     * no results until the text changes, so while nothing matches this types the search text again, as a person
+     * would.
      */
     public void clickSearchResult(final String text) {
-        final long deadline = JoH.tsl() + 10_000;
+        final long deadline = JoH.tsl() + 30_000;
         while (true) {
             final RecyclerView list = findView(searchFragment().getView(), RecyclerView.class);
             layOutAll(list);
@@ -347,9 +354,17 @@ public final class SettingsScreenDriver {
                 fail(matches.size() + " search results show " + text);
             }
             if (JoH.tsl() > deadline) {
-                fail("no search result shows " + text);
+                final List<String> shown = new ArrayList<>();
+                for (int i = 0; i < list.getChildCount(); i++) {
+                    for (final TextView line : texts(list.getChildAt(i))) {
+                        shown.add(String.valueOf(line.getText()));
+                    }
+                }
+                fail("no search result shows " + text + "; the " + list.getChildCount() + " rows show " + shown);
             }
             sleep();
+            searchFragment().setSearchTerm(lastQuery);
+            idle();
         }
     }
 
