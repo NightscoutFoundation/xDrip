@@ -277,7 +277,7 @@ public class Li3CredentialTest extends RobolectricTestWithConfig {
         return new File(RuntimeEnvironment.getApplication().getFilesDir(), "li3");
     }
 
-    private static byte[] bundle() throws Exception {
+    static byte[] bundle() throws Exception {
         JSONObject entry = new JSONObject()
                 .put("label", "a")
                 .put("privateKeyHex", SCALAR)
@@ -290,7 +290,7 @@ public class Li3CredentialTest extends RobolectricTestWithConfig {
                 .getBytes(StandardCharsets.UTF_8);
     }
 
-    private static byte[] xz(byte[] plain) throws Exception {
+    static byte[] xz(byte[] plain) throws Exception {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         try (XZOutputStream xz = new XZOutputStream(out, new LZMA2Options())) {
             xz.write(plain);
@@ -298,7 +298,7 @@ public class Li3CredentialTest extends RobolectricTestWithConfig {
         return out.toByteArray();
     }
 
-    private static String sha256(byte[] data) throws Exception {
+    static String sha256(byte[] data) throws Exception {
         return Hex.of(MessageDigest.getInstance("SHA-256").digest(data));
     }
 

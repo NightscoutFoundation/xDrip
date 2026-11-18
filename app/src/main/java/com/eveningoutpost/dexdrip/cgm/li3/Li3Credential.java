@@ -2,6 +2,8 @@ package com.eveningoutpost.dexdrip.cgm.li3;
 
 import android.content.Context;
 
+import androidx.annotation.VisibleForTesting;
+
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.utilitymodels.Constants;
@@ -50,9 +52,13 @@ public final class Li3Credential {
         this.digest = digest;
     }
 
+    /** The digest {@link #get} pins: the release's, or in a test a synthetic bundle's. */
+    @VisibleForTesting
+    static String pinnedDigest = IdentityBundle.DIGEST;
+
     /** The credential for the pinned release, in the app's private files. */
     public static Li3Credential get(Context context) {
-        return new Li3Credential(new File(context.getFilesDir(), "li3"), IdentityBundle.DIGEST);
+        return new Li3Credential(new File(context.getFilesDir(), "li3"), pinnedDigest);
     }
 
     /**

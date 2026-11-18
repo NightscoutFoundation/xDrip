@@ -615,6 +615,74 @@ public class Li3BleSessionTest {
         assertThat(recorder.errors).contains("Cached key refused at ChallengeLoadDone");
     }
 
+    // ================================================== sensor key ===================================================
+
+    /** The first pairing keeps the key the sensor showed, so a later first pairing can refuse any other device. */
+    @Test
+    public void firstPair_pinsSensorKey() {
+        // :: Setup
+        ble = firstPairBle();
+
+        // :: Act
+        ble.start();
+        awaitStreaming();
+
+        // :: Verify
+        assertThat(state.sensorKey()).isEqualTo(sensor.staticKey65());
+    }
+
+    /** A first pairing with a device that shows another key than the pinned one is refused and never streams. */
+    @Test
+    public void firstPair_otherKeyThanPinned_refused() {
+        // :: Setup
+        ble = firstPairBle();
+        byte[] otherKey = sensor.staticKey65();
+        otherKey[otherKey.length - 1] ^= 1;
+        state.setSensorKey(otherKey);
+
+        // :: Act
+        ble.start();
+        pumpUntil(() -> !recorder.errors.isEmpty());
+
+        // :: Verify
+        assertThat(recorder.errors.get(0)).isEqualTo(
+                "Li3 pairing refused: the device shows another key than the sensor paired before");
+        assertThat(recorder.stages).doesNotContain("Streaming");
+        assertThat(state.sensorKey()).isEqualTo(otherKey);
+    }
+
+    /** A cached key the sensor refuses is forgotten, so the next connection pairs afresh instead of failing again. */
+    @Test
+    public void cachedKeyRefused_forgetsIt() {
+        // :: Setup
+        ble = cachedKeyBle();
+        sensor.acceptedKAuth = null;
+
+        // :: Act
+        ble.start();
+        pumpUntil(() -> !recorder.errors.isEmpty());
+
+        // :: Verify
+        assertThat(recorder.errors.get(0)).isEqualTo("Cached key refused at ChallengeLoadDone");
+        assertThat(state.kAuth()).isNull();
+    }
+
+    /** A cached key is kept when pairing fails only because the sensor stopped answering, as out of range. */
+    @Test
+    public void cachedKeyUnanswered_keepsIt() {
+        // :: Setup
+        ble = cachedKeyBle();
+        gatt.unansweredWrites = Gatt.SEC_COMMAND_RESPONSE;
+
+        // :: Act
+        ble.start();
+        pumpUntil(() -> !recorder.errors.isEmpty(), Duration.ofSeconds(1));
+
+        // :: Verify
+        assertThat(recorder.errors.get(0)).startsWith("Li3 pairing failed at StartAuthorization");
+        assertThat(state.kAuth()).isEqualTo(KAUTH);
+    }
+
     // ============================================== choice of identity ===============================================
 
     /**
@@ -870,6 +938,13 @@ public class Li3BleSessionTest {
     // ==================================================== helpers ====================================================
 
     /** A sensor at a known address whose cached key it still accepts. */
+    /** A connection to a sensor this phone has not paired with, so it runs a first pairing. */
+    private Li3Ble firstPairBle() {
+        state = new Li3SensorState("0RRC989AQ", ADDRESS, new byte[]{1, 2, 3, 4});
+        return new Li3Ble(RuntimeEnvironment.getApplication(), state,
+                Collections.singletonList(FakeSensor.identity("test")), recorder);
+    }
+
     private Li3Ble cachedKeyBle() {
         state = new Li3SensorState("0RRC989AQ", ADDRESS, new byte[]{1, 2, 3, 4});
         state.setKAuth(KAUTH);

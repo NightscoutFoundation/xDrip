@@ -110,7 +110,7 @@ public final class FakeSensor implements Li3Transport {
         }
     }
 
-    byte[] staticKey65() {
+    public byte[] staticKey65() {
         return EphemeralExchange.publicKey65(staticKey);
     }
 
