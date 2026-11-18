@@ -1,0 +1,557 @@
+package com.eveningoutpost.dexdrip.utils.settings;
+
+import android.app.Dialog;
+import android.app.Fragment;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Looper;
+import android.preference.EditTextPreference;
+import android.preference.Preference;
+import android.preference.PreferenceFragment;
+import android.preference.PreferenceGroup;
+import android.preference.PreferenceScreen;
+import android.preference.TwoStatePreference;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ListAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bytehamster.lib.preferencesearch.SearchPreferenceFragment;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.utilitymodels.Pref;
+import com.eveningoutpost.dexdrip.utils.Preferences;
+
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ActivityController;
+import org.robolectric.shadows.ShadowActivity;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.fail;
+import static org.robolectric.Shadows.shadowOf;
+
+/**
+ * Drives the settings screen the way a person does: open it, tap a sub-screen, go back, tap a switch, open a field.
+ * <p>
+ * The pinning tests use only this class, never a preference API, so the same tests run unchanged before and after
+ * the move to androidx. Only this class knows which preference API is underneath.
+ * <p>
+ * Every method fails the test with a message naming the key, instead of returning null.
+ *
+ * @author Asbjørn Aarrestad - 2026.11
+ */
+public final class SettingsScreenDriver {
+
+    private final ActivityController<Preferences> controller;
+    private Intent lastStarted;
+
+    private SettingsScreenDriver(final ActivityController<Preferences> controller) {
+        this.controller = controller;
+    }
+
+    // ===== Opening ===================================================================================================
+
+    /**
+     * Launches the settings screen. A non-null {@code action} is the deep link to that sub-screen.
+     */
+    public static SettingsScreenDriver open(@Nullable final String action) {
+        mirrorIntoPref();
+        final Intent intent = new Intent(org.robolectric.RuntimeEnvironment.getApplication(), Preferences.class);
+        if (action != null) {
+            intent.setAction(action);
+        }
+        final SettingsScreenDriver driver =
+                new SettingsScreenDriver(Robolectric.buildActivity(Preferences.class, intent).setup());
+        driver.idle();
+        return driver;
+    }
+
+    /**
+     * Copies the default preference store into the one {@link Pref} holds, so that both hold the test's settings.
+     * <p>
+     * The settings code reads some settings, such as engineering mode and the data source, through {@link Pref}.
+     * {@link Pref} keeps the first store it is given in a static for the rest of the test run, and in a full run that
+     * store belongs to an earlier test. Without the copy the screen would show that test's state.
+     */
+    private static void mirrorIntoPref() {
+        final SharedPreferences store = android.preference.PreferenceManager
+                .getDefaultSharedPreferences(org.robolectric.RuntimeEnvironment.getApplication());
+        final SharedPreferences cached = Pref.getInstance();
+        if (cached == null || cached == store) {
+            return;
+        }
+        final SharedPreferences.Editor editor = cached.edit().clear();
+        for (final Map.Entry<String, ?> entry : store.getAll().entrySet()) {
+            final Object value = entry.getValue();
+            if (value instanceof Boolean) {
+                editor.putBoolean(entry.getKey(), (Boolean) value);
+            } else if (value instanceof Integer) {
+                editor.putInt(entry.getKey(), (Integer) value);
+            } else if (value instanceof Long) {
+                editor.putLong(entry.getKey(), (Long) value);
+            } else if (value instanceof Float) {
+                editor.putFloat(entry.getKey(), (Float) value);
+            } else if (value instanceof Set) {
+                @SuppressWarnings("unchecked") final Set<String> strings = (Set<String>) value;
+                editor.putStringSet(entry.getKey(), strings);
+            } else {
+                editor.putString(entry.getKey(), (String) value);
+            }
+        }
+        editor.commit();
+    }
+
+    /**
+     * Recreates the activity, as a rotation does.
+     */
+    public void recreate() {
+        controller.recreate();
+        idle();
+    }
+
+    // ===== Where am I ================================================================================================
+
+    /**
+     * The key of the sub-screen on top, or null when the root is shown.
+     */
+    @Nullable
+    public String shownScreenKey() {
+        final PreferenceScreen shown = shownScreen();
+        return shown == root() ? null : shown.getKey();
+    }
+
+    /**
+     * The title of the screen on top.
+     */
+    public String title() {
+        final PreferenceScreen shown = shownScreen();
+        if (shown == root()) {
+            return String.valueOf(activity().getTitle());
+        }
+        return String.valueOf(shown.getTitle());
+    }
+
+    /**
+     * True when {@code key} is on the screen on top (not inside one of its sub-screens).
+     */
+    public boolean isShown(final String key) {
+        return ownerScreen(find(key)) == shownScreen();
+    }
+
+    /**
+     * True when {@code key} exists anywhere in the live settings tree.
+     */
+    public boolean exists(final String key) {
+        return root().findPreference(key) != null;
+    }
+
+    public boolean isEnabled(final String key) {
+        return find(key).isEnabled();
+    }
+
+    // ===== Navigation ================================================================================================
+
+    /**
+     * Taps the sub-screen {@code key}, which must be on the screen on top.
+     */
+    public void openScreen(final String key) {
+        final Preference pref = find(key);
+        if (!(pref instanceof PreferenceScreen)) {
+            fail(key + " is not a sub-screen but " + pref.getClass().getSimpleName());
+        }
+        tap(key);
+    }
+
+    /**
+     * Goes back to the root, then opens each sub-screen on the path to {@code key}, so that {@code key} is shown.
+     */
+    public void showScreenOf(final String key) {
+        final List<PreferenceScreen> path = new ArrayList<>();
+        for (PreferenceScreen screen = ownerScreen(find(key)); screen != root(); screen = ownerScreen(screen)) {
+            path.add(0, screen);
+        }
+        while (shownScreen() != root()) {
+            back();
+        }
+        for (final PreferenceScreen screen : path) {
+            tap(screen); // by object: a nested screen may reuse its parent's key
+        }
+        if (!isShown(key)) {
+            fail("could not reach the screen of " + key + "; shown is " + shownScreenKey());
+        }
+    }
+
+    /**
+     * Goes back one screen, as the back button does.
+     */
+    public void back() {
+        final PreferenceScreen shown = shownScreen();
+        if (shown == root()) {
+            fail("back pressed on the root screen");
+        }
+        shown.getDialog().dismiss();
+        idle();
+    }
+
+    // ===== Interaction ===============================================================================================
+
+    /**
+     * Taps {@code key}, which must be on the screen on top.
+     */
+    public void click(final String key) {
+        tap(key);
+    }
+
+    /**
+     * Sets the switch or checkbox {@code key} by tapping it when its state differs, so the change listener runs.
+     */
+    public void setChecked(final String key, final boolean on) {
+        final Preference pref = find(key);
+        if (!(pref instanceof TwoStatePreference)) {
+            fail(key + " is not a switch or checkbox but " + pref.getClass().getSimpleName());
+        }
+        if (((TwoStatePreference) pref).isChecked() != on) {
+            tap(key);
+        }
+        if (((TwoStatePreference) pref).isChecked() != on) {
+            fail(key + " did not change to " + on);
+        }
+    }
+
+    /**
+     * Opens the edit dialog of the text field {@code key}, from wherever it is, and returns the field in it. A field
+     * that is disabled by its dependency gets that switch tapped first, as a person would.
+     */
+    public EditText editTextOf(final String key) {
+        final Preference pref = find(key);
+        if (!(pref instanceof EditTextPreference)) {
+            fail(key + " is not a text field but " + pref.getClass().getSimpleName());
+        }
+        enable(key, 5);
+        showScreenOf(key);
+        tap(key);
+        final Dialog dialog = ((EditTextPreference) pref).getDialog();
+        if (dialog == null || !dialog.isShowing()) {
+            fail("no edit dialog opened for " + key);
+        }
+        final View field = dialog.findViewById(android.R.id.edit);
+        if (!(field instanceof EditText)) {
+            fail("edit dialog of " + key + " has no text field");
+        }
+        final EditText editText = (EditText) field;
+        dialog.dismiss();
+        idle();
+        return editText;
+    }
+
+    /**
+     * Taps the switch {@code key} depends on, and that switch's own dependency first, until {@code key} is enabled.
+     */
+    private void enable(final String key, final int depth) {
+        final Preference pref = find(key);
+        if (pref.isEnabled()) {
+            return;
+        }
+        final String dependency = pref.getDependency();
+        if (dependency == null || depth == 0 || !(find(dependency) instanceof TwoStatePreference)) {
+            fail(key + " is disabled and has no switch to enable it");
+        }
+        enable(dependency, depth - 1);
+        showScreenOf(dependency);
+        tap(dependency);
+        if (!pref.isEnabled()) {
+            fail(key + " stayed disabled after tapping " + dependency);
+        }
+    }
+
+    /**
+     * The intent the last tap started for a result. Fails when none was started.
+     */
+    public Intent nextStartedActivityForResult() {
+        final ShadowActivity.IntentForResult started = shadowOf(activity()).getNextStartedActivityForResult();
+        if (started == null) {
+            fail("no activity was started for a result");
+        }
+        lastStarted = started.intent;
+        return started.intent;
+    }
+
+    /**
+     * The intent the last tap started without a result. Fails when none was started.
+     */
+    public Intent nextStartedActivity() {
+        final Intent started = shadowOf(activity()).getNextStartedActivity();
+        if (started == null) {
+            fail("no activity was started");
+        }
+        return started;
+    }
+
+    /**
+     * Delivers a result to the activity that {@link #nextStartedActivityForResult} returned.
+     */
+    public void deliverResult(final int resultCode, @Nullable final Intent data) {
+        if (lastStarted == null) {
+            fail("deliverResult called before nextStartedActivityForResult");
+        }
+        shadowOf(activity()).receiveResult(lastStarted, resultCode, data);
+        idle();
+    }
+
+    // ===== Search ====================================================================================================
+
+    /**
+     * Opens the search page from the toolbar and types {@code query}.
+     */
+    public void search(final String query) {
+        activity().showSearch(null);
+        idle();
+        searchFragment().setSearchTerm(query);
+        idle();
+    }
+
+    /**
+     * Taps the one search result that shows {@code text} as its title or its summary, as a person picks a result by
+     * what it says. Waits for the search index, which is built in the background. Fails unless exactly one result
+     * matches.
+     */
+    public void clickSearchResult(final String text) {
+        final long deadline = JoH.tsl() + 10_000;
+        while (true) {
+            final RecyclerView list = findView(searchFragment().getView(), RecyclerView.class);
+            layOutAll(list);
+            final List<View> matches = new ArrayList<>();
+            for (int i = 0; i < list.getChildCount(); i++) {
+                final View item = list.getChildAt(i);
+                for (final TextView line : texts(item)) {
+                    if (text.contentEquals(line.getText())) {
+                        matches.add(item);
+                        break;
+                    }
+                }
+            }
+            if (matches.size() == 1) {
+                matches.get(0).performClick();
+                idle();
+                return;
+            }
+            if (matches.size() > 1) {
+                fail(matches.size() + " search results show " + text);
+            }
+            if (JoH.tsl() > deadline) {
+                fail("no search result shows " + text);
+            }
+            sleep();
+        }
+    }
+
+    // ===== Internals =================================================================================================
+
+    private Preferences activity() {
+        return controller.get();
+    }
+
+    private PreferenceScreen root() {
+        return settingsFragment().getPreferenceScreen();
+    }
+
+    /**
+     * The settings fragment; the search page may sit on top of it in the same container.
+     */
+    private PreferenceFragment settingsFragment() {
+        final List<Fragment> found = new ArrayList<>();
+        for (final Fragment fragment : activity().getFragmentManager().getFragments()) {
+            if (fragment instanceof PreferenceFragment && fragment.isAdded()) {
+                found.add(fragment);
+            }
+        }
+        if (found.size() != 1) {
+            fail("expected one settings fragment, found " + found);
+        }
+        return (PreferenceFragment) found.get(0);
+    }
+
+    private Preference find(final String key) {
+        final Preference pref = root().findPreference(key);
+        if (pref == null) {
+            fail("no setting with key " + key);
+        }
+        return pref;
+    }
+
+    /**
+     * The deepest sub-screen whose dialog is showing, or the root.
+     */
+    private PreferenceScreen shownScreen() {
+        PreferenceScreen shown = root();
+        boolean deeper = true;
+        while (deeper) {
+            deeper = false;
+            for (final PreferenceScreen child : childScreens(shown)) {
+                final Dialog dialog = child.getDialog();
+                if (dialog != null && dialog.isShowing()) {
+                    shown = child;
+                    deeper = true;
+                    break;
+                }
+            }
+        }
+        return shown;
+    }
+
+    private static List<PreferenceScreen> childScreens(final PreferenceGroup group) {
+        final List<PreferenceScreen> out = new ArrayList<>();
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            final Preference child = group.getPreference(i);
+            if (child instanceof PreferenceScreen) {
+                out.add((PreferenceScreen) child);
+            } else if (child instanceof PreferenceGroup) {
+                out.addAll(childScreens((PreferenceGroup) child));
+            }
+        }
+        return out;
+    }
+
+    /**
+     * The screen that lists {@code pref} directly, through categories but not through sub-screens.
+     */
+    private PreferenceScreen ownerScreen(final Preference pref) {
+        final PreferenceScreen owner = ownerIn(root(), pref);
+        if (owner == null) {
+            fail("setting " + pref.getKey() + " is not in the live tree");
+        }
+        return owner;
+    }
+
+    @Nullable
+    private static PreferenceScreen ownerIn(final PreferenceScreen screen, final Preference pref) {
+        if (listsDirectly(screen, pref)) {
+            return screen;
+        }
+        for (final PreferenceScreen child : childScreens(screen)) {
+            final PreferenceScreen found = ownerIn(child, pref);
+            if (found != null) {
+                return found;
+            }
+        }
+        return null;
+    }
+
+    private static boolean listsDirectly(final PreferenceGroup group, final Preference pref) {
+        for (int i = 0; i < group.getPreferenceCount(); i++) {
+            final Preference child = group.getPreference(i);
+            if (child == pref) {
+                return true;
+            }
+            if (!(child instanceof PreferenceScreen) && child instanceof PreferenceGroup
+                    && listsDirectly((PreferenceGroup) child, pref)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Taps {@code key} through the list of the screen on top, so enabled state and click listeners apply as for a
+     * finger.
+     */
+    private void tap(final String key) {
+        tap(find(key));
+    }
+
+    private void tap(final Preference pref) {
+        final String key = pref.getKey();
+        if (ownerScreen(pref) != shownScreen()) {
+            fail(key + " is not on the shown screen " + shownScreenKey());
+        }
+        final PreferenceScreen shown = shownScreen();
+        final View content = shown == root()
+                ? settingsFragment().getView()
+                : shown.getDialog().getWindow().getDecorView();
+        final ListView list = content.findViewById(android.R.id.list);
+        if (list == null) {
+            fail("no list on the shown screen " + shownScreenKey());
+        }
+        final ListAdapter adapter = list.getAdapter();
+        for (int pos = 0; pos < adapter.getCount(); pos++) {
+            if (adapter.getItem(pos) == pref) {
+                list.performItemClick(null, pos, adapter.getItemId(pos));
+                idle();
+                return;
+            }
+        }
+        fail(key + " is not in the list of the shown screen " + shownScreenKey());
+    }
+
+    /**
+     * Lays the result list out tall enough that every result is an attached row, so its click handler sees a valid
+     * position, as on a phone after scrolling to it.
+     */
+    private static void layOutAll(final RecyclerView list) {
+        final int width = View.MeasureSpec.makeMeasureSpec(1080, View.MeasureSpec.EXACTLY);
+        final int height = View.MeasureSpec.makeMeasureSpec(100_000, View.MeasureSpec.EXACTLY);
+        list.measure(width, height);
+        list.layout(0, 0, 1080, 100_000);
+    }
+
+    private SearchPreferenceFragment searchFragment() {
+        for (final Fragment fragment : activity().getFragmentManager().getFragments()) {
+            if (fragment instanceof SearchPreferenceFragment) {
+                return (SearchPreferenceFragment) fragment;
+            }
+        }
+        fail("search page is not open");
+        return null;
+    }
+
+    @Nullable
+    private static <T extends View> T findView(final View view, final Class<T> type) {
+        if (type.isInstance(view)) {
+            return type.cast(view);
+        }
+        if (view instanceof ViewGroup) {
+            final ViewGroup group = (ViewGroup) view;
+            for (int i = 0; i < group.getChildCount(); i++) {
+                final T found = findView(group.getChildAt(i), type);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static List<TextView> texts(final View view) {
+        final List<TextView> out = new ArrayList<>();
+        if (view instanceof TextView) {
+            out.add((TextView) view);
+        }
+        if (view instanceof ViewGroup) {
+            for (int i = 0; i < ((ViewGroup) view).getChildCount(); i++) {
+                out.addAll(texts(((ViewGroup) view).getChildAt(i)));
+            }
+        }
+        return out;
+    }
+
+    private static void idle() {
+        shadowOf(Looper.getMainLooper()).idle();
+    }
+
+    private static void sleep() {
+        try {
+            Thread.sleep(50);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        idle();
+    }
+}
