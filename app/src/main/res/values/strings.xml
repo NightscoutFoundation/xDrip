@@ -2170,19 +2170,19 @@
     <string name="li3_stage_sensor_ended">Session ended; scan a new device with NFC</string>
     <string name="li3_stage_no_credential">No app credential; tap Download on the Li3 screen</string>
     <string name="li3_reading_not_stored">Reading not stored</string>
-    <string name="li3_refused_value">no valid value from the sensor</string>
-    <string name="li3_refused_time">the session start time looks wrong</string>
-    <string name="li3_refused_quality">the sensor marked the reading as unreliable</string>
+    <string name="li3_refused_value">No valid value from the device</string>
+    <string name="li3_refused_time">The session start time looks wrong</string>
+    <string name="li3_refused_quality">The device marked the reading as unreliable</string>
     <string name="li3_started">Started</string>
     <string name="li3_remaining">Sensor life</string>
-    <string name="li3_expired">expired</string>
+    <string name="li3_expired">Expired</string>
     <string name="li3_setup">Setup</string>
     <string name="li3_step_credential">Download the app credential with the button below</string>
     <string name="li3_step_account">Only to take over a session started by an official app: look up its account ID, then choose that app, with the buttons below</string>
     <string name="li3_step_scan">Scan the device with this screen open. Answer the question, then scan again.</string>
-    <string name="li3_step_readings">Wait for the first reading. A new sensor sends none during its first hour or so.</string>
+    <string name="li3_step_readings">Wait for the first reading. A new device sends none during its first hour or so.</string>
     <string name="li3_credential">App credential</string>
-    <string name="li3_credential_ready">downloaded</string>
+    <string name="li3_credential_ready">Downloaded</string>
     <string name="li3_download_credential">Download app credential</string>
     <string name="li3_downloading">Downloading app credential</string>
     <string name="li3_download_failed">App credential download failed</string>
@@ -2218,7 +2218,7 @@
     <string name="li3_fold_title">Official app</string>
     <string name="li3_fold_summary">The app the account uses</string>
     <string name="li3_smoothing_title">Smooth Li3 readings</string>
-    <string name="li3_smoothing_summary">Off shows the raw per-minute values</string>
+    <string name="li3_smoothing_summary">Average recent readings to make them smoother</string>
     <string name="sensor_cannot_be_calibrated">This sensor cannot be calibrated.</string>
     <string name="notification_listener_permission_explanation">Permission is needed to receive data from other applications. xDrip does not do anything beyond this scope. Please enable xDrip on the next screen</string>
 </resources>
