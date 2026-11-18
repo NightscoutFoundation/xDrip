@@ -445,7 +445,7 @@ public class Li3Service extends ForegroundService {
         if (!credential && !downloadError.isEmpty()) {
             si.add(new StatusItem(gs(R.string.li3_download_failed), downloadError, StatusItem.Highlight.BAD));
         }
-        si.add(new StatusItem("Li3", gs(R.string.li3_open), StatusItem.Highlight.NORMAL,
+        si.add(new StatusItem("Li3", gs(R.string.glupro_open), StatusItem.Highlight.NORMAL,
                 "button-press", Li3Store::startControlActivity));
         return si;
     }

@@ -472,6 +472,16 @@ public class Li3ServiceTest extends RobolectricTestWithConfig {
         assertThat(status.stream().anyMatch(item -> item.value.contains("HTTP 404"))).isTrue();
     }
 
+    /** The status page ends with a button that opens the Li3 screen, labelled with xDrip's shared "Open". */
+    @Test
+    public void megaStatus_endsWithOpenButton() {
+        // :: Act
+        List<StatusItem> status = Li3Service.megaStatus();
+
+        // :: Verify
+        assertThat(value(status, "Li3")).isEqualTo(gs(R.string.glupro_open));
+    }
+
     /** Right after "Forget Device" the old session's stage is gone: the page says there is no device. */
     @Test
     public void megaStatus_afterForget_showsNoSensor() {

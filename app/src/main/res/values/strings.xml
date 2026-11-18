@@ -2176,7 +2176,6 @@
     <string name="li3_started">Started</string>
     <string name="li3_remaining">Sensor life</string>
     <string name="li3_expired">expired</string>
-    <string name="li3_open">Open</string>
     <string name="li3_setup">Setup</string>
     <string name="li3_step_credential">Download the app credential with the button below</string>
     <string name="li3_step_account">Only to take over a session started by an official app: look up its account ID, then choose that app, with the buttons below</string>
