@@ -74,9 +74,12 @@ public final class Li3SensorState {
         this.blePin = blePin.clone();
     }
 
-    /** Keeps the warm-up, wear, product, generation and region the sensor reported over NFC. */
+    /**
+     * Keeps the warm-up, wear, product, generation and region the sensor reported over NFC. A warm-up under an hour is
+     * taken as an hour, the shortest any Li3 has, so a fresh sensor's first readings are never taken as valid.
+     */
     public synchronized void applySensorCycle(PatchInfo info) {
-        warmupMinutes = Math.max(0, info.warmupMinutes());
+        warmupMinutes = atLeastAnHour(info.warmupMinutes());
         wearMinutes = Math.max(0, info.wearMinutes());
         productType = info.productType();
         generation = info.generation();
@@ -158,7 +161,8 @@ public final class Li3SensorState {
                 state.fold = ReceiverId.Fold.valueOf(json.getString("fold"));
             }
             state.activationMs = json.optLong("activationMs", 0);
-            state.warmupMinutes = optNonNegative(json, "warmupDurationMinutes");
+            Integer warmup = optInt(json, "warmupDurationMinutes");
+            state.warmupMinutes = warmup == null ? null : atLeastAnHour(warmup);
             state.wearMinutes = optNonNegative(json, "wearDurationMinutes");
             state.productType = optInt(json, "productType");
             state.generation = optInt(json, "generation");
@@ -192,6 +196,11 @@ public final class Li3SensorState {
 
     private static Integer optInt(JSONObject json, String key) throws JSONException {
         return json.has(key) ? json.getInt(key) : null;
+    }
+
+    /** A warm-up of at least {@link Lifecycle#DEFAULT_WARMUP_MINUTES}, the shortest any Li3 has. */
+    private static int atLeastAnHour(int warmupMinutes) {
+        return Math.max(Lifecycle.DEFAULT_WARMUP_MINUTES, warmupMinutes);
     }
 
     private static Integer optNonNegative(JSONObject json, String key) throws JSONException {

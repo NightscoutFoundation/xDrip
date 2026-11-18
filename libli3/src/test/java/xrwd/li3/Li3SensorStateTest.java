@@ -32,6 +32,10 @@ public class Li3SensorStateTest {
     private static final byte[] PIN = {0x32, 0x25, (byte) 0xec, 0x72};
     private static final String KAUTH_HEX = "00112233445566778899aabbccddeeff";
     private static final String ACTIVE = "00a50001000200010060541e020401040c04305252433938394151c6ca";
+    /** {@link #ACTIVE} reporting no warm-up. */
+    private static final String NO_WARMUP = "00a50001000200010060541e020401040004305252433938394151c6ca";
+    /** {@link #ACTIVE} reporting a 120-minute warm-up. */
+    private static final String LONG_WARMUP = "00a50001000200010060541e020401041804305252433938394151c6ca";
     private static final String SENSOR_KEY_HEX = "04" + "11111111111111111111111111111111111111111111111111111111111111111111111111111111"
             + "111111111111111111111111111111111111111111111111";
 
@@ -264,6 +268,55 @@ public class Li3SensorStateTest {
         assertThat(restored.wearMinutes()).isEqualTo(21600);
         assertThat(restored.lifecycle().usable(21599)).isTrue();
         assertThat(restored.lifecycle().usable(21600)).isFalse();
+    }
+
+    /**
+     * A sensor that reports a warm-up under an hour over NFC still warms up for an hour, the shortest any Li3 has, so a
+     * fresh sensor's first readings are never taken as valid.
+     */
+    @Test
+    public void applySensorCycle_warmupUnderAnHour_warmsUpAnHour() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+
+        // :: Act
+        state.applySensorCycle(PatchInfo.parse(Hex.toBytes(NO_WARMUP)));
+
+        // :: Verify
+        assertThat(state.warmupMinutes()).isEqualTo(60);
+        assertThat(state.lifecycle().usable(59)).isFalse();
+        assertThat(state.lifecycle().usable(60)).isTrue();
+    }
+
+    /** A warm-up longer than an hour is kept as the sensor reports it. */
+    @Test
+    public void applySensorCycle_warmupOverAnHour_kept() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+
+        // :: Act
+        state.applySensorCycle(PatchInfo.parse(Hex.toBytes(LONG_WARMUP)));
+
+        // :: Verify
+        assertThat(state.warmupMinutes()).isEqualTo(120);
+        assertThat(state.lifecycle().usable(119)).isFalse();
+    }
+
+    /** A state stored before the one-hour floor, with a warm-up under an hour, warms up for an hour once read back. */
+    @Test
+    public void fromJson_warmupUnderAnHour_warmsUpAnHour() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.applySensorCycle(PatchInfo.parse(Hex.toBytes(ACTIVE)));
+        String json = state.toJson().replace("\"warmupDurationMinutes\":60", "\"warmupDurationMinutes\":0");
+
+        // :: Act
+        Li3SensorState restored = Li3SensorState.fromJson(json);
+
+        // :: Verify
+        assertThat(json).contains("\"warmupDurationMinutes\":0");
+        assertThat(restored.warmupMinutes()).isEqualTo(60);
+        assertThat(restored.lifecycle().usable(59)).isFalse();
     }
 
     // ================================================= Backfill hole =================================================
