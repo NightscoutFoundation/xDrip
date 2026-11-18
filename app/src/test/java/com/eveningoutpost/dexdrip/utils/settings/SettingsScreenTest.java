@@ -54,6 +54,7 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     private static final String SEARCH_QUERY = "serial number";
     private static final String NIGHT_START = "miband_nightmode_start";
     private static final String MIBAND_MAC = "AA:BB:CC:DD:EE:FF";
+    private static final String HIGH_VALUE = "highValue";
     private static final String HIGH_COLOUR = "color_high_values";
     private static final String EXAMPLE_CHART = "example_chart";
     private static final String AUDIO_ATTRIBUTES_FLAGS = "android.intent.extra.ringtone.AUDIO_ATTRIBUTES_FLAGS";
@@ -264,6 +265,39 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
         assertThat(driver.shownScreenKey()).isEqualTo(SPEAK_SCREEN);
     }
 
+    /**
+     * Recreating the screen while a setting's dialog is open closes the dialog, as today's screen does, so nothing
+     * typed afterwards goes to a screen that is gone.
+     */
+    @Test
+    public void recreateClosesOpenDialog() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        driver.dialogOf(HIGH_VALUE);
+
+        // :: Act
+        driver.recreate();
+
+        // :: Verify
+        assertThat(driver.hasOpenDialog()).isFalse();
+    }
+
+    /**
+     * Bringing settings to the front again while a setting's dialog is open closes the dialog, as today's screen does.
+     */
+    @Test
+    public void newIntentClosesOpenDialog() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        driver.dialogOf(HIGH_VALUE);
+
+        // :: Act
+        driver.deliverNewIntent(SPEAK_SCREEN);
+
+        // :: Verify
+        assertThat(driver.hasOpenDialog()).isFalse();
+    }
+
     // ===== Dependencies ==============================================================================================
 
     /**
@@ -304,6 +338,26 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(driver.shownScreenKey()).isEqualTo(SPEAK_SCREEN);
+    }
+
+    /**
+     * After a search result opens its sub-screen, back goes to the root and back again closes settings, as without
+     * the search: the closed search page leaves no extra back step.
+     */
+    @Test
+    public void searchResultLeavesNoExtraBackStep() {
+        // :: Setup
+        final String summary = RuntimeEnvironment.getApplication().getString(R.string.title_When_changes_by);
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        driver.search(summary);
+        driver.clickSearchResult(summary);
+
+        // :: Act
+        driver.back();
+        driver.pressBack();
+
+        // :: Verify
+        assertThat(driver.isClosed()).isTrue();
     }
 
     /**

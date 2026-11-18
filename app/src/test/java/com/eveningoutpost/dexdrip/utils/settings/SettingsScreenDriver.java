@@ -225,6 +225,36 @@ public final class SettingsScreenDriver {
         idle();
     }
 
+    /**
+     * Presses back on whatever is shown, the root included, as the back button does.
+     */
+    public void pressBack() {
+        activity().onBackPressed();
+        idle();
+    }
+
+    /**
+     * Whether the settings screen has closed, as it does when back is pressed on the root.
+     */
+    public boolean isClosed() {
+        return activity().isFinishing();
+    }
+
+    /**
+     * Whether a dialog of a setting is shown on the settings screen.
+     */
+    public boolean hasOpenDialog() {
+        for (final Fragment fragment : activity().getSupportFragmentManager().getFragments()) {
+            if (fragment instanceof DialogFragment) {
+                final Dialog dialog = ((DialogFragment) fragment).getDialog();
+                if (dialog != null && dialog.isShowing()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     // ===== Interaction ===============================================================================================
 
     /**

@@ -35,6 +35,9 @@ import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.EditTextPreference;
@@ -199,6 +202,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
     private volatile String scanContents = null; // Text content of the scan coming either from camera or file
     private volatile byte[] scanRawBytes = null; // Raw bytes of the scan
 
+    /** The name the search page puts on the back stack. */
+    private static final String SEARCH_PAGE = "SearchPreferenceFragment";
+
     private void refreshFragments() {
         refreshFragments(null);
     }
@@ -212,8 +218,13 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         this.preferenceFragment = new AllPrefsFragment(jumpTo);
         this.preferenceFragment.setParent(this);
         pFragment = this.preferenceFragment;
-        getSupportFragmentManager().beginTransaction().replace(android.R.id.content,
-                this.preferenceFragment).commit();
+        final FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        for (final Fragment shown : getSupportFragmentManager().getFragments()) {
+            if (shown instanceof DialogFragment) {
+                transaction.remove(shown); // the old screen closed its setting dialogs here too
+            }
+        }
+        transaction.replace(android.R.id.content, this.preferenceFragment).commit();
     }
 
     public static List<String> getAllPreferenceKeys(final PreferenceGroup parent) {
@@ -245,7 +256,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         try {
             final AllPrefsFragment fragment = this.preferenceFragment;
             final Preference found = fragment == null ? null : fragment.findPreference(searchPreferenceResult.getKey());
-            searchPreferenceResult.closeSearchPage(this);
+            // the search page put itself on the back stack; popping it leaves no extra back step behind
+            if (!getSupportFragmentManager().popBackStackImmediate(SEARCH_PAGE,
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE)) {
+                searchPreferenceResult.closeSearchPage(this);
+            }
             if (found == null) {
                 Log.e(TAG, "Search result is no longer in the settings: " + searchPreferenceResult.getKey());
                 return;
