@@ -368,6 +368,33 @@ public final class SettingsScreenDriver {
         }
     }
 
+    /**
+     * Every title and summary the search page shows, once it shows any. Types the search text again while the index is
+     * still being built, as {@link #clickSearchResult} does, and fails when nothing shows within thirty seconds.
+     */
+    public List<String> searchResultTexts() {
+        final long deadline = JoH.tsl() + 30_000;
+        while (true) {
+            final RecyclerView list = findView(searchFragment().getView(), RecyclerView.class);
+            layOutAll(list);
+            final List<String> shown = new ArrayList<>();
+            for (int i = 0; i < list.getChildCount(); i++) {
+                for (final TextView line : texts(list.getChildAt(i))) {
+                    shown.add(String.valueOf(line.getText()));
+                }
+            }
+            if (!shown.isEmpty()) {
+                return shown;
+            }
+            if (JoH.tsl() > deadline) {
+                fail("the search page shows no results for " + lastQuery);
+            }
+            sleep();
+            searchFragment().setSearchTerm(lastQuery);
+            idle();
+        }
+    }
+
     // ===== Internals =================================================================================================
 
     private Preferences activity() {

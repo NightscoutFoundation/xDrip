@@ -1,6 +1,8 @@
 package com.eveningoutpost.dexdrip.utils.settings;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.provider.Settings;
@@ -12,8 +14,10 @@ import com.eveningoutpost.dexdrip.xdrip;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +36,10 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     private static final String SPEAK_THRESHOLD = "speak_readings_change_threshold";
     private static final String ALERT_SOUND = "other_alerts_sound";
     /** Hidden {@code RingtoneManager.EXTRA_RINGTONE_AUDIO_ATTRIBUTES_FLAGS}. */
+    private static final String API_ENABLE = "cloud_storage_api_enable";
+    private static final String API_DOWNLOAD = "cloud_storage_api_download_enable";
+    /** Matches the hidden test-mode serial number and settings that are still on the screen. */
+    private static final String SEARCH_QUERY = "serial number";
     private static final String AUDIO_ATTRIBUTES_FLAGS = "android.intent.extra.ringtone.AUDIO_ATTRIBUTES_FLAGS";
 
     // ===== Setup =====================================================================================================
@@ -151,6 +159,76 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
         assertThat(started).isNotEmpty();
     }
 
+    /**
+     * While a sub-screen is shown, the settings of every other screen stay in the live tree, and a switch on one
+     * screen still enables a setting on another: the cloud upload switch enables treatment download one level deeper.
+     */
+    @Test
+    public void subScreenKeepsWholeTreeLive() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(SPEAK_SCREEN);
+
+        // :: Act
+        final boolean otherScreenLive = driver.exists(ALERT_SOUND) && driver.exists(API_DOWNLOAD);
+        driver.showScreenOf(API_ENABLE);
+        driver.setChecked(API_ENABLE, false);
+        final boolean enabledWhenOff = driver.isEnabled(API_DOWNLOAD);
+        driver.setChecked(API_ENABLE, true);
+        final boolean enabledWhenOn = driver.isEnabled(API_DOWNLOAD);
+
+        // :: Verify
+        assertThat(otherScreenLive).isTrue();
+        assertThat(enabledWhenOff).isFalse();
+        assertThat(enabledWhenOn).isTrue();
+    }
+
+    /**
+     * Opening every sub-screen and going back again changes no stored setting.
+     */
+    @Test
+    public void storedValuesSurviveOpeningEveryScreen() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Map<String, ?> before = new HashMap<>(store().getAll());
+        final Map<String, String> intentScreens = SettingsXml.intentScreens();
+        final List<String> actionScreens = SettingsXml.childlessScreens();
+
+        // :: Act
+        for (final String key : SettingsXml.keysOf("PreferenceScreen")) {
+            if (!driver.exists(key) || intentScreens.containsKey(key) || actionScreens.contains(key)
+                    || !driver.isEnabled(key)) {
+                continue;
+            }
+            driver.showScreenOf(key);
+            driver.openScreen(key);
+            driver.back();
+        }
+
+        // :: Verify
+        assertThat(store().getAll()).isEqualTo(before);
+    }
+
+    /**
+     * Recreating the screen two sub-screens deep, as a rotation does, shows the root again, as today's screen does, and
+     * the screen keeps working: another sub-screen opens.
+     */
+    @Test
+    public void recreateKeepsScreenUsable() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        driver.openScreen("whole_alerts_screen");
+        driver.openScreen("bg_alerts_screen");
+
+        // :: Act
+        driver.recreate();
+        final String shownAfterRecreate = driver.shownScreenKey();
+        driver.showScreenOf(SPEAK_THRESHOLD);
+
+        // :: Verify
+        assertThat(shownAfterRecreate).isNull();
+        assertThat(driver.shownScreenKey()).isEqualTo(SPEAK_SCREEN);
+    }
+
     // ===== Dependencies ==============================================================================================
 
     /**
@@ -191,6 +269,25 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(driver.shownScreenKey()).isEqualTo(SPEAK_SCREEN);
+    }
+
+    /**
+     * A setting the screen removes from its tree, such as the hidden test-mode serial number, does not show in search
+     * results, though its sibling in the XML is searchable text.
+     */
+    @Test
+    public void searchResultForRemovedKeyDoesNotCrash() {
+        // :: Setup
+        final String removed = RuntimeEnvironment.getApplication().getString(R.string.dexcom_test_mode_serial);
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+
+        // :: Act
+        driver.search(SEARCH_QUERY);
+        final List<String> shown = driver.searchResultTexts();
+
+        // :: Verify
+        assertThat(driver.exists("share_test_key")).isFalse();
+        assertThat(shown).doesNotContain(removed);
     }
 
     // ===== Ringtone ==================================================================================================
@@ -256,10 +353,41 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
         assertThat(afterCancel).isEqualTo("");
     }
 
+    /**
+     * The sound picker's result reaches the sound setting, and a scanner result started afterwards from the same
+     * screen still reaches the screen: a scanned receiver serial is stored.
+     */
+    @Test
+    public void ringtoneAndActivityResultsBothArrive() {
+        // :: Setup
+        Shadows.shadowOf(RuntimeEnvironment.getApplication()).grantPermissions(Manifest.permission.CAMERA);
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Uri picked = Settings.System.DEFAULT_NOTIFICATION_URI;
+
+        // :: Act
+        driver.showScreenOf(ALERT_SOUND);
+        driver.click(ALERT_SOUND);
+        driver.nextStartedActivityForResult();
+        driver.deliverResult(android.app.Activity.RESULT_OK,
+                new Intent().putExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI, picked));
+        driver.showScreenOf("auto_configure");
+        driver.click("auto_configure");
+        driver.nextStartedActivityForResult();
+        driver.deliverResult(android.app.Activity.RESULT_OK, new Intent()
+                .putExtra("SCAN_RESULT", "SM12345678").putExtra("SCAN_RESULT_FORMAT", "CODE_128"));
+
+        // :: Verify
+        assertThat(storedSound()).isEqualTo(picked.toString());
+        assertThat(store().getString("share_key", "<absent>")).isEqualTo("SM12345678");
+    }
+
     // ===== Helpers ===================================================================================================
 
     private static String storedSound() {
-        return android.preference.PreferenceManager.getDefaultSharedPreferences(RuntimeEnvironment.application)
-                .getString(ALERT_SOUND, "<absent>");
+        return store().getString(ALERT_SOUND, "<absent>");
+    }
+
+    private static SharedPreferences store() {
+        return android.preference.PreferenceManager.getDefaultSharedPreferences(RuntimeEnvironment.application);
     }
 }
