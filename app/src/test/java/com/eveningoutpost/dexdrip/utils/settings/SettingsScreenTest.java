@@ -245,6 +245,36 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     }
 
     /**
+     * A slider value stored below the {@code android:min} in the XML stays as stored through an app start and
+     * through showing its screen. The old screen ignored {@code android:min}, so 0 was a value a person could set.
+     */
+    @Test
+    public void sliderValueBelowXmlMinIsKept() {
+        // :: Setup
+        final Map<String, Integer> belowMin = new HashMap<>();
+        belowMin.put("blueReader_turn_off_value", 0);
+        belowMin.put("speech_speed", 0);
+        belowMin.put("speech_pitch", 1);
+        final SharedPreferences.Editor editor = store().edit();
+        for (final Map.Entry<String, Integer> entry : belowMin.entrySet()) {
+            editor.putInt(entry.getKey(), entry.getValue());
+        }
+        editor.commit();
+
+        // :: Act
+        xdrip.loadDefaultPreferences(RuntimeEnvironment.application);
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        for (final String key : belowMin.keySet()) {
+            driver.showScreenOf(key);
+        }
+
+        // :: Verify
+        for (final Map.Entry<String, Integer> entry : belowMin.entrySet()) {
+            assertWithMessage(entry.getKey()).that(store().getInt(entry.getKey(), -1)).isEqualTo(entry.getValue());
+        }
+    }
+
+    /**
      * Recreating the screen two sub-screens deep, as a rotation does, shows the root again, as today's screen does, and
      * the screen keeps working: another sub-screen opens.
      */

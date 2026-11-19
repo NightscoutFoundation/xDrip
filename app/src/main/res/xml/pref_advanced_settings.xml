@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
         android:icon="@drawable/ic_watch_grey600_48dp"
         android:key="smart_watch_options"
@@ -369,7 +368,6 @@
                 android:key="bluejay_screen_timeout"
                 android:max="7"
                 android:min="0"
-                app:min="0"
                 android:summary=""
                 android:title="Screen Timeout" />
 
@@ -388,7 +386,6 @@
                 android:key="bluejay_wake_velocity"
                 android:max="15"
                 android:min="0"
-                app:min="0"
                 android:summary=""
                 android:title="Wake up velocity" />
 
@@ -465,7 +462,6 @@
                     android:summary="Larger backfill scope can reduce battery life"
                     android:max="12"
                     android:min="0"
-                    app:min="0"
                     android:defaultValue="3" />
 
                 <CheckBoxPreference
@@ -898,7 +894,6 @@
                 android:key="speak_readings_change_threshold"
                 android:max="300"
                 android:min="0"
-                app:min="0"
                 android:summary="@string/title_When_changes_by"
                 android:title="" />
             <SeekBarPreference
@@ -907,7 +902,6 @@
                 android:key="speak_readings_change_time"
                 android:max="300"
                 android:min="0"
-                app:min="0"
                 android:summary="@string/title_Or_per_number_of_minutes"
                 android:title="" />
             <SwitchPreference
@@ -940,7 +934,6 @@
                 android:key="speech_speed"
                 android:max="20"
                 android:min="2"
-                app:min="2"
                 android:summary=""
                 android:title="@string/Speech_speed" />
             <SeekBarPreference
@@ -948,7 +941,6 @@
                 android:key="speech_pitch"
                 android:max="20"
                 android:min="4"
-                app:min="4"
                 android:summary=""
                 android:title="@string/Speech_pitch" />
             <CheckBoxPreference
@@ -1434,7 +1426,6 @@
                     android:key="blueReader_turn_off_value"
                     android:max="20"
                     android:min="1"
-                    app:min="1"
                     android:summary="@string/blueReader_turnoffvalue_sum"
                     android:title="@string/blueReader_turnoffvalue" />
                 <SwitchPreference
