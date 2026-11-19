@@ -26,6 +26,7 @@ import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
 import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.time.TimeRangeUtils;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -748,26 +749,61 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     // ===== Hardware data source ======================================================================================
 
     /**
-     * Every hardware data source can be chosen from its list, and the choice is stored.
+     * Every hardware data source can be chosen from its list, and the choice is stored. The sources are chosen one
+     * after the other, so each choice starts from the source chosen before it.
      */
     @Test
     public void everyHardwareDataSourceCanBeChosen() {
-        // :: Setup
         final List<String> sources = SettingsScreenDriver.open(null).entryValuesOf(DATA_SOURCE);
-
-        for (final String source : sources) {
+        for (int position = 0; position < sources.size(); position++) {
+            // :: Setup
             final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
-            final ListView list = ((AlertDialog) driver.dialogOf(DATA_SOURCE)).getListView();
-            final int position = sources.indexOf(source);
 
             // :: Act
-            list.performItemClick(list.getAdapter().getView(position, null, list), position,
-                    list.getItemIdAtPosition(position));
-            Shadows.shadowOf(Looper.getMainLooper()).idle();
+            chooseDataSource(driver, position);
 
             // :: Verify
+            final String source = sources.get(position);
             assertWithMessage(source).that(store().getString(DATA_SOURCE, "<absent>")).isEqualTo(source);
         }
+    }
+
+    /**
+     * Choosing a hardware data source shows the settings that belong to it and hides those of other sources: the Share
+     * key only for Share, the NFC settings only for Libre sources, and the Nightscout follower URL for that follower.
+     * The sources are chosen one after the other, so each choice starts from the source chosen before it.
+     */
+    @Test
+    public void hardwareDataSourceShowsItsOwnSettings() {
+        final List<String> sources = SettingsScreenDriver.open(null).entryValuesOf(DATA_SOURCE);
+        for (int position = 0; position < sources.size(); position++) {
+            // :: Setup
+            final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+            final String source = sources.get(position);
+            final DexCollectionType type = DexCollectionType.getType(source);
+
+            // :: Act
+            chooseDataSource(driver, position);
+
+            // :: Verify
+            assertWithMessage(source + " share_key").that(driver.exists("share_key"))
+                    .isEqualTo(type == DexCollectionType.DexcomShare);
+            assertWithMessage(source + " nfc settings").that(driver.exists("xdrip_plus_nfc_settings"))
+                    .isEqualTo(DexCollectionType.hasLibre(type));
+            if (type == DexCollectionType.NSFollow) {
+                assertWithMessage(source + " nsfollow_url").that(driver.exists("nsfollow_url")).isTrue();
+            }
+        }
+    }
+
+    /**
+     * Taps row {@code position} in the hardware data source list, the way a user picks a source.
+     */
+    private static void chooseDataSource(final SettingsScreenDriver driver, final int position) {
+        final ListView list = ((AlertDialog) driver.dialogOf(DATA_SOURCE)).getListView();
+        list.performItemClick(list.getAdapter().getView(position, null, list), position,
+                list.getItemIdAtPosition(position));
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
     }
 
     // ===== Look ======================================================================================================

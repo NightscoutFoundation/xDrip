@@ -4,12 +4,11 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceGroup;
 
 /**
- * Adds a setting to a group the way the old {@code android.preference} screen did for the code that shows and hides
- * settings by moving them in and out of groups.
+ * Adds a setting to a group without crashing when the setting already sits in another group.
  * <p>
- * The old screen accepted a setting that already sat in another group; androidx throws instead. The settings code
- * adds settings back to groups they were never removed from, often to a group that is not their own, so here such a
- * setting stays where it is.
+ * The code that shows and hides settings sometimes adds a setting to a group that is not its own. The old
+ * {@code android.preference} screen accepted that and showed the setting in both groups until the screen was rebuilt;
+ * androidx throws instead. Here such a setting stays only in its own group.
  *
  * @author Asbjørn Aarrestad - 2026.11
  */
