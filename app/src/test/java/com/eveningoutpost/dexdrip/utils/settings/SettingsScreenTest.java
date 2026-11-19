@@ -73,6 +73,7 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     private static final String HIGH_VALUE = "highValue";
     private static final String LOW_VALUE = "lowValue";
     private static final String UNITS = "units";
+    private static final String DATA_SOURCE = "dex_collection_method";
     private static final String BLUEJAY_TIMEOUT = "bluejay_screen_timeout";
     private static final String MIBAND_NIGHT_INTERVAL = "miband_nightmode_interval";
     private static final String NUMBER_WALL_START = "pick_numberwall_start";
@@ -742,6 +743,31 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
         assertThat(store().getString(UNITS, "<absent>")).isEqualTo("mmol");
         assertThat(store().getString(HIGH_VALUE, "<absent>")).isEqualTo("9.4");
         assertThat(store().getString(LOW_VALUE, "<absent>")).isEqualTo("3.9");
+    }
+
+    // ===== Hardware data source ======================================================================================
+
+    /**
+     * Every hardware data source can be chosen from its list, and the choice is stored.
+     */
+    @Test
+    public void everyHardwareDataSourceCanBeChosen() {
+        // :: Setup
+        final List<String> sources = SettingsScreenDriver.open(null).entryValuesOf(DATA_SOURCE);
+
+        for (final String source : sources) {
+            final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+            final ListView list = ((AlertDialog) driver.dialogOf(DATA_SOURCE)).getListView();
+            final int position = sources.indexOf(source);
+
+            // :: Act
+            list.performItemClick(list.getAdapter().getView(position, null, list), position,
+                    list.getItemIdAtPosition(position));
+            Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+            // :: Verify
+            assertWithMessage(source).that(store().getString(DATA_SOURCE, "<absent>")).isEqualTo(source);
+        }
     }
 
     // ===== Look ======================================================================================================

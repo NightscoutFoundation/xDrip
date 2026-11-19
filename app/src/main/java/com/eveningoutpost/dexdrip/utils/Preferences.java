@@ -127,6 +127,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleTr
 import com.eveningoutpost.dexdrip.utilitymodels.pebble.watchface.InstallPebbleWatchFace;
 import com.eveningoutpost.dexdrip.utils.framework.IncomingCallsReceiver;
 import com.eveningoutpost.dexdrip.utils.settings.EditTextAttributes;
+import com.eveningoutpost.dexdrip.utils.settings.PreferenceGroups;
 import com.eveningoutpost.dexdrip.utils.settings.RingtonePickerPreference;
 import com.eveningoutpost.dexdrip.utils.settings.SubScreenNavigator;
 import com.eveningoutpost.dexdrip.watch.lefun.LeFunEntry;
@@ -1525,15 +1526,15 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 //Add CL prefs
                 //collectionCategory.addPreference(carelinkFollowUser);
                 //collectionCategory.addPreference(carelinkFollowPass);
-                collectionCategory.addPreference(carelinkFollowCountry);
-                collectionCategory.addPreference(carelinkFollowPatient);
-                collectionCategory.addPreference(carelinkFollowLogin);
-                collectionCategory.addPreference(carelinkFollowGracePeriod);
-                collectionCategory.addPreference(carelinkFollowMissedPollInterval);
-                collectionCategory.addPreference(carelinkFollowDownloadFingerBGs);
-                collectionCategory.addPreference(carelinkFollowDownloadBoluses);
-                collectionCategory.addPreference(carelinkFollowDownloadMeals);
-                collectionCategory.addPreference(carelinkFollowDownloadNotifications);
+                PreferenceGroups.add(collectionCategory, carelinkFollowCountry);
+                PreferenceGroups.add(collectionCategory, carelinkFollowPatient);
+                PreferenceGroups.add(collectionCategory, carelinkFollowLogin);
+                PreferenceGroups.add(collectionCategory, carelinkFollowGracePeriod);
+                PreferenceGroups.add(collectionCategory, carelinkFollowMissedPollInterval);
+                PreferenceGroups.add(collectionCategory, carelinkFollowDownloadFingerBGs);
+                PreferenceGroups.add(collectionCategory, carelinkFollowDownloadBoluses);
+                PreferenceGroups.add(collectionCategory, carelinkFollowDownloadMeals);
+                PreferenceGroups.add(collectionCategory, carelinkFollowDownloadNotifications);
                 //Create prefChange handler
                 final Preference.OnPreferenceChangeListener carelinkFollowListener = new Preference.OnPreferenceChangeListener() {
                     @Override
@@ -1903,7 +1904,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 collectionCategory.removePreference(shareKey);
                 collectionCategory.removePreference(scanShare);
                 otherCategory.removePreference(interpretRaw);
-                alertsCategory.addPreference(calibrationAlertsScreen);
+                PreferenceGroups.add(alertsCategory, calibrationAlertsScreen);
             } else {
                 otherCategory.removePreference(predictiveBG);
                 alertsCategory.removePreference(calibrationAlertsScreen);
@@ -2185,9 +2186,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 final PreferenceScreen g5_settings_screen = (PreferenceScreen) findPreference("xdrip_plus_g5_extra_settings");
                 if (collectionType == DexCollectionType.DexcomG5) {
                     try {
-                        collectionCategory.addPreference(transmitterId);
+                        PreferenceGroups.add(collectionCategory, transmitterId);
 
-                        collectionCategory.addPreference(g5_settings_screen);
+                        PreferenceGroups.add(collectionCategory, g5_settings_screen);
                         //collectionCategory.addPreference(g5nonraw);
                         //collectionCategory.addPreference(scanConstantly);
                         //collectionCategory.addPreference(reAuth);
@@ -2409,22 +2410,22 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
 
                         // Add New one
                         if ((pebbleType == 3) || (pebbleType == 4) || (pebbleType == 5)) {
-                            watchCategory.addPreference(pebbleTrend);
-                            watchCategory.addPreference(pebbleFilteredLine);
-                            watchCategory.addPreference(pebbleTinyDots);
-                            watchCategory.addPreference(pebbleHighLine);
-                            watchCategory.addPreference(pebbleLowLine);
-                            watchCategory.addPreference(pebbleTrendPeriod);
-                            watchCategory.addPreference(pebbleDelta);
-                            watchCategory.addPreference(pebbleDeltaUnits);
-                            watchCategory.addPreference(pebbleShowArrows);
-                            watchCategory.addPreference(pebbleVibrateNoSignal);
-                            watchCategory.addPreference(pebbleVibrateNoBluetooth);
+                            PreferenceGroups.add(watchCategory, pebbleTrend);
+                            PreferenceGroups.add(watchCategory, pebbleFilteredLine);
+                            PreferenceGroups.add(watchCategory, pebbleTinyDots);
+                            PreferenceGroups.add(watchCategory, pebbleHighLine);
+                            PreferenceGroups.add(watchCategory, pebbleLowLine);
+                            PreferenceGroups.add(watchCategory, pebbleTrendPeriod);
+                            PreferenceGroups.add(watchCategory, pebbleDelta);
+                            PreferenceGroups.add(watchCategory, pebbleDeltaUnits);
+                            PreferenceGroups.add(watchCategory, pebbleShowArrows);
+                            PreferenceGroups.add(watchCategory, pebbleVibrateNoSignal);
+                            PreferenceGroups.add(watchCategory, pebbleVibrateNoBluetooth);
                         }
 
                         if (oldPebbleType != 1) {
-                            watchCategory.addPreference(pebbleSpecialValue);
-                            watchCategory.addPreference(pebbleSpecialText);
+                            PreferenceGroups.add(watchCategory, pebbleSpecialValue);
+                            PreferenceGroups.add(watchCategory, pebbleSpecialText);
                         }
 
                     }
@@ -2572,19 +2573,19 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         collectionCategory.removePreference(shareKey);
                         collectionCategory.removePreference(scanShare);
                         otherCategory.removePreference(interpretRaw);
-                        otherCategory.addPreference(predictiveBG);
-                        alertsCategory.addPreference(calibrationAlertsScreen);
+                        PreferenceGroups.add(otherCategory, predictiveBG);
+                        PreferenceGroups.add(alertsCategory, calibrationAlertsScreen);
                     } else {
-                        collectionCategory.addPreference(shareKey);
-                        collectionCategory.addPreference(scanShare);
-                        otherCategory.addPreference(interpretRaw);
+                        PreferenceGroups.add(collectionCategory, shareKey);
+                        PreferenceGroups.add(collectionCategory, scanShare);
+                        PreferenceGroups.add(otherCategory, interpretRaw);
                         otherCategory.removePreference(predictiveBG);
                         alertsCategory.removePreference(calibrationAlertsScreen);
                         AllPrefsFragment.this.prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
 
                     if (DexCollectionType.hasLibre(collectionType)) {
-                        collectionCategory.addPreference(nfcSettings);
+                        PreferenceGroups.add(collectionCategory, nfcSettings);
                         NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), prefs.getBoolean("nfc_scan_homescreen", false) && prefs.getBoolean("use_nfc_scan", false));
                         if (!engineering_mode)
                             try {
@@ -2620,10 +2621,10 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         if (receiversIpAddresses == null || receiversIpAddresses.trim().equals("")) {
                             collectionCategory.removePreference(wifiRecievers);
                         } else {
-                            collectionCategory.addPreference(wifiRecievers);
+                            PreferenceGroups.add(collectionCategory, wifiRecievers);
                         }
                     } else {
-                        collectionCategory.addPreference(wifiRecievers);
+                        PreferenceGroups.add(collectionCategory, wifiRecievers);
                     }
 
                     if ((collectionType != DexCollectionType.DexbridgeWixel)
@@ -2632,24 +2633,24 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         //collectionCategory.removePreference(closeGatt);
                         //TODO Bridge battery display support
                     } else {
-                        collectionCategory.addPreference(transmitterId);
+                        PreferenceGroups.add(collectionCategory, transmitterId);
                      //   collectionCategory.addPreference(closeGatt);
                     }
 
                     if (collectionType == DexCollectionType.DexcomG5) {
-                        collectionCategory.addPreference(transmitterId);
+                        PreferenceGroups.add(collectionCategory, transmitterId);
                         // TODO add debug menu
                     }
 
                     if (collectionType == DexCollectionType.NSFollow) {
-                        collectionCategory.addPreference(nsFollowUrl);
-                        collectionCategory.addPreference(nsFollowDownload);
-                        collectionCategory.addPreference(nsFollowSamplePeriod);
-                        collectionCategory.addPreference(nsFollowLag);
+                        PreferenceGroups.add(collectionCategory, nsFollowUrl);
+                        PreferenceGroups.add(collectionCategory, nsFollowDownload);
+                        PreferenceGroups.add(collectionCategory, nsFollowSamplePeriod);
+                        PreferenceGroups.add(collectionCategory, nsFollowLag);
                     }
 
                     if (collectionType == DexCollectionType.Follower) {
-                        collectionCategory.addPreference(xSyncFollowChime);
+                        PreferenceGroups.add(collectionCategory, xSyncFollowChime);
                     }
 
 
@@ -2791,17 +2792,17 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 prefs.removePreference(miband_authkey);
 
                 if (type == MiBand.MiBandType.MI_BAND4) {
-                    settings.addPreference(miband3_4_screen);
-                    settings.addPreference(miband_nightmode_category);
-                    prefs.addPreference(miband_graph_category);
-                    prefs.addPreference(miband_send_readings_as_notification);
-                    prefs.addPreference(miband_authkey);
+                    PreferenceGroups.add(settings, miband3_4_screen);
+                    PreferenceGroups.add(settings, miband_nightmode_category);
+                    PreferenceGroups.add(prefs, miband_graph_category);
+                    PreferenceGroups.add(prefs, miband_send_readings_as_notification);
+                    PreferenceGroups.add(prefs, miband_authkey);
                 } else if (type == MiBand.MiBandType.MI_BAND2) {
-                    settings.addPreference(miband2_screen);
+                    PreferenceGroups.add(settings, miband2_screen);
                 }
                 else if (type == MiBand.MiBandType.MI_BAND3 || type == MiBand.MiBandType.MI_BAND3_1){
-                    settings.addPreference(miband3_4_screen);
-                    settings.addPreference(miband_nightmode_category);
+                    PreferenceGroups.add(settings, miband3_4_screen);
+                    PreferenceGroups.add(settings, miband_nightmode_category);
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Cannot find preference item: " + e);
@@ -2855,7 +2856,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     nfcScreen.removePreference(nfc_expiry_days);
                 } else {
                     nfc_expiry_days.setOrder(3);
-                    nfcScreen.addPreference(nfc_expiry_days);
+                    PreferenceGroups.add(nfcScreen, nfc_expiry_days);
                 }
             } catch (NullPointerException e) {
                 //
