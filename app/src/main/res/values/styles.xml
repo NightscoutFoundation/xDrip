@@ -128,6 +128,7 @@
         <item name="android:listPreferredItemPaddingRight">8dp</item>
         <item name="android:listPreferredItemPaddingEnd">8dp</item>
         <item name="android:switchStyle">@style/SettingsPref.SwitchWidget</item>
+        <item name="android:textAppearanceListItem">@style/TextAppearance.AppCompat.Medium</item>
     </style>
     <!-- Shows a switch's switchTextOn/Off (ON/OFF, km/miles), as the old switches did. -->
     <style name="SettingsPref.SwitchWidget" parent="android:Widget.Material.CompoundButton.Switch">
@@ -139,7 +140,7 @@
         <item name="android:switchTextAppearance">@style/SettingsPref.SwitchText</item>
     </style>
     <style name="SettingsPref.SwitchText" parent="android:TextAppearance.Material.Small">
-        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textColor">@color/settings_switch_text</item>
         <item name="android:textSize">12sp</item>
     </style>
     <style name="SettingsActionBar" parent="Widget.AppCompat.ActionBar.Solid">
@@ -151,7 +152,6 @@
         <item name="titleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Title</item>
     </style>
     <style name="SettingsPreferenceOverlay" parent="PreferenceThemeOverlay">
-        <item name="android:textAppearanceListItem">@style/TextAppearance.AppCompat.Medium</item>
         <item name="preferenceStyle">@style/SettingsPref</item>
         <item name="preferenceScreenStyle">@style/SettingsPref.Screen</item>
         <item name="checkBoxPreferenceStyle">@style/SettingsPref.CheckBox</item>
@@ -160,6 +160,7 @@
         <item name="dialogPreferenceStyle">@style/SettingsPref.Dialog</item>
         <item name="editTextPreferenceStyle">@style/SettingsPref.EditText</item>
         <item name="preferenceCategoryStyle">@style/SettingsPref.Category</item>
+        <item name="seekBarPreferenceStyle">@style/SettingsPref.SeekBar</item>
     </style>
     <style name="SettingsPref" parent="Preference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
     <style name="SettingsPref.Screen" parent="Preference.PreferenceScreen.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
@@ -168,6 +169,7 @@
     <style name="SettingsPref.SwitchCompat" parent="Preference.SwitchPreferenceCompat.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
     <style name="SettingsPref.Dialog" parent="Preference.DialogPreference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
     <style name="SettingsPref.EditText" parent="Preference.DialogPreference.EditTextPreference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.SeekBar" parent="Preference.SeekBarPreference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
     <style name="SettingsPref.Category" parent="Preference.Category.Material">
         <item name="iconSpaceReserved">false</item>
         <item name="android:layout">@layout/settings_category</item>

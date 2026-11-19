@@ -5,11 +5,16 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
+import android.content.res.TypedArray;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.provider.Settings;
+import android.util.TypedValue;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.eveningoutpost.dexdrip.R;
@@ -26,6 +31,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
+import org.robolectric.annotation.Config;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -46,6 +52,8 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
 
     private static final String SPEAK_SCREEN = "xdrip_speak_readings_settings";
     private static final String SPEAK_THRESHOLD = "speak_readings_change_threshold";
+    private static final String SPEAK_SWITCH = "bg_to_speech";
+    private static final String SPEECH_SPEED = "speech_speed";
     private static final String ALERT_SOUND = "other_alerts_sound";
     /** Hidden {@code RingtoneManager.EXTRA_RINGTONE_AUDIO_ATTRIBUTES_FLAGS}. */
     private static final String API_ENABLE = "cloud_storage_api_enable";
@@ -597,6 +605,66 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
         // :: Verify
         final LineChartData after = find(driver.rowOf(EXAMPLE_CHART), LineChartView.class).getLineChartData();
         assertThat(after).isNotSameInstanceAs(before);
+    }
+
+    // ===== Look ======================================================================================================
+
+    /**
+     * Setting titles are drawn at 18sp, the medium text size the old screen used, on plain rows and on slider rows.
+     */
+    @Test
+    public void titlesUseMediumTextSize() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(SPEAK_SCREEN);
+        final float mediumPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, 18,
+                RuntimeEnvironment.application.getResources().getDisplayMetrics());
+
+        // :: Act
+        final TextView switchTitle = driver.rowOf(SPEAK_SWITCH).findViewById(android.R.id.title);
+        final TextView sliderTitle = driver.rowOf(SPEECH_SPEED).findViewById(android.R.id.title);
+
+        // :: Verify
+        assertThat(switchTitle.getTextSize()).isEqualTo(mediumPx);
+        assertThat(sliderTitle.getTextSize()).isEqualTo(mediumPx);
+    }
+
+    /**
+     * A slider row on a phone-sized screen reserves no space for an icon it does not have, so its title lines up
+     * with the other rows.
+     */
+    @Test
+    @Config(qualifiers = "w411dp-h891dp")
+    public void sliderRowReservesNoIconSpace() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(SPEAK_SCREEN);
+
+        // :: Act
+        final View iconFrame = driver.rowOf(SPEAK_THRESHOLD).findViewById(androidx.preference.R.id.icon_frame);
+
+        // :: Verify
+        assertThat(iconFrame.getVisibility()).isEqualTo(View.GONE);
+    }
+
+    /**
+     * The ON/OFF text of a switch is white when the switch can be used and dimmed when it is disabled, as the old
+     * switches were.
+     */
+    @Test
+    public void switchTextDimsWhenDisabled() {
+        // :: Setup
+        final ContextThemeWrapper themed = new ContextThemeWrapper(RuntimeEnvironment.application,
+                R.style.SettingsPref_SwitchText);
+
+        // :: Act
+        final TypedArray attrs = themed.obtainStyledAttributes(new int[]{android.R.attr.textColor});
+        final ColorStateList colours = attrs.getColorStateList(0);
+        attrs.recycle();
+
+        // :: Verify
+        final int enabled = colours.getColorForState(new int[]{android.R.attr.state_enabled}, 0);
+        final int disabled = colours.getColorForState(new int[]{-android.R.attr.state_enabled}, 0);
+        assertThat(enabled).isEqualTo(0xFFFFFFFF);
+        assertThat(disabled >>> 24).isLessThan(0xFF);
     }
 
     // ===== Helpers ===================================================================================================
