@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.preference.EditTextPreference;
+import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceGroup;
@@ -161,6 +162,28 @@ public final class SettingsScreenDriver {
      */
     public String activityTitle() {
         return String.valueOf(activity().getTitle());
+    }
+
+    /**
+     * The title the setting {@code key} has now, wherever it is in the tree.
+     */
+    public String titleOf(final String key) {
+        return String.valueOf(find(key).getTitle());
+    }
+
+    /**
+     * The values the list setting {@code key} offers, in the order it offers them.
+     */
+    public List<String> entryValuesOf(final String key) {
+        final Preference pref = find(key);
+        if (!(pref instanceof ListPreference)) {
+            fail(key + " is not a list but " + pref.getClass().getSimpleName());
+        }
+        final List<String> values = new ArrayList<>();
+        for (final CharSequence value : ((ListPreference) pref).getEntryValues()) {
+            values.add(value.toString());
+        }
+        return values;
     }
 
     /**

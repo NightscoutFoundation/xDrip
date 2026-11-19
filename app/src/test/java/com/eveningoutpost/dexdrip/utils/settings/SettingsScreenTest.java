@@ -9,17 +9,24 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.TypedValue;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
+import androidx.appcompat.app.AlertDialog;
+
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.RobolectricTestWithConfig;
+import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.utilitymodels.PersistentStore;
+import com.eveningoutpost.dexdrip.utils.time.TimeRangeUtils;
 import com.eveningoutpost.dexdrip.watch.miband.MiBand;
 import com.eveningoutpost.dexdrip.xdrip;
 import com.rarepebble.colorpicker.ColorPickerView;
@@ -44,7 +51,8 @@ import static com.google.common.truth.Truth.assertWithMessage;
 
 /**
  * Pins how the settings screen behaves for a person: deep links, sub-screens, back, dependencies, search and the
- * ringtone picker. Written against today's screen; the move to androidx must keep every test green unchanged.
+ * ringtone picker. Most tests were written against the old screen first and stayed green unchanged through the
+ * move to androidx; the rest pin behaviour the old screen did not have or that only the new one needs.
  *
  * @author Asbjørn Aarrestad - 2026.11
  */
@@ -63,6 +71,12 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     private static final String NIGHT_START = "miband_nightmode_start";
     private static final String MIBAND_MAC = "AA:BB:CC:DD:EE:FF";
     private static final String HIGH_VALUE = "highValue";
+    private static final String LOW_VALUE = "lowValue";
+    private static final String UNITS = "units";
+    private static final String BLUEJAY_TIMEOUT = "bluejay_screen_timeout";
+    private static final String MIBAND_NIGHT_INTERVAL = "miband_nightmode_interval";
+    private static final String NUMBER_WALL_START = "pick_numberwall_start";
+    private static final String CALIBRATION_PLUGIN = "current_calibration_plugin";
     private static final String HIGH_COLOUR = "color_high_values";
     private static final String EXAMPLE_CHART = "example_chart";
     private static final String AUDIO_ATTRIBUTES_FLAGS = "android.intent.extra.ringtone.AUDIO_ATTRIBUTES_FLAGS";
@@ -123,7 +137,7 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
 
     /**
      * Settings brought to the front again from another screen, while a sub-screen is open, shows the root with the
-     * root's title, as the old screen did when it closed its sub-screen dialogs.
+     * root's title.
      */
     @Test
     public void newIntentOnSubScreenShowsRootTitle() {
@@ -304,8 +318,8 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     }
 
     /**
-     * Recreating the screen while a setting's dialog is open closes the dialog, as today's screen does, so nothing
-     * typed afterwards goes to a screen that is gone.
+     * Recreating the screen while a setting's dialog is open closes the dialog, so nothing typed afterwards goes to
+     * a screen that is gone.
      */
     @Test
     public void recreateClosesOpenDialog() {
@@ -321,7 +335,7 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     }
 
     /**
-     * Bringing settings to the front again while a setting's dialog is open closes the dialog, as today's screen does.
+     * Bringing settings to the front again while a setting's dialog is open closes the dialog.
      */
     @Test
     public void newIntentClosesOpenDialog() {
@@ -605,6 +619,129 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
         // :: Verify
         final LineChartData after = find(driver.rowOf(EXAMPLE_CHART), LineChartView.class).getLineChartData();
         assertThat(after).isNotSameInstanceAs(before);
+    }
+
+    // ===== Titles and lists other classes fill in ====================================================================
+
+    /**
+     * The BlueJay screen timeout title shows the stored timeout in seconds.
+     */
+    @Test
+    public void blueJayTimeoutTitleShowsSeconds() {
+        // :: Setup
+        store().edit().putInt(BLUEJAY_TIMEOUT, 2).commit();
+
+        // :: Act
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+
+        // :: Verify
+        assertThat(driver.titleOf(BLUEJAY_TIMEOUT)).endsWith("  (6 seconds)");
+    }
+
+    /**
+     * The Mi Band night mode interval title shows the stored interval in minutes.
+     */
+    @Test
+    public void miBandNightModeTitleShowsMinutes() {
+        // :: Setup
+        useMiBand4();
+        store().edit().putInt(MIBAND_NIGHT_INTERVAL, 2).commit();
+
+        // :: Act
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+
+        // :: Verify
+        assertThat(driver.titleOf(MIBAND_NIGHT_INTERVAL)).isEqualTo("Interval (15 minutes)");
+    }
+
+    /**
+     * The number wall start time title shows the time range the number wall is set to.
+     */
+    @Test
+    public void numberWallTitleShowsTimeRange() {
+        // :: Setup
+        final String range = TimeRangeUtils.getNiceStartStopString("number_wall");
+
+        // :: Act
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+
+        // :: Verify
+        assertThat(driver.titleOf(NUMBER_WALL_START)).endsWith("  (" + range + ")");
+    }
+
+    /**
+     * The calibration plugin list offers every calibration plugin, in the order the plugins are declared.
+     */
+    @Test
+    public void calibrationPluginListOffersEveryPlugin() {
+        // :: Setup
+        final List<String> plugins = new ArrayList<>();
+        for (final PluggableCalibration.Type type : PluggableCalibration.Type.values()) {
+            plugins.add(type.toString());
+        }
+
+        // :: Act
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+
+        // :: Verify
+        assertThat(driver.entryValuesOf(CALIBRATION_PLUGIN)).containsExactlyElementsIn(plugins).inOrder();
+    }
+
+    // ===== Glucose range =============================================================================================
+
+    /**
+     * A number typed into the high value field and confirmed with OK is stored as typed.
+     */
+    @Test
+    public void highValueStoresTypedNumber() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Dialog dialog = driver.dialogOf(HIGH_VALUE);
+
+        // :: Act
+        ((EditText) dialog.findViewById(android.R.id.edit)).setText("180");
+        driver.press(dialog, DialogInterface.BUTTON_POSITIVE);
+
+        // :: Verify
+        assertThat(store().getString(HIGH_VALUE, "<absent>")).isEqualTo("180");
+    }
+
+    /**
+     * Text that is not a number, typed into the low value field and confirmed with OK, is not stored: the value
+     * stays as it was.
+     */
+    @Test
+    public void lowValueRejectsText() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final Dialog dialog = driver.dialogOf(LOW_VALUE);
+
+        // :: Act
+        ((EditText) dialog.findViewById(android.R.id.edit)).setText("abc");
+        driver.press(dialog, DialogInterface.BUTTON_POSITIVE);
+
+        // :: Verify
+        assertThat(store().getString(LOW_VALUE, "<absent>")).isEqualTo("70");
+    }
+
+    /**
+     * Picking mmol/L in the units list stores it and converts the high and low values from mg/dL to mmol/L.
+     */
+    @Test
+    public void unitsChangeConvertsRange() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+        final AlertDialog dialog = (AlertDialog) driver.dialogOf(UNITS);
+
+        // :: Act
+        final ListView list = dialog.getListView();
+        list.performItemClick(list.getChildAt(1), 1, list.getItemIdAtPosition(1));
+        Shadows.shadowOf(Looper.getMainLooper()).idle();
+
+        // :: Verify
+        assertThat(store().getString(UNITS, "<absent>")).isEqualTo("mmol");
+        assertThat(store().getString(HIGH_VALUE, "<absent>")).isEqualTo("9.4");
+        assertThat(store().getString(LOW_VALUE, "<absent>")).isEqualTo("3.9");
     }
 
     // ===== Look ======================================================================================================
