@@ -1886,6 +1886,7 @@
     <string name="alert_warning">Fgyelmeztetés!</string>
     <string name="no_active_low_alert_warning">Nincsak aktív Alacsony riasztás. Készítsen vagy aktiváljon egyet, hogy értesüljön az alacsony VC-értékről.</string>
     <string name="volume_profile_set_to_silent">A hangerő profil csendesre van állítva!</string>
+    <string name="volume_profile_will_be_muted">A(z) \'%1$s\' és a(z) \'%2$s\' figyelmen kívül hagyja a(z) \'%3$s\' módot, és nem ad hangjelzést. Biztos benne?</string>
     <string name="pre_snooze">Elő-szundi</string>
     <string name="volume_profile_high">Nagy</string>
     <string name="volume_profile_medium">Közepes</string>

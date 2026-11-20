@@ -2,8 +2,16 @@ package com.eveningoutpost.dexdrip;
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.wearable.view.WatchViewStub;
+import android.text.Layout;
+import android.text.SpannableStringBuilder;
+import android.text.Spanned;
+import android.text.style.ImageSpan;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -30,6 +38,7 @@ public class KeypadInputActivity extends Activity {
 
     private final static String TAG = "jamorham " + KeypadInputActivity.class.getSimpleName();
     private TextView mDialTextView;
+    private float dialTextSize;
     private Button zeroButton, oneButton, twoButton, threeButton, fourButton, fiveButton,
             sixButton, sevenButton, eightButton, nineButton, starButton, backSpaceButton;
     private ImageButton callImageButton, backspaceImageButton, insulintabbutton, carbstabbutton,
@@ -38,6 +47,7 @@ public class KeypadInputActivity extends Activity {
     private static String currenttab = "insulin";
     private static Map<String, String> values = new HashMap<String, String>();
     private static final String WEARABLE_VOICE_PAYLOAD = "/xdrip_plus_voice_payload";
+    private static final float ROUND_DIAL_WIDTH_FRACTION = 0.5f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +59,10 @@ public class KeypadInputActivity extends Activity {
             @Override
             public void onLayoutInflated(WatchViewStub stub) {
                 mDialTextView = (TextView) stub.findViewById(R.id.dialed_no_textview);
+                dialTextSize = mDialTextView.getTextSize();
+                // a shrunk value must not move the keypad
+                final Paint.FontMetricsInt metrics = mDialTextView.getPaint().getFontMetricsInt();
+                mDialTextView.setMinHeight(metrics.bottom - metrics.top);
                 zeroButton = (Button) stub.findViewById(R.id.zero_button);
                 oneButton = (Button) stub.findViewById(R.id.one_button);
                 twoButton = (Button) stub.findViewById(R.id.two_button);
@@ -329,12 +343,35 @@ public class KeypadInputActivity extends Activity {
                 break;
         }
         value = getValue(currenttab);
-        mDialTextView.setText(value + append);
-        // show green tick
+        final SpannableStringBuilder text = new SpannableStringBuilder(value + append);
+        // show green tick right after the text, where a round screen still shows it
         if (value.length() > 0) {
-            mDialTextView.getBackground().setAlpha(255);
-        } else {
-            mDialTextView.getBackground().setAlpha(0);
+            final Drawable tick = getResources().getDrawable(R.drawable.tick_icon_small);
+            tick.setBounds(0, 0, tick.getIntrinsicWidth(), tick.getIntrinsicHeight());
+            text.append("  ");
+            text.setSpan(new ImageSpan(tick, ImageSpan.ALIGN_BASELINE), text.length() - 1, text.length(),
+                    Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+        }
+        mDialTextView.setText(text);
+        fitToRoundScreen(text);
+    }
+
+    // the top line sits where a round screen is narrow, so shrink long values until they fit
+    private void fitToRoundScreen(CharSequence text) {
+        mDialTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, dialTextSize);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M || !getResources().getConfiguration().isScreenRound()) {
+            return;
+        }
+        float maxWidth = getResources().getDisplayMetrics().widthPixels * ROUND_DIAL_WIDTH_FRACTION;
+        final int viewWidth = mDialTextView.getWidth() - mDialTextView.getTotalPaddingLeft() - mDialTextView.getTotalPaddingRight();
+        if (viewWidth > 0) {
+            maxWidth = Math.min(maxWidth, viewWidth); // never wrap onto a second line
+        }
+        // the tick keeps its size, so scaling the text once is not quite enough
+        float width = Layout.getDesiredWidth(text, mDialTextView.getPaint());
+        for (int i = 0; i < 5 && width > maxWidth; i++) {
+            mDialTextView.setTextSize(TypedValue.COMPLEX_UNIT_PX, mDialTextView.getTextSize() * maxWidth / width);
+            width = Layout.getDesiredWidth(text, mDialTextView.getPaint());
         }
     }
 

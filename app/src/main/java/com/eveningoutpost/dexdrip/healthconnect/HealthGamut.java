@@ -68,11 +68,11 @@ import lombok.val;
 // jamorham
 
 @RequiredArgsConstructor
-@RequiresApi(api = Build.VERSION_CODES.O)
 @SuppressWarnings("unchecked")
 public class HealthGamut {
 
     private static final String TAG = HealthGamut.class.getSimpleName();
+    private static final String HEALTH_CONNECT_PROVIDER = "com.google.android.apps.healthdata";
 
     private static final String[] fullPermissionList = {
             HealthPermission.getReadPermission(createKotlinClass(ExerciseSessionRecord.class)),
@@ -121,12 +121,7 @@ public class HealthGamut {
 
     private final Coroutines coroutines = Coroutines.INSTANCE;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public boolean init() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            Log.e(TAG, "Needs above android 8");
-            return false;
-        }
 
         if (HealthConnectClient.getSdkStatus(context) == HealthConnectClient.SDK_AVAILABLE) {
             client = HealthConnectClient.getOrCreate(context);
@@ -214,25 +209,45 @@ public class HealthGamut {
 
     public void openPermissionManager() {
         JoH.runOnUiThread(() -> {
-            try {
-                if (context instanceof Activity) {
-                    if (Build.VERSION.SDK_INT >= 34) {
-                        val intent =
-                                new Intent("android.health.connect.action.MANAGE_HEALTH_PERMISSIONS")
-                                        .putExtra(Intent.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID);
-                        ((Activity) context).startActivity(intent);
-                    } else {
-                        val intent = new Intent("androidx.health.ACTION_HEALTH_CONNECT_SETTINGS");
-                        ((Activity) context).startActivity(intent);
-                    }
-
-                } else {
-                    JoH.static_toast_long(xdrip.gs(R.string.google_health_connect_needs_perms));
-                }
-            } catch (Exception e) {
-                Log.e(TAG, "Cannot start permissions request: " + e);
+            if (!(context instanceof Activity)) {
+                JoH.static_toast_long(xdrip.gs(R.string.google_health_connect_needs_perms));
+                return;
             }
+            val activity = (Activity) context;
+
+            // The permission screen for this app. Android 15 and later only let apps holding
+            // GRANT_RUNTIME_PERMISSIONS open it (tested on API 35/36 emulators), so fall back below.
+            if (Build.VERSION.SDK_INT >= 34
+                    && tryStartActivity(activity, new Intent("android.health.connect.action.MANAGE_HEALTH_PERMISSIONS")
+                    .putExtra(Intent.EXTRA_PACKAGE_NAME, BuildConfig.APPLICATION_ID))) {
+                return;
+            }
+
+            // Otherwise open Health Connect itself. Below Android 14 the settings screen comes
+            // first, as before; from Android 14 on the "manage data" screen is the public entry.
+            val settings = new Intent(HealthConnectClient.getHealthConnectSettingsAction());
+            val manageData = HealthConnectClient.getHealthConnectManageDataIntent(activity, HEALTH_CONNECT_PROVIDER);
+            val first = Build.VERSION.SDK_INT >= 34 ? manageData : settings;
+            val second = Build.VERSION.SDK_INT >= 34 ? settings : manageData;
+            if (tryStartActivity(activity, first) || tryStartActivity(activity, second)) {
+                JoH.static_toast_long(xdrip.gs(R.string.health_connect_open_app_permissions_hint));
+                return;
+            }
+
+            Log.e(TAG, "Cannot open Health Connect to manage permissions");
+            JoH.static_toast_long(xdrip.gs(R.string.health_connect_cannot_open_settings));
         });
+    }
+
+    private static boolean tryStartActivity(final Activity activity, final Intent intent) {
+        try {
+            activity.startActivity(intent);
+            return true;
+        } catch (Exception e) {
+            // Expected for the permission screen on Android 15+ (SecurityException); only the final failure is an error.
+            Log.d(TAG, "Cannot open " + intent.getAction() + ": " + e);
+            return false;
+        }
     }
 
     public static HealthGamut init(Activity activity) {
@@ -255,9 +270,7 @@ public class HealthGamut {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     public synchronized void getAllData() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         val startTime = Instant.now().minus(1, ChronoUnit.DAYS);
         val endTime = Instant.now();
         val reply = new DataReply();
@@ -335,20 +348,15 @@ public class HealthGamut {
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to read hr records: " + e);
                     }
+                    // Only now are both reads complete: processing right after starting the heart
+                    // rate read lost its records whenever that read had not finished yet.
+                    try {
+                        ReadReplyProcessor.process(reply);
+                        getChangesToken();
+                    } catch (Exception e) {
+                        Log.e(TAG, "Failed to process records: " + e);
+                    }
                 }));
-
-                ReadReplyProcessor.process(reply);
-
-                client.getChangesToken(new ChangesTokenRequest(records, new HashSet<>()),
-                        coroutines.getContinuation((tokenResult, throwable3) -> {
-                            if (throwable3 != null) {
-                                throw new RuntimeException(throwable3);
-                            }
-
-                            Log.d(TAG, "Changes token: " + tokenResult);
-                            token = tokenResult;
-                        }));
-
 
             } catch (Exception e) {
                 Log.e(TAG, "Failed to read records: " + e);
@@ -356,8 +364,21 @@ public class HealthGamut {
         }));
     }
 
+    private void getChangesToken() {
+        client.getChangesToken(new ChangesTokenRequest(records, new HashSet<>()),
+                coroutines.getContinuation((tokenResult, throwable) -> {
+                    if (throwable != null) {
+                        Log.e(TAG, "Failed to retrieve Health Connect changes token: " + throwable);
+                        token = null; // Reset the token so it retries a fresh sync next run
+                        return;
+                    }
+
+                    Log.d(TAG, "Changes token: " + tokenResult);
+                    token = tokenResult;
+                }));
+    }
+
     public void sendGlucose(final BgReading bg) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         if (init()) {
             val list = new LinkedList<BloodGlucoseRecord>();
             val record = new BloodGlucoseRecord(Instant.ofEpochMilli(bg.timestamp),

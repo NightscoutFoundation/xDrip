@@ -1891,6 +1891,8 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Enviar y recibir datos de Google Health Connect y Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">ERROR: ¡Health connect necesita permisos! - intenta de nuevo desde el menú de configuración</string>
+    <string name="health_connect_open_app_permissions_hint">En Health Connect, abre los permisos de la aplicación y selecciona xDrip+</string>
+    <string name="health_connect_cannot_open_settings">No se puede abrir Health Connect. Por favor, abre la aplicación Health Connect y administra los permisos de xDrip+ allí.</string>
     <string name="carelink_auth_country_required">¡País requerido!</string>
     <string name="carelink_auth_status_authenticated">¡Estado autenticado!</string>
     <string name="carelink_auth_status_not_authenticated">¡Estado no autenticado!</string>
@@ -1961,6 +1963,7 @@
     <string name="alert_warning">¡Advertencia!</string>
     <string name="no_active_low_alert_warning">No hay ninguna alerta de glucosa baja activa. No recibirás notificaciones de hipoglucemia; por favor, añade o activa una.</string>
     <string name="volume_profile_set_to_silent">¡El perfil de volumen está configurado en silencio!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' y \'%2$s\' ignoran \'%3$s\' y no hacen sonido. ¿Estás seguro?</string>
     <string name="volume_profile_set_to_ascending_with_delay">El perfil de volumen ascendente + ascenso retardado significa que comenzará en silencio</string>
     <string name="start_snoozed_enabled">Iniciar aplazado significa que la alerta normalmente comenzará en silencio</string>
     <string name="pre_snooze">Aplazar</string>
@@ -2042,4 +2045,5 @@
     <string name="click">Clic</string>
     <string name="to_use_this_instead">¿Usar esto en su lugar?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">El ID del transmisor o el código de emparejamiento que ha introducido es incorrecto y no funcionaría.\n\nCompruebe los detalles e inténtelo de nuevo.</string>
+    <string name="notification_listener_permission_explanation">Se necesita permiso para recibir datos de otras aplicaciones. xDrip no hace nada más allá de este ámbito. Por favor, habilita xDrip en la siguiente pantalla</string>
 </resources>

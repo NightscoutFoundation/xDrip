@@ -1943,6 +1943,8 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Invia e ricevi dati da Google Health Connect e Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">ERRORE: Health connect necessita dei permessi! - riprova dal menu impostazioni</string>
+    <string name="health_connect_open_app_permissions_hint">In Health Connect, apri i permessi dell\'app e seleziona xDrip+</string>
+    <string name="health_connect_cannot_open_settings">Impossibile aprire Health Connect. Apri l\'app Health Connect per gestire i permessi per xDrip+.</string>
     <string name="carelink_auth_country_required">Il campo paese è obbligatorio!</string>
     <string name="carelink_auth_status_authenticated">Stato: autenticato!</string>
     <string name="carelink_auth_status_not_authenticated">Stato: non autenticato!</string>
@@ -2013,6 +2015,7 @@
     <string name="alert_warning">Attenzione !</string>
     <string name="no_active_low_alert_warning">Nessun allarme glicemia bassa è attivo. Non sarai avvisato delle ipoglicemie—per favore aggiungine o abilitane uno.</string>
     <string name="volume_profile_set_to_silent">Il profilo del volume è impostato su silenzioso!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' e \'%2$s\' ignorare \'%3$s\' e non emettere alcun suono. Sei sicuro?</string>
     <string name="volume_profile_set_to_ascending_with_delay">Profilo volume crescente + aumento volume ritardato significa che inizierà silenzioso</string>
     <string name="start_snoozed_enabled">L\'impostazione avvio posticipato significa che l\'allarme inizierà silenziato</string>
     <string name="pre_snooze">pre-Snooze</string>
@@ -2094,4 +2097,5 @@
     <string name="click">Clicca</string>
     <string name="to_use_this_instead">usare questo invece?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">L\'ID del trasmettitore o il codice di accoppiamento che hai inserito è errato e non funzionerebbe.\n\nRicontrolla i dettagli e riprova.</string>
+    <string name="notification_listener_permission_explanation">Il permesso è necessario per ricevere dati da altre applicazioni. xDrip non fa nulla al di là di questo scopo. Abilitare xDrip nella schermata successiva</string>
 </resources>
