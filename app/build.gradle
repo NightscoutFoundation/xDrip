@@ -332,7 +332,7 @@ dependencies {
     //implementation 'com.google.dagger:dagger-android-support:2.x' // if you use the support libraries
     annotationProcessor 'com.google.dagger:dagger-compiler:2.25.4'
     implementation 'net.danlew:android.joda:2.10.6.1'
-    implementation 'org.bouncycastle:bcpkix-jdk15to18:1.68'
+    implementation 'org.bouncycastle:bcpkix-jdk15to18:1.86'
 
     implementation 'io.sentry:sentry-android:4.2.0'
 
