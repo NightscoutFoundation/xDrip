@@ -38,8 +38,8 @@ dependencies {
     implementation project(':ipluginda')
     implementation 'androidx.legacy:legacy-support-v13:1.0.0'
 
-    implementation 'org.bouncycastle:bcpkix-jdk15to18:1.68'
-    implementation 'org.bouncycastle:bcprov-jdk15to18:1.68'
+    implementation 'org.bouncycastle:bcpkix-jdk15to18:1.86'
+    implementation 'org.bouncycastle:bcprov-jdk15to18:1.86'
 
     testImplementation project(':ipluginda')
     testImplementation 'junit:junit:4.13.2'
