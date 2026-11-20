@@ -5,7 +5,7 @@ import android.app.WallpaperManager;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Build;
-import android.preference.Preference;
+import androidx.preference.Preference;
 
 import com.eveningoutpost.dexdrip.BestGlucose;
 import com.eveningoutpost.dexdrip.models.JoH;

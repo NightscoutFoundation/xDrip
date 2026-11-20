@@ -8,7 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.os.Build;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.annotation.StringRes;
 import android.util.Log;
 
@@ -93,13 +93,7 @@ public class xdrip extends Application {
 
         IdempotentMigrations.migrateOOP2CalibrationPreferences(); // needs to run before preferences get defaults
 
-        PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_data_sync, true);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_advanced_settings, true);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_notifications, true);
-        PreferenceManager.setDefaultValues(this, R.xml.pref_data_source, true);
-        PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_defaults, true);
-        PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
+        loadDefaultPreferences(this);
         ColorCache.setDefaultsLoaded();
 
         checkForcedEnglish(xdrip.context);
@@ -216,6 +210,20 @@ public class xdrip extends Application {
         } else {
             return true;
         }
+    }
+
+    /**
+     * Writes the default value of every setting in the settings XMLs into the shared preferences.
+     * Stored values are kept; only missing keys get their default.
+     */
+    public static void loadDefaultPreferences(final Context ctx) {
+        PreferenceManager.setDefaultValues(ctx, R.xml.pref_general, true);
+        PreferenceManager.setDefaultValues(ctx, R.xml.pref_data_sync, true);
+        PreferenceManager.setDefaultValues(ctx, R.xml.pref_advanced_settings, true);
+        PreferenceManager.setDefaultValues(ctx, R.xml.pref_notifications, true);
+        PreferenceManager.setDefaultValues(ctx, R.xml.pref_data_source, true);
+        PreferenceManager.setDefaultValues(ctx, R.xml.xdrip_plus_defaults, true);
+        PreferenceManager.setDefaultValues(ctx, R.xml.xdrip_plus_prefs, true);
     }
 
     public static void checkForcedEnglish(Context context) {
