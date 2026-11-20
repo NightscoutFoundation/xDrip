@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Information-free alert screen shown above the lock screen: only the alert name above
+     the centred xDrip icon. No buttons and no instructions, so nothing can be snoozed by an
+     accidental touch and a bystander learns nothing (review feedback, discussion #4748). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="32dp">
+
+    <TextView
+        android:id="@+id/alert_lockscreen_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
+        android:gravity="center"
+        android:textColor="@android:color/white"
+        android:textSize="28sp" />
+
+    <ImageView
+        android:id="@+id/alert_lockscreen_icon"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/ic_launcher" />
+
+</LinearLayout>
