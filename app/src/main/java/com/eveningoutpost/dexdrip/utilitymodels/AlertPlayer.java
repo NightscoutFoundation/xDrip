@@ -19,7 +19,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
-import android.preference.PreferenceManager;
+import androidx.preference.PreferenceManager;
 import androidx.core.app.NotificationCompat;
 
 import com.eveningoutpost.dexdrip.GcmActivity;

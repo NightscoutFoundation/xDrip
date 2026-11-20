@@ -1943,6 +1943,8 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">與 Google Health Connect 及 Google Fit 之間傳送與接收資料</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">錯誤：Health Connect 需要權限！ - 請再從設定選單嘗試</string>
+    <string name="health_connect_open_app_permissions_hint">在 Health Connect 中開啟「應用程式權限」，並選取 xDrip+</string>
+    <string name="health_connect_cannot_open_settings">無法開啟 Health Connect。請開啟 Health Connect 應用程式，並在其中管理 xDrip+ 的權限。</string>
     <string name="carelink_auth_country_required">國家為必填！</string>
     <string name="carelink_auth_status_authenticated">已驗證狀態！</string>
     <string name="carelink_auth_status_not_authenticated">未驗證狀態！</string>
@@ -2095,4 +2097,5 @@
     <string name="click">點選</string>
     <string name="to_use_this_instead">以改用這個嗎？</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">您輸入的發射器 ID 或配對碼不正確，將無法使用。\n\n請再次確認詳細資訊，然後重試。</string>
+    <string name="notification_listener_permission_explanation">需要授予權限，才能接收其他應用程式的資料。xDrip 不會執行超出此範圍的操作。請在下一個畫面啟用 xDrip</string>
 </resources>
