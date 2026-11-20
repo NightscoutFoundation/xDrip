@@ -55,7 +55,7 @@ public class AuthFlowOut {
             try {
                 authState = new AuthState(AuthorizationServiceConfiguration.fromJson(Pref.getStringDefaultBlank(PREF_TIDEPOOL_SERVICE_CONFIGURATON)));
                 authState = AuthState.jsonDeserialize(Pref.getStringDefaultBlank(PREF_TIDEPOOL_STATE_STORE));
-                Log.d(TAG, "Auth state loaded with: " + authState.getAccessToken());
+                Log.d(TAG, "Auth state loaded");
             } catch (Exception e) {
                 Log.d(TAG, "Error during getAuthState - could just be empty cache data: " + e);
             }
