@@ -12,7 +12,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles rootProject.file('proguard-android-agp8.txt'), 'proguard-rules.txt'
         }
     }
     namespace 'com.twofortyfouram.locale.api'
