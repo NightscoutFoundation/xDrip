@@ -643,10 +643,16 @@ public class Treatments extends Model {
     }
 
     public static void delete_by_uuid(String uuid, boolean from_interactive) {
+        delete_by_uuid(uuid, from_interactive, true);
+    }
+
+    // upload false when following a deletion which happened remotely: sending it back
+    // would delete the record which tells everyone else it was deleted
+    public static void delete_by_uuid(String uuid, boolean from_interactive, boolean upload) {
         Treatments thistreat = byuuid(uuid);
         if (thistreat != null) {
 
-            UploaderQueue.newEntry("delete", thistreat);
+            if (upload) UploaderQueue.newEntry("delete", thistreat);
             if (from_interactive) {
                 GcmActivity.push_delete_treatment(thistreat);
                 SyncService.startSyncService(3000); // sync in 3 seconds
