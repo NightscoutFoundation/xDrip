@@ -3118,6 +3118,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     }
                 });
                 TxIdHelper.attachValidator(editText);
+                // the dialog sets the stored id before this runs; set it again so it passes the filter and validator
+                editText.setText(editText.getText());
             });
             EditTextAttributes.bindAll(getPreferenceScreen(), EditTextAttributes.parse(getActivity(),
                     R.xml.pref_license, R.xml.pref_general, R.xml.pref_notifications, R.xml.pref_data_source,

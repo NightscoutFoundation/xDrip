@@ -113,6 +113,24 @@ public class SettingsEditTextTest extends RobolectricTestWithConfig {
         assertWithMessage("text fields shown in some state").that(shown).containsNoneIn(NEVER_SHOWN);
     }
 
+    // ===== Transmitter id ============================================================================================
+
+    /**
+     * The transmitter id field shows a stored id in capitals, as typed ids are, so pressing OK stores it in capitals.
+     */
+    @Test
+    public void transmitterIdShowsStoredIdInCapitals() {
+        // :: Setup
+        startFrom(prefs(DexCollectionType.DEX_COLLECTION_METHOD, "DexcomG5", "dex_txid", "8abc12"));
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(null);
+
+        // :: Act
+        final EditText field = driver.editTextOf("dex_txid");
+
+        // :: Verify
+        assertWithMessage("transmitter id field text").that(field.getText().toString()).isEqualTo("8ABC12");
+    }
+
     // ===== Helpers ===================================================================================================
 
     private static Map<String, String> prefs(final String... keysAndValues) {
