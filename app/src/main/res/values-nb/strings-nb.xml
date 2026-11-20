@@ -2015,6 +2015,7 @@
     <string name="alert_warning">Advarsel !</string>
     <string name="no_active_low_alert_warning">Inget lav varsel er aktivt. Du vil ikke få varsel ved lavt glukosenivå – legg til eller aktiver et varsel.</string>
     <string name="volume_profile_set_to_silent">Volumprofilen er satt til stille!</string>
+    <string name="volume_profile_will_be_muted">\'%1$s\' og \'%2$s\' ignorerer \'%3$s\' og lager ingen lyd. Er du sikker?</string>
     <string name="volume_profile_set_to_ascending_with_delay">Stigende volumprofil + forsinket stigende betyr at den starter stille</string>
     <string name="start_snoozed_enabled">Innstillingen start slumret betyr at varselet vanligvis starter stille</string>
     <string name="pre_snooze">før-Slumre</string>
@@ -2096,4 +2097,5 @@
     <string name="click">Klikk</string>
     <string name="to_use_this_instead">å bruke dette i stedet?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">Sender-ID-en eller paringskoden du har skrevet inn er feil og vil ikke fungere.\n\nDobbeltsjekk detaljene og prøv på nytt.</string>
+    <string name="notification_listener_permission_explanation">Det kreves tillatelse for å motta data fra andre applikasjoner. xDrip foretar seg ingenting utover dette. Vennligst aktiver xDrip på neste skjermbilde</string>
 </resources>

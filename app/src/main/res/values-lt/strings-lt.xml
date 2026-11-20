@@ -39,7 +39,7 @@
     <string name="prefs_auto_config_summary">Autokonfigūracija naudojant barkodą.</string>
     <string name="auto_config_cam_title">Kamera</string>
     <string name="auto_config_cam_summary">Nuskaitykite QR kodą telefonu (rekomenduojama)</string>
-    <string name="auto_config_image_title">Vaizdo failas</string>
+    <string name="auto_config_image_title">Nuotrauka</string>
     <string name="auto_config_image_summary">QR kodą galite išsaugoti telefone kaip vaizdo failą (pvz., .png arba .jpeg). Tada pasirinkite šią parinktį, kad nuskaitytumėte QR kodą iš išsaugoto failo.</string>
     <string name="scan_share2_barcode">Nuskaityti barkodą</string>
     <string name="pref_share2_scan_barcode_summary">Arba nuskaityti Share imtuvo barkodą</string>
