@@ -1996,6 +1996,8 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Send and receive data from Google Health Connect and Google Fit</string>
     <string name="google_health_connect">Google Health Connect</string>
     <string name="google_health_connect_needs_perms">ERROR: Health connect needs permissions! - try from settings menu again</string>
+    <string name="health_connect_open_app_permissions_hint">In Health Connect, open App permissions and select xDrip+</string>
+    <string name="health_connect_cannot_open_settings">Cannot open Health Connect. Please open the Health Connect app and manage the permissions for xDrip+ there.</string>
     <string name="carelink_auth_country_required">Country is required!</string>
     <string name="carelink_auth_status_authenticated">Authenticated status!</string>
     <string name="carelink_auth_status_not_authenticated">Not authenticated status!</string>

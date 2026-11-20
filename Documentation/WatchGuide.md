@@ -69,7 +69,7 @@ These settings are listed in order of dependency.  Note, the Watch's **XDrip BT 
   If you ONLY want to use the watch in standalone mode when the phone is out-of-range, then just select the Enable Wear checkbox. This simply enables the BT collection service on the watch to run only when the phone is out-of-range. Upon reconnecting to the phone, the watch will stop its BT collection service and send its BG readings. The phone will sync the received readings and startup its own BT collection service. There may be a delay, perhaps up to 14 minutes, on some smartphones (eg., if the smartphone has poor BT connectivity) to get an initial bg reading after it is switched back to the phone.
 * **Force Wear**
 
-  Enabling **Force Wear** will cause xDrip+ to use the watch BT collection service.  The watch BT collection service will sync each bg reading with the phone as readings are received from the collector, or upon reconnecting to the phone.  **Force Wear** for everyday use has the advantage of offloading some of the proccessing required on the smartphone to the watch, thus saving battery and CPU usage on the smartphone.
+  Enabling **Force Wear** will cause xDrip+ to use the watch BT collection service.  The watch BT collection service will sync each bg reading with the phone as readings are received from the collector, or upon reconnecting to the phone.  **Force Wear** for everyday use has the advantage of offloading some of the processing required on the smartphone to the watch, thus saving battery and CPU usage on the smartphone.
 
   However, this offloading means the watch battery may not last as long as when not using Force Wear.  As an example, some users find that the Sony Smartwatch 3 (SW3) can use 20%+ overnight (7-8 hrs) when unplugged and running G5 collector and always-on screen.
 
@@ -121,7 +121,7 @@ For example, if the user changes the Force Wear preference on the watch, it will
   2. **Sync Wear DB** is auto-executed on a daily basis at 4 am.  This task will removes all data from the database which have already been synced with the phone.
   3. The app is uninstalled.
 
-* UserError Table - Similar to the xDrip+ phone app, UserError log messages are saved in the watch UserError table.  To access the watch log entries on the phone, enable the **Sync Wear Logs** preference shown in the above image.  The log entries will be prefixed with the **Wear Log Prefix**, which defaults to **wear**, but is user-configurable.  This allows users to identify which device generated the log entry.  The log entries can be viewed using the follwoing options:
+* UserError Table - Similar to the xDrip+ phone app, UserError log messages are saved in the watch UserError table.  To access the watch log entries on the phone, enable the **Sync Wear Logs** preference shown in the above image.  The log entries will be prefixed with the **Wear Log Prefix**, which defaults to **wear**, but is user-configurable.  This allows users to identify which device generated the log entry.  The log entries can be viewed using the following options:
   - Users can view log messages on the phone via the xDrip+ upper right menu item, **View Events Log**.
   - As with the xDrip+ phone app, specific log entries can be enabled by entering the extra log tag and severity level preference via the xDrip+ phone app settings, Less Common Settings (LCS) - Extra Logging Settings - **Extra tags for logging**.
 
@@ -136,7 +136,7 @@ The watch XDrip Prefs app is used to set the xDrip+ wear app preferences.  In ad
 
   - XDrip G5 Settings
 
-    Wear provides G5 BT settings similar to those provided by the xDrip+ app, such as **Scan for G5 Contantly**, under **G5 Debug Settings**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.
+    Wear provides G5 BT settings similar to those provided by the xDrip+ app, such as **Scan for G5 Constantly**, under **G5 Debug Settings**.  As with the xDrip+ app, they should only be enabled if the watch has connectivity issues.
 
     For example, many users find that the **Sony Smartwatch 3 (SW3)** does not require any of these settings enabled.
     While other SW3 users find enabling **Scan for G5** helpful.
@@ -203,7 +203,7 @@ The following new preferences are supported:
   - Show Toasts - Show Steps and Extra Status toast popup messages.
   - Show Steps - Show Step Counter on all XDrip watchfaces.  Steps reset to 0 at midnight. To enable xDrip+ synchronization, you must switch **Use Wear Health Data** on under xDrip+ **Smart Watch Features**. When enabled, wear steps will be synced to xDrip+.
   - Step Delay - Select time delay from the list preferences.  Step Delay is maximum reporting latency. Events are batched up until this "maximum" latency has lapsed. Once lapsed all batched up events will occur sequentially.
-  This is a way to save power consumption so that each event does not interrupt the processer. If you find 10 seconds uses too much power you can select a larger latency. This will of course effect the frequency at which the display of the steps is updated on the watch. Defaults to 10 seconds.  To conserve wear battery, select 5 minutes.
+  This is a way to save power consumption so that each event does not interrupt the processor. If you find 10 seconds uses too much power you can select a larger latency. This will of course effect the frequency at which the display of the steps is updated on the watch. Defaults to 10 seconds.  To conserve wear battery, select 5 minutes.
   - Heart Rate - Show last BPM is supported by device.
   - Show Status - Show Loop Status on the XDrip, XDrip(Large) and XDrip (BigChart)watchfaces.  This will display the HAPP status message containing Basal%, IOB, COB.
   - Opaque Card - Show notifications cards with opaque background.  This will allow cards to be read more easily in ambient mode.

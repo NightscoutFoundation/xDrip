@@ -513,21 +513,8 @@ public class DexCollectionService extends Service implements BtCallBack {
 
                         servicesDiscovered = DISCOVERED.NULL; // reset this state
                     }else if (Bubble.isBubble()) {
-                        status("Enabled bubble");
-                        Log.d(TAG, "Queueing bubble initialization..");
-                        Inevitable.task("initialize-bubble", 4000, new Runnable() {
-                            @Override
-                            public void run() {
-                                final List<ByteBuffer> buffers = Bubble.initialize();
-                                for (ByteBuffer buffer : buffers) {
-                                    sendBtMessage(buffer);
-                                    JoH.threadSleep(150);
-                                }
-                                Log.d(TAG, "bubble initialized and data requested");
-                            }
-                        });
-
-                        servicesDiscovered = DISCOVERED.NULL; // reset this state
+                        // Bubble support has been discontinued
+                        bubbleDiscontinued();
                     }else if (Atom.isAtom()) {
                         status("Enabled atom");
                         Log.d(TAG, "Queueing atom initialization..");
@@ -880,6 +867,15 @@ public class DexCollectionService extends Service implements BtCallBack {
         } else return LIMITTER_NAME;
     }
 
+    /**
+     * Bubble transmitters are no longer supported.
+     */
+    private static void bubbleDiscontinued() {
+        if (JoH.ratelimit("bubble-discontinued", 600)) {
+            UserError.Log.wtf(TAG, "Bubble Discontinued");
+        }
+    }
+
     // data for MegaStatus
     public static List<StatusItem> megaStatus() {
         final List<StatusItem> l = new ArrayList<>();
@@ -1063,12 +1059,7 @@ public class DexCollectionService extends Service implements BtCallBack {
             l.add(new StatusItem("Tomato Firmware", PersistentStore.getString("TomatoFirmware")));
             l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
         }
-        if (Bubble.isBubble()) {
-            l.add(new StatusItem("Bubble Battery", PersistentStore.getString("Bubblebattery")));
-            l.add(new StatusItem("Bubble Hardware", PersistentStore.getString("BubbleHArdware")));
-            l.add(new StatusItem("Bubble Firmware", PersistentStore.getString("BubbleFirmware")));
-            l.add(new StatusItem("Libre SN", PersistentStore.getString("LibreSN")));
-        }
+        // Bubble support discontinued
         if (Atom.isAtom()) {
             l.add(new StatusItem("Atom Battery", PersistentStore.getString("Atombattery")));
             l.add(new StatusItem("Atom Hardware", PersistentStore.getString("AtomHArdware")));
@@ -1669,18 +1660,8 @@ public class DexCollectionService extends Service implements BtCallBack {
             gotValidPacket();
 
         }else if (Bubble.isBubble()) {
-            final BridgeResponse reply = Bubble.decodeBubblePacket(buffer, len);
-            if (reply.shouldDelay()) {
-                Inevitable.task("send-bubble-reply", reply.getDelay(), () -> sendReply(reply));
-            } else {
-                sendReply(reply);
-            }
-            if (reply.hasError()) {
-                JoH.static_toast_long(reply.getError_message());
-                error(reply.getError_message());
-            }
-            gotValidPacket();
-
+            // Bubble support has been discontinued: drop the packet
+            bubbleDiscontinued();
         }else if (Atom.isAtom()) {
             final BridgeResponse reply = Atom.decodeAtomPacket(buffer, len);
             if (reply.shouldDelay()) {

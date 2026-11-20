@@ -2097,4 +2097,5 @@
     <string name="click">Klikk</string>
     <string name="to_use_this_instead">å bruke dette i stedet?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">Sender-ID-en eller paringskoden du har skrevet inn er feil og vil ikke fungere.\n\nDobbeltsjekk detaljene og prøv på nytt.</string>
+    <string name="notification_listener_permission_explanation">Det kreves tillatelse for å motta data fra andre applikasjoner. xDrip foretar seg ingenting utover dette. Vennligst aktiver xDrip på neste skjermbilde</string>
 </resources>
