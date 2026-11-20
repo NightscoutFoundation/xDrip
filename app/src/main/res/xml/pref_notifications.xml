@@ -256,65 +256,6 @@
                     android:title="@string/title_sens_expiry_notify" />
             </PreferenceScreen>
 
-
-            <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-                android:key="calibration_alerts_screen"
-                android:title="@string/calibration_alerts">
-                <SwitchPreference
-                    android:defaultValue="false"
-                    android:key="calibration_notifications"
-                    android:summary="@string/alert_calibration_request"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/calibration_alerts" />
-                <EditTextPreference
-                    android:defaultValue="24"
-                    android:dependency="calibration_notifications"
-                    android:key="calibration_reminder_hours"
-                    android:numeric="integer"
-                    android:summary="@string/calibrations_request_time_time_difference"
-                    android:title="@string/hours_between_calibrations" />
-                <RingtonePreference
-                    android:defaultValue="default"
-                    android:key="calibration_notification_sound"
-                    android:ringtoneType="all"
-                    android:showSilent="true"
-                    android:summary="@string/calibrations_sound"
-                    android:dependency="calibration_notifications"
-                    android:title="@string/calibration_request_sound" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:dependency="calibration_notifications"
-                    android:key="calibration_alerts_override_silent"
-                    android:title="@string/override_silent_mode" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:dependency="calibration_notifications"
-                    android:key="calibration_alerts_while_charging"
-                    android:summary="@string/no_calibration_requests_charging"
-                    android:title="@string/even_when_charging" />
-                <CheckBoxPreference
-                    android:defaultValue="true"
-                    android:dependency="calibration_notifications"
-                    android:key="calibration_alerts_repeat"
-                    android:summary="@string/keep_alert_no_calibration"
-                    android:title="@string/repeat_alerts" />
-                <EditTextPreference
-                    android:defaultValue="20"
-                    android:dependency="calibration_alerts_repeat"
-                    android:key="calibration_snooze"
-                    android:numeric="integer"
-                    android:summary="@string/calibration_minutes_reraise"
-                    android:title="@string/alert_repeat_minutes" />
-                <SwitchPreference
-                    android:defaultValue="true"
-                    android:key="play_sound_for_initial_calibration"
-                    android:summary="@string/summary_play_sound_for_initial_calibration"
-                    android:switchTextOff="@string/short_off_text_for_switches"
-                    android:switchTextOn="@string/short_on_text_for_switches"
-                    android:title="@string/title_play_sound_for_initial_calibration" />
-            </PreferenceScreen>
-
             <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
                 android:key="missed_readings_screen"
                 android:title="@string/missed_reading_alert">
