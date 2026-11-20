@@ -96,7 +96,7 @@ public class Ob1DexTransmitterBattery {
 
     public boolean voltageBWarning() {
         if (shortTxId()) {
-            return voltageB() < (G5BaseService.LOW_BATTERY_WARNING_LEVEL - 60);
+            return voltageB() < (G5BaseService.LOW_BATTERY_WARNING_LEVEL - 50);
         }
         return voltageB() < (G5BaseService.LOW_BATTERY_WARNING_LEVEL - 10);
     };

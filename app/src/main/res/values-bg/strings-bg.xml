@@ -1941,6 +1941,8 @@
     <string name="send_and_receive_data_from_google_health_connect_and_google_fit">Изпращане и получаване на данни от Google Health Connect и Google Fit</string>
     <string name="google_health_connect">Свързване с Google Health</string>
     <string name="google_health_connect_needs_perms">ГРЕШКА: Health connect изисква разрешения! - опитайте отново от менюто с настройки</string>
+    <string name="health_connect_open_app_permissions_hint">В Health Connect отворете „Разрешения за приложения“ и изберете xDrip+</string>
+    <string name="health_connect_cannot_open_settings">Не мога да отворя Health Connect. Моля, отворете приложението Health Connect и управлявайте разрешенията за xDrip+ там.</string>
     <string name="carelink_auth_country_required">Държавата е задължителна!</string>
     <string name="carelink_auth_status_authenticated">Статус на удостоверяване!</string>
     <string name="carelink_auth_status_not_authenticated">Статус на не удостоверен!</string>
@@ -2093,4 +2095,5 @@
     <string name="click">Натисни</string>
     <string name="to_use_this_instead">да използвам това вместо другото?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">Въведеният от вас идентификатор на предавателя или код за сдвояване е неправилен и няма да работи.\n\nМоля, проверете данните и опитайте отново.</string>
+    <string name="notification_listener_permission_explanation">Необходимо е разрешение за получаване на данни от други приложения. xDrip не прави нищо извън този обхват. Моля, активирайте xDrip на следващия екран</string>
 </resources>

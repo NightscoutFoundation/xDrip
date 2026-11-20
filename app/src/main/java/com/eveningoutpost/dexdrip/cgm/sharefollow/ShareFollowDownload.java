@@ -63,7 +63,7 @@ public class ShareFollowDownload extends RetrofitBase {
         } else {
             final String invalid = xdrip.gs(R.string.share_login_data_isnt_valid);
             msg(invalid);
-            UserError.Log.e(TAG, invalid);
+            UserError.Log.e(TAG, "Share Login data isn't valid - check username / password");
             return false;
         }
     }
