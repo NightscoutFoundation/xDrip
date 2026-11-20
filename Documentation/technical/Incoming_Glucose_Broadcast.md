@@ -1,5 +1,5 @@
 
-# Integration with xDrip+ via Broadcast Intent
+# Integration with xDrip via Broadcast Intent
 
 ## Overview
 This documentation provides guidance on how to send a broadcast intent from a third-party Android application to insert a glucose sensor record into the xDrip application. There are a few different broadcast receivers but this documents the Nightscout Emulation receiver just for glucose records.
@@ -14,10 +14,13 @@ Intent intent = new Intent("com.eveningoutpost.dexdrip.NS_EMULATOR");
 ```
 
 ### Intent Package
-To ensure the intent is received only by xDrip and to be allowed on Android 8+, specify the package name:
+Always address the broadcast to xDrip explicitly:
 ```java
 intent.setPackage("com.eveningoutpost.dexdrip");
 ```
+This is required. Manifest-declared receivers stopped receiving implicit broadcasts in Android 8. An implicit broadcast will appear to work, because xDrip also registers this receiver at runtime, but it stops being delivered whenever the xDrip process is not running, with no error on either side.
+
+You only need a `<queries>` entry for xDrip if your app also checks whether xDrip is installed, for example with `queryBroadcastReceivers` or `getPackageInfo`. Delivery works without it.
 
 ### Extra Parameters
 Add extra parameters to the intent for the data collection and JSON payload containing the sensor readings.
@@ -31,7 +34,9 @@ Construct the JSON payload with the glucose sensor readings as follows:
     - `"type"`: Set to `"sgv"` for sensor glucose value record.
     - `"date"`: The timestamp of the reading in milliseconds since epoch.
     - `"sgv"`: The glucose value in mg/dL.
-    - `"direction"`: The rate of change of the glucose value, represented by a string such as `"SingleUp"`. Refer to `BgReading.slopeFromName()` for possible values.
+    - `"direction"`: The rate of change of the glucose value, represented by a string such as `"SingleUp"`. Refer to `BgReading.slopefromName()` for possible values.
+
+Send exactly one reading per broadcast. An array with more than one element is treated as a different payload and no glucose record is inserted.
 
 Here is an example JSON payload with a single reading:
 ```java
@@ -54,4 +59,4 @@ context.sendBroadcast(intent);
 ```
 
 ## Testing the Integration
-For testing purposes, make sure you set xDrip `Hardware Data Source` to `640G / Eversense` to enable the receiver.
+For testing purposes, make sure you set xDrip `Hardware Data Source` to `Inter-app broadcast` to enable the receiver. Releases made before that option was renamed list it as `640G / EverSense`.
