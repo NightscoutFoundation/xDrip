@@ -53,7 +53,7 @@ via Settings -> Connected Devices -> Bluetooth -> BLU00XXX -> Forget
 
 * best is simply to exchange it together with the sensor (every 14 days)
 * Low battery will be detected and we suggest then changing it as soon as possible. Detection is not perfect
-* @keencave: I think the edge measured with a voltage meter is < 2.8x V. In my test setup I feeded the system with an adjustable power source down to 2,65 V before I see the battery low indication message. As any battery has an idle voltage and an internal resistance this will lead to a slightly higher voltage in real life. I guess that the peak current to drive the RF circuit is too low with voltages < ~2.8x Vs. My last 4 batteries all have had a voltage > 2.8x V after 14 days and I got no battery low indication at all. Seems that 2.8 V measured with a voltage meter is a good citeria to check wether an unknown battery can be used or not. Fresh ones should have >3.2x V.
+* @keencave: I think the edge measured with a voltage meter is < 2.8x V. In my test setup I fed the system with an adjustable power source down to 2,65 V before I see the battery low indication message. As any battery has an idle voltage and an internal resistance this will lead to a slightly higher voltage in real life. I guess that the peak current to drive the RF circuit is too low with voltages < ~2.8x Vs. My last 4 batteries all have had a voltage > 2.8x V after 14 days and I got no battery low indication at all. Seems that 2.8 V measured with a voltage meter is a good criteria to check whether an unknown battery can be used or not. Fresh ones should have >3.2x V.
 
 
 # If really nothing works
