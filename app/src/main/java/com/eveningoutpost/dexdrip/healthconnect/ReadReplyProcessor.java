@@ -26,9 +26,8 @@ public class ReadReplyProcessor {
 
         if (dataReply.stepsRecords != null) {
             for (val item : dataReply.stepsRecords) {
-                StepCounter.createUniqueRecord(item.getStartTime().toEpochMilli() + ((item.getEndTime().toEpochMilli() - item.getStartTime().toEpochMilli()) / 2),
-                        (int) item.getCount(),
-                        true);
+                StepCounter.createOrUpdateAbsoluteRecord(item.getStartTime().toEpochMilli() + ((item.getEndTime().toEpochMilli() - item.getStartTime().toEpochMilli()) / 2),
+                        (int) item.getCount());
             }
         }
 

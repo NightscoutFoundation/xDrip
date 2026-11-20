@@ -91,6 +91,26 @@ public class StepCounter extends Model {
         return null;
     }
 
+    // Health Connect gives absolute counts, and a record that is still being written comes again
+    // with the same span and a higher count (Samsung Health keeps one record per day). Keep the
+    // highest count for the timestamp; a lower count from another source must not replace it.
+    public static synchronized StepCounter createOrUpdateAbsoluteRecord(final long timestamp_ms, final int data) {
+        final StepCounter existing = getForTimestamp(timestamp_ms);
+        if (existing == null) {
+            return createUniqueRecord(timestamp_ms, data, true);
+        }
+        if (existing.isAbsolute() && data > existing.metric) {
+            existing.metric = data;
+            existing.saveit();
+            UserError.Log.d(TAG, "Updated record: " + existing.toS() + " " + JoH.dateTimeText(existing.timestamp));
+            return existing;
+        }
+        if (existing.isAbsolute() && data < existing.metric) {
+            UserError.Log.d(TAG, "Kept record " + JoH.dateTimeText(existing.timestamp) + " at " + existing.metric + ", ignored lower count " + data);
+        }
+        return null;
+    }
+
     public static StepCounter createEfficientRecord(long timestamp_ms, int data) {
         StepCounter pm = last();
         if ((pm == null) || (data < pm.metric) || ((timestamp_ms - pm.timestamp) > (1000 * 30 * 5))) {
