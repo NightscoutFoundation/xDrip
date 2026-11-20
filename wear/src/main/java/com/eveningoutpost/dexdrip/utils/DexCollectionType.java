@@ -40,6 +40,7 @@ public enum DexCollectionType {
     NSFollow("NSFollower"),
     SHFollow("SHFollower"),
     Medtrum("Medtrum"),
+    MedtrumFollow("MedtrumFollower"),
     Disabled("Disabled"),
     Mock("Mock"),
     Manual("Manual"),
@@ -186,6 +187,7 @@ public enum DexCollectionType {
             case Medtrum:
                 return MedtrumCollectionService.class;
             case Follower:
+            case MedtrumFollow:
             case LibreReceiver:
                 return DoNothingService.class;
             case NSFollow:
@@ -265,6 +267,8 @@ public enum DexCollectionType {
                 return "Network libre";
             case NSFollow:
                 return "Nightscout";
+            case MedtrumFollow:
+                return "Medtrum EasyView";
             case SHFollow:
                 return "Share";
 
