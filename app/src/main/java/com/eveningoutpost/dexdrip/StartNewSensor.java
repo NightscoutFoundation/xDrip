@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.eveningoutpost.dexdrip.cgm.li3.Li3Store;
 import com.eveningoutpost.dexdrip.g5model.DexSyncKeeper;
 import com.eveningoutpost.dexdrip.g5model.DexTimeKeeper;
 import com.eveningoutpost.dexdrip.g5model.FirmwareCapability;
@@ -73,6 +74,10 @@ public class StartNewSensor extends ActivityWithMenu {
             activitySetupView();
             getIntent().putExtra(FINISH_ACTIVITY_ON_DIALOG_DISMISS, true);
             DexCollectionHelper.assistance(this, DexCollectionType.DexcomG5);
+        } else if (DexCollectionType.getDexCollectionType() == DexCollectionType.Li3 && !Sensor.isActive()) {
+            // a Li3 sensor is started by scanning it on the Li3 screen, which starts the xDrip sensor too
+            Li3Store.startControlActivity();
+            finish();
         } else {
             if (!Sensor.isActive()) {
                activitySetupView();

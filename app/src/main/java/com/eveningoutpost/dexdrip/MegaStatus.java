@@ -9,6 +9,7 @@ package com.eveningoutpost.dexdrip;
 import static com.eveningoutpost.dexdrip.Home.startWatchUpdaterService;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.DexcomG5;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.GluPro;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Li3;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.NSFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
@@ -45,6 +46,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.eveningoutpost.dexdrip.cgm.glupro.GluProService;
+import com.eveningoutpost.dexdrip.cgm.li3.Li3Service;
 import com.eveningoutpost.dexdrip.models.DesertSync;
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.models.RollCall;
@@ -138,6 +140,7 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
     private static final String WEB_FOLLOW = "Web Follower";
     private static final String CARELINK_FOLLOW = "CareLink Follow";
     public static final String GLU_PRO = "Smart Guide";
+    private static final String LI3 = "Li3";
     private static final String XDRIP_LIBRE2 = "Libre2";
 
 
@@ -181,6 +184,9 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
             }
             if (dexCollectionType.equals(GluPro)) {
                 addAsection(GLU_PRO, getString(R.string.glupro_status));
+            }
+            if (dexCollectionType.equals(Li3)) {
+                addAsection(LI3, "Li3 Status");
             }
             if (BlueJayEntry.isEnabled()) {
                 addAsection(BLUEJAY_STATUS, "BlueJay Watch Status");
@@ -290,6 +296,9 @@ public class MegaStatus extends FloatingLocaleActivityWithScreenshot {
                 break;
             case GLU_PRO:
                 la.addRows(GluProService.megaStatus());
+                break;
+            case LI3:
+                la.addRows(Li3Service.megaStatus());
                 break;
             case XDRIP_LIBRE2:
                 la.addRows(LibreReceiver.megaStatus());

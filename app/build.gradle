@@ -228,6 +228,7 @@ dependencies {
     implementation project(':ipluginda')
     implementation project(':libkeks')
     implementation project(':libglupro')
+    implementation project(':libli3')
 
     // add missing JAXB dependencies for JDK 9+
     if (JavaVersion.current().ordinal() >= JavaVersion.VERSION_1_9.ordinal()) {
@@ -353,6 +354,8 @@ dependencies {
     testImplementation 'org.hamcrest:hamcrest-library:1.3'
     testImplementation "org.robolectric:robolectric:4.16"
     testImplementation "com.google.truth:truth:1.4.5"
+    // builds a synthetic Li3 identity bundle
+    testImplementation 'org.tukaani:xz:1.12'
     testImplementation 'com.squareup.okhttp3:mockwebserver:5.4.0'
     testImplementation 'com.squareup.okhttp3:okhttp-tls:5.4.0'
 

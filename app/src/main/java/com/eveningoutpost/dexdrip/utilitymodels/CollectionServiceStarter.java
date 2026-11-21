@@ -28,6 +28,7 @@ import static com.eveningoutpost.dexdrip.utils.DexCollectionType.SHFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.WebFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.CLFollow;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.GluPro;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Li3;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.getCollectorServiceClass;
 
 /**
@@ -233,6 +234,7 @@ public class CollectionServiceStarter {
         JoH.stopService(getCollectorServiceClass(WebFollow));
         JoH.stopService(getCollectorServiceClass(CLFollow));
         JoH.stopService(getCollectorServiceClass(GluPro));
+        JoH.stopService(getCollectorServiceClass(Li3));
     }
 
     private void start(Context context, String collection_method) {
