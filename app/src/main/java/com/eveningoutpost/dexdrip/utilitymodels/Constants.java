@@ -59,6 +59,7 @@ public class Constants {
     public static final int BACKUP_ACTIVITY_ID = 1029;
     public static final int CARELINK_SERVICE_FAILOVER_ID = 1030;
     public static final int GLUPRO_SERVICE_FAILOVER_ID = 1031;
+    public static final int LI3_SERVICE_FAILOVER_ID = 1032;
 
     static final int NIGHTSCOUT_ERROR_NOTIFICATION_ID = 2001;
     public static final int HEALTH_CONNECT_RESPONSE_ID = 2002;
@@ -67,6 +68,8 @@ public class Constants {
     public static final int SENSORY_EXPIRY_NOTIFICATION_ID = 2003;
     public static final int OUT_OF_RANGE_GLUCOSE_ENTRY_ID = 2004; // Preference setting out of range
     public static final int XDRIP_UPDATE_NOTIFICATION_ID = 2005;
+    public static final int LI3_CREDENTIAL_NOTIFICATION_ID = 2006;
+    public static final int LI3_LOCATION_NOTIFICATION_ID = 2007;
 
     // increments from this start number
     public static final int INCOMPATIBLE_BASE_ID = 5000;

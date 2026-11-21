@@ -1604,6 +1604,32 @@
                     android:summary="@string/retrieve_blukon_history_summary"
                     android:title="@string/retrieve_blukon_history_title" />
 
+                <PreferenceScreen
+                    android:key="li3_settings"
+                    android:summary="@string/li3_settings_summary"
+                    android:title="Li3">
+
+                    <EditTextPreference
+                        android:defaultValue=""
+                        android:key="li3_account_id"
+                        android:summary="@string/li3_account_id_summary"
+                        android:title="@string/li3_account_id_title" />
+
+                    <ListPreference
+                        android:defaultValue="LI3_APP"
+                        android:entries="@array/Li3FoldEntries"
+                        android:entryValues="@array/Li3FoldValues"
+                        android:key="li3_fold"
+                        android:summary="@string/li3_fold_summary"
+                        android:title="@string/li3_fold_title" />
+
+                    <CheckBoxPreference
+                        android:defaultValue="false"
+                        android:key="li3_smoothing"
+                        android:summary="@string/li3_smoothing_summary"
+                        android:title="@string/li3_smoothing_title" />
+                </PreferenceScreen>
+
                 <CheckBoxPreference
                     android:defaultValue="false"
                     android:enabled="true"
