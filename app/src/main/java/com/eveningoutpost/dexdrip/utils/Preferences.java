@@ -1164,8 +1164,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             addPreferencesFromResource(R.xml.pref_notifications);
             bindPreferenceSummaryToValueAndWarnIfMuted(getActivity(), findPreference("bg_alert_profile"));
 
-            bindPreferenceSummaryToValue(findPreference("calibration_notification_sound"));
-            bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("calibration_snooze"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("bg_unclear_readings_minutes"));
             bindPreferenceSummaryToValueAndEnsureNumeric(findPreference("disable_alerts_stale_data_minutes"));
             bindPreferenceSummaryToValue(findPreference("falling_bg_val"));
@@ -1649,7 +1647,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
             final PreferenceScreen motionScreen = (PreferenceScreen) findPreference("xdrip_plus_motion_settings");
             final PreferenceScreen nfcScreen = (PreferenceScreen) findPreference("xdrip_plus_nfc_settings");
             final PreferenceCategory otherCategory = (PreferenceCategory) findPreference("other_category");
-            final PreferenceScreen calibrationAlertsScreen = (PreferenceScreen) findPreference("calibration_alerts_screen");
             final PreferenceCategory alertsCategory = (PreferenceCategory) findPreference("alerts_category");
             final Preference disableAlertsStaleDataMinutes = findPreference("disable_alerts_stale_data_minutes");
             final PreferenceScreen calibrationSettingsScreen = (PreferenceScreen) findPreference("xdrip_plus_calibration_settings");
@@ -1877,11 +1874,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 collectionCategory.removePreference(shareKey);
                 collectionCategory.removePreference(scanShare);
                 otherCategory.removePreference(interpretRaw);
-                alertsCategory.addPreference(calibrationAlertsScreen);
             } else {
                 otherCategory.removePreference(predictiveBG);
-                alertsCategory.removePreference(calibrationAlertsScreen);
-                this.prefs.edit().putBoolean("calibration_notifications", false).apply();
             }
 
             if (collectionType != DexCollectionType.Medtrum) {
@@ -2224,22 +2218,6 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 }
             }
 
-            try {
-                findPreference("calibration_notifications").setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        // clear any pending alerts
-                        final UserNotification userNotification = UserNotification.lastCalibrationAlert();
-                        if (userNotification != null) {
-                            userNotification.delete();
-                        }
-                        return true;
-                    }
-                });
-            } catch (Exception e) {
-                //
-            }
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 try {
                     findPreference("health_connect_enable").setOnPreferenceChangeListener((preference, newValue) -> {
@@ -2557,14 +2535,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         collectionCategory.removePreference(scanShare);
                         otherCategory.removePreference(interpretRaw);
                         otherCategory.addPreference(predictiveBG);
-                        alertsCategory.addPreference(calibrationAlertsScreen);
                     } else {
                         collectionCategory.addPreference(shareKey);
                         collectionCategory.addPreference(scanShare);
                         otherCategory.addPreference(interpretRaw);
                         otherCategory.removePreference(predictiveBG);
-                        alertsCategory.removePreference(calibrationAlertsScreen);
-                        AllPrefsFragment.this.prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
 
                     if (DexCollectionType.hasNfcScan(collectionType)) {
