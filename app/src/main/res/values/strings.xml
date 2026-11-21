@@ -1987,6 +1987,7 @@
     <string name="title_Lib2_show_sense_on_status">Show sensor info in Status</string>
     <string name="summary_Lib2_show_sense_on_status">Switch on to show additional information in Status for Libre 2 sensor.</string>
     <string name="import_qr_code_warning">Only import settings from sources you trust!\n\nPlease confirm to import the following settings:\n\n</string>
+    <string name="import_qr_code_wizard_warning">Only import settings from sources you trust!\n\nPlease confirm to download and import all settings from this code.</string>
     <string name="scan_to_load_xdrip_settings">Scan to load xDrip settings</string>
     <string name="manage_permissions">Manage permissions</string>
     <string name="open_health_connect_settings_to_manually_manage_permissions">Open Health Connect Settings to manually manage permissions</string>

@@ -295,9 +295,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (prefsmap.containsKey(getString(R.string.all_settings_wizard))) {
                     if (prefsmap.containsKey(getString(R.string.wizard_key))
                             && prefsmap.containsKey(getString(R.string.wizard_uuid))) {
-                        staticKey = CipherUtils.hexToBytes(prefsmap.get(getString(R.string.wizard_key)));
+                        GenericConfirmDialog.show(this, gs(R.string.are_you_sure), gs(R.string.import_qr_code_wizard_warning), () -> {
+                            staticKey = CipherUtils.hexToBytes(prefsmap.get(getString(R.string.wizard_key)));
 
-                        new WebAppHelper(new ServiceCallback()).executeOnExecutor(xdrip.executor, getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
+                            new WebAppHelper(new ServiceCallback()).executeOnExecutor(xdrip.executor, getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
+                        });
                     } else {
                         Log.d(TAG, "Incorrectly formatted wizard pref");
                     }
