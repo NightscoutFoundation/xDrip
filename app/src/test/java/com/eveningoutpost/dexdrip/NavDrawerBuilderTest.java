@@ -4,10 +4,16 @@ import android.content.Intent;
 
 import androidx.preference.PreferenceManager;
 
+import com.eveningoutpost.dexdrip.models.BgReading;
+import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.tables.BgReadingTable;
 import com.eveningoutpost.dexdrip.tables.CalibrationDataTable;
+import com.eveningoutpost.dexdrip.utilitymodels.Constants;
+import com.eveningoutpost.dexdrip.utils.DexCollectionType;
 import com.eveningoutpost.dexdrip.utils.Preferences;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
@@ -35,6 +41,13 @@ public class NavDrawerBuilderTest extends RobolectricTestWithConfig {
     public void setUp() {
         super.setUp();
         xdrip.setContextAlways(RuntimeEnvironment.application); // force re-bind to current Robolectric app
+        PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().clear().commit();
+    }
+
+    @After
+    public void tearDown() {
+        BgReading.deleteALL();
+        Sensor.deleteAll();
         PreferenceManager.getDefaultSharedPreferences(xdrip.getAppContext()).edit().clear().commit();
     }
 
@@ -135,6 +148,33 @@ public class NavDrawerBuilderTest extends RobolectricTestWithConfig {
 
         // :: Verify
         assertThat(targets).doesNotContain(AlertList.class.getName());
+    }
+
+    // ===== Li3 is never calibrated ===============================================================
+
+    /**
+     * With an active Li3 sensor and readings the drawer offers no calibration screen, even with the
+     * data quality check bypassed, and it still offers stop sensor.
+     */
+    @Test
+    public void li3OffersNoCalibrationButStopSensor() {
+        // :: Setup
+        storeBoolean("I_understand", true);
+        storeBoolean("bypass_calibration_quality_check", true);
+        DexCollectionType.setDexCollectionType(DexCollectionType.Li3);
+        long now = JoH.tsl();
+        Sensor.create(now - Constants.HOUR_IN_MS);
+        BgReading.bgReadingInsertFromGluPro(110, now - 10 * Constants.MINUTE_IN_MS, "test");
+        BgReading.bgReadingInsertFromGluPro(115, now - 5 * Constants.MINUTE_IN_MS, "test");
+        BgReading.bgReadingInsertFromGluPro(120, now, "test");
+
+        // :: Act
+        List<String> targets = targetClasses(new NavDrawerBuilder(xdrip.getAppContext()));
+
+        // :: Verify
+        assertThat(targets).containsNoneOf(AddCalibration.class.getName(),
+                DoubleCalibrationActivity.class.getName(), CalibrationOverride.class.getName());
+        assertThat(targets).contains(StopSensor.class.getName());
     }
 
     // ===== Structural invariant, not a preference branch =========================================

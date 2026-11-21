@@ -71,6 +71,7 @@ import com.eveningoutpost.dexdrip.calibrations.PluggableCalibration;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.CareLinkFollowService;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.auth.CareLinkAuthType;
 import com.eveningoutpost.dexdrip.cgm.dex.TxIdHelper;
+import com.eveningoutpost.dexdrip.cgm.li3.Li3Nfc;
 import com.eveningoutpost.dexdrip.cgm.nsfollow.NightscoutFollow;
 import com.eveningoutpost.dexdrip.cgm.sharefollow.ShareFollowService;
 import com.eveningoutpost.dexdrip.cgm.webfollow.Cpref;
@@ -324,9 +325,11 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 if (prefsmap.containsKey(getString(R.string.all_settings_wizard))) {
                     if (prefsmap.containsKey(getString(R.string.wizard_key))
                             && prefsmap.containsKey(getString(R.string.wizard_uuid))) {
-                        staticKey = CipherUtils.hexToBytes(prefsmap.get(getString(R.string.wizard_key)));
+                        GenericConfirmDialog.show(this, gs(R.string.are_you_sure), gs(R.string.import_qr_code_wizard_warning), () -> {
+                            staticKey = CipherUtils.hexToBytes(prefsmap.get(getString(R.string.wizard_key)));
 
-                        new WebAppHelper(new ServiceCallback()).executeOnExecutor(xdrip.executor, getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
+                            new WebAppHelper(new ServiceCallback()).executeOnExecutor(xdrip.executor, getString(R.string.wserviceurl) + "/joh-getsw/" + prefsmap.get(getString(R.string.wizard_uuid)));
+                        });
                     } else {
                         Log.d(TAG, "Incorrectly formatted wizard pref");
                     }
@@ -1121,6 +1124,8 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
         private static final int RC_RINGTONE = 0x5E7;
 
         final String jumpTo;
+        /** The NFC settings {@link #show_nfc_settings_for} can take off the screen, kept to put them back. */
+        private final Map<String, Preference> nfcSettingsByKey = new HashMap<>();
         /** Opens nested screens in this page's list, keeping the whole tree live. */
         final SubScreenNavigator navigator = new SubScreenNavigator(this, this::onCreateAdapter);
         /** The sound setting whose picker is open. */
@@ -2077,7 +2082,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                 });
             //}
 
-            if (!DexCollectionType.hasLibre(collectionType)) {
+            if (!DexCollectionType.hasNfcScan(collectionType)) {
                 collectionCategory.removePreference(nfcSettings);
             } else {
                 // has libre
@@ -2089,6 +2094,7 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     }
                 set_nfc_expiry_change_listeners();
                 update_nfc_expiry_preferences(null);
+                show_nfc_settings_for(collectionType);
             }
 
             if (!DexCollectionService.getBestLimitterHardwareName().equals("BlueReader")) {
@@ -2584,8 +2590,9 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                         AllPrefsFragment.this.prefs.edit().putBoolean("calibration_notifications", false).apply();
                     }
 
-                    if (DexCollectionType.hasLibre(collectionType)) {
+                    if (DexCollectionType.hasNfcScan(collectionType)) {
                         PreferenceGroups.add(collectionCategory, nfcSettings);
+                        show_nfc_settings_for(collectionType);
                         NFCReaderX.handleHomeScreenScanPreference(xdrip.getAppContext(), prefs.getBoolean("nfc_scan_homescreen", false) && prefs.getBoolean("use_nfc_scan", false));
                         if (!engineering_mode)
                             try {
@@ -2841,6 +2848,29 @@ public class Preferences extends BasePreferenceActivity implements SearchPrefere
                     return true;
                 }
             });
+        }
+
+        /** Hides the NFC settings the collector never reads, and brings them back when the source changes again. */
+        private void show_nfc_settings_for(DexCollectionType collectionType) {
+            try {
+                final PreferenceScreen nfcScreen = (PreferenceScreen) findPreference("xdrip_plus_nfc_settings");
+                final List<String> unused = Li3Nfc.unusedNfcSettings(collectionType);
+                for (final String key : Li3Nfc.unusedNfcSettings(DexCollectionType.Li3)) {
+                    // the expiry days may already be off the screen, so that one comes from its field
+                    final Preference preference = nfcSettingsByKey.computeIfAbsent(key,
+                            k -> k.equals("nfc_expiry_days") ? nfc_expiry_days : findPreference(k));
+                    if (unused.contains(key)) {
+                        nfcScreen.removePreference(preference);
+                    } else if (!key.equals("nfc_expiry_days")) {
+                        nfcScreen.addPreference(preference);
+                    }
+                }
+                if (unused.isEmpty()) {
+                    update_nfc_expiry_preferences(null);
+                }
+            } catch (NullPointerException e) {
+                UserError.Log.e(TAG, "Could not update the NFC settings: " + e);
+            }
         }
 
         private void update_nfc_expiry_preferences(Boolean show_age) {

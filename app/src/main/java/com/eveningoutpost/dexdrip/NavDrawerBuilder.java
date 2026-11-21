@@ -72,7 +72,7 @@ public class NavDrawerBuilder {
             // Only if the collector can start/stop sensor and submit calibrations (is not passive)
 
             if (is_active_sensor) {
-                if (!CollectionServiceStarter.isBTShare(context)) {
+                if (!CollectionServiceStarter.isBTShare(context) && !DexCollectionType.isNoCalibration()) {
                     if (last_two_bgReadings.size() > 1 || Ob1G5CollectionService.isG5WantingCalibration()) {
                         if ((last_two_calibrations.size() > 1) && !Ob1G5CollectionService.isG5WantingInitialCalibration()) { // After two successful initial calibrations
                             // TODO tighten this time limit

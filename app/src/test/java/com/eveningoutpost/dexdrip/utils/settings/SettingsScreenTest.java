@@ -770,7 +770,8 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
 
     /**
      * Choosing a hardware data source shows the settings that belong to it and hides those of other sources: the Share
-     * key only for Share, the NFC settings only for Libre sources, and the Nightscout follower URL for that follower.
+     * key only for Share, the NFC settings only for sources that scan by NFC, and the Nightscout follower URL for that
+     * follower.
      * The sources are chosen one after the other, so each choice starts from the source chosen before it.
      */
     @Test
@@ -789,7 +790,7 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
             assertWithMessage(source + " share_key").that(driver.exists("share_key"))
                     .isEqualTo(type == DexCollectionType.DexcomShare);
             assertWithMessage(source + " nfc settings").that(driver.exists("xdrip_plus_nfc_settings"))
-                    .isEqualTo(DexCollectionType.hasLibre(type));
+                    .isEqualTo(DexCollectionType.hasNfcScan(type));
             if (type == DexCollectionType.NSFollow) {
                 assertWithMessage(source + " nsfollow_url").that(driver.exists("nsfollow_url")).isTrue();
             }

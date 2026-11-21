@@ -297,9 +297,7 @@ public class DisplayQRCode extends BaseAppCompatActivity {
 
     private void showQRCode() {
         String mystring = new JSONObject(prefsMap).toString();
-        Log.d(TAG, "Serialized: " + mystring);
         String compressedstring = JoH.compressString(mystring);
-        Log.d(TAG, "Compressed: " + compressedstring);
 
         if (compressedstring != null) {
             // show non binary type - unwrap the base64 because it gets wrapped again
