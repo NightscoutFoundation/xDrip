@@ -42,19 +42,16 @@ public class QRcodeUtils {
     }
 
     public static Map<String, String> decodeString(String data) {
-        Log.d(TAG, "jamorham qr decode: " + data);
         try {
             if (data.startsWith(qrmarker)) {
                 data = data.substring(qrmarker.length());
-                Log.d(TAG, "String to uncompress: " + data);
                 data = JoH.uncompressString(data);
-                Log.d(TAG, "Json after decompression: " + data);
                 return new Gson().fromJson(data, new TypeToken<HashMap<String, String>>() {
                 }.getType());
 
             } else if (data.startsWith(qrmarker2)) {
                 data = data.substring(qrmarker2.length());
-                Log.d(TAG, "String to uncompress: " + data + " len: " + data.length());
+                Log.d(TAG, "String to uncompress len: " + data.length());
                 val bytes = JoH.decompressBytesToBytes(Base64.decode(data, Base64.NO_PADDING | Base64.NO_WRAP));
                 Log.d(TAG, "Json after decompression: " + bytes.length);
                 return deserializeQr2(bytes);
