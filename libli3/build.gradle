@@ -1,0 +1,57 @@
+plugins {
+    id 'com.android.library'
+}
+repositories {
+    google()
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 36
+
+    defaultConfig {
+        minSdkVersion 26
+        targetSdkVersion 26
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    namespace 'xrwd.li3'
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+    }
+}
+
+dependencies {
+    // the version the app already runs, through ipluginda; 2.11 can wait in the background without a direct connect
+    implementation "no.nordicsemi.android:ble:2.11.0"
+    implementation 'no.nordicsemi.android:ble-common:2.6.1'
+    implementation "no.nordicsemi.android.support.v18:scanner:1.5.1"
+
+    // AES-CCM and P-256; the same version the app already gets through bcpkix
+    implementation 'org.bouncycastle:bcprov-jdk15to18:1.68'
+    // unpacks the downloaded app identity bundle
+    implementation 'org.tukaani:xz:1.12'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "org.robolectric:robolectric:4.16"
+    testImplementation "com.google.truth:truth:1.4.5"
+
+    compileOnly 'org.projectlombok:lombok:1.18.42'
+    annotationProcessor "org.projectlombok:lombok:1.18.42"
+    testCompileOnly 'org.projectlombok:lombok:1.18.42'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.42'
+}

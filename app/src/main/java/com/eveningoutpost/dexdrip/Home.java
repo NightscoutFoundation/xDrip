@@ -14,6 +14,7 @@ import static com.eveningoutpost.dexdrip.utilitymodels.Constants.HOUR_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.MINUTE_IN_MS;
 import static com.eveningoutpost.dexdrip.utilitymodels.Constants.SECOND_IN_MS;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.GluPro;
+import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Li3;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.LibreAlarm;
 import static com.eveningoutpost.dexdrip.utils.DexCollectionType.Medtrum;
 import static com.eveningoutpost.dexdrip.xdrip.gs;
@@ -723,6 +724,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
     private synchronized void processFingerStickCalibration(final double glucosenumber, final double timeoffset, boolean dontask) {
         JoH.clearCache();
         UserError.Log.uel(TAG, "Processing Finger stick Calibration with values: glucose: " + glucosenumber + " timeoffset: " + timeoffset + " full auto: " + dontask);
+        if (DexCollectionType.isNoCalibration()) return; // no calibration for this data source (at least, not yet)
         if (glucosenumber > 0) {
 
             if (timeoffset < 0) {
@@ -790,7 +792,8 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             Log.d(TAG, "Creating blood test record from input data");
             BloodTest.createFromCal(glucosenumber, timeoffset, "Manual Entry");
             GcmActivity.syncBloodTests();
-            if (!Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto")) { // If automatic calibration is disabled
+            if (!Pref.getBooleanDefaultFalse("bluetooth_meter_for_calibrations_auto") // If automatic calibration is disabled
+                    && !DexCollectionType.isNoCalibration()) { // and the data source can be calibrated
                 if (calibration_type.equals("ask")) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(gs(R.string.use_bg_for_calibration));
@@ -2491,7 +2494,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
             displayCurrentInfo();
             Inevitable.task("home-notifications-start", 5000, Notifications::start);
             // TODO add dexcollectiontype set handling for these
-        } else if (!alreadyDisplayedBgInfoCommon && (collector == LibreAlarm || collector == Medtrum || collector == GluPro)) {
+        } else if (!alreadyDisplayedBgInfoCommon && (collector == LibreAlarm || collector == Medtrum || collector == GluPro || collector == Li3)) {
             updateCurrentBgInfoCommon(collector, notificationText);
         }
         if (collector.equals(DexCollectionType.Disabled)) {
@@ -2736,7 +2739,7 @@ public class Home extends ActivityWithMenu implements ActivityCompat.OnRequestPe
         }
 
         // we can't use the Dex related code below so we handle things here
-        if (DexCollectionType.getDexCollectionType() == GluPro) {
+        if (DexCollectionType.getDexCollectionType() == GluPro || DexCollectionType.getDexCollectionType() == Li3) {
             displayCurrentInfo();
             return;
         }

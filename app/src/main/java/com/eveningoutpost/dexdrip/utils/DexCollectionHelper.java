@@ -8,6 +8,7 @@ import com.eveningoutpost.dexdrip.BluetoothScan;
 import com.eveningoutpost.dexdrip.Home;
 import com.eveningoutpost.dexdrip.models.ActiveBluetoothDevice;
 import com.eveningoutpost.dexdrip.R;
+import com.eveningoutpost.dexdrip.cgm.li3.Li3Store;
 import com.eveningoutpost.dexdrip.models.UserError;
 import com.eveningoutpost.dexdrip.services.Ob1G5CollectionService;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
@@ -109,6 +110,11 @@ public class DexCollectionHelper {
                 break;
             case LibreReceiver:
                 Home.staticRefreshBGChartsOnIdle();
+                break;
+            case Li3:
+                // the Li3 screen lists the setup steps and is where the sensor is scanned
+                CollectionServiceStarter.restartCollectionServiceBackground();
+                Li3Store.startControlActivity();
                 break;
 
             default:

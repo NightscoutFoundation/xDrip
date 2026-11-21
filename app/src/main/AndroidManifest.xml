@@ -123,6 +123,10 @@
             android:label="@string/glupro_activity_title"
             android:exported="false" />
         <activity
+            android:name=".cgm.li3.Li3Activity"
+            android:label="Li3"
+            android:exported="false" />
+        <activity
             android:name=".HealthPrivacy"
             android:exported="true"
             android:label="xDrip Privacy Policy">
@@ -538,6 +542,11 @@
             android:enabled="true"
             android:exported="false"
             android:foregroundServiceType="connectedDevice|location" />
+        <service
+            android:name=".cgm.li3.Li3Service"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice" />
 
         <activity
             android:name=".ShareTest"

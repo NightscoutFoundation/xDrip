@@ -22,6 +22,7 @@
         <item>SmartGuide</item>
         <item>GlucoRx/Aidex App</item>
         <item>CareLink Follower</item>
+        <item>Li3</item>
         <item>@string/disable_collection</item>
     </string-array>
 
@@ -47,7 +48,18 @@
         <item>GluPro</item>
         <item>AidexReceiver</item>
         <item>CLFollower</item>
+        <item>Li3</item>
         <item>Disabled</item>
+    </string-array>
+
+     <string-array name="Li3FoldEntries">
+        <item>@string/li3_fold_li3_app</item>
+        <item>@string/li3_fold_multi_sensor_app</item>
+    </string-array>
+
+    <string-array name="Li3FoldValues" translatable="false">
+        <item>LI3_APP</item>
+        <item>MULTI_SENSOR_APP</item>
     </string-array>
 
      <string-array name="EnableStreamingMethods">
