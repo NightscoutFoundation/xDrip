@@ -93,11 +93,12 @@ public final class Li3SensorState {
 
     /**
      * The stored cycle; without one, as a reconnect without NFC has, the default warm-up and the longest wear. Unlike
-     * RoundWhiteDiscKit, which has no wear end then, so no reading is taken as valid past any sensor's end.
+     * RoundWhiteDiscKit, which has no wear end then, so no reading is taken as valid past any sensor's end. A wear of
+     * 0 counts as none, as the app's sensor-life display takes it.
      */
     public synchronized Lifecycle lifecycle() {
         return new Lifecycle(warmupMinutes != null ? warmupMinutes : Lifecycle.DEFAULT_WARMUP_MINUTES,
-                wearMinutes != null ? wearMinutes : Lifecycle.DEFAULT_WEAR_MINUTES);
+                wearMinutes != null && wearMinutes > 0 ? wearMinutes : Lifecycle.DEFAULT_WEAR_MINUTES);
     }
 
     public synchronized String toJson() {

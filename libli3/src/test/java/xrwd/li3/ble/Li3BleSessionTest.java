@@ -937,7 +937,6 @@ public class Li3BleSessionTest {
 
     // ==================================================== helpers ====================================================
 
-    /** A sensor at a known address whose cached key it still accepts. */
     /** A connection to a sensor this phone has not paired with, so it runs a first pairing. */
     private Li3Ble firstPairBle() {
         state = new Li3SensorState("0RRC989AQ", ADDRESS, new byte[]{1, 2, 3, 4});
@@ -945,6 +944,7 @@ public class Li3BleSessionTest {
                 Collections.singletonList(FakeSensor.identity("test")), recorder);
     }
 
+    /** A sensor at a known address whose cached key it still accepts. */
     private Li3Ble cachedKeyBle() {
         state = new Li3SensorState("0RRC989AQ", ADDRESS, new byte[]{1, 2, 3, 4});
         state.setKAuth(KAUTH);

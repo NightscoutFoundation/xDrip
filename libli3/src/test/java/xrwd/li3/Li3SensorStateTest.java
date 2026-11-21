@@ -36,6 +36,8 @@ public class Li3SensorStateTest {
     private static final String NO_WARMUP = "00a50001000200010060541e020401040004305252433938394151c6ca";
     /** {@link #ACTIVE} reporting a 120-minute warm-up. */
     private static final String LONG_WARMUP = "00a50001000200010060541e020401041804305252433938394151c6ca";
+    /** {@link #ACTIVE} reporting no wear duration. */
+    private static final String NO_WEAR = "00a500010002000100" + "0000" + "1e020401040c04305252433938394151c6ca";
     private static final String SENSOR_KEY_HEX = "04" + "11111111111111111111111111111111111111111111111111111111111111111111111111111111"
             + "111111111111111111111111111111111111111111111111";
 
@@ -317,6 +319,42 @@ public class Li3SensorStateTest {
         assertThat(json).contains("\"warmupDurationMinutes\":0");
         assertThat(restored.warmupMinutes()).isEqualTo(60);
         assertThat(restored.lifecycle().usable(59)).isFalse();
+    }
+
+    /**
+     * A sensor that reports no wear duration gets the longest wear, as the status page and the collector assume, so its
+     * readings are not all refused as expired while the sensor is shown as running.
+     */
+    @Test
+    public void applySensorCycle_wearZero_usesDefaultWear() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+
+        // :: Act
+        state.applySensorCycle(PatchInfo.parse(Hex.toBytes(NO_WEAR)));
+
+        // :: Verify
+        assertThat(PatchInfo.parse(Hex.toBytes(NO_WEAR)).wearMinutes()).isEqualTo(0);
+        assertThat(state.lifecycle().usable(60)).isTrue();
+        assertThat(state.lifecycle().usable(21599)).isTrue();
+        assertThat(state.lifecycle().usable(21600)).isFalse();
+    }
+
+    /** A stored state with no wear duration gets the longest wear once read back, the same as a fresh scan. */
+    @Test
+    public void fromJson_wearZero_usesDefaultWear() {
+        // :: Setup
+        Li3SensorState state = new Li3SensorState(SERIAL, ADDRESS, PIN);
+        state.applySensorCycle(PatchInfo.parse(Hex.toBytes(ACTIVE)));
+        String json = state.toJson().replace("\"wearDurationMinutes\":21600", "\"wearDurationMinutes\":0");
+
+        // :: Act
+        Li3SensorState restored = Li3SensorState.fromJson(json);
+
+        // :: Verify
+        assertThat(json).contains("\"wearDurationMinutes\":0");
+        assertThat(restored.lifecycle().usable(60)).isTrue();
+        assertThat(restored.lifecycle().usable(21600)).isFalse();
     }
 
     // ================================================= Backfill hole =================================================
