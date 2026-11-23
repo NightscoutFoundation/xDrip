@@ -1976,5 +1976,9 @@
     <string name="click">Klik</string>
     <string name="to_use_this_instead">aby użyć tego zamiast?</string>
     <string name="the_transmitter_id_you_have_entered_is_incorrect">Wprowadzony przez Ciebie identyfikator nadajnika lub kod parowania jest nieprawidłowy i nie będzie działał.\n\nSprawdź wprowadzone wartości i spróbuj ponownie.</string>
+    <string name="li3_started">Rozpoczęto</string>
+    <string name="li3_email">Email</string>
+    <string name="li3_lookup_blank">Wprowadź e-mail i hasło</string>
+    <string name="li3_lookup_bad_login">Nazwa użytkownika nie została zaakceptowana</string>
     <string name="notification_listener_permission_explanation">Należy przyznać uprawnienie, żeby móc otrzymywać dane z innych aplikacji. xDrip nie wykonuje niczego innego. Na następnym ekranie proszę włączyć xDrip</string>
 </resources>
