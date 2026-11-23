@@ -448,8 +448,8 @@
     <string name="sdcard_not_readable">SD card not readable</string>
     <string name="loading_settings_from_xdrip_mainline">Loading settings from xDrip mainline</string>
     <string name="warning_settings_from_xdrip_and_plus_exist">Warning settings from old and current xDrip exist - loading current</string>
-    <string name="new_version_date_colon">"New Version date: "</string>
-    <string name="old_version_date_colon">"Old Version date: "</string>
+    <string name="new_version_date_colon">"New Version code: "</string>
+    <string name="old_version_date_colon">"Old Version code: "</string>
     <string name="speak_your_note_text">Speak your note text</string>
     <string name="alarm_if_above_high_value">Notify if above threshold for longer than the time specified below</string>
     <string name="for_longer_than_minutes">for longer than (minutes)</string>
