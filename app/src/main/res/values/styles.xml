@@ -128,7 +128,11 @@
         <item name="android:listPreferredItemPaddingRight">8dp</item>
         <item name="android:listPreferredItemPaddingEnd">8dp</item>
         <item name="android:switchStyle">@style/SettingsPref.SwitchWidget</item>
-        <item name="android:textAppearanceListItem">@style/TextAppearance.AppCompat.Medium</item>
+        <item name="android:textAppearanceListItem">@style/SettingsPref.TitleText</item>
+    </style>
+    <!-- Setting titles in white (textColorPrimary), dimmed when disabled; AppCompat's Medium is 70 % white. -->
+    <style name="SettingsPref.TitleText" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
     <!-- Shows a switch's switchTextOn/Off (ON/OFF, km/miles), as the old switches did. -->
     <style name="SettingsPref.SwitchWidget" parent="android:Widget.Material.CompoundButton.Switch">

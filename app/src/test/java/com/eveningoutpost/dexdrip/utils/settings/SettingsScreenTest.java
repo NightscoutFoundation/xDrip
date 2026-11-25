@@ -829,6 +829,25 @@ public class SettingsScreenTest extends RobolectricTestWithConfig {
     }
 
     /**
+     * Titles of settings that can be used are white, as on the old screen, and titles of disabled settings are dimmed.
+     */
+    @Test
+    public void titlesAreWhiteUnlessDisabled() {
+        // :: Setup
+        final SettingsScreenDriver driver = SettingsScreenDriver.open(SPEAK_SCREEN);
+
+        // :: Act
+        final TextView usable = driver.rowOf(SPEAK_SWITCH).findViewById(android.R.id.title);
+        final TextView disabled = driver.rowOf(SPEAK_THRESHOLD).findViewById(android.R.id.title);
+
+        // :: Verify
+        assertThat(usable.isEnabled()).isTrue();
+        assertThat(usable.getCurrentTextColor()).isEqualTo(0xFFFFFFFF);
+        assertThat(disabled.isEnabled()).isFalse();
+        assertThat(disabled.getCurrentTextColor() >>> 24).isLessThan(0xFF);
+    }
+
+    /**
      * A slider row on a phone-sized screen reserves no space for an icon it does not have, so its title lines up
      * with the other rows.
      */
