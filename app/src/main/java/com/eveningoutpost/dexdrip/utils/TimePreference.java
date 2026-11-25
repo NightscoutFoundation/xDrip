@@ -2,62 +2,62 @@ package com.eveningoutpost.dexdrip.utils;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.preference.DialogPreference;
 import android.text.format.DateFormat;
 import android.util.AttributeSet;
-import android.view.View;
-import android.widget.TimePicker;
+
+import androidx.preference.DialogPreference;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+/**
+ * A time of day setting, stored as a long. Its dialog is {@link TimePreferenceDialogFragment}.
+ */
 public class TimePreference extends DialogPreference {
     private Calendar calendar;
-    private TimePicker picker = null;
 
     public TimePreference(Context ctxt) {
         this(ctxt, null);
     }
 
     public TimePreference(Context ctxt, AttributeSet attrs) {
-        this(ctxt, attrs, android.R.attr.dialogPreferenceStyle);
+        super(ctxt, attrs);
+        init();
     }
 
     public TimePreference(Context ctxt, AttributeSet attrs, int defStyle) {
         super(ctxt, attrs, defStyle);
+        init();
+    }
 
+    private void init() {
         setPositiveButtonText("Set");
         setNegativeButtonText("Close");
         calendar = new GregorianCalendar();
     }
 
-    @Override
-    protected View onCreateDialogView() {
-        picker = new TimePicker(getContext());
-        return (picker);
+    /** The hour of day the dialog opens on. */
+    int getHour() {
+        return calendar.get(Calendar.HOUR_OF_DAY);
     }
 
-    @Override
-    protected void onBindDialogView(View v) {
-        super.onBindDialogView(v);
-        picker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
-        picker.setCurrentMinute(calendar.get(Calendar.MINUTE));
+    /** The minute the dialog opens on. */
+    int getMinute() {
+        return calendar.get(Calendar.MINUTE);
     }
 
-    @Override
-    protected void onDialogClosed(boolean positiveResult) {
-        super.onDialogClosed(positiveResult);
+    /**
+     * Takes the time set in the dialog, as the old dialog's positive button did.
+     */
+    void onTimeSet(final int hour, final int minute) {
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
 
-        if (positiveResult) {
-            calendar.set(Calendar.HOUR_OF_DAY, picker.getCurrentHour());
-            calendar.set(Calendar.MINUTE, picker.getCurrentMinute());
-
-            setSummary(getSummary());
-            if (callChangeListener(calendar.getTimeInMillis())) {
-                persistLong(calendar.getTimeInMillis());
-                notifyChanged();
-            }
+        setSummary(getSummary());
+        if (callChangeListener(calendar.getTimeInMillis())) {
+            persistLong(calendar.getTimeInMillis());
+            notifyChanged();
         }
     }
 
