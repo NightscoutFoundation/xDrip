@@ -131,7 +131,8 @@ public class ReadingData {
         while (it.hasNext()) {
             GlucoseData glucoseData = it.next();
             try {
-                if (libreTrendPoints.get(glucoseData.sensorTime).isError()) {
+                if (new LibreTrendPoint(glucoseData).isError()
+                        || libreTrendPoints.get(glucoseData.sensorTime).isError()) {
                     it.remove();
                 }
             } catch (Exception e) {

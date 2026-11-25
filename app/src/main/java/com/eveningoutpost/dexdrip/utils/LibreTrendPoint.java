@@ -23,6 +23,13 @@ public class LibreTrendPoint {
         this.source = source;
     }
 
+    public LibreTrendPoint(GlucoseData glucoseData) {
+        this.sensorTime = glucoseData.sensorTime;
+        this.rawSensorValue = glucoseData.glucoseLevelRaw;
+        this.flags = glucoseData.flags;
+        this.source = glucoseData.source;
+    }
+
     public String toString(){
         return "{ sensorTime = " + sensorTime + " rawSensorValue = " + rawSensorValue +  " flags = " +   flags +  " source = " +   source +
                 " glucoseLevel " + glucoseLevel + "}";
