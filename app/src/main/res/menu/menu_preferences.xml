@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/showsearch"
         android:title="@string/search"
         android:checkable="false"
@@ -7,5 +8,6 @@
         android:visible="true"
         android:onClick="showSearch"
         android:icon="@android:drawable/ic_menu_search"
-        android:showAsAction="always"/>
+        android:showAsAction="always"
+        app:showAsAction="always"/>
 </menu>

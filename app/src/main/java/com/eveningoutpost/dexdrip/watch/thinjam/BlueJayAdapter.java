@@ -2,7 +2,7 @@ package com.eveningoutpost.dexdrip.watch.thinjam;
 
 // jamorham
 
-import android.preference.Preference;
+import androidx.preference.Preference;
 
 import com.eveningoutpost.dexdrip.models.JoH;
 import com.eveningoutpost.dexdrip.R;
@@ -51,7 +51,7 @@ public class BlueJayAdapter {
                     final String seconds = xdrip.gs(R.string.unit_seconds);
                     preference.setTitle(preference.getTitle().toString().replaceAll("  \\([a-z0-9A-Z ]+" + seconds + "\\)$", "") + "  (" + screenTimeoutValueToSeconds(ivalue) + " " + seconds + ")");
                     if (do_update) {
-                        preference.getEditor().putInt(preference.getKey(), ivalue).apply(); // update prefs now
+                        preference.getSharedPreferences().edit().putInt(preference.getKey(), ivalue).apply(); // update prefs now
                     }
                 }
             } catch (Exception e) {

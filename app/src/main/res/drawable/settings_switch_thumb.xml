@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A flat switch thumb that grows to fit its ON/OFF text, like the old Holo switches. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_enabled="false">
+        <shape android:shape="rectangle">
+            <solid android:color="#FF2E2E2E" />
+            <size android:height="28dp" />
+        </shape>
+    </item>
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="#FF0099CC" />
+            <size android:height="28dp" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FF5A5A5A" />
+            <size android:height="28dp" />
+        </shape>
+    </item>
+</selector>

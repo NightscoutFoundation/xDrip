@@ -1,12 +1,12 @@
 package com.eveningoutpost.dexdrip.utils;
 
 import android.content.Context;
-import android.preference.Preference;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+
+import androidx.preference.Preference;
+import androidx.preference.PreferenceViewHolder;
 
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
@@ -24,22 +24,14 @@ public class ExampleChartPreferenceView extends Preference {
 
     public ExampleChartPreferenceView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setWidgetLayoutResource(R.layout.prefs_example_chart_layout);
+        setLayoutResource(R.layout.prefs_example_chart_layout);
     }
 
     @Override
-    protected View onCreateView(ViewGroup parent) {
-        super.onCreateView(parent);
-
-        LayoutInflater li = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        return li.inflate(R.layout.prefs_example_chart_layout, parent, false);
-    }
-
-    @Override
-    protected void onBindView(View view) {
+    public void onBindViewHolder(PreferenceViewHolder holder) {
         //Log.d(TAG, "onBindExampleChart: bindview");
-        refreshView(view);
-        super.onBindView(view);
+        refreshView(holder.itemView);
+        super.onBindViewHolder(holder);
     }
 
     protected void refreshView(View view) {
@@ -58,6 +50,13 @@ public class ExampleChartPreferenceView extends Preference {
 
     @Override
     protected void onClick() {
+        notifyChanged();
+    }
+
+    /**
+     * Draws the graph again, with the colours as they are stored now.
+     */
+    public void refresh() {
         notifyChanged();
     }
 }

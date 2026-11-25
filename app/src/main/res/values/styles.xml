@@ -112,4 +112,76 @@
     <style name="WhiteActionBar.Subtitle">
         <item name="android:textColor">@android:color/black</item>
     </style>
+
+    <!-- The settings screen (androidx.preference), drawn to look as the old one did. -->
+    <style name="SettingsTheme" parent="Theme.AppCompat">
+        <item name="colorAccent">@android:color/holo_blue_light</item>
+        <item name="android:windowBackground">@drawable/settings_background</item>
+        <item name="android:colorBackground">@android:color/black</item>
+        <item name="actionBarStyle">@style/SettingsActionBar</item>
+        <item name="preferenceTheme">@style/SettingsPreferenceOverlay</item>
+        <item name="android:timePickerStyle">@style/SettingsTimePicker</item>
+        <item name="android:listPreferredItemHeightSmall">64dp</item>
+        <item name="actionBarSize">48dp</item>
+        <item name="android:listPreferredItemPaddingLeft">8dp</item>
+        <item name="android:listPreferredItemPaddingStart">8dp</item>
+        <item name="android:listPreferredItemPaddingRight">8dp</item>
+        <item name="android:listPreferredItemPaddingEnd">8dp</item>
+        <item name="android:switchStyle">@style/SettingsPref.SwitchWidget</item>
+        <item name="android:textAppearanceListItem">@style/SettingsPref.TitleText</item>
+    </style>
+    <!-- Setting titles in white (textColorPrimary), dimmed when disabled; AppCompat's Medium is 70 % white. -->
+    <style name="SettingsPref.TitleText" parent="TextAppearance.AppCompat.Medium">
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+    </style>
+    <!-- Shows a switch's switchTextOn/Off (ON/OFF, km/miles), as the old switches did. -->
+    <style name="SettingsPref.SwitchWidget" parent="android:Widget.Material.CompoundButton.Switch">
+        <item name="android:showText">true</item>
+        <item name="android:thumb">@drawable/settings_switch_thumb</item>
+        <item name="android:track">@drawable/settings_switch_track</item>
+        <item name="android:thumbTextPadding">12dp</item>
+        <item name="android:switchMinWidth">96dp</item>
+        <item name="android:switchTextAppearance">@style/SettingsPref.SwitchText</item>
+    </style>
+    <style name="SettingsPref.SwitchText" parent="android:TextAppearance.Material.Small">
+        <item name="android:textColor">@color/settings_switch_text</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+    <style name="SettingsActionBar" parent="Widget.AppCompat.ActionBar.Solid">
+        <item name="background">@color/settings_action_bar</item>
+        <item name="elevation">0dp</item>
+        <item name="height">48dp</item>
+        <item name="displayOptions">showHome|showTitle</item>
+        <item name="icon">@drawable/ic_launcher</item>
+        <item name="titleTextStyle">@android:style/TextAppearance.Holo.Widget.ActionBar.Title</item>
+    </style>
+    <style name="SettingsPreferenceOverlay" parent="PreferenceThemeOverlay">
+        <item name="preferenceStyle">@style/SettingsPref</item>
+        <item name="preferenceScreenStyle">@style/SettingsPref.Screen</item>
+        <item name="checkBoxPreferenceStyle">@style/SettingsPref.CheckBox</item>
+        <item name="switchPreferenceStyle">@style/SettingsPref.Switch</item>
+        <item name="switchPreferenceCompatStyle">@style/SettingsPref.SwitchCompat</item>
+        <item name="dialogPreferenceStyle">@style/SettingsPref.Dialog</item>
+        <item name="editTextPreferenceStyle">@style/SettingsPref.EditText</item>
+        <item name="preferenceCategoryStyle">@style/SettingsPref.Category</item>
+        <item name="seekBarPreferenceStyle">@style/SettingsPref.SeekBar</item>
+    </style>
+    <style name="SettingsPref" parent="Preference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.Screen" parent="Preference.PreferenceScreen.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.CheckBox" parent="Preference.CheckBoxPreference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.Switch" parent="Preference.SwitchPreference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.SwitchCompat" parent="Preference.SwitchPreferenceCompat.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.Dialog" parent="Preference.DialogPreference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.EditText" parent="Preference.DialogPreference.EditTextPreference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.SeekBar" parent="Preference.SeekBarPreference.Material"><item name="iconSpaceReserved">false</item><item name="allowDividerAbove">true</item><item name="allowDividerBelow">true</item></style>
+    <style name="SettingsPref.Category" parent="Preference.Category.Material">
+        <item name="iconSpaceReserved">false</item>
+        <item name="android:layout">@layout/settings_category</item>
+        <item name="allowDividerAbove">false</item>
+        <item name="allowDividerBelow">false</item>
+    </style>
+    <style name="SettingsTimePicker" parent="android:Widget.Material.TimePicker">
+        <item name="android:timePickerMode">spinner</item>
+    </style>
+    <color name="settings_action_bar">#212121</color>
 </resources>

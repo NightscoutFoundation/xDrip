@@ -1,6 +1,6 @@
 package com.eveningoutpost.dexdrip.calibrations;
 
-import android.preference.ListPreference;
+import androidx.preference.ListPreference;
 import android.util.Log;
 
 import com.eveningoutpost.dexdrip.models.BgReading;
