@@ -32,6 +32,8 @@ import com.eveningoutpost.dexdrip.models.UserError.Log;
 import com.eveningoutpost.dexdrip.R;
 import com.eveningoutpost.dexdrip.services.SnoozeOnNotificationDismissService;
 import com.eveningoutpost.dexdrip.SnoozeActivity;
+import com.eveningoutpost.dexdrip.SnoozeLockScreenActivity;
+import com.eveningoutpost.dexdrip.SnoozeOverlayActivity;
 import com.eveningoutpost.dexdrip.utilitymodels.pebble.PebbleWatchSync;
 import com.eveningoutpost.dexdrip.eassist.AlertTracker;
 import com.eveningoutpost.dexdrip.ui.FlashLight;
@@ -639,6 +641,18 @@ public class AlertPlayer {
         // We are going to create a log now corresponding to a notification that will be created.  It may be silent due to the volume profile or DND.
         // Regardless, the log needs to be created.
         Log.ueh(TAG, contentLog); // Glucose level alert log
+
+        // When a full-screen presentation is wanted (override silent mode or Wake Screen),
+        // target the full-screen intent at the lock-screen snooze screen. It previously
+        // targeted Home, only for override-silent alerts with an audible profile, and stayed
+        // behind the keyguard. The system only fires a full-screen intent while the screen
+        // is off or the keyguard is showing.
+        if (SnoozeLockScreenActivity.fullScreenWanted(overrideSilent)) {
+            UserError.Log.d(TAG, "Setting full screen intent");
+            builder.setCategory(NotificationCompat.CATEGORY_ALARM);
+            builder.setFullScreenIntent(notificationIntent(context, new Intent(context, SnoozeLockScreenActivity.class)), true);
+        }
+
         if (profile != ALERT_PROFILE_VIBRATE_ONLY && profile != ALERT_PROFILE_SILENT) {
             float volumeFrac = (float) (minsFromStartPlaying - MAX_VIBRATING_MINUTES) / (MAX_ASCENDING_MINUTES - MAX_VIBRATING_MINUTES);
             // While minsFromStartPlaying <= MAX_VIBRATING_MINUTES, we only vibrate ...
@@ -656,12 +670,6 @@ public class AlertPlayer {
             Log.d(TAG, "VibrateNotifyMakeNoise volumeFrac = " + volumeFrac);
 
             boolean forceSpeaker = alert.force_speaker;
-
-            if (overrideSilent) {
-                UserError.Log.d(TAG, "Setting full screen intent");
-                builder.setCategory(NotificationCompat.CATEGORY_ALARM);
-                builder.setFullScreenIntent(notificationIntent(context, new Intent(context, Home.class)), true);
-            }
 
             if (notSilencedDueToCall()) {
                 if (overrideSilent || isLoudPhone(context)) {
@@ -692,6 +700,15 @@ public class AlertPlayer {
         final NotificationManager mNotifyMgr = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         //mNotifyMgr.cancel(Notifications.exportAlertNotificationId); // this appears to confuse android wear version 2.0.0.141773014.gms even though it shouldn't - can we survive without this?
         mNotifyMgr.notify(Notifications.exportAlertNotificationId, XdripNotificationCompat.build(builder));
+
+        if (SnoozeLockScreenActivity.screenOffOrLocked(context)) {
+            // screen off or device locked - show the snooze screen above the lock screen
+            // directly when possible (the full-screen intent above is the fallback)
+            SnoozeLockScreenActivity.launchIfWanted(context, overrideSilent);
+        } else {
+            // optionally show the snooze screen on top of the app currently in use
+            SnoozeOverlayActivity.launchIfEnabled(context);
+        }
 
         // send to bluejay
         BlueJayEntry.sendAlertIfEnabled((alert.above ? "High" : "Low") + " Alert " + bgValue + " " + alert.name); // string text is used to determine alert type
