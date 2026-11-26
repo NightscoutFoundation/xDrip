@@ -107,15 +107,12 @@ public class NightscoutFollow {
             try {
                 final BgReading last = BgReading.last(true);
                 final long lastTs = (last != null) ? last.timestamp : 0;
-                if (lastTs > 0) {
-                    final long cutoff = Math.max(lastTs, JoH.tsl() - Constants.DAY_IN_MS);
-                    final int safetyLimit = 2 * 24 * 60; // 2× headroom: fits 24h at any upload rate
-                    UserError.Log.d(TAG, "Fetching entries since: " + cutoff + " (limit " + safetyLimit + ")");
-                    getService().getEntriesSince(session.url.getHashedSecret(), safetyLimit, cutoff, JoH.tsl() + "").enqueue(session.entriesCallback);
-                } else {
-                    UserError.Log.d(TAG, "No prior reading - fetching last 10 entries");
-                    getService().getEntries(session.url.getHashedSecret(), 10, JoH.tsl() + "").enqueue(session.entriesCallback);
-                }
+                // On first run (no prior reading) lastTs is 0, so the cutoff floors to now-24h and
+                // the follower still backfills the last 24 hours instead of only the newest entries.
+                final long cutoff = Math.max(lastTs, JoH.tsl() - Constants.DAY_IN_MS);
+                final int safetyLimit = 2 * 24 * 60; // 2× headroom: fits 24h at any upload rate
+                UserError.Log.d(TAG, "Fetching entries since: " + cutoff + " (limit " + safetyLimit + ")");
+                getService().getEntriesSince(session.url.getHashedSecret(), safetyLimit, cutoff, JoH.tsl() + "").enqueue(session.entriesCallback);
             } catch (Exception e) {
                 UserError.Log.e(TAG, "Exception in entries work() " + e);
                 msg("Nightscout follow entries error: " + e);
