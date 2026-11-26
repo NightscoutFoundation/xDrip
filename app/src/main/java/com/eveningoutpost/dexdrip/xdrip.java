@@ -123,6 +123,8 @@ public class xdrip extends Application {
             }
         }, new IntentFilter("com.eveningoutpost.dexdrip.ExternalStatusline"));
 
+        LibreReceiver.registerForImplicitBroadcasts(this);
+
         JobManager.create(this).addJobCreator(new XDripJobCreator());
         DailyJob.schedule();
         //SyncService.startSyncServiceSoon();

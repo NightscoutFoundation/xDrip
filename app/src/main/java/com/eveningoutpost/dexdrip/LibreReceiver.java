@@ -8,6 +8,7 @@ import static com.eveningoutpost.dexdrip.models.Libre2Sensor.Libre2Sensors;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.text.format.DateFormat;
@@ -241,6 +242,34 @@ public class LibreReceiver extends BroadcastReceiver {
             libre_calc_doku += DateFormat.format("kk:mm:ss :", rawValue.timestamp) + " w:" + longformat.format(weight) + " raw: " + rawValue.glucose + "\n";
         }
         return Math.round(sum / weightSum);
+    }
+
+    /**
+     * Registers a receiver at runtime for the LibreLink broadcasts, so that apps which send them without naming
+     * xDrip are still heard while xDrip runs. Since targetSdk 26, Android no longer delivers such implicit broadcasts
+     * to a receiver declared only in the manifest. Broadcasts that name xDrip's component or package are ignored here,
+     * as the manifest receiver still gets them.
+     *
+     * @return the registered receiver
+     */
+    public static BroadcastReceiver registerForImplicitBroadcasts(final Context context) {
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction(Intents.LIBRE2_BG);
+        filter.addAction(Intents.LIBRE2_ACTIVATION);
+        filter.addAction("com.librelink.app.ThirdPartyIntegration.FOUND_DEVICE");
+        filter.addAction(Intents.LIBRE2_CONNECTION);
+        filter.addAction(Intents.LIBRE2_SCAN);
+
+        final BroadcastReceiver receiver = new LibreReceiver() {
+            @Override
+            public void onReceive(final Context context, final Intent intent) {
+                // Explicit or package-targeted broadcasts still reach the manifest receiver; only handle the rest
+                if (intent.getComponent() != null || intent.getPackage() != null) return;
+                super.onReceive(context, intent);
+            }
+        };
+        context.registerReceiver(receiver, filter);
+        return receiver;
     }
 
     public static List<StatusItem> megaStatus() {
