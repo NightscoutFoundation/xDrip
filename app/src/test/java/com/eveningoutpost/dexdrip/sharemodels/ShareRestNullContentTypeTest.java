@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -23,8 +22,8 @@ import static com.google.common.truth.Truth.assertThat;
  * Covers {@code ShareRest}'s network interceptor rebuilding the response body via
  * {@code ResponseBody.create(bodyString, contentType)}, both when the server sends no
  * {@code Content-Type} header (the null-media-type case the okhttp 4 argument-order swap
- * makes interesting) and when it sends one. The interceptor consumes the original body to
- * log it, so a test that successfully reads the returned body's content proves the rebuild
+ * makes interesting) and when it sends one. The interceptor consumes the original body and
+ * rebuilds it, so a test that successfully reads the returned body's content proves the rebuild
  * happened and preserved the payload.
  *
  * @author Asbjørn Aarrestad - 2026.08
@@ -45,10 +44,7 @@ public class ShareRestNullContentTypeTest extends RobolectricTestWithConfig {
     }
 
     private OkHttpClient getInterceptorEquippedClient() throws Exception {
-        ShareRest shareRest = new ShareRest(RuntimeEnvironment.application, new OkHttpClient());
-        Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
-        method.setAccessible(true);
-        return (OkHttpClient) method.invoke(shareRest);
+        return new ShareRest(RuntimeEnvironment.application, new OkHttpClient()).getOkHttpClient();
     }
 
     @Test

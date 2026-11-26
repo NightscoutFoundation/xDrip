@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ON/OFF text of a settings switch: dimmed when the switch is disabled. -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:color="#80FFFFFF" android:state_enabled="false" />
+    <item android:color="@android:color/white" />
+</selector>

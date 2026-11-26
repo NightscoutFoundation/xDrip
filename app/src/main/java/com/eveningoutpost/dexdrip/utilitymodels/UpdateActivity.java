@@ -281,11 +281,20 @@ public class UpdateActivity extends BaseAppCompatActivity {
         });
 
         TextView detail = (TextView) findViewById(R.id.updatedetail);
-        detail.setText(getString(R.string.new_version_date_colon) + Integer.toString(newversion) + "\n" + getString(R.string.old_version_date_colon) + Integer.toString(versionnumber));
+        detail.setText(getString(R.string.new_version_date_colon) + formatVersionDate(newversion) + "\n" + getString(R.string.old_version_date_colon) + formatVersionDate(versionnumber));
         TextView channel = (TextView) findViewById(R.id.update_channel);
         channel.setText(getString(R.string.update_channel_colon_space) + JoH.ucFirst(prefs.getString("update_channel", "beta")));
 
         updateMessageText.setText(MESSAGE);
+    }
+
+    private String formatVersionDate(int version) {
+        String v = Integer.toString(version);
+        if (v.length() == 10) {
+            // Extracts YYMMDD from e.g. 2126112114 -> 2026-11-21 (valid through year 2099)
+            return "20" + v.substring(2, 4) + "-" + v.substring(4, 6) + "-" + v.substring(6, 8);
+        }
+        return v;
     }
 
     public void closeActivity(View myview) {

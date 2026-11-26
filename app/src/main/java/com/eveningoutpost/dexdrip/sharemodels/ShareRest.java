@@ -3,6 +3,7 @@ package com.eveningoutpost.dexdrip.sharemodels;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import androidx.annotation.VisibleForTesting;
 import androidx.preference.PreferenceManager;
 import android.util.Log;
 
@@ -17,16 +18,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -34,7 +27,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
-import okio.Buffer;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
@@ -105,31 +97,9 @@ public class ShareRest {
         }
     }
 
-    private synchronized OkHttpClient getOkHttpClient() {
+    @VisibleForTesting
+    synchronized OkHttpClient getOkHttpClient() {
         try {
-            final X509TrustManager trustManager = new X509TrustManager() {
-                @Override
-                public void checkClientTrusted(
-                        java.security.cert.X509Certificate[] chain,
-                        String authType) throws CertificateException {
-                }
-
-                @Override
-                public void checkServerTrusted(
-                        java.security.cert.X509Certificate[] chain,
-                        String authType) throws CertificateException {
-                }
-
-                @Override
-                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                    return new java.security.cert.X509Certificate[0];
-                }
-            };
-
-            final SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, new TrustManager[] { trustManager }, new java.security.SecureRandom());
-            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
             return OkHttpWrapper.getClient().newBuilder()
                     .addNetworkInterceptor(new Interceptor() {
                         @Override
@@ -137,25 +107,19 @@ public class ShareRest {
                             try {
                                 // Add user-agent and relevant headers.
                                 Request original = chain.request();
-                                Request copy = original.newBuilder().build();
                                 Request modifiedRequest = original.newBuilder()
                                         .header("User-Agent", "CGM-Store-1.2/22 CFNetwork/711.5.6 Darwin/14.0.0")
                                         .header("Content-Type", "application/json")
                                         .header("Accept", "application/json")
                                         .build();
-                                Log.d(TAG, "Sending request: " + modifiedRequest.toString());
-                                if (copy.body() != null) {
-                                    Buffer buffer = new Buffer();
-                                    copy.body().writeTo(buffer);
-                                    Log.d(TAG, "Request body: " + buffer.readUtf8());
-                                }
+                                // Bodies and the query string carry the password and session id: log neither.
+                                Log.d(TAG, "Sending request: " + modifiedRequest.method() + " " + modifiedRequest.url().encodedPath());
 
                                 final Response response = chain.proceed(modifiedRequest);
-                                Log.d(TAG, "Received response: " + response.toString());
+                                Log.d(TAG, "Received response: " + response.code() + " for " + modifiedRequest.url().encodedPath());
                                 if (response.body() != null) {
                                     MediaType contentType = response.body().contentType();
                                     String bodyString = response.body().string();
-                                    Log.d(TAG, "Response body: " + bodyString);
                                     return response.newBuilder().body(ResponseBody.create(bodyString, contentType)).build();
                                 } else
                                     return response;
@@ -164,13 +128,6 @@ public class ShareRest {
                                 UserError.Log.wtf(TAG, "Got illegal state exception in network interceptor: " + e);
                                 throw new IOException("Network interceptor failed: " + e.getMessage(), e);
                             }
-                        }
-                    })
-                    .sslSocketFactory(sslSocketFactory, trustManager)
-                    .hostnameVerifier(new HostnameVerifier() {
-                        @Override
-                        public boolean verify(String hostname, SSLSession session) {
-                            return true;
                         }
                     })
                     .build();

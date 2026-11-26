@@ -555,7 +555,7 @@
             android:name=".utils.Preferences"
             android:configChanges="orientation|screenSize"
             android:label="@string/settings"
-            android:theme="@style/OldAppTheme" />
+            android:theme="@style/SettingsTheme" />
 
         <receiver android:name=".xDripWidget">
             <intent-filter>

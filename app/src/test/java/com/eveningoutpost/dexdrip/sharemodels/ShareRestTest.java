@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.robolectric.RuntimeEnvironment;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -62,12 +61,10 @@ public class ShareRestTest extends RobolectricTestWithConfig {
         // :: Setup
         server.enqueue(new MockResponse().setBody("\"ok\""));
 
-        // Create ShareRest with a real context, passing a dummy client to avoid using the private one
-        // Then call the private getOkHttpClient to get the interceptor-equipped client
+        // Pass a dummy client so the constructor does not build the real one; getOkHttpClient builds the
+        // interceptor-equipped client under test
         ShareRest shareRest = new ShareRest(RuntimeEnvironment.application, new OkHttpClient());
-        Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
-        method.setAccessible(true);
-        OkHttpClient client = (OkHttpClient) method.invoke(shareRest);
+        OkHttpClient client = shareRest.getOkHttpClient();
 
         // :: Act
         okhttp3.Request request = new okhttp3.Request.Builder()
@@ -88,11 +85,9 @@ public class ShareRestTest extends RobolectricTestWithConfig {
         // :: Setup
         server.enqueue(new MockResponse().setBody("ok"));
         ShareRest shareRest = new ShareRest(RuntimeEnvironment.application, new OkHttpClient());
-        Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
-        method.setAccessible(true);
-        OkHttpClient client = (OkHttpClient) method.invoke(shareRest);
+        OkHttpClient client = shareRest.getOkHttpClient();
 
-        // :: Act — GET request has a null body, exercises the null-body guard in the interceptor
+        // :: Act — GET request has a null body
         okhttp3.Request request = new okhttp3.Request.Builder()
                 .url(server.url("/test"))
                 .get()
@@ -108,11 +103,11 @@ public class ShareRestTest extends RobolectricTestWithConfig {
 
     @Test
     public void getOkHttpClient_returnsOkHttp3Client() throws Exception {
-        // :: Setup & Act
+        // :: Setup
         ShareRest shareRest = new ShareRest(RuntimeEnvironment.application, new OkHttpClient());
-        Method method = ShareRest.class.getDeclaredMethod("getOkHttpClient");
-        method.setAccessible(true);
-        Object client = method.invoke(shareRest);
+
+        // :: Act
+        Object client = shareRest.getOkHttpClient();
 
         // :: Verify
         assertThat(client).isInstanceOf(OkHttpClient.class);
