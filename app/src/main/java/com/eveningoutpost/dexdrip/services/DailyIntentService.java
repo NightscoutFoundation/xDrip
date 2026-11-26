@@ -25,6 +25,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.UploaderQueue;
 import com.eveningoutpost.dexdrip.cloud.backup.Backup;
 import com.eveningoutpost.dexdrip.utils.DatabaseUtil;
+import com.eveningoutpost.dexdrip.utils.SentryCrashReporting;
 import com.eveningoutpost.dexdrip.utils.Telemetry;
 import com.eveningoutpost.dexdrip.wearintegration.WatchUpdaterService;
 import com.eveningoutpost.dexdrip.xdrip;
@@ -160,6 +161,12 @@ public class DailyIntentService extends IntentService {
                     Telemetry.sendCaptureReport();
                 } catch (Exception e) {
                     Log.e(TAG, "Exception in Telemetry: " + e);
+                }
+
+                try {
+                    SentryCrashReporting.sendWeeklyStatus();
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception in weekly status: " + e);
                 }
 
                 try {
