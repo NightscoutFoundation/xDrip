@@ -17,6 +17,9 @@ import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.Marker;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.RecentData;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.SensorGlucose;
 import com.eveningoutpost.dexdrip.cgm.carelinkfollow.message.TextMap;
+import com.eveningoutpost.dexdrip.models.InsulinInjection;
+import com.eveningoutpost.dexdrip.insulin.InsulinManager;
+import com.eveningoutpost.dexdrip.insulin.MultipleInsulins;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -27,7 +30,6 @@ import java.util.UUID;
 
 import static com.eveningoutpost.dexdrip.models.BgReading.SPECIAL_FOLLOWER_PLACEHOLDER;
 import static com.eveningoutpost.dexdrip.models.Treatments.pushTreatmentSyncToWatch;
-
 
 /**
  * Medtronic CareLink Data Processor
@@ -205,19 +207,65 @@ public class CareLinkDataProcessor {
 
                             //new Treatment
                             if (newTreatment(carbs, insulin, marker.getDate().getTime())) {
-                                t = Treatments.create(carbs, insulin, marker.getDate().getTime());
+
+                                if (marker.type.equals(Marker.MARKER_TYPE_INSULIN)
+                                        && MultipleInsulins.isEnabled()) {
+
+                                    final String insulinType = marker.getInsulinType();
+                                    final ArrayList<InsulinInjection> injections = new ArrayList<>();
+
+                                    if ("SHORT_ACTING".equals(insulinType)
+                                            && InsulinManager.getBolusProfile() != null) {
+
+                                        injections.add(new InsulinInjection(
+                                                InsulinManager.getBolusProfile(),
+                                                insulin
+                                        ));
+
+                                    } else if ("LONG_ACTING".equals(insulinType)
+                                            && InsulinManager.getBasalProfile() != null) {
+
+                                        injections.add(new InsulinInjection(
+                                                InsulinManager.getBasalProfile(),
+                                                insulin
+                                        ));
+                                    }
+
+                                    if (!injections.isEmpty()) {
+                                        t = Treatments.create(
+                                                carbs,
+                                                insulin,
+                                                injections,
+                                                marker.getDate().getTime()
+                                        );
+                                    } else {
+                                        t = Treatments.create(
+                                                carbs,
+                                                insulin,
+                                                marker.getDate().getTime()
+                                        );
+                                    }
+
+                                } else {
+                                    t = Treatments.create(
+                                            carbs,
+                                            insulin,
+                                            marker.getDate().getTime()
+                                    );
+                                }
+
                                 if (t != null) {
                                     t.enteredBy = SOURCE_CARELINK_FOLLOW;
                                     t.save();
+
                                     if (Home.get_show_wear_treatments())
                                         pushTreatmentSyncToWatch(t, true);
+
                                     UserError.Log.d(TAG, "NEW TREATMENT: " + treatmentToString(t));
                                 }
                             }
                         }
-
                     }
-
                 }
             }
         }
