@@ -53,6 +53,9 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
     private static long newest_cmp = -1;
     private static final Object lock = new Object();
     private static long sensorAge = 0;
+    // The vendor app shows nothing during a sensor's first hour, and readings from it can be far off (#4847).
+    // The vendor app may extend the warm-up, so this is a minimum.
+    private static final int WARM_UP_MINUTES = 60;
     private static long timeShiftNearest = -1;
     public static final String LIBRE_SOURCE_INFO = "Libre2";
 
@@ -213,16 +216,21 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
         boolean use_smoothed_data = Pref.getBooleanDefaultFalse("libre_use_smoothed_data");
         if (use_smoothed_data) {
-            readingData.calculateSmoothDataImproved(libreTrendPoints, bg_val_exists);
+            readingData.calculateSmoothDataImproved(libreTrendPoints, bg_val_exists, WARM_UP_MINUTES);
         }
         if (Pref.getBooleanDefaultFalse("external_blukon_algorithm") != false) {
             Log.wtf(TAG, "Error external_blukon_algorithm should be false here");
         }
         boolean use_raw = !Pref.getString("calibrate_external_libre_2_algorithm_type", "calibrate_raw").equals("no_calibration");
-        CalculateFromDataTransferObject(readingData, use_smoothed_data, use_raw);
+        CalculateFromDataTransferObject(readingData, use_smoothed_data, use_raw, true);
     }
 
     public static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_smoothed_data, boolean use_raw) {
+        CalculateFromDataTransferObject(readingData, use_smoothed_data, use_raw, false);
+    }
+
+    // skip_warm_up needs a sensor time on every trend and history record, which the NFC and Bluetooth readers set.
+    private static void CalculateFromDataTransferObject(ReadingData readingData, boolean use_smoothed_data, boolean use_raw, boolean skip_warm_up) {
         Log.i(TAG, "CalculateFromDataTransferObject called");
         // insert any recent data we can
         val segmentation_timeslice = DexCollectionType.getCurrentDeduplicationPeriod();
@@ -263,6 +271,10 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
 
                 for (GlucoseData gd : mTrend) {
                     if (d) Log.d(TAG, "DEBUG: sensor time: " + gd.sensorTime);
+                    if (skip_warm_up && gd.sensorTime < WARM_UP_MINUTES) {
+                        if (d) Log.d(TAG, "Skipping record during sensor warm-up: " + gd.sensorTime);
+                        continue;
+                    }
                     if ((timeShiftNearest > 0) && ((timeShiftNearest - gd.realDate) < segmentation_timeslice) && (timeShiftNearest - gd.realDate != 0)) {
                         if (d)
                             Log.d(TAG, "Skipping record due to closeness to the most recent value: " + JoH.dateTimeText(gd.realDate));
@@ -279,12 +291,23 @@ public class LibreAlarmReceiver extends BroadcastReceiver {
             }
 
             // munge and insert the history data if any is missing
-            insertFromHistory(readingData.history, use_raw);
+            insertFromHistory(skip_warm_up ? afterWarmUp(readingData.history) : readingData.history, use_raw);
         } else {
             Log.d(TAG, "Trend data is null!");
         }
     }
 
+
+    private static List<GlucoseData> afterWarmUp(final List<GlucoseData> records) {
+        if (records == null) return null;
+        final List<GlucoseData> result = new ArrayList<>();
+        for (final GlucoseData gd : records) {
+            if (gd.sensorTime >= WARM_UP_MINUTES) {
+                result.add(gd);
+            }
+        }
+        return result;
+    }
 
     public static void insertFromHistory(final List<GlucoseData> mHistory, final boolean use_raw) {
         val timeslice = DexCollectionType.getCurrentDeduplicationPeriod();

@@ -183,6 +183,11 @@ public class ReadingData {
     }
 
     public void calculateSmoothDataImproved(List<LibreTrendPoint> libreTrendPoints, boolean BgValSmoothing) {
+        calculateSmoothDataImproved(libreTrendPoints, BgValSmoothing, 0);
+    }
+
+    // firstValidMinute: the average for a point at or after it leaves out the minutes before it (sensor warm-up).
+    public void calculateSmoothDataImproved(List<LibreTrendPoint> libreTrendPoints, boolean BgValSmoothing, int firstValidMinute) {
         // use the data on libreTrendPoints to do the calculations.
         // Try to use the first 5 points to do the average if they exist and if not use up to 7 more points.
 
@@ -190,7 +195,7 @@ public class ReadingData {
         Iterator<GlucoseData> it = trend.iterator();
         while (it.hasNext()) {
             GlucoseData glucoseData = it.next();
-            boolean remove = calculateSmoothDataPerPoint(glucoseData, libreTrendPoints, BgValSmoothing, errorHash);
+            boolean remove = calculateSmoothDataPerPoint(glucoseData, libreTrendPoints, BgValSmoothing, errorHash, firstValidMinute);
             if (remove) {
                 it.remove();
             }
@@ -198,7 +203,7 @@ public class ReadingData {
     }
 
     // true means we need to remove this objects.
-    private boolean calculateSmoothDataPerPoint(GlucoseData glucoseData, List<LibreTrendPoint> libreTrendPoints, boolean BgValSmoothing, HashSet<Integer> errorHash) {
+    private boolean calculateSmoothDataPerPoint(GlucoseData glucoseData, List<LibreTrendPoint> libreTrendPoints, boolean BgValSmoothing, HashSet<Integer> errorHash, int firstValidMinute) {
         if (glucoseData.sensorTime < MAX_DISTANCE_FOR_SMOOTHING) {
             // First values are not interesting, but would make the algorithm more complex.
             return false;
@@ -210,6 +215,9 @@ public class ReadingData {
         int points_used_bg = 0;
 
         for (int i = 0; i < MAX_DISTANCE_FOR_SMOOTHING && points_used < PREFERRED_AVERAGE; i++) {
+            if (glucoseData.sensorTime >= firstValidMinute && glucoseData.sensorTime - i < firstValidMinute) {
+                break;
+            }
             LibreTrendPoint libreTrendPoint = libreTrendPoints.get(glucoseData.sensorTime - i);
             if (errorHash.contains(glucoseData.sensorTime - i) || libreTrendPoint.rawSensorValue == 0) {
                 if (libreTrendPoint.getSensorTime() != 0) {
