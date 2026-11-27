@@ -4,9 +4,12 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceManager;
 
 import com.eveningoutpost.dexdrip.models.JoH;
@@ -281,16 +284,21 @@ public class SnoozeActivity extends ActivityWithMenu {
                         long minutes;
                         if (snoozeValue.getValue() == snoozeValue.getMaxValue()) {
                             minutes = infiniteSnoozeValueInMinutes;
+                            new AlertDialog.Builder(SnoozeActivity.this)
+                                    .setTitle("Not recommended")
+                                    .setMessage("These alerts will remain disabled until you manually re-enable them.\n\nAre you sure?")
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            applySnooze(d, minutes, snoozeType);
+                                        }
+                                    })
+                                    .setNegativeButton(android.R.string.no, null)
+                                    .show();
                         } else {
                             minutes = SnoozeActivity.getTimeFromSnoozeValue(snoozeValue.getValue());
+                            applySnooze(d, minutes, snoozeType);
                         }
-
-                        snoozeForType(minutes, snoozeType, prefs);
-
-                        d.dismiss();
-                        //also make sure the text in the Activity is changed
-                        displayStatus();
-                        showDisableEnableButtons();
                     }
                 });
                 b2.setOnClickListener(new View.OnClickListener() {
@@ -306,6 +314,16 @@ public class SnoozeActivity extends ActivityWithMenu {
         });
 
     }
+
+    private void applySnooze(Dialog d, long minutes, SnoozeType snoozeType) {
+        snoozeForType(minutes, snoozeType, prefs);
+
+        d.dismiss();
+        // also make sure the text in the Activity is changed
+        displayStatus();
+        showDisableEnableButtons();
+    }
+
     public static void recheckAlerts() {
         Notifications.start();
         JoH.startService(MissedReadingService.class); // TODO this should be rate limited or similar as it is polled in various locations leading to excessive cpu
