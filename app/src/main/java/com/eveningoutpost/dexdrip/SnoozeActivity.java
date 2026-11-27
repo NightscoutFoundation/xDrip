@@ -285,8 +285,8 @@ public class SnoozeActivity extends ActivityWithMenu {
                         if (snoozeValue.getValue() == snoozeValue.getMaxValue()) {
                             minutes = infiniteSnoozeValueInMinutes;
                             new AlertDialog.Builder(SnoozeActivity.this)
-                                    .setTitle("Disable alerts indefinitely?")
-                                    .setMessage("These alerts will remain disabled until you manually re-enable them. This is not recommended.\n\nAre you sure?")
+                                    .setTitle("Not recommended")
+                                    .setMessage("These alerts will remain disabled until you manually re-enable them.\n\nAre you sure?")
                                     .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                         @Override
                                         public void onClick(DialogInterface dialog, int which) {
